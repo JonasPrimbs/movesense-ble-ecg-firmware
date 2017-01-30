@@ -5,7 +5,7 @@
 To compile the applications you also need the following tools and programs:
 
  * [GNU Toolchain for ARM Embedded](https://launchpad.net/gcc-arm-embedded)
- * [Ninja build tool](https://ninja-build.org/)
+ * [Ninja build tool](https://ninja-build.org/) (download the ninja.exe and put it in the path)
  * [cmake >=3.6](https://cmake.org/download/)
 
 and if you want to flash the device firmware directly from build process using the *Movesense Programming Jig* need also:
@@ -32,7 +32,7 @@ if you are using a *Movesense programming jig* you can flash the resulting .hex-
 ```
 ninja flash
 ```
-or any other nRF52 compatible programming software such as *nRFGo Studio*.
+or you can use any other nRF52 compatible programming software such as *nRFGo Studio*.
 
 ## Frequently Asked Questions
 
