@@ -3,14 +3,16 @@
 *Movesense Core library* for movesense device is available from this git repository or as a zip download. Just unpack the core lib and example app anywhere.
 
 To compile the applications you also need the following tools and programs:
-* [GNU Toolchain for ARM Embedded](https://launchpad.net/gcc-arm-embedded)
-* [Ninja build tool](https://ninja-build.org/)
-* [cmake >=3.6](https://cmake.org/download/)
 
-and if you want to flash the device firmware using the programming jig you need also:
-* Nordic Semiconductor's from [nRF5x-Command-Line-Tools-Win32](https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF52-DK)
+ * [GNU Toolchain for ARM Embedded](https://launchpad.net/gcc-arm-embedded)
+ * [Ninja build tool](https://ninja-build.org/)
+ * [cmake >=3.6](https://cmake.org/download/)
 
-## Example
+and if you want to flash the device firmware directly from build process using the *Movesense Programming Jig* need also:
+
+ * Nordic Semiconductor's [nRF5x-Command-Line-Tools-Win32](https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF52-DK)
+
+## Example App
 
 To build the "Example app" project, you will need to clone the repo or download both *Movesense Core library* and *Example App*, and run the following commands from a build directory of your choosing.
 
