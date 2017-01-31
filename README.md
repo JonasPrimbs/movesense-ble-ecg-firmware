@@ -52,6 +52,7 @@ or you can use any other nRF52 compatible programming software such as *nRFGo St
 ## Frequently Asked Questions
 
 For FAQ please check http://stackoverflow.com/search?q=movesense
+
 If your problem is not addressed there, please [post](http://stackoverflow.com/questions/ask) a new question, and tag it with 'movesense' so that it will added to the FAQ collection.
 
 ## Bug Reports
