@@ -1,6 +1,6 @@
 ## Installation
 
-*Movesense Core library* for movesense device is available from this git repository or as a zip download. Just unpack the core lib and example app anywhere.
+*Movesense Core library* for the Movesense device is available from this git repository. Just unpack the core lib with the example app to an arbitrary folder. For convenience, the whole SW is also provided as a .zip file (see the Download section).  
 
 To compile the applications you also need the following tools and programs:
 
