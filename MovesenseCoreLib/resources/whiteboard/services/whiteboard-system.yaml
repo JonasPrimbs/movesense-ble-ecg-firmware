@@ -1,0 +1,157 @@
+# Copyright Suunto Oy 2016
+# All rights reserved.
+#
+swagger: '2.0'
+
+# Document metadata
+info:
+  version: "0.9.0"
+  title: /Whiteboard/System API
+  description: |
+    This file defines Suunto Whiteboard System Services API.
+
+    See http://developer.suunto.com for more information.
+  termsOfService: http://suunto.com/wbapi/terms/
+  contact:
+    name: Suunto team
+    url: http://developer.suunto.com
+  
+# Security definitions
+security:
+  - suuntoAccessCode:
+    - public
+
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+    flow: accessCode
+    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
+    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
+    
+# Paths
+paths:
+
+  /Whiteboard/System/Launcher:
+    x-executionContext: application
+    get:
+      description: |
+        Query of Launchable Module names and status.
+      parameters:
+        - name: moduleStartIndex
+          in: query
+          description: The response module list starts from this zero based
+            element index onwards if given, otherwise from the first module.
+          required: false
+          type: integer
+          format: uint16
+      responses:
+        100:
+          description: Operation completed partially.
+            Not all modules fit in the list, please ask again with moduleStartIndex.
+            Suggesting value of the element count from previous module list query.
+          schema:
+            $ref: '#/definitions/LaunchableList'
+        200:
+          description: Operation completed successfully.
+            All included (or from moduleStartIndex), no more modules after this.
+          schema:
+            $ref: '#/definitions/LaunchableList'
+        416:
+          description: moduleStartIndex is out of range.
+      security:
+        - suuntoAccessCode:
+          - public
+    put:
+      description: |
+         Launchable Module state update with given command.
+      parameters:
+        - name: name
+          in: query
+          description: Launchable Module name.
+          required: true
+          type: string
+        - name: command
+          in: body
+          description: Launchable Module command request.
+          required: true
+          schema:
+            $ref: '#/definitions/ModuleCommand'
+      responses:
+        200:
+          description: Operation completed successfully.
+        400:
+          description: Bad request. Operation failed.
+        404:
+          description: Module not found.
+        405:
+          description: Command not supported.
+        500:
+          description: Module failure.
+      security:
+        - suuntoAccessCode:
+          - public
+
+definitions:
+  ModuleCommand:
+    type: integer
+    format: uint8
+    enum:
+      - description: Initializes the module.
+        name: 'Initialize'
+        value: 0
+      - description: Starts the module. If not initialize already, also initializes it.
+        name: 'Start'
+        value: 1
+      - description: Stops the module. Has to be started before.
+        name: 'Stop'
+        value: 2
+      - description: Deinitializes the module. If not stopped already, also stops it.
+        name: 'Deinitialize'
+        value: 3
+
+  ModuleState:
+    type: integer
+    format: uint8
+    enum:
+      - description: The module has been uninitialized and all resources are freed.
+        name: 'Uninitialized'
+        value: 0
+      - description: The module has been initialized with all required resources reserved.
+        name: 'Initialized'
+        value: 1
+      - description: The module is in active state and running.
+        name: 'Started'
+        value: 2
+      - description: The module is in sleep or standby mode.
+        name: 'Stopped'
+        value: 3
+      - description: The module initialization has failed.
+        name: 'InitFailed'
+        value: 4
+      - description: An error has occured in module, while it has been started.
+        name: 'Failure'
+        value: 5
+
+  LaunchableModule:
+    required:
+      - name
+      - state
+    properties:
+      name:
+        description: The Launchable Module name.
+        type: string
+      state:
+        description: The current state of the Launchable Module.
+        $ref: '#/definitions/ModuleState'
+
+  LaunchableList:
+    required:
+      - modules
+    properties:
+      modules:
+        description: List of all Launchable Modules registered.
+        type: array
+        items:
+          $ref: '#/definitions/LaunchableModule'

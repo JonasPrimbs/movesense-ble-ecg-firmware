@@ -1,0 +1,459 @@
+# This file defines Suunto Whiteboard API
+#
+# Copyright Suunto Oy 2015
+# All rights reserved.
+#
+# Swagger editor is located at http://vaas1410:81/#/
+#
+# NOTE! Editor remembers last file you have edited, but it is
+# not necessarily the version located in your local or shared repository. 
+# ALWAYS USE COPY + PASTE TO UPDATE THE EDITOR BEFORE DOING ANY EDITING!!!
+#
+swagger: '2.0'
+
+# Document metadata
+info:
+  version: "0.0.0"
+  title: Suunto Whiteboard API for Performance 2016 product.
+  description: |
+    This file defines API for Whiteboard server that runs on NextGen Performance 2016 device.
+
+    See http://developer.suunto.com for more information.
+  termsOfService: http://suunto.com/wbapi/terms/
+  contact:
+    name: Suunto team
+    url: http://developer.suunto.com
+
+# Security definitions
+security:
+  - suuntoAccessCode:
+    - public
+    - read:user
+    - write:user
+    - read:contacts
+    - write:contacts
+    - test
+
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+      read:user: Grants read access to user profile info.
+      write:user: Grants write access to user profile info.
+      read:contacts: Grants read access to user's contants and memberships.
+      write:contacts: Grants write access to user's contants and memberships.
+      test: Grants read/write access to QA / test resources.
+    flow: accessCode
+    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
+    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
+
+# Paths
+paths:
+  /Dev/Time:
+    x-executionContext: meas
+    get:
+      description: |
+        Gets current time in number of seconds since epoch 1.1.1970 (UTC).
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: integer
+            format: int64
+      security:
+        - suuntoAccessCode:
+          - public
+    put:
+      description: |
+        Sets current time in number of seconds since epoch 1.1.1970 (UTC).
+      parameters:
+        -
+          name: value
+          in: query
+          description: New time value.
+          required: true
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Operation completed successfully
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Dev/Time/Subscription:
+    x-executionContext: meas
+    post:
+      description: |
+        Subscribes the client to receive time change event notifications.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        x-notification:
+          description: |
+            New time.
+          schema:
+            type: integer
+            format: int64
+      security:
+        - suuntoAccessCode:
+          - public
+    delete:
+      description: |
+        Unsubscribes the client from all time change event notifications.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Dev/Time/DualTime:
+    x-executionContext: meas
+    get:
+      description: |
+        Gets current dual time in number of seconds since epoch 1.1.1970 (UTC), adjusted by user setting.
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: integer
+            format: int64
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Dev/Time/DualTime/Subscription:
+    x-executionContext: meas
+    post:
+      description: |
+        Subscribes the client to receive dual time change event notifications.
+      responses:
+        200:
+          description: Operation completed successfully. Returns dual time.
+          schema:
+            type: integer
+            format: int64
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        x-notification:
+          description: |
+            New dual time.
+          schema:
+            type: integer
+            format: int64
+      security:
+        - suuntoAccessCode:
+          - public
+    delete:
+      description: |
+        Unsubscribes the client from all dual time change event notifications.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Dev/Time/LocalTime:
+    x-executionContext: meas
+    get:
+      description: |
+        Gets current local time in number of seconds since epoch 1.1.1970 (UTC) based on timezone.
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: integer
+            format: int64
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Dev/Time/LocalTime/Subscription:
+    x-executionContext: meas
+    post:
+      description: |
+        Subscribes the client to receive local time change event notifications.
+      responses:
+        200:
+          description: Operation completed successfully. Returns local time.
+          schema:
+            type: integer
+            format: int64
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        x-notification:
+          description: |
+            New local time.
+          schema:
+            type: integer
+            format: int64
+      security:
+        - suuntoAccessCode:
+          - public
+    delete:
+      description: |
+        Unsubscribes the client from all local time change event notifications.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Dev/Time/Min:
+    x-executionContext: meas
+    get:
+      description: |
+        Gets current time in number of seconds since epoch 1.1.1970 (UTC). Update interval is 1 min.
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: integer
+            format: int64
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Dev/Time/Min/Subscription:
+    x-executionContext: meas
+    post:
+      description: |
+        Subscribes the client to receive time change event notifications. Update interval is 1 min.
+      responses:
+        200:
+          description: Operation completed successfully. Returns time.
+          schema:
+            type: integer
+            format: int64
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        x-notification:
+          description: |
+            New minute time.
+          schema:
+            type: integer
+            format: int64
+      security:
+        - suuntoAccessCode:
+          - public
+    delete:
+      description: |
+        Unsubscribes the client from all time change event notifications.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Dev/Time/DualTime/Min:
+    x-executionContext: meas
+    get:
+      description: |
+        Gets current dual time in number of seconds since epoch 1.1.1970 (UTC), adjusted by user setting. Update interval is 1 min.
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: integer
+            format: int64
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Dev/Time/DualTime/Min/Subscription:
+    x-executionContext: meas
+    post:
+      description: |
+        Subscribes the client to receive time change event notifications. Update interval is 1 min.
+      responses:
+        200:
+          description: Operation completed successfully. Returns dual time.
+          schema:
+            type: integer
+            format: int64
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        x-notification:
+          description: |
+            New dual time minute time.
+          schema:
+            type: integer
+            format: int64
+      security:
+        - suuntoAccessCode:
+          - public
+    delete:
+      description: |
+        Unsubscribes the client from all time change event notifications.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Dev/Time/LocalTime/Min:
+    x-executionContext: meas
+    get:
+      description: |
+        Gets current local time in number of seconds since epoch 1.1.1970 (UTC) based on timezone. Update interval is 1 min.
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: integer
+            format: int64
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Dev/Time/LocalTime/Min/Subscription:
+    x-executionContext: meas
+    post:
+      description: |
+        Subscribes the client to receive local time change event notifications. Update interval is 1 min.
+      responses:
+        200:
+          description: Operation completed successfully. Returns local time.
+          schema:
+            type: integer
+            format: int64
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        x-notification:
+          description: |
+            New local minute time.
+          schema:
+            type: integer
+            format: int64
+      security:
+        - suuntoAccessCode:
+          - public
+    delete:
+      description: |
+        Unsubscribes the client from all local time change event notifications.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Dev/Time/DateChange:
+    x-executionContext: meas
+
+  /Dev/Time/DateChange/Subscription:
+    x-executionContext: meas
+    post:
+      description: |
+        Subscribed client to receive when the user chnaged the date
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        x-notification:
+          description: |
+            New date time.
+          schema:
+            type: integer
+            format: uint32
+      security:
+        - suuntoAccessCode:
+          - public
+    delete:
+      description: |
+        Unsubscribes the client from all local time change event notifications.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Dev/Time/Midnight:
+    x-executionContext: meas
+
+  /Dev/Time/Midnight/Subscription:
+    x-executionContext: meas
+    post:
+      description: |
+        Subscribed client to receive notification when the date is changed at midnight
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        x-notification:
+          description: |
+            Date has changed at midnight indication.
+          schema:
+            type: boolean
+      security:
+        - suuntoAccessCode:
+          - public
+    delete:
+      description: |
+        Unsubscribes the client from the midnight notifications.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Dev/Time/Hour:
+    x-executionContext: meas
+
+  /Dev/Time/Hour/Subscription:
+    x-executionContext: meas
+    post:
+      description: |
+        Subscribed client to receive notification every hour in local timezone
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        x-notification:
+          description: |
+            Hour has changed indication.
+          schema:
+            type: boolean
+      security:
+        - suuntoAccessCode:
+          - public
+    delete:
+      description: |
+        Unsubscribes the client from hourly event notifications.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public

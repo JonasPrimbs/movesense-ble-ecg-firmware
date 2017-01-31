@@ -1,0 +1,168 @@
+# Copyright Suunto Oy 2016
+# All rights reserved.
+#
+swagger: '2.0'
+
+# Document metadata
+info:
+  version: "0.9.0"
+  title: /Net API
+  description: |
+    This file defines Suunto Whiteboard routing table service API.
+
+    See http://developer.suunto.com for more information.
+  termsOfService: http://suunto.com/wbapi/terms/
+  contact:
+    name: Suunto team
+    url: http://developer.suunto.com
+  
+# Security definitions
+security:
+  - suuntoAccessCode:
+    - public
+
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+    flow: accessCode
+    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
+    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
+    
+# Paths
+paths:
+  /Net:
+    x-executionContext: PrimaryServices
+    get:
+      description: |
+        User can query information about the remote whiteboards known by the local whiteboard.
+      parameters:
+        -
+          name: continuationIndex
+          in: query
+          description: |
+            Start index from where to continue the routing table get request. If not set, returns from the beginning.
+          required: false
+          type: integer
+          format: uint32
+      responses:
+        200:
+          description: |
+            Returns list containing serial number of each known remote whiteboard. 
+          schema:
+            $ref: '#/definitions/RoutingTable'
+        100:
+          description: | 
+            Returns list containing serial number of each known remote whiteboard. Return value indicates that the 
+            routing table did not fit into single request. Additional entries can be retrieved with additional request
+            where optional parameter ContinuationIndex is set to the amount of currently received entries.
+          schema:
+            $ref: '#/definitions/RoutingTable'
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Net/Subscription:
+    x-executionContext: PrimaryServices
+    post:
+      tags:
+        - Suunto API
+      description: |
+        Subscribe to the routing table changes, ie changes on remote whiteboards.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        x-notification:
+          description: |
+            Event notification, contains serial number of the remote whiteboard that has changed.
+          headers:
+            notificationType:
+              description: Type of update of the returned route.
+              type: integer
+              format: uint8
+            remoteWhiteboardIdInLocalScope:
+              description: Id of the whiteboard.
+              type: integer
+              format: uint8
+          schema:
+            type: string
+      security:
+        - suuntoAccessCode:
+          - public
+    delete:
+      tags:
+        - Suunto API
+      description: |
+        Unsubscribe from routing table changes.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
+
+# Data type definitions
+definitions:
+  RoutingTable:
+    description: Serial numbers of the remote whiteboards.
+    required:
+    - version
+    - serialNumbers
+    properties:
+      version:
+        description: |
+          Current version of the remote whiteboard list. Increased by one on each change in the list. 
+          Can be used to determine if the list has been changed since last querying the list. 
+          User should take care of handling the overflow.
+        type: integer
+        format: uint8
+      serialNumbers:
+        $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/ListOfStrings'
+
+  RouteState:
+    type: integer
+    format: uint8
+    enum:
+      - description: Route is not used (empty routing table entry).
+        name: 'ROUTE_STATE_NOT_USED'
+        value: 0
+      - description: Communication adapter of route has been disabled.
+        name: 'ROUTE_STATE_ADAPTER_DISABLED'
+        value: 1
+      - description: Route has not been connected.
+        name: 'ROUTE_STATE_NOT_CONNECTED'
+        value: 2
+      - description: Route is connecting.
+        name: 'ROUTE_STATE_CONNECTING'
+        value: 3
+      - description: Route is handshaking.
+        name: 'ROUTE_STATE_HANDSHAKING'
+        value: 4
+      - description: Route is established and working.
+        name: 'ROUTE_STATE_ESTABLISHED'
+        value: 5
+      - description: Route is disconnecting.
+        name: 'ROUTE_STATE_DISCONNECTING'
+        value: 6
+      - description: Route is in errorneous state.
+        name: 'ROUTE_STATE_ERROR'
+        value: 7
+  
+  RoutingTableNotificationType:
+    type: integer
+    format: uint8
+    enum:
+      - description: New route has been established.
+        name: 'ROUTE_NOTIFICATION_NEW'
+        value: 0
+      - description: Route has been lost.
+        name: 'ROUTE_NOTIFICATION_LOST'
+        value: 1
+      - description: Route has gone to error state.
+        name: 'ROUTE_NOTIFICATION_ERROR'
+        value: 2

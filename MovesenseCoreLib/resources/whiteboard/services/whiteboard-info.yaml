@@ -1,0 +1,67 @@
+# Copyright Suunto Oy 2016
+# All rights reserved.
+#
+swagger: '2.0'
+
+# Document metadata
+info:
+  version: "0.9.0"
+  title: /Whiteboard API
+  description: |
+    This file defines Suunto Whiteboard Core Services API.
+
+    See http://developer.suunto.com for more information.
+  termsOfService: http://suunto.com/wbapi/terms/
+  contact:
+    name: Suunto team
+    url: http://developer.suunto.com
+  
+# Security definitions
+security:
+  - suuntoAccessCode:
+    - public
+
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+    flow: accessCode
+    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
+    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
+    
+# Paths
+paths:
+  /Whiteboard/Info:
+    x-executionContext: PrimaryServices
+    get:
+      description: |
+        User can query whiteboard version information of the system.
+      responses:
+        200:
+          description: Returns whiteboard version information.
+          schema:
+            $ref: '#/definitions/WbInfo'
+      security:
+        - suuntoAccessCode:
+          - public
+
+definitions:
+  WbInfo:
+    description: Version information of the whiteboard.
+    required:
+    - version
+    - commVersion
+    - minCommVersion
+    properties:
+      version:
+        description: Whiteboard version string, e.g. "1.0.0-a1b2c3d4"
+        type: string
+      commVersion:
+        description: Whiteboard communicaton version.
+        type: integer
+        format: uint8
+      minCommVersion:
+        description: Minimum compatible commuication version.
+        type: integer
+        format: uint8

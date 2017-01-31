@@ -1,0 +1,279 @@
+# Copyright Suunto Oy 2016
+# All rights reserved.
+#
+swagger: '2.0'
+
+# Document metadata
+info:
+  version: "0.9.0"
+  title: /Net API
+  description: |
+    This file defines Suunto Whiteboard routing table service API.
+
+    See http://developer.suunto.com for more information.
+  termsOfService: http://suunto.com/wbapi/terms/
+  contact:
+    name: Suunto team
+    url: http://developer.suunto.com
+  
+# Security definitions
+security:
+  - suuntoAccessCode:
+    - public
+
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+    flow: accessCode
+    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
+    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
+    
+# Paths
+paths:
+  /Net/Info:
+    x-executionContext: PrimaryServices
+    get:
+      description: |
+        User can query information about the remote whiteboards known by the local whiteboard.
+      parameters:
+        -
+          name: remoteWhiteboardIdInLocalScope
+          in: query
+          description: Id of the remote whiteboard in local scope.
+          required: true
+          type: integer
+          format: uint8
+      responses:
+        200:
+          description: Details of the route to remote whiteboard.
+          schema:
+            $ref: '#/definitions/RoutingTableEntry'
+        204:
+          description: There is no route to the given remote whiteboard (route is not in use).
+        416:
+          description: The given remoteWhiteboardIdInLocalScope is illegal (out of routing table range).
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Net/Info/{remoteWhiteboardIdInLocalScope}/SerialNumber:
+    x-executionContext: PrimaryServices
+    get:
+      description: |
+        User can query serial number of Whiteboard with given ID.
+      parameters:
+        -
+          name: remoteWhiteboardIdInLocalScope
+          in: path
+          description: Id of the remote whiteboard in local scope.
+          required: true
+          type: integer
+          format: int32 # really uint8, but only int32 is supported with path parameter
+      responses:
+        200:
+          description: Serial number of remote whiteboard.
+          schema:
+            type: string
+        204:
+          description: There is no route to the given remote whiteboard (route is not in use).
+        416:
+          description: The given remoteWhiteboardIdInLocalScope is illegal (out of routing table range).
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Net/Info/{remoteWhiteboardIdInLocalScope}/State:
+    x-executionContext: PrimaryServices
+    get:
+      description: |
+        User can query state of route to Whiteboard with given ID.
+      parameters:
+        -
+          name: remoteWhiteboardIdInLocalScope
+          in: path
+          description: Id of the remote whiteboard in local scope.
+          required: true
+          type: integer
+          format: int32 # really uint8, but only int32 is supported with path parameter
+      responses:
+        200:
+          description: State of the route to remote whiteboard.
+          schema:
+            $ref: 'http://localhost:9000/services/whiteboard-net.yaml#/definitions/RouteState'
+        416:
+          description: The given remoteWhiteboardIdInLocalScope is illegal (out of routing table range).
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Net/Info/{remoteWhiteboardIdInLocalScope}/Address:
+    x-executionContext: PrimaryServices
+    get:
+      description: |
+        User can query adapter specific address of route to Whiteboard with given ID.
+      parameters:
+        -
+          name: remoteWhiteboardIdInLocalScope
+          in: path
+          description: Id of the remote whiteboard in local scope.
+          required: true
+          type: integer
+          format: int32 # really uint8, but only int32 is supported with path parameter
+      responses:
+        200:
+          description: Adapter specific address to remote whiteboard.
+          schema:
+            type: string
+        204:
+          description: There is no route to the given remote whiteboard (route is not in use).
+        410:
+          description: Route to remote whiteboard is currently broken.
+        416:
+          description: The given remoteWhiteboardIdInLocalScope is illegal (out of routing table range).
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Net/Adapter/{index}/Name:
+    x-executionContext: PrimaryServices
+    get:
+      description: |
+        User can query name of communication adapter with given index.
+      parameters:
+        -
+          name: index
+          in: path
+          description: Index of communication adapter.
+          required: true
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: Name of the communication adapter.
+          schema:
+            type: string
+        416:
+          description: The given index out of range.
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Net/Adapter/{index}/State:
+    x-executionContext: PrimaryServices
+    get:
+      description: |
+        User can query state of communication adapter with given index.
+      parameters:
+        -
+          name: index
+          in: path
+          description: Index of communication adapter.
+          required: true
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: State of the communication adapter.
+          schema:
+            $ref: '#/definitions/AdapterState'
+        416:
+          description: The given index out of range.
+      security:
+        - suuntoAccessCode:
+          - public
+
+# Data type definitions
+definitions:
+  RoutingTableEntry:
+    description: Details of the remote whiteboard.
+    required:
+    - serialNumber
+    - entryVersion
+    - sequenceNumber
+    - numberOfHops
+    - routeState
+    - routeStateTimeout
+    - lastMessageSent
+    - lifetime
+    - protocolVersion
+    - wbVersion
+    - remoteWhiteboardIdInLocalScope
+    - localWhiteboardIdInRemoteScope
+    properties:
+      serialNumber:
+        description: Serial number of the remote whiteboard.
+        type: string
+      entryVersion:
+        description: Version number of this routing table entry, can be used if the entry has been reassigned.
+        type: integer
+        format: uint8
+      sequenceNumber:
+        description: Sequence number of the last route discovery.
+        type: integer
+        format: uint8
+      numberOfHops:
+        description: Number of hops to reach the destination.
+        type: integer
+        format: uint8
+      routeState:
+        $ref: 'http://localhost:9000/services/whiteboard-net.yaml#/definitions/RouteState'
+      routeStateTimeout:
+        description: Number of milliseconds until current routeState times out.
+        type: integer
+        format: int32
+      lastMessageSent:
+        description: Number of milliseconds that has elapsed since last message was sent to entry's remote whiteboard.
+        type: integer
+        format: int32
+      lifetime:
+        description: Lifetime of this routing table entry in milliseconds, used to remove outdated entries.
+        type: integer
+        format: int32
+      protocolVersion:
+        description: Communication protocol version of the remote whiteboard.
+        type: integer
+        format: uint8
+      wbVersion:
+        description: Whiteboard version of the remote whiteboard.
+        $ref: '#/definitions/CompactWbVersion'
+      remoteWhiteboardIdInLocalScope:
+        description: ID of remote whiteboard in local scope.
+        type: integer
+        format: uint8
+      localWhiteboardIdInRemoteScope:
+        description: ID of local whiteboard in remote scope.
+        type: integer
+        format: uint8
+
+  CompactWbVersion:
+    description: Version information, e.g. 1.0.0
+    required:
+    - majorVersion
+    - minorVersion
+    - patchVersion
+    properties:
+      majorVersion:
+        type: integer
+        format: uint8
+      minorVersion:
+        type: integer
+        format: uint8
+      patchVersion:
+        type: integer
+        format: uint8
+
+  AdapterState:
+    type: integer
+    format: uint8
+    enum:
+      - description: Communication adapter is disabled.
+        name: 'ADAPTER_DISABLED'
+        value: 0
+      - description: Communication adapter has been enabled.
+        name: 'ADAPTER_ENABLED'
+        value: 1
+      - description: Adapter is in error state.
+        name: 'ADAPTER_ERROR'
+        value: 2

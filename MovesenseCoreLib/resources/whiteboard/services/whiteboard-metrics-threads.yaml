@@ -1,0 +1,214 @@
+# Copyright Suunto Oy 2016
+# All rights reserved.
+#
+swagger: '2.0'
+
+# Document metadata
+info:
+  version: "0.9.0"
+  title: /Whiteboard/Metrics API
+  description: |
+    This file defines Suunto Whiteboard Metrics Services API.
+
+    See http://developer.suunto.com for more information.
+  termsOfService: http://suunto.com/wbapi/terms/
+  contact:
+    name: Suunto team
+    url: http://developer.suunto.com
+  
+# Security definitions
+security:
+  - suuntoAccessCode:
+    - public
+
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+    flow: accessCode
+    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
+    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
+    
+# Paths
+paths:
+  /Whiteboard/Metrics/Threads:
+    x-executionContext: PrimaryServices
+    get:
+      description: |
+        Returns information about threads and their run time statistics.
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            $ref: '#/definitions/ThreadInfoList'
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Whiteboard/Metrics/Threads/Count:
+    x-executionContext: PrimaryServices
+    get:
+      description: |
+        Get number of threads
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: integer
+            format: uint8
+      security:
+        - suuntoAccessCode:
+            - public
+
+  /Whiteboard/Metrics/Threads/{index}/Name:
+    x-executionContext: PrimaryServices
+    get:
+      description: |
+        User can query name of thread with given index.
+      parameters:
+        -
+          name: index
+          in: path
+          description: Index of thread.
+          required: true
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: Name of the thread.
+          schema:
+            type: string
+        416:
+          description: The given index out of range.
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Whiteboard/Metrics/Threads/{index}/ProgramCounter:
+    x-executionContext: PrimaryServices
+    get:
+      description: |
+        User can query value of program counter register of thread with given index.
+      parameters:
+        -
+          name: index
+          in: path
+          description: Index of thread.
+          required: true
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: Value of program counter register.
+          schema:
+            type: integer
+            format: uint32
+        416:
+          description: The given index out of range.
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Whiteboard/Metrics/Threads/{index}/ReturnAddress:
+    x-executionContext: PrimaryServices
+    get:
+      description: |
+        User can query value of return address register of thread with given index.
+      parameters:
+        -
+          name: index
+          in: path
+          description: Index of thread.
+          required: true
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: Value of return address register.
+          schema:
+            type: integer
+            format: uint32
+        416:
+          description: The given index out of range.
+      security:
+        - suuntoAccessCode:
+          - public
+
+definitions:
+  ThreadState:
+    description: State of the thread
+    type: integer
+    format: uint8
+    enum:
+      - READY
+      - RUNNING
+      - BLOCKED
+      - SUSPENDED
+      - TERMINATED
+
+  ThreadPriorityLevel:
+    description: System thread priority
+    type: integer
+    format: int8
+
+  ThreadInfo:
+    required:
+      - name
+      - state
+      - basePriority
+      - currentPriority
+      - runTimePercentage
+      - runTimeTicks
+      - contextSwitches
+      - freeStack
+      - programCounter
+      - returnAddress
+    properties:
+      name:
+        description: Name of the thread
+        type: string
+      state:
+        description: State of the thread
+        $ref: '#/definitions/ThreadState'
+      basePriority:
+        description: Thread's original priorty.
+        $ref: '#/definitions/ThreadPriorityLevel'
+      currentPriority:
+        description: Current thread priorty. Priority may be higher than original, if it has been inherited to avoid priority inversion problem.
+        $ref: '#/definitions/ThreadPriorityLevel'
+      runTimePercentage:
+        description: Percentage of total system runtime the thread has been running.
+        type: integer
+        format: uint8
+        x-unit: percent
+      runTimeTicks:
+        description: Number of ticks the thread has been running.
+        type: integer
+        format: uint32
+      contextSwitches:
+        description: Number of times the thread has swithed to running state.
+        type: integer
+        format: uint32
+      freeStack:
+        description: The minimum amount of stack space that has been unused in bytes.
+        type: integer
+        format: uint32
+      programCounter:
+        description: The value of program counter.
+        type: integer
+        format: uint32
+      returnAddress:
+        description: Function return address.
+        type: integer
+        format: uint32
+
+  ThreadInfoList:
+    required:
+      - threads
+    properties:
+      threads:
+        description: List of all system threads.
+        type: array
+        items:
+          $ref: '#/definitions/ThreadInfo'

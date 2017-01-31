@@ -1,0 +1,114 @@
+# Copyright Suunto Oy 2016
+# All rights reserved.
+#
+swagger: '2.0'
+
+# Document metadata
+info:
+  version: "0.9.0"
+  title: /Whiteboard/Metrics API
+  description: |
+    This file defines Suunto Whiteboard Metrics Services API.
+
+    See http://developer.suunto.com for more information.
+  termsOfService: http://suunto.com/wbapi/terms/
+  contact:
+    name: Suunto team
+    url: http://developer.suunto.com
+  
+# Security definitions
+security:
+  - suuntoAccessCode:
+    - public
+
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+    flow: accessCode
+    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
+    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
+    
+# Paths
+paths:
+  /Whiteboard/Metrics/Events:
+    x-executionContext: PrimaryServices
+    get:
+      description: |
+        Returns information about Whiteboard execution contexts' event queues and their usage.
+      parameters:
+        -
+          name: Type
+          in: query
+          description: Message type (requests or responses). If omitted defaults to requests.
+          required: false
+          type: integer
+          format: uint8
+          enum:
+            - name: 'requests'
+              value: 0
+            - name: 'responses'
+              value: 1
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            $ref: '#/definitions/EventQueueInfoList'
+      security:
+        - suuntoAccessCode:
+          - public
+
+definitions:
+  EventQueueInfo:
+    required:
+      - name
+      - size
+      - used
+      - total
+      - highWaterMark
+      - slow
+      - verySlow
+      - failed
+    properties:
+      name:
+        description: Name of the execution context.
+        type: string
+      size:
+        description: Size of the execution context event queue.
+        type: integer
+        format: uint32
+      used:
+        description: Momentary amount of events in the queue.
+        type: integer
+        format: uint32
+      total:
+        description: Total amount of events handled.
+        type: integer
+        format: uint32
+      highWaterMark:
+        description: Maximum recorded amount of events in the queue.
+        type: integer
+        format: uint32
+      slow:
+        description: Amount of slow event posts (took longer than 2 ms).
+        type: integer
+        format: uint32
+      verySlow:
+        description: Amount of slow event posts (took longer than 20 ms).
+        type: integer
+        format: uint32
+      failed:
+        description: Amount of failed event posts (queue was full).
+        type: integer
+        format: uint32
+
+  EventQueueInfoList:
+    required:
+      - queues
+    properties:
+      queues:
+        description: List of all Whiteboard execution constexts' event queues.
+        type: array
+        items:
+          $ref: '#/definitions/EventQueueInfo'

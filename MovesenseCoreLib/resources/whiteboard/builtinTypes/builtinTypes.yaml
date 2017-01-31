@@ -1,0 +1,185 @@
+# Copyright Suunto Oy 2015
+# All rights reserved.
+#
+swagger: '2.0'
+
+# Document metadata
+info:
+  version: "0.9.0"
+  title: Built-in types API
+  description: |
+    This file defines Whiteboard API built-in types.
+
+    See http://developer.suunto.com for more information.
+  termsOfService: http://suunto.com/wbapi/terms/
+  contact:
+    name: Suunto team
+    url: http://developer.suunto.com
+    
+# Security definitions
+security:
+  - suuntoAccessCode:
+    - public
+
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+    flow: accessCode
+    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
+    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
+
+# Paths tag is required
+paths:
+  x-workaround:
+    x-get
+      
+definitions:
+  ByteStream:
+    x-fixedId: 13
+    type: object
+    x-builtin: true
+      
+  Date:
+    x-fixedId: 24
+    required:
+    - day
+    - month
+    - year
+    properties:
+      year:
+        type: integer
+        format: uint16
+      month:
+        type: integer
+        format: uint8
+      day:
+        type: integer
+        format: uint8
+
+  DateTime:
+    x-fixedId: 25
+    required:
+    - timeZone
+    - date
+    - time
+    properties:
+      date:
+        $ref: '#/definitions/Date'
+      time:
+        $ref: '#/definitions/Time'
+      timeZone:
+        type: integer
+        format: int8
+
+  Time:
+    x-fixedId: 26
+    required:
+    - hour
+    - minute
+    - second
+    - us100
+    properties:
+      hour:
+        type: integer
+        format: uint8
+      minute:
+        type: integer
+        format: uint8
+      second:
+        type: integer
+        format: uint8
+      us100:
+        type: integer
+        format: uint16
+
+  Timestamp:
+    x-fixedId: 27
+    required:
+    - value
+    properties:
+      value:
+        type: integer
+        format: int64
+
+  IntVector2D:
+    x-fixedId: 28
+    required:
+    - x
+    - y
+    properties:
+      x:
+        type: integer
+        format: int32
+      y:
+        type: integer
+        format: int32
+
+  FloatVector2D:
+    x-fixedId: 29
+    required:
+    - x
+    - y
+    properties:
+      x:
+        type: number
+        format: float
+      y:
+        type: number
+        format: float
+
+  IntVector3D:
+    x-fixedId: 30
+    required:
+    - x
+    - y
+    - z
+    properties:
+      x:
+        type: integer
+        format: int32
+      y:
+        type: integer
+        format: int32
+      z:
+        type: integer
+        format: int32
+
+  FloatVector3D:
+    x-fixedId: 31
+    required:
+    - x
+    - y
+    - z
+    properties:
+      x:
+        type: number
+        format: float
+      y:
+        type: number
+        format: float
+      z:
+        type: number
+        format: float
+
+  ListOfBytes:
+    x-fixedId: 32
+    required:
+    - items
+    properties:
+      items:
+        type: array
+        items:
+          type: integer
+          format: uint8
+
+  ListOfStrings:
+    x-fixedId: 33
+    required:
+    - items
+    properties:
+      items:
+        type: array
+        items:
+          type: string

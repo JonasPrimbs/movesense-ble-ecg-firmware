@@ -1,0 +1,445 @@
+# This file defines Suunto Whiteboard API
+#
+# Copyright Suunto Oy 2015
+# All rights reserved.
+#
+# Swagger editor is located at http://vaas1410:81/#/
+#
+# NOTE! Editor remembers last file you have edited, but it is
+# not necessarily the version located in your local or shared repository. 
+# ALWAYS USE COPY + PASTE TO UPDATE THE EDITOR BEFORE DOING ANY EDITING!!!
+#
+swagger: '2.0'
+
+# Document metadata
+info:
+  version: "0.0.0"
+  title: Suunto Whiteboard API for Performance 2016 product. /Suunto/Dev subtree.
+  description: |
+    This file defines API for Whiteboard server that runs on NextGen Performance 2016 device.
+
+    See http://developer.suunto.com for more information.
+  termsOfService: http://suunto.com/wbapi/terms/
+  contact:
+    name: Suunto team
+    url: http://developer.suunto.com
+  
+# Security definitions
+security:
+  - suuntoAccessCode:
+    - public
+    - read:user
+    - write:user
+    - read:contacts
+    - write:contacts
+    - test
+
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+      read:user: Grants read access to user profile info.
+      write:user: Grants write access to user profile info.
+      read:contacts: Grants read access to user's contants and memberships.
+      write:contacts: Grants write access to user's contants and memberships.
+      test: Grants read/write access to QA / test resources.
+    flow: accessCode
+    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
+    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
+    
+# Paths
+paths:
+  /Logbook/Logging:
+    x-executionContext: application
+    get:
+      description: |
+        Returns number of current amount of subscribers.
+      responses:
+        200:
+          description: Amount of subscribers
+          schema:
+            type: integer
+            format: uint16
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Logbook/Logging/Subscription:
+    x-executionContext: application
+    post:
+      description: |
+        Subscribes the client and opens new log file if client is the first subscriber.
+      responses:
+        200:
+          description: Operation completed successfully
+        423:
+          description: Not opening new log files when device shutdown is initiated.
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        x-notification:
+          description: |
+           Event notification.
+          schema:
+            type: integer
+            format: uint16
+      security:
+        - suuntoAccessCode:
+          - public
+
+    delete:
+      description: |
+        Unsubscribes the client and closes open log file if amount of subscribers is zero.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Logbook/IsOpen:
+    x-executionContext: application
+    get:
+      description: |
+        Is log open
+      responses:
+        200:
+          description: 
+          schema:
+            type: boolean
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Logbook/IsOpen/Subscription:
+    x-executionContext: application
+    post:
+      description: |
+        Is log open
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: boolean
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        x-notification:
+          description: |
+           Event notification.
+          schema:
+            type: boolean
+      security:
+        - suuntoAccessCode:
+          - public
+
+    delete:
+      description: |
+        Unsubscribes
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Logbook/IsFull:
+    x-executionContext: application
+    get:
+      description: |
+        Is periodic logging stopped because not enough log space left
+      responses:
+        200:
+          description:
+          schema:
+            type: boolean
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Logbook/IsFull/Subscription:
+    x-executionContext: application
+    post:
+      description: |
+        Is periodic logging stopped because not enough log space left
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        x-notification:
+          description: |
+           Event notification.
+          schema:
+            type: boolean
+      security:
+        - suuntoAccessCode:
+          - public
+
+    delete:
+      description: |
+        Unsubscribes
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Logbook/UnsynchronisedLogs:
+    x-executionContext: application
+    get:
+      description: |
+        Returns number of unsynchronised logs
+      responses:
+        200:
+          description: Amount of unsynchronized logs
+          schema:
+            type: integer
+            format: uint16
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Logbook/UnsynchronisedLogs/Subscription:
+    x-executionContext: application
+    post:
+      description: |
+        number of unsynchronised log
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: integer
+            format: uint16
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        x-notification:
+          description: |
+           Event notification.
+          schema:
+            type: integer
+            format: uint16
+      security:
+        - suuntoAccessCode:
+          - public
+
+    delete:
+      description: |
+        Unsubscribes
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Logbook/Entries:
+    x-executionContext: application
+    get:
+      description: |
+        List Log contents. 
+      parameters:
+        - name: StartAfterId
+          in: query
+          description: Log ID after which the list of the items starts from.
+            If the StartAfter is null or empty,
+            the list of the items starts from beginning.
+          required: false
+          type: integer
+          format: uint32
+      responses:
+        100:
+          description: Operation completed partially.
+            Not all log entries fit in the list, please ask again with StartAfterId parameter.
+          schema:
+             $ref: '#/definitions/LogEntries'
+        200:
+          description: |
+            Zero or more log entries describing the log entry contents.
+            Zero number of log entries indicates end of log iteration.
+          schema:
+             $ref: '#/definitions/LogEntries'
+        404:
+          description: |
+            StartAfterId was not found in logs
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#get
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Logbook/byId/{LogId}/Descriptors:
+    x-executionContext: application
+    get:
+      description: |
+        Read training log descriptors and stream the descriptor file.
+      responses:
+        100:
+          description: |
+            Partial operation completed successfully.
+            New identical request may be sent to continue.
+            Returns a byte stream value type.
+          schema:
+            $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/ByteStream'
+        200:
+          description: |
+            Operation completed successfully.
+            Returns a byte stream value type.
+          schema:
+            $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/ByteStream'
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#get
+      security:
+        - suuntoAccessCode:
+          - public
+    parameters:
+       -
+         $ref: '#/parameters/LogId'
+
+  /Logbook/byId/{LogId}/Data:
+    x-executionContext: application
+    get:
+      description: |
+        Read SBEM data from a log entry and stream it. The SBEM data
+        may be either be uncompressed or compressed with Heatshrink.
+        Uncompressed data can be detected by FOURCC 'SBEM' at beginning of data.
+      responses:
+        100:
+          description: |
+            Partial operation completed successfully.
+            New identical request may be sent to continue.
+            Returns a byte stream value type.
+          schema:
+            $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/ByteStream'
+        200:
+          description: |
+            Operation completed successfully.
+            Returns a byte stream value type.
+          schema:
+            $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/ByteStream'
+        404:
+          description: Referenced log not found in LogBook.
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#get
+      security:
+        - suuntoAccessCode:
+          - public
+    parameters:
+       -
+         $ref: '#/parameters/LogId'
+        
+  /Logbook/Log/{LogIndex}/Flags:
+    x-executionContext: application
+    get:
+      description: |
+        Read Logbook entry bit flags for an exercise:
+        SUMMARY_ALL_SYNCED = 0x01
+        VALUES_ALL_SYNCED  = 0x02
+        SYNC_CONTENT_ERROR = 0x04
+        IMPORTANT_LOG      = 0x08
+        RECOVERED          = 0x10
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: integer
+            format: uint16
+        416:
+          description: Bad request. LogIndex not in range.
+      security:
+        - suuntoAccessCode:
+          - public
+    put:
+      description: |
+        set Logbook entry bit flags for an exercise:
+        SUMMARY_ALL_SYNCED = 0x01
+        VALUES_ALL_SYNCED  = 0x02
+        SYNC_CONTENT_ERROR = 0x04
+        IMPORTANT_LOG      = 0x08
+      parameters:
+        -
+          name: flags
+          in: query
+          description: The logbook entry flags for an exercise.
+          required: true
+          type: integer
+          format: uint16
+      responses:
+        200:
+          description: Operation completed successfully
+        416:
+          description: Bad request. LogIndex not in range.
+      security:
+        - suuntoAccessCode:
+          - public
+    parameters:
+      -
+        $ref: 'http://localhost:9000/suunto_activities.yaml#/parameters/LogIndex'
+
+  /Logbook/Log/{LogIndex}/Remove:
+    x-executionContext: application
+    put:
+      description: |
+        Remove given Logbook entry.
+      responses:
+        200:
+          description: Operation completed successfully
+        416:
+          description: Bad request. LogIndex not in range.
+      security:
+        - suuntoAccessCode:
+          - public
+      parameters:
+        -
+          $ref: 'http://localhost:9000/suunto_activities.yaml#/parameters/LogIndex'
+
+
+# Extra definitions
+definitions:
+  LogEntries:
+    required:
+      - elements
+    properties:
+      elements:
+        description: |
+          Zero or more log entries describing log contents.
+          Zero entries are received if log iteration has completed.
+        type: array
+        items:
+          $ref: '#/definitions/LogEntry'
+
+  LogEntry:
+    required:
+      - Id
+      - ModificationTimestamp
+    properties:
+      Id:
+        description: Id of the log entry.
+        type: integer
+        format: uint32
+      ModificationTimestamp:
+        description: |
+          Timestamp of last modification to entry in seconds after 0:00
+          Jan 1st 1970 (UTC) without leap seconds.
+        type: integer
+        format: uint32
+      Size:
+        type: integer
+        format: uint64
+
+# Parameter definitions
+parameters:
+  LogId:
+    name: LogId
+    in: path
+    required: true
+    type: integer
+    format: int32

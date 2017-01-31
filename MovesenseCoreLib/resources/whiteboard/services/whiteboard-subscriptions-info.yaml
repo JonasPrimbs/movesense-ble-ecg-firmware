@@ -1,0 +1,105 @@
+# Copyright Suunto Oy 2016
+# All rights reserved.
+#
+swagger: '2.0'
+
+# Document metadata
+info:
+  version: "0.9.0"
+  title: /Whiteboard API
+  description: |
+    This file defines Suunto Whiteboard Core Services API.
+
+    See http://developer.suunto.com for more information.
+  termsOfService: http://suunto.com/wbapi/terms/
+  contact:
+    name: Suunto team
+    url: http://developer.suunto.com
+  
+# Security definitions
+security:
+  - suuntoAccessCode:
+    - public
+
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+    flow: accessCode
+    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
+    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
+    
+# Paths
+paths:
+  /Whiteboard/Info/Subscriptions:
+    x-executionContext: PrimaryServices
+    get:
+      description: |
+        Returns information about subscribers for a resource.
+      parameters:
+        -
+          name: resourcePath
+          in: query
+          description: |
+            Path of which subscribers should be retrieved - path must support subscription.
+          required: true
+          type: string
+        -
+          name: startIndex
+          in: query
+          description: |
+            Start index in the subscriber list
+          required: false
+          type: integer
+          format: uint32
+      responses:
+        100:
+          description: Operation completed successfully, there is more subscriptions available, use startIndex to query more.
+          schema:
+            $ref: '#/definitions/SubscriptionList'
+        200:
+          description: Operation completed successfully
+          schema:
+            $ref: '#/definitions/SubscriptionList'
+        204:
+          description: No subscribers for the given path.
+        404:
+          description: Requested resource was not found.          
+        406:
+          description: Not acceptable - The resource provider hosting the requested path has not been started.
+        423:
+          description: Locked, ongoing request is being processed, only one request can be served at a time, try again later.
+      security:
+        - suuntoAccessCode:
+          - public
+
+definitions:
+  SubscriptionInfo:
+    required:
+      - name
+      - localClientId
+      - pathParams
+    properties:
+      name:
+        description: Name of the subscribing client
+        type: string
+      localClientId:
+        description: Local clientId of the subscribing client
+        type: integer
+        format: uint16
+      pathParams:
+        type: array
+        items:
+          type: integer
+          format: int32
+
+  SubscriptionList:
+    required:
+      - subscriptions
+    properties:
+      subscriptions:
+        description: List of all subscriptions of the requested resource.
+        type: array
+        items:
+          $ref: '#/definitions/SubscriptionInfo'

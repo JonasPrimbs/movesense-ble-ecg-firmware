@@ -1,0 +1,146 @@
+# Copyright Suunto Oy 2015-2016
+# All rights reserved.
+
+swagger: '2.0'
+
+# Document metadata
+info:
+  version: "0.9.0"
+  title: /Device/Measurement/LinearAcceleration API
+  description: |
+    This file defines the /Device/Measurement/LinearAcceleration API.
+  termsOfService: http://suunto.com/wbapi/terms/
+  contact:
+    name: Suunto team
+    url: http://developer.suunto.com
+
+# Security definitions
+security:
+  - suuntoAccessCode:
+    - public
+
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+    flow: accessCode
+    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
+    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
+
+# Paths
+paths:
+  /Device/Measurement/LinearAcceleration:
+    x-executionContext: meas
+    get:
+      description: |
+        Get a linear acceleration value.
+      responses:
+        200:
+          description: Linear acceleration vector
+          schema:
+            $ref: '#/definitions/LinearAccelerationValue'
+        204:
+          description: Measurement source is unavailable
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Device/Measurement/LinearAcceleration/Subscription:
+    x-executionContext: meas
+    post:
+      description: |
+        Subscribe to periodic linear acceleration values.
+        See documentation on product-specific measurement periods at
+        http://XXX.suunto.com/XXX. If measurement source is unavailable, the
+        Measurement member will be empty. If present, Measurement member
+        contains an array of a single measurement result. Delivery of periodic
+        values may be suspended when there hasn't been significant motion for
+        a device specific period of time. Delivery will commence after movement
+        is detected.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        x-notification:
+          description: New value
+          schema:
+            $ref: '#/definitions/LinearAccelerationValue'
+      security:
+        - suuntoAccessCode:
+          - public
+    delete:
+      description: |
+        Unsubscribe from periodic linear acceleration values.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Device/Measurement/LinearAcceleration/HighSpeed:
+    x-executionContext: meas
+
+  /Device/Measurement/LinearAcceleration/HighSpeed/Subscription:
+    x-executionContext: meas
+    post:
+      description: |
+        Subscribe to high speed periodic linear acceleration values.
+        See documentation on product-specific measurement periods at
+        http://XXX.suunto.com/XXX. If measurement source is unavailable, the
+        Measurement member will be empty. If present, Measurement member
+        contains an array of at least one measurement result, but may contain
+        more. Delivery of periodic values may be suspended when there hasn't
+        been significant motion for a device specific period of time. Delivery
+        will commence after movement is detected.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        x-notification:
+          description: New value(s)
+          schema:
+            $ref: '#/definitions/LinearAccelerationValue'
+      security:
+        - suuntoAccessCode:
+          - public
+    delete:
+      description: |
+        Unsubscribe from periodic high speed linear acceleration values.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
+
+definitions:
+  LinearAccelerationValue:
+    required:
+      - RelativeTime
+    properties:
+      RelativeTime:
+        description: Relative time of measurement
+        type: integer
+        format: uint32
+        x-unit: millisecond
+      Measurement:
+        description: Linear acceleration measurement(s)
+        $ref: '#/definitions/FloatVector3DArray'
+        x-unit: m/s^2
+
+  FloatVector3DArray:
+    required:
+      - data
+    properties:
+      data:
+        type: array
+        items:
+          $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/FloatVector3D'

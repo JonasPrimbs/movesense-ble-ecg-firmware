@@ -1,0 +1,64 @@
+#pragma once
+// Copyright (c) Suunto Oy 2015. All rights reserved.
+
+// TODO: Fix this dependency
+#include "whiteboard/internal/DynamicExecutionContext.h"
+
+#include "whiteboard/unittest/TestClient.h"
+#include "whiteboard/unittest/TestProvider.h"
+#include "whiteboard/unittest/TestResourceScope.h"
+
+namespace whiteboard
+{
+
+class DynamicExecutionContext;
+
+// Access rights
+static const uint32 providerAccessRights = 0;
+static const uint32 clientAccessRights = ALL_ACCESS;
+const uint8 MAX_DPCS = 2;
+
+// Provider execution context settings
+const metadata::ExecutionContextInfo providerContextInfo =
+    INIT_EXEC_CTX_INFO("DynProviderTestExecCtx", MAX_DPCS, 12, 8, false, metadata::EXEC_CTX_PRIORITY_HIGH, 1300, providerAccessRights);
+// Client execution context settings
+const metadata::ExecutionContextInfo clientContextInfo =
+    INIT_EXEC_CTX_INFO("DynClientTestExecCtx", 5, 6, 42, false, metadata::EXEC_CTX_PRIORITY_NORMAL, 1024, clientAccessRights);
+
+/**
+*	Base class to initialize provider and client context.
+*/
+template <class ResourceScope = WbResTestResourceScope> class TestContextBase
+{
+public:
+    /** Constructor */
+    TestContextBase()
+        : mProviderExecutionContext(providerContextInfo),
+          mClientExecutionContext(clientContextInfo)
+    {
+    }
+
+    /** Destructor */
+    ~TestContextBase()
+    {
+    }
+
+    /**
+    *	Function to get client context ID.
+    *	@return ID of created client context.
+    */
+    inline ExecutionContextId getClientContextId() const { return mClientExecutionContext.getId(); }
+
+    /**
+    *	Function to get provider context ID.
+    *	@return ID of created provider context.
+    */
+    inline ExecutionContextId getProviderContextId() const { return mProviderExecutionContext.getId(); }
+
+private:
+    const ResourceScope mTestResourceScope;
+    const DynamicExecutionContext mProviderExecutionContext;
+    const DynamicExecutionContext mClientExecutionContext;
+};
+
+} // namespace whiteboard

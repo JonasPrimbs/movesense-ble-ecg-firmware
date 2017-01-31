@@ -1,0 +1,145 @@
+# Copyright Suunto Oy 2015-2016
+# All rights reserved.
+
+swagger: '2.0'
+
+# Document metadata
+info:
+  version: "0.9.0"
+  title: /Device/System/Mode API
+  description: |
+    This file defines the /Device/System/Mode API.
+  termsOfService: http://suunto.com/wbapi/terms/
+  contact:
+    name: Suunto team
+    url: http://developer.suunto.com
+
+# Security definitions
+security:
+  - suuntoAccessCode:
+    - public
+
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+    flow: accessCode
+    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
+    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
+
+# Paths
+paths:
+  /Device/System/Mode:
+    x-executionContext: meas
+    get:
+      description: |
+        Get current and optional next system mode. Next mode will be reported
+        if a mode change request is active.
+      responses:
+        200:
+          description: Returns the current and optional next system mode.
+          schema:
+            $ref: '#/definitions/SystemModeStatus'
+      security:
+        - suuntoAccessCode:
+          - public
+    put:
+      description: |
+        Request a system mode switch into the given mode.
+        Mode switch (if any) will cause a controlled shutdown sequence
+        to be run in the system before the final target mode is reached.
+        Note that target modes cannot always be reached during the mode
+        switch. In this case, the system will switch into the most suitable
+        mode (which is likely to be SystemFailure).
+      parameters:
+        - name: NewState
+          in: body
+          description: Requested new system mode
+          required: true
+          schema:
+            $ref: '#/definitions/SystemMode'
+      responses:
+        202:
+          description: |
+            Request was accepted. This status is also returned in if
+            requested mode equals current or equals current mode switch
+            target.
+        400:
+          description: Requested mode was not valid. Request was ignored.
+        409:
+          description: |
+            Requested mode conflicts with current mode switch target mode.
+            Request was ignored.
+      security:
+        - suuntoAccessCode:
+          - public
+
+definitions:
+  SystemMode:
+    type: integer
+    format: uint8
+    enum:
+      # Product independent modes (0-9)
+      - name: 'Unknown'
+        description: Current system mode couldn't be determined or is not valid.
+        value: 0
+      - name: 'FullPowerOff'
+        description: |
+          System will do fullest possible power off at earliest opportunity. On some
+          products this requires waiting for charging cable to be disconnected,
+          and while waiting for this to happen, reported system mode will be
+          PowerOff. System time will be lost.
+        value: 1
+      - name: 'SystemFailure'
+        description: |
+          System cannot start due to failing quick self checks or failed
+          firmware.
+        value: 2
+      - name: 'PowerOff'
+        description: |
+          System is put in lowest possible energy mode while still keeping
+          system wallclock active (if possible).
+        value: 3
+      - name: 'WaitForCharge'
+        description: |
+          System is waiting for additional charge to be applied or user to
+          initiate startup.
+        value: 4
+      - name: 'Application'
+        description: System is starting or executing end user application.
+        value: 5
+
+      # Product specific modes are described below and start from 10
+      - name: 'FactoryInteractive'
+        description: Factory testing in interactive phase.
+        value: 10
+      - name: 'FactoryExternal'
+        description: |
+          Factory testing and HLA configuration in externally connected mode.
+        value: 11
+      - name: 'UpdateBootloader'
+        description: Mode for updating bootloader region.
+        value: 12
+      - name: 'UpdatePeripherals'
+        description: |
+          Mode for updating firmware in peripherals (see
+          /Device/System/PeripheralUpdater).
+        value: 13
+      - name: 'UpdateApplication'
+        description: |
+          Mode for updating application and filesystem (i.e., DALI is executing)
+        value: 14
+      - name: 'FileSynchronization'
+        description: |
+          Mode where filesystem is available over Whiteboard for safe file
+          restoration after firmware update.
+        value: 15
+  SystemModeStatus:
+    required:
+      - current
+    properties:
+      current:
+        $ref: '#/definitions/SystemMode'
+      next:
+        $ref: '#/definitions/SystemMode'
