@@ -21,6 +21,12 @@ Movesense sensor is a programmable multi-purpose device comprising accelerometer
 
 **/Device/Battery** API for reading the battery state.
 
+**/Dev/Time** API for accessing the local time (EPOCH).
+
+**/Device/SystemEvent** API for accessing system event log.
+
+**/Device/System/Mode** API for controlling the main system state (e.g. factory sleep). 
+
 ## Installation
 
 *Movesense Core library* for the Movesense device is available from this git repository. Just unpack the core lib with the example app to an arbitrary folder. For convenience, the whole SW is also provided as a .zip file (see the Download section).  
