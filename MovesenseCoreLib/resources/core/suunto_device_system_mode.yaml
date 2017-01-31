@@ -1,34 +1,11 @@
-# Copyright Suunto Oy 2015-2016
-# All rights reserved.
-
 swagger: '2.0'
 
-# Document metadata
 info:
-  version: "0.9.0"
-  title: /Device/System/Mode API
+  version: "0.0.1"
+  title: System Mode API
   description: |
-    This file defines the /Device/System/Mode API.
-  termsOfService: http://suunto.com/wbapi/terms/
-  contact:
-    name: Suunto team
-    url: http://developer.suunto.com
+    API for the device's system mode
 
-# Security definitions
-security:
-  - suuntoAccessCode:
-    - public
-
-securityDefinitions:
-  suuntoAccessCode:
-    type: oauth2
-    scopes:
-      public: Grants read/write access to public resources.
-    flow: accessCode
-    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
-    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
-
-# Paths
 paths:
   /Device/System/Mode:
     x-executionContext: meas
@@ -41,9 +18,6 @@ paths:
           description: Returns the current and optional next system mode.
           schema:
             $ref: '#/definitions/SystemModeStatus'
-      security:
-        - suuntoAccessCode:
-          - public
     put:
       description: |
         Request a system mode switch into the given mode.
@@ -71,9 +45,6 @@ paths:
           description: |
             Requested mode conflicts with current mode switch target mode.
             Request was ignored.
-      security:
-        - suuntoAccessCode:
-          - public
 
 definitions:
   SystemMode:
