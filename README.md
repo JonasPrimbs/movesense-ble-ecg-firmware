@@ -1,3 +1,7 @@
+## Overview
+
+Movesense sensor is a programmable multi-purpose device comprising accelerometer, gyroscope, magnetometer and thermometer together with optional hearthrate/IBI and intelligent gear ID APIs. The APIs follow the well known REST principle and can be used both internally by the partner app or externally via the iOS/Android libraries. API specification, found in this folder, is based on Swagger 2.0 syntax.
+
 ## Installation
 
 *Movesense Core library* for the Movesense device is available from this git repository. Just unpack the core lib with the example app to an arbitrary folder. For convenience, the whole SW is also provided as a .zip file (see the Download section).  
