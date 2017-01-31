@@ -15,7 +15,7 @@ Resource | Description
 /Device/Measurement/Temperature|API enabling reading or subscribing temperature data (based on thermometer).
 /Device/UserInteraction/Indication|API for controlling the LED.
 /Device/Battery|API for reading the battery state.
-/Dev/Time|API for accessing the local time (EPOCH).
+/Dev/Time|API for accessing different time related services.
 /Device/SystemEvent|API for accessing system event log.
 /Device/System/Mode|API for controlling the main system state (e.g. factory sleep). 
 
