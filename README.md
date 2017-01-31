@@ -2,6 +2,25 @@
 
 Movesense sensor is a programmable multi-purpose device comprising accelerometer, gyroscope, magnetometer and thermometer together with optional hearthrate/IBI and intelligent gear ID APIs. The APIs follow the well known REST principle and can be used both internally by the partner app or externally via the iOS/Android libraries. API specification ([link to folder](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/resources/core/)), is based on Swagger 2.0 syntax.
 
+## API
+**/DataLogger** Generic logger capable of logging max. 8 different resources (even custom ones) to the external EEPROM.
+
+**/Logbook** Generic Logbook from where the logged data can be read (ref. /DataLogger).
+
+**/Device/Measurement/AngularVelocity** API enabling reading or subscribing angular velocity data (this is based on readings from the gyroscope).
+
+**/Device/Measurement/LinearAcceleration** API enabling reading or subscribing linear acceleration data (this is based on readings from the accelerometer).
+
+**/Device/Measurement/MagneticField** API enabling reading or subscribing magnetic field data (this is based on readings from the magnetometer).
+
+**/Device/Measurement/Temperature** API enabling reading or subscribing temperature data (this is based on readings from the thermometer).
+
+**/Info** API for accessing generic device information.
+
+**/Device/UserInteraction/Indication** API for controlling the LED.
+
+**/Device/Battery** API for reading the battery state.
+
 ## Installation
 
 *Movesense Core library* for the Movesense device is available from this git repository. Just unpack the core lib with the example app to an arbitrary folder. For convenience, the whole SW is also provided as a .zip file (see the Download section).  
