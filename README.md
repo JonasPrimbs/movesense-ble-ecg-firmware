@@ -21,8 +21,8 @@ Resource | Description
 
 ## Prerequisite
 
- * [GNU Toolchain for ARM Embedded](https://launchpad.net/gcc-arm-embedded)
- * [Ninja build tool](https://ninja-build.org/)
+ * [GNU Toolchain for ARM Embedded 5-2016-q2](https://launchpad.net/gcc-arm-embedded)
+ * [Ninja build tool](https://ninja-build.org/) - remember to add to path
  * [cmake >=3.6](https://cmake.org/download/)
  * [Visual Studio Redistributable 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
 
