@@ -120,7 +120,7 @@ elseif(${COMPILER} STREQUAL "GCCARM")
     add_custom_command(
         TARGET ${EXECUTABLE_NAME}
         POST_BUILD
-        COMMAND objcopy -O ihex ${EXECUTABLE_NAME} ${EXECUTABLE_NAME}.hex
+        COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_NAME} ${EXECUTABLE_NAME}.hex
         )
 endif()
 
