@@ -1,47 +1,24 @@
-# Copyright Suunto Oy 2015-2016
-# All rights reserved.
-
 swagger: '2.0'
 
-# Document metadata
 info:
-  version: "1.0.0"
-  title: /Device/Measurement/AngularVelocity API
+  version: "0.0.1"
+  title: Angular Velocity API
   description: |
-    This file defines the /Device/Measurement/AngularVelocity API.
-  termsOfService: http://suunto.com/wbapi/terms/
-  contact:
-    name: Suunto team
-    url: http://developer.suunto.com
+    API for accessing device's angular velocity
 
-# Security definitions
-security:
-  - suuntoAccessCode:
-    - public
-
-securityDefinitions:
-  suuntoAccessCode:
-    type: oauth2
-    scopes:
-      public: Grants read/write access to public resources.
-    flow: accessCode
-    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
-    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
-
-# Paths
 paths:
   /Device/Measurement/AngularVelocity:
     x-executionContext: meas
     get:
       description: |
-        Get an angular velocity value.
+        Read the current angular velocity value.
       responses:
         200:
-          description: Linear acceleration vector
+          description: Angular velocity vector
           schema:
             $ref: '#/definitions/AngularVelocityValue'
         204:
-          description: Measurement source is unavailable
+          description: Source is unavailable
       security:
         - suuntoAccessCode:
           - public
@@ -51,36 +28,19 @@ paths:
     post:
       description: |
         Subscribe to periodic angular velocity values.
-        See documentation on product-specific measurement periods at
-        http://XXX.suunto.com/XXX. If measurement source is unavailable, the
-        Measurement member will be empty. If present, Measurement member
-        contains an array of a single measurement result. Delivery of periodic
-        values may be suspended when there hasn't been significant motion for
-        a device specific period of time. Delivery will commence after movement
-        is detected.
       responses:
         200:
           description: Operation completed successfully
-        x-std-errors:
-          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
         x-notification:
-          description: New value
+          description: Next value
           schema:
             $ref: '#/definitions/AngularVelocityValue'
-      security:
-        - suuntoAccessCode:
-          - public
     delete:
       description: |
-        Unsubscribe from periodic angular velocity values.
+        Unsubscribe periodic angular velocity subscription.
       responses:
         200:
           description: Operation completed successfully
-        x-std-errors:
-          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
-      security:
-        - suuntoAccessCode:
-          - public
 
   /Device/Measurement/AngularVelocity/HighSpeed:
     x-executionContext: meas
@@ -90,20 +50,11 @@ paths:
     post:
       description: |
         Subscribe to high speed periodic angular velocity values.
-        See documentation on product-specific measurement periods at
-        http://XXX.suunto.com/XXX. If measurement source is unavailable, the
-        Measurement member will be empty. If present, Measurement member
-        contains an array of at least one measurement result, but may contain
-        more. Delivery of periodic values may be suspended when there hasn't
-        been significant motion for a device specific period of time. Delivery
-        will commence after movement is detected.
       responses:
         200:
           description: Operation completed successfully
-        x-std-errors:
-          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
         x-notification:
-          description: New value(s)
+          description: Next value(s)
           schema:
             $ref: '#/definitions/AngularVelocityValue'
       security:
@@ -111,12 +62,10 @@ paths:
           - public
     delete:
       description: |
-        Unsubscribe from periodic high speed angular velocity values.
+        Unsubscribe periodic high speed angular velocity subscription.
       responses:
         200:
           description: Operation completed successfully
-        x-std-errors:
-          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
       security:
         - suuntoAccessCode:
           - public
