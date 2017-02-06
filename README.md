@@ -49,6 +49,9 @@ ninja flash
 ```
 or you can use any other nRF52 compatible programming software such as *nRFGo Studio*.
 
+## What's New ##
+For information about releases, see the [CHANGES.md](./src/ff16fc2045c8a38d0cbc97ebbfa48135eff02e02/CHANGES.md?) file in repository.
+
 ## Frequently Asked Questions
 
 For FAQ please check http://stackoverflow.com/search?q=movesense
