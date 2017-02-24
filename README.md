@@ -18,6 +18,7 @@ Resource | Description|Implemented
 /Dev/Time|API for accessing different time related services.| NO
 /Device/SystemEvent|API for accessing system event log.| NO
 /Device/System/Mode|API for controlling the main system state (e.g. factory sleep).| PARTIAL
+** Due to unexceptionally high current consumption, disabled in the master release until fixed
 
 ## Prerequisite
 
