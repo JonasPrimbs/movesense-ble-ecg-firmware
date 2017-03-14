@@ -2,16 +2,16 @@
 // Copyright (c) Suunto Oy 2015. All rights reserved.
 
 // TODO: Fix this dependency
-#include "whiteboard/internal/DynamicExecutionContext.h"
+#include "whiteboard/unittest/DynamicExecutionContext.h"
 
 #include "whiteboard/unittest/TestClient.h"
 #include "whiteboard/unittest/TestProvider.h"
 #include "whiteboard/unittest/TestResourceScope.h"
 
+#if WB_UNITTEST_BUILD
+
 namespace whiteboard
 {
-
-class DynamicExecutionContext;
 
 // Access rights
 static const uint32 providerAccessRights = 0;
@@ -19,10 +19,10 @@ static const uint32 clientAccessRights = ALL_ACCESS;
 const uint8 MAX_DPCS = 2;
 
 // Provider execution context settings
-const metadata::ExecutionContextInfo providerContextInfo =
+const ExecutionContextInfo providerContextInfo =
     INIT_EXEC_CTX_INFO("DynProviderTestExecCtx", MAX_DPCS, 12, 8, false, metadata::EXEC_CTX_PRIORITY_HIGH, 1300, providerAccessRights);
 // Client execution context settings
-const metadata::ExecutionContextInfo clientContextInfo =
+const ExecutionContextInfo clientContextInfo =
     INIT_EXEC_CTX_INFO("DynClientTestExecCtx", 5, 6, 42, false, metadata::EXEC_CTX_PRIORITY_NORMAL, 1024, clientAccessRights);
 
 /**
@@ -62,3 +62,5 @@ private:
 };
 
 } // namespace whiteboard
+
+#endif

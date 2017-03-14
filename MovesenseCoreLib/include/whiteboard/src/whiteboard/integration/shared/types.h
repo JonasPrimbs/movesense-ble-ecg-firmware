@@ -13,8 +13,9 @@ namespace whiteboard
 
 namespace wb = whiteboard;
 
+#include <stddef.h>
 #include <stdint.h>
-#include "macros.h"
+#include "whiteboard/integration/shared/macros.h"
 
 /**
     General types:

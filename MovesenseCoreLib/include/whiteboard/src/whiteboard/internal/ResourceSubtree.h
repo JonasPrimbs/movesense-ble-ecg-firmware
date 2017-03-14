@@ -2,16 +2,31 @@
 // Copyright (c) Suunto Oy 2016. All rights reserved.
 
 #include "whiteboard/metadata/MetadataStructures.h"
+#include "whiteboard/metadata/MetadataMap.h"
+#include "whiteboard/Initialization.h"
+#include "whiteboard/Result.h"
+#include "whiteboard/containers/PackedIntegerArray.h"
+
+#define WB_OPTIMIZE_MEM_USAGE
+
 
 namespace whiteboard
 {
 
+// TODO: Remove this when all of internal code has been moved to internal namespace
+namespace internal { class ResourceSubtree;  }
+using internal::ResourceSubtree;
+
 // Forward declarations
 class ResourceMetadata;
+
+namespace internal
+{
+
+// Forward declarations
 struct ResourceSubscriptionData;
 class ResourceSubtree;
 class ResourceTree;
-struct MetadataMap;
 
 /** Mount point */
 struct MountPoint
@@ -29,32 +44,13 @@ public:
     * Initializes a new instance of the ResourceSubtree class
     *
     * @param rMetadataMap Metadata map to use
-    * @param rResourceTree Resource tree metadata
+    * @param providerRegistrySize Size of the provider registry
+    * @param subscriptionRegistrySize Size of the subscription registry
     */
     ResourceSubtree(
         const MetadataMap& rMetadataMap,
-        const metadata::ResourceTree& rResourceTree);
-
-    /**
-    * Initializes a new instance of the ResourceSubtree class
-    *
-    * @param rMetadataMap Metadata map to use
-    * @param numberOfResources Number of resources.
-    * @param pTreeNodes Array of metadata tree nodes.
-    * @param pResourceSubscriptionData Array of subscription data.
-    * @param numberOfSparseMapEntries Number of entries in the sparse map of resources
-    * @param pSparseMap Sparse map that maps resource IDs to indexes of pTreeNode array
-    * @param numberOfMountPoints Nmber of mount points
-    * @param pMountPoints Array of mount points in the subtree
-    */
-    ResourceSubtree(
-        const MetadataMap& rMetadataMap,
-        LocalResourceId numberOfResources,
-        const metadata::ResourceTreeNode* pTreeNodes,
-        size_t numberOfSparseMapEntries,
-        const LocalResourceId* pSparseMap,
-        size_t numberOfMountPoints,
-        const metadata::MountPoint* pMountPoints);
+        uint16 providerRegistrySize,
+        uint16 subscriptionRegistrySize);
 
     /**
     *	Destructor.
@@ -70,31 +66,13 @@ public:
         return mrMetadataMap;
     }
 
-    /** Gets number of resources in the tree
-     *
-     * @return Number of resources
-     */
-    inline size_t getNumberOfResources() const
-    {
-        return mNumberOfResources;
-    }
-
     /** Checks whether subtree has any resources with
      * given resource API ID.
      *
      * @param apiId ID of the API which resources should be checked
      * @return A value indicating whether API exists
      */
-    inline bool hasApiId(metadata::ApiId apiId) const
-    {
-        const size_t apiIdPlusOne = static_cast<size_t>(apiId) + 1;
-        if (apiIdPlusOne >= mNumberOfSparseMapEntries)
-        {
-            return false;
-        }
-    
-        return mpSparseMap[apiId] != mpSparseMap[apiIdPlusOne];
-    }
+    bool hasApiId(metadata::ApiId apiId) const;
 
     /** Finds ResourceTreeNode with given id
     *
@@ -105,7 +83,7 @@ public:
 
     /** Returns a local resource by index
     *
-    * @param index ID of the object
+    * @param index Index of the resource tree node
     * @param rLocalResourceId On output contains ID of the local resource
     * @return Object or NULL if invalid id is given
     */
@@ -114,21 +92,28 @@ public:
     /**
     * Gets resource metadata with given ID
     *
-    * @param localResourceId ID of the local resource
+    * @param index Index of the resource tree node
     * @param rLocalResourceId On output contains ID of the local resource
     * @param rMetadata On output contains resource metadata
-    * @param rpSubscriptionData On output contains pointer to resource's subscripton information
+    * @param rSubscriptionData On output contains resource's subscription information
     * @return Result of the operation
     */
     Result getResourceMetadataByIndex(
         size_t index,
         LocalResourceId& rLocalResourceId,
         ResourceMetadata& rMetadata,
-        ResourceSubscriptionData*& rpSubscriptionData) const;
+        ResourceSubscriptionData& rSubscriptionData) const;
 
-private:
-    /** ResourceTree accesses these member variables directly */
-    friend class ResourceTree;
+    /** Initializes resource subscruption data */
+    void initializeResourceSubscriptionData();
+
+    /** Updates resource's subscription data
+     *
+     * @param index Index of the resource tree node
+     * @param rSubscriptionData New information for resource's subscription data
+     */
+    void updateResourceSubscriptionData(
+        const ResourceSubscriptionData& rSubscriptionData);
 
     /** Finds ResourceTreeNode with given id without any boundary checking
     *
@@ -137,32 +122,35 @@ private:
     */
     const metadata::ResourceTreeNode* getNodeByIdUnsafe(LocalResourceId localResourceId) const;
 
+private:
+    /** ResourceTree is our friend */
+    friend class ResourceTree;
+
     /** Metadata map instance */
     const MetadataMap& mrMetadataMap;
 
-    /** Number of resources */
-    LocalResourceId mNumberOfResources;
+#ifdef WB_OPTIMIZE_MEM_USAGE
+    /** Number of bits needed for provider Ids in resource subscription data */
+    const uint8 mNumberOfBitsForProviderIds;
 
-    /** Array of metadata tree nodes. */
-    const metadata::ResourceTreeNode* mpTreeNodes;
+    /** Resource subscription data for id paths. */
+    PackedIntegerArray mResourceSubscriptionData;
+#else
+    struct ResourceSubscriptionDataItem
+    {
+        /** Current resource provider */
+        LocalProviderId providerId;
+
+        /** Id of first subscription */
+        LocalSubscriptionId firstSubscriptionId;
+    };
 
     /** Array of subscription data for id paths. */
-    ResourceSubscriptionData* mpResourceSubscriptionData;
-
-    /** Number of entries in the sparse map of resources */
-    size_t mNumberOfSparseMapEntries;
-    
-    /** Sparse map that maps resource IDs to indexes of pTreeNode array */
-    const LocalResourceId* mpSparseMap;
+    ResourceSubscriptionDataItem* mpResourceSubscriptionData;
+#endif
 
     /** Parent resource */
     LocalResourceId mParentResourceId;
-
-    /** Number of mount points */
-    uint16 mNumberOfMountPoints;
-
-    /** Array of mount points in the subtree. */
-    const metadata::MountPoint* mpMountPoints;
 
     /** Array of instantiated mount points in the subtree. */
     MountPoint* mpMountPointInstances;
@@ -174,4 +162,5 @@ private:
     ResourceSubtree* mpNextSubtree;
 };
 
+} // namespace internal
 } // namespace whiteboard

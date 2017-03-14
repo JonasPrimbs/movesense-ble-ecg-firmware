@@ -1,9 +1,8 @@
 #pragma once
 // Copyright (c) Suunto Oy 2014. All rights reserved.
 
+#include "whiteboard/ExecutionContext.h"
 #include "whiteboard/Identifiers.h"
-#include "whiteboard/Functor.h"
-#include "whiteboard/metadata/MetadataStructures.h"
 
 namespace whiteboard
 {
@@ -45,9 +44,10 @@ protected:
     /**
     * Optional processing of states between events(from IExecutionContext).
     *
+    * @param eventsPending A value indicating whether more events are waiting in the queue
     * @return Options that guide further event prosessing.
     */
-    virtual metadata::EventProcessorOptions eventStateProcess(bool eventsPending) = 0;
+    virtual ExecutionContext::EventProcessorOptions eventStateProcess(bool eventsPending) = 0;
 };
 
 } // namespace whiteboard

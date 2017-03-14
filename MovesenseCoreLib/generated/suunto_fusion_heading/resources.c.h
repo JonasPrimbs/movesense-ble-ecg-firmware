@@ -6,4 +6,5 @@
 static const unsigned short ROOT_LID = 0;
 static const unsigned short FUSION_LID = 18446744073709551615;
 static const unsigned short FUSION_HEADING_LID = 10752;
+static const unsigned short FUSION_HEADING_ISCOMPASS_LID = 10753;
 

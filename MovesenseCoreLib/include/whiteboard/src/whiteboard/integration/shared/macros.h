@@ -9,6 +9,12 @@
 */
 #include <stddef.h>
 
+#if defined(_MSC_VER)
+#if (_MSC_VER < 1800)
+#error Only Visual Studio 2013 and later are supported
+#endif
+#endif
+
 #ifndef ELEMENTS
 /**
 Returns the number of elements in an array.
@@ -18,7 +24,6 @@ Returns the number of elements in an array.
 #define ELEMENTS(array) (sizeof(array) / sizeof(array[0]))
 #endif
 
-#ifndef WB_OFFSETOF
 /**
 Macro for getting an offset of a struct member.
 
@@ -40,17 +45,12 @@ Macro for getting an offset of a struct member.
 #else
 #define WB_OFFSETOF(type, member) (size_t)(&(((type*)0)->member))
 #endif
-#endif  // #ifndef WB_OFFSETOF
-
-#ifndef WB_SIZEOF_MEMBER
 
 /**
 Returns the size of a member of a struct.
 \hideinitializer
 */
 #define WB_SIZEOF_MEMBER(type, member) (size_t)(sizeof(((type*)0)->member))
-
-#endif
 
 /**
 * Macro for defining variables and types without causing xxx defined but not used warning
@@ -86,9 +86,7 @@ WB_STATIC_VERIFY(sizeof(uint32) == 4, sizeof_uint32_must_be_4);
 @endcode
 */
 
-#ifndef WB_STATIC_VERIFY
 #define WB_STATIC_VERIFY(cond, tag) typedef char tag##__static_verify__helper[(cond) ? 1 : -1] WB_ATTRIBUTE_UNUSED
-#endif
 
 /** @def WB_NOT_USED(param)
 Turn off param not used warning.
@@ -106,9 +104,7 @@ static void foo(int bar)
 
 @endcode
 */
-#ifndef WB_NOT_USED
 #define WB_NOT_USED(param) ((void)param)
-#endif
 
 /** @def WB_CONCATENATE(part1, part2)
 Forms identifier by concatenating two parts.
@@ -127,9 +123,7 @@ static void foo(int bar)
 
 @endcode
 */
-#ifndef WB_CONCATENATE
 #define WB_CONCATENATE(a, b) a##b
-#endif
 
 /** @def WB_EVAL_AND_CONCATENATE(part1, part2)
 Forms identifier by first evaluating parts and then concatenating the results.
@@ -148,9 +142,7 @@ static void foo(int bar)
 
 @endcode
 */
-#ifndef WB_EVAL_AND_CONCATENATE
 #define WB_EVAL_AND_CONCATENATE(a, b) WB_CONCATENATE(a, b)
-#endif
 
 /** @def WB_MIN(a, b)
 Returns smaller item
@@ -172,15 +164,79 @@ Returns larger item
 */
 #define WB_MAX(a, b) ((a) > (b) ? (a) : (b))
 
+/** Checks whether given number is power of two
+http://www.exploringbinary.com/ten-ways-to-check-if-an-integer-is-a-power-of-two-in-c/
+*/
+#define WB_IS_POWER_OF_TWO(x)  (((x) != 0) && (((x) & (~(x) + 1)) == (x)))
+
 /** Macro for converting macro parameter to string */
-#ifndef WB_STRINGIFY
 #define WB_STRINGIFY_X(x) #x
 #define WB_STRINGIFY(x) WB_STRINGIFY_X(x)
-#endif
 
 /** Helper for passing comma in macro parameters without causing number of arguments error */
-#ifndef WB_COMMA
 #define WB_COMMA ,
+
+#if (__cplusplus >= 201103L) || _MSC_VER >= 1900
+#define WB_HAVE_CPLUSPLUS_11
+#endif
+
+#if defined(WB_HAVE_CPLUSPLUS_11)
+
+/** C++11 override specifier that enforces virtual function override. */
+#ifndef OVERRIDE
+#define OVERRIDE override
+#endif
+
+/** C++11 delete specifier to specify explicitly unimplemented methods. */
+#ifndef DELETED
+#define DELETED = delete
+#endif
+
+/** C++11 final specifier to specify class & virtual functions that cannot be inherited. */
+#ifndef FINAL
+#define FINAL final
+#endif
+
+/** C++11 final specifier to specify that only explicit conversion / constructions 
+    are allowed. */
+#ifndef EXPLICIT
+#define EXPLICIT explicit
+#endif
+
+#else // WB_HAVE_CPLUSPLUS_11
+
+#ifndef OVERRIDE
+#define OVERRIDE /**/
+#endif
+
+#ifndef DELETED
+#define DELETED /**/
+#endif
+
+#ifndef FINAL
+#define FINAL /**/
+#endif
+
+#ifndef EXPLICIT
+#define EXPLICIT /**/
+#endif
+
+#endif // WB_HAVE_CPLUSPLUS_11
+
+/** Macro for creating compiler friend multichar literals in big endian format
+ */
+#define WB_BE_TAG(a,b,c,d) (((a) << 0) | ((b) << 8) | ((c) << 16) | ((d) << 24))
+
+#ifdef WB_HAVE_DEBUG_NAMES
+#define WBDEBUG_NAME(name) name
+#else
+#define WBDEBUG_NAME(name) NULL
+#endif
+
+#if WB_UNITTEST_BUILD
+#define WB_PUBLIC_IN_UNITTESTS(visibility) public
+#else
+#define WB_PUBLIC_IN_UNITTESTS(visibility) visibility
 #endif
 
 /** Include header checks */

@@ -1,11 +1,54 @@
+# This file defines Suunto Whiteboard API
+#
+# Copyright Suunto Oy 2015
+# All rights reserved.
+#
+# Swagger editor is located at http://vaas1410:81/#/
+#
+# NOTE! Editor remembers last file you have edited, but it is
+# not necessarily the version located in your local or shared repository. 
+# ALWAYS USE COPY + PASTE TO UPDATE THE EDITOR BEFORE DOING ANY EDITING!!!
+#
 swagger: '2.0'
 
+# Document metadata
 info:
-  version: "0.0.1"
-  title: Logbook API
+  version: "0.0.0"
+  title: Suunto Whiteboard API for Performance 2016 product. /Suunto/Dev subtree.
   description: |
-    Device's logbook API
+    This file defines API for Whiteboard server that runs on NextGen Performance 2016 device.
 
+    See http://developer.suunto.com for more information.
+  termsOfService: http://suunto.com/wbapi/terms/
+  contact:
+    name: Suunto team
+    url: http://developer.suunto.com
+  
+# Security definitions
+security:
+  - suuntoAccessCode:
+    - public
+    - read:user
+    - write:user
+    - read:contacts
+    - write:contacts
+    - test
+
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+      read:user: Grants read access to user profile info.
+      write:user: Grants write access to user profile info.
+      read:contacts: Grants read access to user's contants and memberships.
+      write:contacts: Grants write access to user's contants and memberships.
+      test: Grants read/write access to QA / test resources.
+    flow: accessCode
+    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
+    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
+    
+# Paths
 paths:
   /Logbook/Logging:
     x-executionContext: application
@@ -18,6 +61,9 @@ paths:
           schema:
             type: integer
             format: uint16
+      security:
+        - suuntoAccessCode:
+          - public
 
   /Logbook/Logging/Subscription:
     x-executionContext: application
@@ -29,12 +75,21 @@ paths:
           description: Operation completed successfully
         423:
           description: Not opening new log files when device shutdown is initiated.
+        507:
+          description: Not enough free disk space.
+        500:
+          description: Creating new log files failed.
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
         x-notification:
           description: |
            Event notification.
           schema:
             type: integer
             format: uint16
+      security:
+        - suuntoAccessCode:
+          - public
 
     delete:
       description: |
@@ -55,9 +110,12 @@ paths:
         Is log open
       responses:
         200:
-          description: |
+          description: 
           schema:
             type: boolean
+      security:
+        - suuntoAccessCode:
+          - public
 
   /Logbook/IsOpen/Subscription:
     x-executionContext: application
@@ -69,11 +127,16 @@ paths:
           description: Operation completed successfully
           schema:
             type: boolean
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
         x-notification:
           description: |
            Event notification.
           schema:
             type: boolean
+      security:
+        - suuntoAccessCode:
+          - public
 
     delete:
       description: |
@@ -81,6 +144,11 @@ paths:
       responses:
         200:
           description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
 
   /Logbook/IsFull:
     x-executionContext: application
@@ -89,9 +157,12 @@ paths:
         Is periodic logging stopped because not enough log space left
       responses:
         200:
-          description: |
+          description:
           schema:
             type: boolean
+      security:
+        - suuntoAccessCode:
+          - public
 
   /Logbook/IsFull/Subscription:
     x-executionContext: application
@@ -101,11 +172,16 @@ paths:
       responses:
         200:
           description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
         x-notification:
           description: |
            Event notification.
           schema:
             type: boolean
+      security:
+        - suuntoAccessCode:
+          - public
 
     delete:
       description: |
@@ -113,6 +189,11 @@ paths:
       responses:
         200:
           description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
 
   /Logbook/UnsynchronisedLogs:
     x-executionContext: application
@@ -125,6 +206,9 @@ paths:
           schema:
             type: integer
             format: uint16
+      security:
+        - suuntoAccessCode:
+          - public
 
   /Logbook/UnsynchronisedLogs/Subscription:
     x-executionContext: application
@@ -137,12 +221,17 @@ paths:
           schema:
             type: integer
             format: uint16
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
         x-notification:
           description: |
            Event notification.
           schema:
             type: integer
             format: uint16
+      security:
+        - suuntoAccessCode:
+          - public
 
     delete:
       description: |
@@ -150,6 +239,11 @@ paths:
       responses:
         200:
           description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
 
   /Logbook/Entries:
     x-executionContext: application
@@ -180,6 +274,11 @@ paths:
         404:
           description: |
             StartAfterId was not found in logs
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#get
+      security:
+        - suuntoAccessCode:
+          - public
 
   /Logbook/byId/{LogId}/Descriptors:
     x-executionContext: application
@@ -200,6 +299,11 @@ paths:
             Returns a byte stream value type.
           schema:
             $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/ByteStream'
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#get
+      security:
+        - suuntoAccessCode:
+          - public
     parameters:
        -
          $ref: '#/parameters/LogId'
@@ -227,6 +331,11 @@ paths:
             $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/ByteStream'
         404:
           description: Referenced log not found in LogBook.
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#get
+      security:
+        - suuntoAccessCode:
+          - public
     parameters:
        -
          $ref: '#/parameters/LogId'
@@ -272,6 +381,9 @@ paths:
           description: Operation completed successfully
         416:
           description: Bad request. LogIndex not in range.
+      security:
+        - suuntoAccessCode:
+          - public
     parameters:
       -
         $ref: 'http://localhost:9000/suunto_activities.yaml#/parameters/LogIndex'
@@ -286,9 +398,12 @@ paths:
           description: Operation completed successfully
         416:
           description: Bad request. LogIndex not in range.
-      parameters:
-        -
-          $ref: 'http://localhost:9000/suunto_activities.yaml#/parameters/LogIndex'
+      security:
+        - suuntoAccessCode:
+          - public
+    parameters:
+      -
+        $ref: 'http://localhost:9000/suunto_activities.yaml#/parameters/LogIndex'
 
 
 # Extra definitions

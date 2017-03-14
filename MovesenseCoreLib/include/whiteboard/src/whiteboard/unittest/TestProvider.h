@@ -5,6 +5,8 @@
 #include "whiteboard/ResourceProvider.h"
 #include "whiteboard/unittest/ScopedResource.h"
 
+#if WB_UNITTEST_BUILD
+
 namespace whiteboard
 {
 
@@ -298,3 +300,5 @@ protected:
 };
 
 } // namespace whiteboard
+
+#endif

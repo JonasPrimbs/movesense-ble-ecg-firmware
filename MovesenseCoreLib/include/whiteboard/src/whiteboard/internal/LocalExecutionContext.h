@@ -39,12 +39,19 @@ public:
     /** Initializes a new instance of ExecutionContext class
     *
     * @param id Id of the execution context
-    * @param rDescriptor Execution context descriptor
+    * @param name Name of the execution context
+    * @param rSettings Execution context descriptor
+    * @param pNotifiationFilter Pointer to function that is used to filter update notifications before dispatching.
+    * @para Pointer to function that that performs custom processing between
+    *  Whiteboard events handling.
     * @param rWhiteboard Associated whiteboard instance. Used only for unittest mockups.
     */
     LocalExecutionContext(
         const whiteboard::ExecutionContextId id,
-        const metadata::ExecutionContextInfo& rDescriptor,
+        const char* name,
+        const metadata::ExecutionContext& rSettings,
+        ExecutionContext::NoticationFilterFunc* pNotificationFilter,
+        ExecutionContext::StateProcessorFunc* pStateProcessor,
         Whiteboard& rWhiteboard = *Whiteboard::getInstance());
 
     /** Destructor */
@@ -58,7 +65,7 @@ public:
     ExecutionContextId getId() const OVERRIDE FINAL { return mId; }
 
     /** Gets the execution context name. */
-    const char* getName() const OVERRIDE FINAL { return mrDescriptor.name; }
+    const char* getName() const OVERRIDE FINAL { return mName; }
 
     /**
     * Initializes the execution context
@@ -88,11 +95,10 @@ public:
     /**
     * Processing of states between events(from IExecutionContext).
     *
-    * @param eventsPending - true if there is events pending processing for the execution context.
-    *
+    * @param eventsPending A value indicating whether more events are waiting in the queue
     * @return Options that guide further event prosessing.
     */
-    metadata::EventProcessorOptions eventStateProcess(bool eventsPending) OVERRIDE;
+    ExecutionContext::EventProcessorOptions eventStateProcess(bool eventsPending) OVERRIDE;
 
 private:
     /** Whiteboard accesses these functions directly */
@@ -102,7 +108,7 @@ private:
     friend class WhiteboardCommunication;
 
     /** Get the settings used to initialize this execution context. */
-    const metadata::ExecutionContextSettings& getMetadata() const { return mProcessor.getMetadata(); }
+    const metadata::ExecutionContext& getMetadata() const { return mProcessor.getMetadata(); }
 
     /**
     *	Sends resource changed notification for to client's execution context
@@ -228,8 +234,15 @@ private:
     /** Execution context ID */
     const whiteboard::ExecutionContextId mId;
 
-    /** Execution context descriptor */
-    const metadata::ExecutionContextInfo& mrDescriptor;
+    /** Name of the execution context */
+    const char* const mName;
+
+    /** Pointer to function that is used to filter update notifications before dispatching. */
+    ExecutionContext::NoticationFilterFunc* mpNotificationFilter;
+
+    /** Pointer to function that that performs custom processing between
+    *  Whiteboard events handling. */
+    ExecutionContext::StateProcessorFunc* mpStateProcessor;
 };
 
-} // namespace whitespace
+} // namespace whiteboard

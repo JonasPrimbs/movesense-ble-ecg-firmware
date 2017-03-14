@@ -1,11 +1,34 @@
+# Copyright Suunto Oy 2015-2016
+# All rights reserved.
+
 swagger: '2.0'
 
+# Document metadata
 info:
-  version: "0.0.1"
-  title: System Event API
+  version: "0.9.0"
+  title: /Device/SystemEvent API
   description: |
-    API for the system events
+    This file defines the /Device/SystemEvent API.
+  termsOfService: http://suunto.com/wbapi/terms/
+  contact:
+    name: Suunto team
+    url: http://developer.suunto.com
 
+# Security definitions
+security:
+  - suuntoAccessCode:
+    - public
+
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+    flow: accessCode
+    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
+    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
+
+# Paths
 paths:
   /Device/SystemEvent:
     x-executionContext: meas
@@ -31,6 +54,9 @@ paths:
             sequence number is not given.
           schema:
             $ref: '#/definitions/SystemEventLogEntryArray'
+      security:
+        - suuntoAccessCode:
+          - public
 
 definitions:
   SystemEventLogEntryArray:

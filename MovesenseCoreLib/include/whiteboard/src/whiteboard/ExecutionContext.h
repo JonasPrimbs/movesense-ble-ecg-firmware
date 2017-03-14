@@ -21,7 +21,6 @@ private:
     ExecutionContext& operator=(const ExecutionContext&) DELETED;
 
 public:
-
     /**
     * Checks whether this is the local execution thread of the given of execution context
     *
@@ -63,6 +62,57 @@ public:
     * @return A value indicating whether the event loop was successfully run
     */
     static bool runInExternalThread(ExecutionContextId executionContextId, IFunctor0<void>* entryFunction);
+
+    /** Option that guide how events should be processed */
+    struct WB_API EventProcessorOptions
+    {
+        /** Constructor */
+        inline EventProcessorOptions(uint32 _timeout, bool _doEventProcessing)
+            : timeout(WB_MIN(_timeout, MAXIMUM_TIMEOUT)), doEventProcessing(_doEventProcessing ? 1 : 0)
+        {
+        }
+
+        /** Maximum number of milliseconds to wait for new DPCs and events before calling eventStateProcess
+        * again. Use DEFAULT_TIMEOUT to use system default.
+        *
+        * @note This value specifies maximum only when there is no events. No maximum can be given for how long
+        *       single event is processed.
+        */
+        uint32 timeout : 31;
+
+        /** A flag that indicates that events can be processed for the duration of given timeout.
+        *
+        * @note DPCs are always processed even if this flag is cleared
+        */
+        uint32 doEventProcessing : 1;
+
+        /** Maximum timeout value */
+        static const uint32 MAXIMUM_TIMEOUT = WB_MIN((1u << 31) - 1, WB_INFINITE) - 1;
+    };
+
+    /** Function prototype for worker functions that perform custom processing between
+    *  Whiteboard events handling.
+    *
+    * @param bool : eventsPending; A value indicating whether more events are waiting in the queue
+    * @return Options that guide further event prosessing.
+    *
+    * @see ResourceSubtreeRegistration class is used to install this hook function.
+    */
+    typedef IFunctor1<EventProcessorOptions, bool> StateProcessorFunc;
+
+    /** Function prototype for filtering incoming update notifications before local message dispatching.
+    * Note that this function can be called simultaneously from multiple threads
+    *
+    * @param clientId Client id associated with the update
+    * @param resourceId Resource id associated with the update
+    * @param rValue Current value of the resource
+    * @param rParameters Notification parameters
+    * @return If true, notification is not queued. 
+    *
+    * @see ResourceSubtreeRegistration class is used to install this hook function.
+    */
+    typedef IFunctor4<bool, whiteboard::ClientId, whiteboard::ResourceId, const whiteboard::Value&, const whiteboard::ParameterList&>
+        NoticationFilterFunc;
 };
 
 } // namespace whiteboard

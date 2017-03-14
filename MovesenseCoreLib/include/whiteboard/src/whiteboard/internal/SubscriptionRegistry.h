@@ -24,8 +24,69 @@ struct Subscription
     /** Next subscription in the chain */
     LocalSubscriptionId next;
 
-    /** ID of subscribed client */
-    ClientId clientId;
+    /** Following are fields from the ClientId structure,
+     * but to save space we make our own copy, because ClientId forces 32-alignment
+     * that we don't want here.
+     */
+    struct
+    {
+        /** Reserved for future use
+        *
+        * @note: PathParameterCache uses one bit of this internally as subscription ref-counting for the same path variable,
+        *        that implementation needs to be changed if bits here are taken into use
+        */
+        uint8 reserved : 4;
+
+        /** ID of the execution context */
+        ExecutionContextId executionContextId : 4;
+
+        /** ID of the whiteboard instance */
+        WhiteboardId whiteboardId;
+
+        /** Client ID of the resource in that whiteboard instance */
+        LocalClientId localClientId;
+
+        /** Assignment operator
+         *
+         * @param rClientId ClientId that should be used to initialize this structure
+         */
+        inline void operator=(const ClientId& rClientId)
+        {
+            reserved = rClientId.reserved;
+            executionContextId = rClientId.executionContextId;
+            whiteboardId = rClientId.whiteboardId;
+            localClientId = rClientId.localClientId;
+        }
+
+        /** Cast operator. Converts this structure back to ClientId 
+         *
+         * @return ClientId structure
+         */
+        inline operator ClientId() const
+        {
+            return ClientId(executionContextId, whiteboardId, localClientId);
+        }
+
+        /** Checks whether this structure equals given client ID
+         *
+         * @param rClientId ClientId for comparison
+         * @return A value indicating whether this structure is equal to given client ID
+         */
+        inline bool operator==(const ClientId& rClientId) const
+        {
+            return (localClientId == rClientId.localClientId) && (whiteboardId == rClientId.whiteboardId);
+        }
+
+        /** Checks whether this structure is not equal to given client ID
+        *
+        * @param rClientId ClientId for comparison
+        * @return A value indicating whether this structure is not equal to given client ID
+        */
+        inline bool operator!=(const ClientId& rClientId) const
+        {
+            return !(*this == rClientId);
+        }
+    } clientId;
 };
 
 /** Subscription registry contrainer
@@ -42,6 +103,12 @@ public:
 
     /** Destructor */
     ~SubscriptionRegistry();
+
+    /** Gets size of the registry
+     *
+     * @return Maximum number of subscriptions
+     */
+    inline LocalSubscriptionId getMaximumNumberOfItems() const;
 
     /**
     * Gets existing subscription
@@ -90,98 +157,6 @@ public:
     void freeSubscriptions(WhiteboardId remoteWhiteboardId);
 
 private:
-#if 0
-    /**
-    * Custom free list allocator to minimize memory usage
-    */
-    class SubcriptionFreeListPoolAllocator FINAL : public Pool::IAllocator
-    {
-    public:
-        /** Helper typedefs for a bit cleaner code */
-        typedef Pool::KeyType KeyType;
-
-        /** Constructor */
-        inline SubcriptionFreeListPoolAllocator()
-        {
-            mFirstFreeSubscription = 0;
-        }
-
-        /**
-        * Allocates a new entry from the pool.
-        *
-        * @param rPool Pool from where the item should be allocated
-        * @return KeyType Id which is the index within the array or INVALID_ID if pool is full
-        */
-        KeyType allocate(Pool& rPool, size_t) OVERRIDE
-        {
-            // Do we have free subscriptions
-            if (mFirstFreeSubscription == ID_INVALID_LOCAL_SUBSCRIPTION)
-            {
-                return ID_INVALID_LOCAL_SUBSCRIPTION;
-            }
-
-            // Get next from the free list
-            KeyType subscriptionId = mFirstFreeSubscription;
-            mFirstFreeSubscription = static_cast<Subscription*>(rPool[subscriptionId])->next;
-            return subscriptionId;
-        }
-
-        /**
-        * Frees an allocated entry.
-        *
-        * @param rPool Pool that ows the item
-        * @param id Id of the entry
-        */
-        void deallocate(Pool& rPool, KeyType id) OVERRIDE
-        {
-            // Move subscription to start of free list
-            Subscription& rSubscription = *static_cast<Subscription*>(rPool[id]);
-            rSubscription.clientId = ID_INVALID_CLIENT;
-            rSubscription.next = mFirstFreeSubscription;
-            mFirstFreeSubscription = id;
-        }
-
-        /**
-        * Checks whether given ID is allocated.
-        *
-        * @param rPool Pool that ows the item
-        * @param id Id of the allocated object.
-        * @return A value indicating whether the ID is allocated
-        */
-        bool isAllocated(const Pool& rPool, KeyType id) const OVERRIDE
-        {
-            // This is needed only for debug time asserts, which is good since
-            // here we assume that client id is set by someone else as soon as item is allocated
-            const Subscription& rSubscription = *static_cast<const Subscription*>(rPool[id]);
-            return rSubscription.clientId != ID_INVALID_CLIENT;
-        }
-
-        /**
-        * Increases size of the allocator data structures
-        *
-        * @param rPool Pool that ows the item
-        * @param currentSize Current size of the pool
-        * @param newSize New size of the pool
-        * @return A value indicating wether the allocator data structures were correctly grown
-        */
-        bool grow(Pool& /*rPool*/, KeyType /*currentSize*/, KeyType /*newSize*/) OVERRIDE
-        {
-            for (KeyType i = currentSize; i < newSize; ++i)
-            {
-                deallocate(rPool, i);
-            }
-
-            return true;
-        }
-
-    private:
-        /** First free subscription. */
-        LocalSubscriptionId mFirstFreeSubscription;
-    };
-
-    /** Allocator for subscription pool */
-    SubcriptionFreeListPoolAllocator mAllocator;
-#endif
     /** Allocator for subscription pool */
     BitmapPoolAllocator mAllocator;
 
@@ -189,6 +164,11 @@ private:
     typedef TypedPool<LocalSubscriptionId, Subscription> SubscriptionPool;
     SubscriptionPool mSubscriptions;
 };
+
+inline LocalSubscriptionId SubscriptionRegistry::getMaximumNumberOfItems() const
+{
+    return mSubscriptions.getMaximumNumberOfItems();
+}
 
 inline Subscription* SubscriptionRegistry::getSubscription(LocalSubscriptionId subscriptionId)
 {

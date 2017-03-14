@@ -10,7 +10,10 @@ namespace whiteboard
 {
 
 class ResourceMetadata;
-class ResourceSubtree;
+namespace internal
+{
+    class ResourceSubtree;
+}
 
 namespace services
 {
@@ -106,7 +109,7 @@ protected:
         const Request& rRequest, LocalDataTypeId dataTypeId, const MetadataMap& rMetadata);
 
     void handleGetMetadataStream(
-        const ResourceSubtree& rResourceSubtree,
+        const internal::ResourceSubtree& rResourceSubtree,
         const MetadataMap& rMetadata,
         const Request& rRequest, RequestId originalRequestId);
 
@@ -139,7 +142,7 @@ protected:
         WB_RES::DataTypeMetadata& rDataTypeMetadata);
 
     bool serializeMetadataToBuffer(
-        const ResourceSubtree& rResourceSubtree,
+        const internal::ResourceSubtree& rResourceSubtree,
         const MetadataMap& rMetadata,
         uint8* buffer, size_t bufferSize, size_t& bytesWrittenToBuffer);
 

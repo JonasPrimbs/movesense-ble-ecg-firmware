@@ -21,7 +21,7 @@
 #include "whiteboard/builtinTypes/Vector3D.h"
 #include "whiteboard/builtinTypes/WrapperFor32BitPointer.h"
 
-#define WB_EXECUTION_CONTEXT_INSTANTION_REF(id)						static_cast<whiteboard::ExecutionContextId>(id)
+#define WB_EXECUTION_CONTEXT_INSTANTION_REF(id)					static_cast<whiteboard::ExecutionContextId>(id)
 #define WB_RESOURCE_VALUE(whiteboardId, localResourceId, executionContextId) \
 	static_cast<whiteboard::ResourceId::Value>( \
 		(static_cast<uint32>(localResourceId) << 16) | \
@@ -31,11 +31,6 @@
 
 #define WB_CALLER_CONTEXT										whiteboard::ID_INVALID_EXECUTION_CONTEXT
 
-
-/** Helper function for force linking of the library
-* (Visual C will ignore whole library if none of the symbols are referenced)
-*/
-void pullInWbResources();
 
 #include "../wb-resources/resources.h"
 #include "../suunto_shared/resources.h"
@@ -272,7 +267,7 @@ struct DEV_SYSTEM_MEMORY_FREE
 	};
 };
 
-struct DEV_SYSTEM_MEMORY_SIZE
+struct DEV_SYSTEM_MEMORY_ISSUFFICIENT
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 9735, EXECUTION_CONTEXT);
@@ -280,6 +275,8 @@ struct DEV_SYSTEM_MEMORY_SIZE
 
 	struct GET
 	{
+		typedef bool Response_HTTP_CODE_OK_Type;
+
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
@@ -287,7 +284,7 @@ struct DEV_SYSTEM_MEMORY_SIZE
 	};
 };
 
-struct DEV_SYSTEM_MEMORY_USED
+struct DEV_SYSTEM_MEMORY_LOWESTFREE
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 9736, EXECUTION_CONTEXT);
@@ -302,11 +299,41 @@ struct DEV_SYSTEM_MEMORY_USED
 	};
 };
 
-struct DEV_SYSTEM_UPDATELPAPP
+struct DEV_SYSTEM_MEMORY_SIZE
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 9737, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 9737;
+
+	struct GET
+	{
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+	};
+};
+
+struct DEV_SYSTEM_MEMORY_USED
+{
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 9738, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 9738;
+
+	struct GET
+	{
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+	};
+};
+
+struct DEV_SYSTEM_UPDATELPAPP
+{
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 9739, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 9739;
 
 	struct PUT
 	{
@@ -413,8 +440,8 @@ struct DEV_SYSTEM_UPDATELPAPP
 struct DEV_SYSTEM_UPDATELPDALI
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 9738, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 9738;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 9740, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 9740;
 
 	struct PUT
 	{
@@ -521,8 +548,8 @@ struct DEV_SYSTEM_UPDATELPDALI
 struct DEV_SYSTEM_UPDATELPFILESYSTEM
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 9739, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 9739;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 9741, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 9741;
 
 	struct PUT
 	{

@@ -5,28 +5,13 @@
 ******************************************************************************/
 
 #include "whiteboard/Identifiers.h"
+#include "whiteboard/metadata/MetadataStructures.h"
 
 namespace whiteboard
 {
 
 // Forward declarations
 class RequestAccessor;
-
-/** Type of a request */
-typedef enum
-{
-    REQUEST_GET,
-    REQUEST_PUT,
-    REQUEST_POST,
-    REQUEST_DELETE,
-    REQUEST_SUBSCRIBE,
-    REQUEST_UNSUBSCRIBE,
-
-    REQUEST_GET_RESOURCE,
-    REQUEST_RELEASE_RESOURCE,
-
-    NUMBER_OF_REQUEST_TYPES
-} RequestType;
 
 /** Request information structure */
 class WB_API Request

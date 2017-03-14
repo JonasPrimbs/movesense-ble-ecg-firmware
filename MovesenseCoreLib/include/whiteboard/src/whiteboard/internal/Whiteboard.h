@@ -14,6 +14,7 @@
 #include "whiteboard/internal/SubscriptionRegistry.h"
 #include "whiteboard/internal/TimerPool.h"
 #include "whiteboard/internal/protocol/IMessageHandler.h"
+#include "whiteboard/ResourceTree.h"
 
 namespace whiteboard
 {
@@ -29,11 +30,20 @@ class ResourceProvider;
 class ResourceProvider_ResponseOptions;
 class ResourceClient;
 class ResourceClient_AsyncRequestOptions;
-class ResourceTree;
-class ResourceSubtree;
 class SuuntoSerial;
 class Value;
 class WhiteboardCommunication;
+
+namespace internal
+{
+    struct ResourceSubscriptionData;
+    class ResourceSubtree;
+    class ResourceTree;
+}
+
+// TODO: Remove this when all of internal code has been moved to internal namespace
+namespace internal { struct ResourceSubscriptionData;  }
+using internal::ResourceSubscriptionData;
 
 namespace services
 {
@@ -84,14 +94,10 @@ public:
     *
     * @param serialNumber Serial number to use
     * @param rConfiguration Configuration
-    * @param numberOfExecutionContexts Number of WBRES generated execution contexts
-    * @param pExecutionContexts List of WBRES generated execution contexts
     */
     void initialize(
         const char* serialNumber,
-        const Config& rConfiguration,
-        size_t numberOfExecutionContexts,
-        const metadata::ExecutionContextInfo* pExecutionContexts);
+        const Config& rConfiguration);
 
     /**
     * Deinitializes internal services and then Whiteboard
@@ -137,12 +143,12 @@ public:
     /**
     * @return Resource tree used by this whiteboard
     */
-    inline ResourceTree& getResourceTree();
+    inline internal::ResourceTree& getResourceTree();
 
     /**
     * @return Resource tree used by this whiteboard
     */
-    inline const ResourceTree& getResourceTree() const;
+    inline const internal::ResourceTree& getResourceTree() const;
 
     /*********************
     * Resources
@@ -160,18 +166,22 @@ public:
     * Adds a new sub tree to the resource tree.
     *
     * @param parentResourceId Id of the parent resource (sub tree mount point)
-    * @param rSubtree The resource sub tree
+    * @param rMetadataMap Metadata of the subtree that should be registered
+    * @param hookInstaller Option. Function that install execution context hooks.
     * @return Result of the operation
     */
-    Result registerResourceSubtree(ResourceId parentResourceId, ResourceSubtree& rSubtree);
+    Result registerResourceSubtree(
+        ResourceId parentResourceId, 
+        const MetadataMap& rMetadataMap,
+        ResourceTree::HookInstallerFunc* hookInstaller = NULL);
 
     /**
     * Removes a resource subtree from the resource tree
     *
-    * @param rSubtree The resource sub tree
+    * @param rMetadataMap Metadata of the subtree that should be unregistered
     * @return A value indicating whether the resource was successfully removed
     */
-    Result unregisterResourceSubtree(ResourceSubtree& rSubtree);
+    Result unregisterResourceSubtree(const MetadataMap& rMetadataMap);
 
     /**
     * Returns next available API id for new resource subtree
@@ -827,10 +837,10 @@ private:
     /**
     *   Gets the resource object of the givenId, performs context check and provider resource registration check first.
     *
-    * @param resourceProviderId [in] ID of the resource provider that is doing the checking
-    * @param resourceId [in] ID of the resource that is checked
-    * @param rMetadata [out] On output contains resource metadata
-    * @param rpSubscriptionData [out] On output contains pointer to resource's subscripton information
+    * @param resourceProviderId ID of the resource provider that is doing the checking
+    * @param resourceId ID of the resource that is checked
+    * @param rMetadata On output contains resource metadata
+    * @param rSubscriptionData On output contains resource's subscription information
     *
     *	@return
     *		HTTP_CODE_OK if resource has been subscribed,
@@ -841,7 +851,7 @@ private:
         ProviderId resourceProviderId,
         ResourceId resourceId,
         ResourceMetadata& rMetadata,
-        const ResourceSubscriptionData* & rpSubscriptionData) const;
+        ResourceSubscriptionData& rSubscriptionData) const;
 
 protected:
     /// Serial number of whiteboard
@@ -866,7 +876,7 @@ protected:
     StreamPool* mpStreamPool;
 
     /// Resource tree instance
-    ResourceTree mResourceTree;
+    internal::ResourceTree mResourceTree;
 
     /// Registry for binded providers
     ProviderRegistry* mpProviderRegistry;
@@ -926,12 +936,12 @@ inline PathParameterCache& Whiteboard::getPathParameterCache()
 }
 #endif
 
-inline ResourceTree& Whiteboard::getResourceTree()
+inline internal::ResourceTree& Whiteboard::getResourceTree()
 {
     return mResourceTree;
 }
 
-inline const ResourceTree& Whiteboard::getResourceTree() const
+inline const internal::ResourceTree& Whiteboard::getResourceTree() const
 {
     return mResourceTree;
 }

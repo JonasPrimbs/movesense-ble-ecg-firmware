@@ -177,7 +177,7 @@ public:
     /** Construct a new scoped Dpc with execution context, class instance and method call. */
     template <class Ty> DpcFunctor(const whiteboard::ExecutionContextId id, Ty* pInstance, void (Ty::*pFnMemberFunction)())
     {
-        FunctorImpl<Ty>* callTarget = New<FunctorImpl<Ty>, Ty*, void (Ty::*)()>(pInstance, pFnMemberFunction);
+        FunctorImpl<Ty>* callTarget = NewAligned<FunctorImpl<Ty>, Ty*, void (Ty::*)()>(pInstance, pFnMemberFunction);
         callTarget->mpDpc = mpDpc = Dpc::allocate(id, *callTarget);
     }
 
@@ -189,7 +189,7 @@ public:
     {
         if (mpDpc)
         {
-            Delete(mpDpc->functorPtr());
+            DeleteAligned(mpDpc->functorPtr());
             mpDpc->deallocate();
             mpDpc = NULL;
         }
@@ -257,7 +257,7 @@ private:
         {
             WB_DEBUG_ASSERT(mpDpc->isThisThread(WbThreadGetCurrent()));
             mFunctionCall();
-            Delete(this);
+            DeleteAligned(this);
         }
 
     private:
@@ -303,14 +303,14 @@ private:
     template <typename FunctionCallType>
     static void asyncCall(ExecutionContextId executionContextId, const FunctionCallType& rFunctionCall)
     {
-        New<AsyncDpcFunctionCallWrapper<FunctionCallType>, ExecutionContextId, const FunctionCallType&>(
+        NewAligned<AsyncDpcFunctionCallWrapper<FunctionCallType>, ExecutionContextId, const FunctionCallType&>(
             executionContextId, rFunctionCall);
     }
 
     template <typename FunctionCallType>
     static void asyncCall(ExecutionContextId executionContextId, Whiteboard& rWhiteboard, const FunctionCallType& rFunctionCall)
     {
-        New<AsyncDpcFunctionCallWrapper<FunctionCallType>, ExecutionContextId, Whiteboard&, const FunctionCallType&>(
+        NewAligned<AsyncDpcFunctionCallWrapper<FunctionCallType>, ExecutionContextId, Whiteboard&, const FunctionCallType&>(
             executionContextId, rWhiteboard, rFunctionCall);
     }
 

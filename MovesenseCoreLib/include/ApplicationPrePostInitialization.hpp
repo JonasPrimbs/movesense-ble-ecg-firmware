@@ -3,12 +3,15 @@
 
 #include <whiteboard/integration/port.h>
 #include "common/core/WhiteboardAddress.hpp"
+#include "movesense.h"
 
 /** Application initialization parameters */
 struct ApplicationInitializationParameters_t
 {
     WhiteboardAddress_t whiteboardAddress;
     const char* productName;
+    bool enableSerialComm;
+    bool enableBLEComm;
 };
 
 /** Initialization code that should be called just before application is started 

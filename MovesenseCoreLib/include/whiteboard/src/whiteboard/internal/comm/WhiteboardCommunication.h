@@ -479,9 +479,10 @@ protected:
     *
     * @param eventsPending - not used
     *
+    * @param eventsPending A value indicating whether more events are waiting in the queue
     * @return Options that guide further event prosessing.
     */
-    virtual metadata::EventProcessorOptions eventStateProcess(bool eventsPending) OVERRIDE;
+    virtual ExecutionContext::EventProcessorOptions eventStateProcess(bool eventsPending) OVERRIDE;
 
 private:
     /** Wakes the state machine processor from its current sleep */
@@ -706,7 +707,7 @@ private:
 
 private:
     /** Event processor settings */
-    const metadata::ExecutionContextSettings mEventProcessorSettings;
+    const metadata::ExecutionContext mEventProcessorSettings;
 
     /** The event processor. */
     EventProcessor mEventProcessor;

@@ -2,6 +2,7 @@
 // Copyright (c) Suunto Oy 2015. All rights reserved.
 
 #include <algorithm>
+#include <string>
 #include <vector>
 
 template<class TContainer, class TComparator>

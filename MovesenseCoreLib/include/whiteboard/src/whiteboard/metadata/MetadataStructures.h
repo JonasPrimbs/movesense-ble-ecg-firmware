@@ -3,25 +3,106 @@
 Copyright (c) Suunto Oy 2014.
 All rights reserved.
 ******************************************************************************/
+#include "whiteboard/integration/shared/types.h"
+#include "whiteboard/integration/shared/infinite.h"
+#include "whiteboard/integration/shared/templateMetaprogramming.h"
 #include "whiteboard/Functor.h"
-#include "whiteboard/Identifiers.h"
-#include "whiteboard/Request.h"
-#include "whiteboard/Result.h"
 #include "quantity/quantity/quantity.h"
 
 namespace whiteboard
 {
 
 // Forward declarations
-class IExecutionContext;
 class Value;
 class ParameterList;
-struct MetadataMap;
+struct ClientId;
+struct ResourceId;
+
+/** Type that can be used to identify resources of single whiteboard. */
+typedef uint16 LocalResourceId;
+
+/** Type that is used to identify clients of single whiteboard. */
+typedef uint16 LocalClientId;
+
+/** Type that is used to identify providers of single whiteboard. */
+typedef uint16 LocalProviderId;
+
+/** Type that is used to identify subscriptions of single whiteboard. */
+typedef uint16 LocalSubscriptionId;
+
+/** Type that is used to identify data types of single whiteboard. */
+typedef uint16 LocalDataTypeId;
+
+/** ID of invalid request */
+static const LocalDataTypeId ID_INVALID_LOCAL_DATA_TYPE = 0xffff;
+
+/** Type that is used to identify execution context. Unique for
+local application / whiteboard. */
+typedef uint8 ExecutionContextId;
+
+/** Maximum number of execution context. Note packed structures below. */
+#define WB_MAX_EXECUTION_CONTEXTS 15
+
+/** Execution context ID that is used to indicate invalid execution context.
+* Used also to mark remote execution contexts */
+static const ExecutionContextId ID_INVALID_EXECUTION_CONTEXT = WB_MAX_EXECUTION_CONTEXTS;
+
+/** Type that is used to identify security tags. */
+typedef uint8 SecurityTagId;
+
+/** Index of a parameter in a parameter list */
+typedef uint8 ParameterIndex;
+
+/** ID of invalid request */
+static const ParameterIndex INVALID_PARAMETER_INDEX = 0xff;
+
+/* Value types. Be careful when making changes to this enumeration
+* because most changes will break compatibility as this needs to
+* match fixed data type IDs. */
+enum ValueType
+{
+    WB_TYPE_NONE = 0,
+
+    // Scalar types
+    WB_TYPE_BOOL,
+    WB_TYPE_INT8,
+    WB_TYPE_UINT8,
+    WB_TYPE_INT16,
+    WB_TYPE_UINT16,
+    WB_TYPE_INT32,
+    WB_TYPE_UINT32,
+    WB_TYPE_INT64,
+    WB_TYPE_UINT64,
+    WB_TYPE_FLOAT,
+    WB_TYPE_DOUBLE,
+    WB_TYPE_STRING,
+
+    WB_TYPE_BYTE_STREAM,
+    WB_TYPE_STRUCTURE,
+
+    // Some book keeping
+    WB_TYPE_NUMBER_OF_TYPES,
+    WB_TYPE_LAST_SCALAR = WB_TYPE_STRING
+};
+
+/** Type of a request */
+enum RequestType
+{
+    REQUEST_GET,
+    REQUEST_PUT,
+    REQUEST_POST,
+    REQUEST_DELETE,
+    REQUEST_SUBSCRIBE,
+    REQUEST_UNSUBSCRIBE,
+
+    REQUEST_GET_RESOURCE,
+    REQUEST_RELEASE_RESOURCE,
+
+    NUMBER_OF_REQUEST_TYPES
+};
 
 namespace metadata
 {
-
-// TODO: Use WB structure packing
 
 /** Reference to a security tag. */
 typedef uint8 SecurityTagId;
@@ -124,9 +205,6 @@ static const MountPointId INVALID_MOUNT_POINT = 0xff;
 /** Bit mask of security tags */
 typedef uint32 SecurityMask;
 
-/** Response code that is used to indicate notifications */
-static const Result NOTIFICATION = static_cast<Result>(0);
-
 /** Structure that stores security tag related meta data */
 struct SecurityTag
 {
@@ -143,13 +221,18 @@ enum ExecutionContextPriority
     EXEC_CTX_PRIORITY_HIGH
 };
 
-/** Structure that stores execution context settings */
-struct ExecutionContextSettings
+/** Structure that stores execution context information */
+struct ExecutionContext
 {
+    /** Name of the execution context */
+    StringId nameId;
+
     /** Maximum number of DPCs allocated in execution context */
     uint8 numberOfDpcs;
+
     /** Maximum number of request events allocated in execution context */
     uint8 numberOfRequests;
+    
     /** Maximum number of response events allocated in execution context */
     uint8 numberOfResponses;
 
@@ -171,82 +254,17 @@ struct ExecutionContextSettings
 
     /** Security rights of the execution context */
     SecurityMask securityMask;
+
+    /** Checks whether this is only a forward declaration */
+    inline bool isForwardDeclaration() const
+    {
+        return !externalThread && (stackSize == 0);
+    }
 };
 
 #define ALL_ACCESS UINT32_MAX
-#define INIT_EXEC_CTX_SETTINGS(numberOfDpcs, numberOfRequests, numberOfResponses, externalThread, priority, stackSize, securityMask) \
-    { numberOfDpcs, numberOfRequests, numberOfResponses, externalThread  ? 1 : 0, priority, 0, stackSize, securityMask }
-
-/** Structure that stores execution context related meta data */
-#if 0
-struct ExecutionContext
-{
-    /** ID of execution context name */
-    StringId nameId;
-
-    /** Settings */
-    ExecutionContextSettings settings;
-};
-#endif
-
-/** Function prototype for filtering incoming update notifications before local message dispatching.
- * Note that this function can be called simultaneously from multiple threads */
-typedef IFunctor4<bool, whiteboard::ClientId, whiteboard::ResourceId, const whiteboard::Value&, const whiteboard::ParameterList&>
-    ExecutionContextNoticationFilter;
-
-/** Option that guide how events should be processed */
-struct EventProcessorOptions
-{
-    /** Constructor */
-    inline EventProcessorOptions(uint32 _timeout, bool _doEventProcessing)
-        : timeout(WB_MIN(_timeout, MAXIMUM_TIMEOUT)), doEventProcessing(_doEventProcessing ? 1 : 0)
-    {
-    }
-
-    /** Maximum number of milliseconds to wait for new DPCs and events before calling eventStateProcess
-        * again. Use DEFAULT_TIMEOUT to use system default.
-        *
-        * @note This value specifies maximum only when there is no events. No maximum can be given for how long
-        *       single event is processed.
-        */
-    uint32 timeout : 31;
-
-    /** A flag that indicates that events can be processed for the duration of given timeout.
-        *
-        * @note DPCs are always processed even if this flag is cleared
-        */
-    uint32 doEventProcessing : 1;
-
-    /** Maximum timeout value */
-    static const uint32 MAXIMUM_TIMEOUT = WB_MIN((1u << 31) - 1, WB_INFINITE) - 1;
-};
-
-/** Function prototype for worker functions that perform custom processing between
- *  Whiteboard events handling.
- *
- *  @tparam bool : eventsPending; Does the execition context has events pending
- */
-typedef IFunctor1<EventProcessorOptions, bool> ExecutionContextStateProcessor;
-
-/** Execution context information */
-struct ExecutionContextInfo
-{
-    /** Name of the execution context */
-    const char* const name;
-    
-    /** Execution context settings */
-    const metadata::ExecutionContextSettings settings;
-
-    /** Pointer to function that is used to filter update notifications before dispatching. */
-    ExecutionContextNoticationFilter* pNotificationFilter;
-
-    /** Pointer to function that that performs custom processing between
-     *  Whiteboard events handling. */
-    ExecutionContextStateProcessor* pStateProcessor;
-};
-
-#define INIT_EXEC_CTX_INFO(name, numberOfDpcs, numberOfRequests, numberOfResponses, externalThread, priority, stackSize, securityMask) \
-    { name, { numberOfDpcs, numberOfRequests, numberOfResponses, externalThread  ? 1 : 0, priority, 0, stackSize, securityMask }, NULL, NULL }
+#define INIT_EXEC_CTX_METADATA(nameId, numberOfDpcs, numberOfRequests, numberOfResponses, externalThread, priority, stackSize, securityMask) \
+    { nameId, numberOfDpcs, numberOfRequests, numberOfResponses, externalThread ? 1 : 0, priority, 0, stackSize, securityMask }
 
 /** Structure that stores scalar data type related meta data */
 struct ScalarType
@@ -454,7 +472,6 @@ struct DataType
     */
     inline ScalarType& getScalarDataType()
     {
-        WB_ASSERT(type == DATATYPE_SCALAR);
         return *reinterpret_cast<ScalarType*>(data);
     }
 
@@ -464,7 +481,6 @@ struct DataType
     */
     inline const ScalarType& getScalarDataType() const
     {
-        WB_ASSERT(type == DATATYPE_SCALAR);
         return *reinterpret_cast<const ScalarType*>(data);
     }
 
@@ -474,7 +490,6 @@ struct DataType
     */
     inline NamedType& getNamedDataType()
     {
-        WB_ASSERT(type == DATATYPE_NAMED);
         return *reinterpret_cast<NamedType*>(data);
     }
 
@@ -484,7 +499,6 @@ struct DataType
     */
     inline const NamedType& getNamedDataType() const
     {
-        WB_ASSERT(type == DATATYPE_NAMED);
         return *reinterpret_cast<const NamedType*>(data);
     }
 
@@ -494,7 +508,6 @@ struct DataType
     */
     inline ArrayType& getArrayDataType()
     {
-        WB_ASSERT(type == DATATYPE_ARRAY);
         return *reinterpret_cast<ArrayType*>(data);
     }
 
@@ -504,7 +517,6 @@ struct DataType
     */
     inline const ArrayType& getArrayDataType() const
     {
-        WB_ASSERT(type == DATATYPE_ARRAY);
         return *reinterpret_cast<const ArrayType*>(data);
     }
 
@@ -514,7 +526,6 @@ struct DataType
     */
     inline StructureType& getStructureDataType()
     {
-        WB_ASSERT(type == DATATYPE_STRUCTURE);
         return *reinterpret_cast<StructureType*>(data);
     }
 
@@ -524,7 +535,6 @@ struct DataType
     */
     inline const StructureType& getStructureDataType() const
     {
-        WB_ASSERT(type == DATATYPE_STRUCTURE);
         return *reinterpret_cast<const StructureType*>(data);
     }
 
@@ -534,7 +544,6 @@ struct DataType
     */
     inline EnumerationType& getEnumerationDataType()
     {
-        WB_ASSERT(type == DATATYPE_ENUMERATION);
         return *reinterpret_cast<EnumerationType*>(data);
     }
 
@@ -544,7 +553,6 @@ struct DataType
     */
     inline const EnumerationType& getEnumerationDataType() const
     {
-        WB_ASSERT(type == DATATYPE_ENUMERATION);
         return *reinterpret_cast<const EnumerationType*>(data);
     }
 };
@@ -669,7 +677,6 @@ struct OperationList
      */
     inline OperationId getOperationIdByType(RequestType type) const
     {
-        WB_DEBUG_ASSERT(type < ELEMENTS(operationIds));
         return operationIds[type];
     }
 
@@ -753,6 +760,7 @@ struct MountPoint
     MountPointId mountPointId;
 };
 
+/** Structure that stores symbolic link information */
 struct ConstSymbolicLink
 {
     /** Name of the resource */
@@ -808,6 +816,15 @@ struct ResourceTreeNode
     /** Data storage for different tree node types. uint16 ensures correct alignment.
     */
     uint16 data[(sizeof(ResourceTreeNodeContainer) + sizeof(uint16) - 1) / sizeof(uint16)];
+
+    /** Checks whether this node is a dummy place holder
+    *
+    * @return true if dummy, false if one of the other node types
+    */
+    inline bool isDummy() const
+    {
+        return isStandardPath() && reinterpret_cast<const Path*>(data)->nameId == INVALID_STRING;
+    }
 
     /** Checks whether this node describes a standard path node
     *
@@ -874,7 +891,6 @@ struct ResourceTreeNode
     */
     inline Path& getPath()
     {
-        WB_DEBUG_ASSERT(!isMountPoint());
         return *reinterpret_cast<Path*>(data);
     }
 
@@ -884,7 +900,6 @@ struct ResourceTreeNode
     */
     inline const Path& getPath() const
     {
-        WB_DEBUG_ASSERT(!isMountPoint());
         return *reinterpret_cast<const Path*>(data);
     }
 
@@ -894,7 +909,6 @@ struct ResourceTreeNode
     */
     inline MountPoint& getMountPoint()
     {
-        WB_DEBUG_ASSERT(isMountPoint());
         return *reinterpret_cast<MountPoint*>(data);
     }
 
@@ -904,8 +918,16 @@ struct ResourceTreeNode
     */
     inline const MountPoint& getMountPoint() const
     {
-        WB_DEBUG_ASSERT(isMountPoint());
         return *reinterpret_cast<const MountPoint*>(data);
+    }
+
+    /** Gets const symbolic link node type
+    *
+    * @return Reference to a const symbolic link node
+    */
+    inline ConstSymbolicLink& getConstSymLink()
+    {
+        return *reinterpret_cast<ConstSymbolicLink*>(data);
     }
 
     /** Gets const symbolic link node type
@@ -914,22 +936,152 @@ struct ResourceTreeNode
     */
     inline const ConstSymbolicLink& getConstSymLink() const
     {
-        WB_DEBUG_ASSERT(isConstSymLink());
         return *reinterpret_cast<const ConstSymbolicLink*>(data);
     }
 };
 
-/** Structure that stores resource tree related data */
-struct ResourceTree
+/** Offset from start of the metadata blob */
+typedef uint32 MetadataBlobOffset;
+
+/** Typedef for a number of items in a metadata list */
+typedef uint16 MetadataBlobItemCount;
+
+/** Magic constant used to identify resource tree blob */
+static const uint32 RESOURCE_TREE_MAGIC = WB_BE_TAG('W', 'B', 'R', '0');
+
+/** Maximum alignment of any metadata structure */
+#define WB_METADATA_MAX_ALIGNMENT 4
+
+/** Structure that stores metadata blob related information */
+struct MetadataBlobHeader
 { 
-    const MetadataMap* pMetadataMap;
-    LocalResourceId numberOfResources;
-    const metadata::ResourceTreeNode* pTreeNodes;
-    size_t numberOfSparseMapEntries;
-    const LocalResourceId* pSparseMap;
-    size_t numberOfMountPoints;
-    const MountPoint* pMountPoints;
+    /** Magic constant used to identify resource tree blob */
+    uint32 magic;
+
+    /** Size of the resource tree blob (including this struct) */
+    uint32 size;
+
+    /** Hash of the metadata */
+    uint32 hash;
+
+    /** String map */
+    MetadataBlobOffset offsetToStringMap;
+
+    /** List of execution contexts */
+    MetadataBlobOffset offsetToExecutionContexts;
+
+    /** List of properties */
+    MetadataBlobOffset offsetToProperties;
+
+    /** List of property lists */
+    MetadataBlobOffset offsetToPropertyLists;
+
+    /** List of enumeration items */
+    MetadataBlobOffset offsetToEnumerationItems;
+
+    /** List of data types */
+    MetadataBlobOffset offsetToDataTypes;
+
+    /** List of data type sparse map entries */
+    MetadataBlobOffset offsetToDataTypeSparseMap;
+
+    /** List of parameters */
+    MetadataBlobOffset offsetToParameters;
+
+    /** List of parameter lists */
+    MetadataBlobOffset offsetToParameterLists;
+
+    /** List of responses */
+    MetadataBlobOffset offsetToResponses;
+
+    /** List of response lists */
+    MetadataBlobOffset offsetToResponseLists;
+
+    /** List of operations */
+    MetadataBlobOffset offsetToOperations;
+
+    /** List of operation lists */
+    MetadataBlobOffset offsetToOperationLists;
+
+    /** List of security tags */
+    MetadataBlobOffset offsetToSecurityTags;
+
+    /** List of resource tree nodes */
+    MetadataBlobOffset offsetToResourceTreeNodes;
+
+    /** List of mount points */
+    MetadataBlobOffset offsetToMountPoints;
+
+    /** Resource tree sparse map */
+    MetadataBlobOffset offsetToResourceTreeSparseMap;
+
+    /** Number of characters in string map */
+    MetadataBlobItemCount stringMapLength;
+
+    /** Number of execution contexts */
+    MetadataBlobItemCount numberOfExecutionContexts;
+
+    /** Number of properties */
+    MetadataBlobItemCount numberOfProperties;
+
+    /** Number of entries in property list map */
+    MetadataBlobItemCount numberOfPropertyListMapEntries;
+
+    /** Number of enumeration items */
+    MetadataBlobItemCount numberOfEnumerationItems;
+
+    /** Number of data types */
+    MetadataBlobItemCount numberOfDataTypes;
+
+    /** Number of entries in sparce data type map */
+    MetadataBlobItemCount numberOfDataTypeSparseMapEntries;
+
+    /** Number of parameters */
+    MetadataBlobItemCount numberOfParameters;
+
+    /** Number of entries in parameter list map */
+    MetadataBlobItemCount numberOfParameterListMapEntries;
+
+    /** Number of responses */
+    MetadataBlobItemCount numberOfResponses;
+
+    /** Number of entries in response list map */
+    MetadataBlobItemCount numberOfResponseListMapEntries;
+
+    /** Number of operations */
+    MetadataBlobItemCount numberOfOperations;
+
+    /** Number of operation lists */
+    MetadataBlobItemCount numberOfOperationLists;
+
+    /** Number of security tags */
+    MetadataBlobItemCount numberOfSecurityTags;
+
+    /** Number of nodes in the resource tree */
+    MetadataBlobItemCount numberOfResourceTreeNodes;
+
+    /** Number of resource tree sparse map entries */
+    MetadataBlobItemCount numberOfResourceTreeSparseMapEntries;
+    
+    /** Number of mount points */
+    MetadataBlobItemCount numberOfMountPoints;
 };
+
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(SecurityTag) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment1);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ExecutionContext) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment2);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(Property) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment3);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(PropertyId) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment4);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(EnumerationItem) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment5);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(DataType) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment6);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(DataTypeId) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment7);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(Parameter) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment8);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ParameterId) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment9);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(Response) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment10);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ResponseId) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment11);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(Operation) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment12);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(OperationId) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment13);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ResourceTreeNode) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment14);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(LocalResourceId) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment15);
 
 } // namespace metadata
 } // namespace whiteboard

@@ -81,3 +81,7 @@ set(LIBRARY_GROUP_END "-Wl,--end-group")
 
 # We have to manually add c++ and math libraries
 set(LIBRARIES ${LIBRARIES} m stdc++)
+
+# Set stack size definition
+add_definitions("-D__STACK_SIZE=1024")
+add_definitions("-D__HEAP_SIZE=0")

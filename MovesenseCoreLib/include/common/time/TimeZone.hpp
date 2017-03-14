@@ -319,7 +319,7 @@ namespace nea
     X3_(WS, Apia, Australia, Samoa, Apia, 13, 13)                                                  \
     X3_(SB, Guadalcanal, Australia, Solomon Islands, Honiara, 11, 0)                               \
     X3_(TK, Fakaofo, Australia, Tokelau, Fakaofo, 13, 0)                                           \
-    X3_(TO, Tongatapu, Australia, Tonga, Nukualofa, 13, 0)                                         \
+    X3_(TO, Tongatapu, Australia, Tonga, Nukualofa, 13, 14)                                        \
     X3_(TV, Funafuti, Australia, Tuvalu, Funafuti, 12, 0)                                          \
     X3_(UM, Midway, Australia, USA, Midway Atoll, -11, 0)                                          \
     X3_(UM, Johnston, Australia, USA, Johnston Atoll, -10, 0)                                      \
@@ -335,6 +335,7 @@ namespace nea
     X3_(BG, Sofia, Europe, Bulgaria, Sofia, 2, 1)                                                  \
     X3_(HR, Zagreb, Europe, Croatia, Zagreb, 1, 1)                                                 \
     X3_(CZ, Prague, Europe, Czech Republic, Prague, 1, 1)                                          \
+    X3_(CY, Kyrenia, Europe, Cyprus, Kyrenia, 3, 0)                                                \
     X3_(CY, Nicosia, Europe, Cyprus, Nicosia, 2, 1)                                                \
     X3_(DK, Copenhagen, Europe, Denmark, Copenhagen, 1, 1)                                         \
     X3_(EE, Tallinn, Europe, Estonia, Tallinn, 2, 1)                                               \
@@ -380,7 +381,7 @@ namespace nea
     X3_(SJ, Longyearbyen, Europe, Svalbard, Longyearbyen, 1, 1)                                    \
     X3_(SE, Stockholm, Europe, Sweden, Stockholm, 1, 1)                                            \
     X3_(CH, Zurich, Europe, Switzerland, Zürich, 1, 1)                                             \
-    X3_(TR, Istanbul, Europe, Turkey, Istanbul, 2, 1)                                              \
+    X3_(TR, Istanbul, Europe, Turkey, Istanbul, 3, 0)                                              \
     X3_(UA, Kiev, Europe, Ukraine, Kiev, 2, 1)                                                     \
     X3_(RU, Simferopol, Europe, Ukraine, Simferopol, 3, 0)                                         \
     X3_(GB, London, Europe, United Kingdom, London, 0, 1)                                          \
@@ -393,45 +394,45 @@ namespace nea
     X3_(MU, Mauritius, Indian, Mauritius, Port Louis, 4, 0)                                        \
     X3_(RE, Reunion, Indian, Réunion, Saint-Denis, 4, 0)                                           \
     X3_(SC, Mahe, Indian, Seychelles, Mahé, 4, 0)                                                  \
-    X3_(UT, M1200, UTC, UTC, -12:00, -12, 0)                                                       \
-    X3_(UT, M1100, UTC, UTC, -11:00, -11, 0)                                                       \
-    X3_(UT, M1000, UTC, UTC, -10:00, -10, 0)                                                       \
-    X3_(UT, M0930, UTC, UTC, -09:30, -9.5, 0)                                                      \
-    X3_(UT, M0900, UTC, UTC, -09:00, -9, 0)                                                        \
-    X3_(UT, M0800, UTC, UTC, -08:00, -8, 0)                                                        \
-    X3_(UT, M0700, UTC, UTC, -07:00, -7, 0)                                                        \
-    X3_(UT, M0600, UTC, UTC, -06:00, -6, 0)                                                        \
-    X3_(UT, M0500, UTC, UTC, -05:00, -5, 0)                                                        \
-    X3_(UT, M0400, UTC, UTC, -04:00, -4, 0)                                                        \
-    X3_(UT, M0330, UTC, UTC, -03:30, -3.5, 0)                                                      \
-    X3_(UT, M0300, UTC, UTC, -03:00, -3, 0)                                                        \
-    X3_(UT, M0200, UTC, UTC, -02:00, -2, 0)                                                        \
-    X3_(UT, M0100, UTC, UTC, -01:00, -1, 0)                                                        \
-    X3_(UT, P0000, UTC, UTC, +00:00, 0, 0)                                                         \
-    X3_(UT, P0100, UTC, UTC, +01:00, 1, 0)                                                         \
-    X3_(UT, P0200, UTC, UTC, +02:00, 2, 0)                                                         \
-    X3_(UT, P0300, UTC, UTC, +03:00, 3, 0)                                                         \
-    X3_(UT, P0330, UTC, UTC, +03:30, 3.5, 0)                                                       \
-    X3_(UT, P0400, UTC, UTC, +04:00, 4, 0)                                                         \
-    X3_(UT, P0430, UTC, UTC, +04:30, 4.5, 0)                                                       \
-    X3_(UT, P0500, UTC, UTC, +05:00, 5, 0)                                                         \
-    X3_(UT, P0530, UTC, UTC, +05:30, 5.5, 0)                                                       \
-    X3_(UT, P0545, UTC, UTC, +05:45, 5.75, 0)                                                      \
-    X3_(UT, P0600, UTC, UTC, +06:00, 6, 0)                                                         \
-    X3_(UT, P0630, UTC, UTC, +06:30, 6.5, 0)                                                       \
-    X3_(UT, P0700, UTC, UTC, +07:00, 7, 0)                                                         \
-    X3_(UT, P0800, UTC, UTC, +08:00, 8, 0)                                                         \
-    X3_(UT, P0830, UTC, UTC, +08:30, 8.5, 0)                                                       \
-    X3_(UT, P0845, UTC, UTC, +08:45, 8.75, 0)                                                      \
-    X3_(UT, P0900, UTC, UTC, +09:00, 9, 0)                                                         \
-    X3_(UT, P0930, UTC, UTC, +09:30, 9.5, 0)                                                       \
-    X3_(UT, P1000, UTC, UTC, +10:00, 10, 0)                                                        \
-    X3_(UT, P1030, UTC, UTC, +10:30, 10.5, 0)                                                      \
-    X3_(UT, P1100, UTC, UTC, +11:00, 11, 0)                                                        \
-    X3_(UT, P1200, UTC, UTC, +12:00, 12, 0)                                                        \
-    X3_(UT, P1245, UTC, UTC, +12:45, 12.75, 0)                                                     \
-    X3_(UT, P1300, UTC, UTC, +13:00, 13, 0)                                                        \
-    X3_(UT, P1400, UTC, UTC, +14:00, 14, 0)
+    X3_(UT, M1200, UTC, UTC, UTC -12:00, -12, 0)                                                   \
+    X3_(UT, M1100, UTC, UTC, UTC -11:00, -11, 0)                                                   \
+    X3_(UT, M1000, UTC, UTC, UTC -10:00, -10, 0)                                                   \
+    X3_(UT, M0930, UTC, UTC, UTC -09:30, -9.5, 0)                                                  \
+    X3_(UT, M0900, UTC, UTC, UTC -09:00, -9, 0)                                                    \
+    X3_(UT, M0800, UTC, UTC, UTC -08:00, -8, 0)                                                    \
+    X3_(UT, M0700, UTC, UTC, UTC -07:00, -7, 0)                                                    \
+    X3_(UT, M0600, UTC, UTC, UTC -06:00, -6, 0)                                                    \
+    X3_(UT, M0500, UTC, UTC, UTC -05:00, -5, 0)                                                    \
+    X3_(UT, M0400, UTC, UTC, UTC -04:00, -4, 0)                                                    \
+    X3_(UT, M0330, UTC, UTC, UTC -03:30, -3.5, 0)                                                  \
+    X3_(UT, M0300, UTC, UTC, UTC -03:00, -3, 0)                                                    \
+    X3_(UT, M0200, UTC, UTC, UTC -02:00, -2, 0)                                                    \
+    X3_(UT, M0100, UTC, UTC, UTC -01:00, -1, 0)                                                    \
+    X3_(UT, P0000, UTC, UTC, UTC +00:00, 0, 0)                                                     \
+    X3_(UT, P0100, UTC, UTC, UTC +01:00, 1, 0)                                                     \
+    X3_(UT, P0200, UTC, UTC, UTC +02:00, 2, 0)                                                     \
+    X3_(UT, P0300, UTC, UTC, UTC +03:00, 3, 0)                                                     \
+    X3_(UT, P0330, UTC, UTC, UTC +03:30, 3.5, 0)                                                   \
+    X3_(UT, P0400, UTC, UTC, UTC +04:00, 4, 0)                                                     \
+    X3_(UT, P0430, UTC, UTC, UTC +04:30, 4.5, 0)                                                   \
+    X3_(UT, P0500, UTC, UTC, UTC +05:00, 5, 0)                                                     \
+    X3_(UT, P0530, UTC, UTC, UTC +05:30, 5.5, 0)                                                   \
+    X3_(UT, P0545, UTC, UTC, UTC +05:45, 5.75, 0)                                                  \
+    X3_(UT, P0600, UTC, UTC, UTC +06:00, 6, 0)                                                     \
+    X3_(UT, P0630, UTC, UTC, UTC +06:30, 6.5, 0)                                                   \
+    X3_(UT, P0700, UTC, UTC, UTC +07:00, 7, 0)                                                     \
+    X3_(UT, P0800, UTC, UTC, UTC +08:00, 8, 0)                                                     \
+    X3_(UT, P0830, UTC, UTC, UTC +08:30, 8.5, 0)                                                   \
+    X3_(UT, P0845, UTC, UTC, UTC +08:45, 8.75, 0)                                                  \
+    X3_(UT, P0900, UTC, UTC, UTC +09:00, 9, 0)                                                     \
+    X3_(UT, P0930, UTC, UTC, UTC +09:30, 9.5, 0)                                                   \
+    X3_(UT, P1000, UTC, UTC, UTC +10:00, 10, 0)                                                    \
+    X3_(UT, P1030, UTC, UTC, UTC +10:30, 10.5, 0)                                                  \
+    X3_(UT, P1100, UTC, UTC, UTC +11:00, 11, 0)                                                    \
+    X3_(UT, P1200, UTC, UTC, UTC +12:00, 12, 0)                                                    \
+    X3_(UT, P1245, UTC, UTC, UTC +12:45, 12.75, 0)                                                 \
+    X3_(UT, P1300, UTC, UTC, UTC +13:00, 13, 0)                                                    \
+    X3_(UT, P1400, UTC, UTC, UTC +14:00, 14, 0)                                                    \
 
 class TimeZone
 {

@@ -15,9 +15,11 @@ static const unsigned short DEV_SYSTEM_LPFILESYSTEMVERSION_LID = 9732;
 static const unsigned short DEV_SYSTEM_LPUPDATEPROGRESS_LID = 9733;
 static const unsigned short DEV_SYSTEM_MEMORY_LID = 18446744073709551615;
 static const unsigned short DEV_SYSTEM_MEMORY_FREE_LID = 9734;
-static const unsigned short DEV_SYSTEM_MEMORY_SIZE_LID = 9735;
-static const unsigned short DEV_SYSTEM_MEMORY_USED_LID = 9736;
-static const unsigned short DEV_SYSTEM_UPDATELPAPP_LID = 9737;
-static const unsigned short DEV_SYSTEM_UPDATELPDALI_LID = 9738;
-static const unsigned short DEV_SYSTEM_UPDATELPFILESYSTEM_LID = 9739;
+static const unsigned short DEV_SYSTEM_MEMORY_ISSUFFICIENT_LID = 9735;
+static const unsigned short DEV_SYSTEM_MEMORY_LOWESTFREE_LID = 9736;
+static const unsigned short DEV_SYSTEM_MEMORY_SIZE_LID = 9737;
+static const unsigned short DEV_SYSTEM_MEMORY_USED_LID = 9738;
+static const unsigned short DEV_SYSTEM_UPDATELPAPP_LID = 9739;
+static const unsigned short DEV_SYSTEM_UPDATELPDALI_LID = 9740;
+static const unsigned short DEV_SYSTEM_UPDATELPFILESYSTEM_LID = 9741;
 

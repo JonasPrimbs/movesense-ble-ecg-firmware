@@ -12,7 +12,7 @@ namespace whiteboard
 // Forward declarations
 class ParameterList;
 class Value;
-struct MetadataMap;
+class MetadataMap;
 
 /** Maximum length of resource name */
 static const int MAX_RESOURCE_NAME_LENGTH = 64;

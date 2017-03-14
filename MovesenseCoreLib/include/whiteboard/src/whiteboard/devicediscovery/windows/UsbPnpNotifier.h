@@ -41,7 +41,6 @@ private: // Implementation
 
     std::unique_ptr<HWND, WindowDeleter> createHiddenWindow() const;
     std::unique_ptr<VOID, NotifierDeleter> registerNotification(HWND hWnd);
-    LRESULT handleCallback(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
     static LRESULT CALLBACK callback(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 

@@ -4,6 +4,8 @@
 #include "whiteboard/metadata/MetadataBuilder.h"
 #include "whiteboard/Initialization.h"
 
+#if WB_UNITTEST_BUILD
+
 namespace whiteboard
 {
 
@@ -105,7 +107,7 @@ private:
     Whiteboard& mrWhiteboard;
     ExecutionContextId mExecutionContextId;
     LocalResourceId mLocalResourceId;
-    ResourceSubtree* mpResourceSubtree;
+    MetadataMap* mpMetadataMap;
 };
 
 /**
@@ -134,3 +136,5 @@ public:
 };
 
 } // namespace whiteboard
+
+#endif

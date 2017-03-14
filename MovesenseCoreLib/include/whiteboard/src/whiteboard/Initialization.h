@@ -4,7 +4,13 @@
     All rights reserved.
 ******************************************************************************/
 
-#include "integration/port.h"
+#include "whiteboard/integration/port.h"
+#include "whiteboard/ResourceTree.h"
+
+// Metadata of Whiteboard resources. This may contain also embedded application resources,
+// which is more optimal than having a separate resource tree for Whiteboard and application.
+// This should be generated during application build and is therefore declared in this header.
+extern const whiteboard::MetadataMap WbMetadata;
 
 namespace whiteboard
 {
@@ -113,8 +119,14 @@ struct Config
 *
 * @param serialNumber Serial number to use
 * @param rConfiguration Runtime configuration to use
+* @param rMetadata Metadata of the Whiteboard.
+* @param hookInstaller Optional. Hook installer function.
 */
-WB_API void initialize(const char* serialNumber, const Config& rConfiguration);
+WB_API void initialize(
+    const char* serialNumber, 
+    const Config& rConfiguration,
+    const whiteboard::MetadataMap& rMetadata = WbMetadata,
+    ResourceTree::HookInstallerFunc* hookInstaller = NULL);
 
 /** Shuts down whiteboard library
 */

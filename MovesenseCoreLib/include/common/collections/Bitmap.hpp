@@ -65,18 +65,18 @@ public:
     uint32 clearAtomic(uint32 mask)
     {
         uint32 oldBits;
-//#ifndef __ICCARM__ TODO: Evaluate is this optimization really needed
+#ifndef __ICCARM__
         uint32 newBits;
 
         do {
             oldBits = mBits;
             newBits = oldBits & ~mask;
         } while (!WbInterlockedCompareAndExchange32(reinterpret_cast<volatile int32*>(&mBits), newBits, oldBits));
-//#else
-//        do {
-//            oldBits = __LDREXW(reinterpret_cast<volatile unsigned long*>(&mBits));
-//        } while (__STREXW(oldBits & ~mask, reinterpret_cast<volatile unsigned long*>(&mBits)));
-//#endif
+#else
+        do {
+            oldBits = __LDREXW(reinterpret_cast<volatile unsigned long*>(&mBits));
+        } while (__STREXW(oldBits & ~mask, reinterpret_cast<volatile unsigned long*>(&mBits)));
+#endif
 
         return oldBits;
     }

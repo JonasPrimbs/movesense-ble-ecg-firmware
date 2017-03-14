@@ -7,136 +7,260 @@ namespace whiteboard
 {
 
 /** Map of read-only resource metadata */
-struct MetadataMap
+class MetadataMap
 {
-    /** Number of strings */
-    size_t mStringMapLength;
+public:
+    /** Constructor 
+     *
+     * @param pMetadataBlob Metadata blob instanse
+     */
+    MetadataMap(const uint32* pMetadataBlob);
 
-    /** String map (id is offset of a string in the map) */
-    const char* mpStringMap;
+    /** Destructor */
+    virtual ~MetadataMap();
 
-    /** Number of properties */
-    size_t mNumberOfProperties;
+    /** Checks validity of the metadata blob 
+    *
+    * @return A value indicating wether the metadata blob i valid
+    */
+    bool isValid() const;
 
-    /** List of properties */
-    const metadata::Property* mpProperties;
+    /// @return The metadata header
+    inline const metadata::MetadataBlobHeader& getMetadataHeader() const
+    {
+        return *reinterpret_cast<const metadata::MetadataBlobHeader*>(mpMetadataBlob);
+    }
 
-    /** Number of property lists */
-    size_t mNumberOfPropertyLists;
+    /// @return number of response lists in the const metadata map
+    inline size_t getStringMapLength() const
+    {
+        return getMetadataHeader().stringMapLength;
+    }
 
-    /** List of property lists */
-    const metadata::PropertyId* mpPropertyLists;
+    /// @return Number of execution contexts
+    inline size_t getNumberOfExecutionContexts() const
+    {
+        return getMetadataHeader().numberOfExecutionContexts;
+    }
 
-    /** Number of enumeration items */
-    size_t mNumberOfEnumerationItems;
+    /// @return Number of security tags in the resource tree
+    inline size_t getNumberOfMountPoints() const
+    {
+        return getMetadataHeader().numberOfMountPoints;
+    }
 
-    /** List of enumeration items */
-    const metadata::EnumerationItem* mpEnumerationItems;
+    /// @return number of strings in the const metadata map
+    size_t countNumberOfStrings() const;
 
-    /** Number of data types */
-    size_t mNumberOfDataTypes;
+    /// @return number of properties in the const metadata map
+    inline size_t getNumberOfProperties() const
+    {
+        return getMetadataHeader().numberOfProperties;
+    }
 
-    /** List of data types */
-    const metadata::DataType* mpDataTypes;
+    /// @return number of property lists in the const metadata map
+    inline size_t getNumberOfPropertyLists() const
+    {
+        return getMetadataHeader().numberOfPropertyListMapEntries;
+    }
 
-    /** Number of entries in sparce data type map */
-    size_t mNumberOfDataTypeSparseMapEntries;
+    /// @return number of enumeration items in the const metadata map
+    inline size_t getNumberOfEnumerationItems() const
+    {
+        return getMetadataHeader().numberOfEnumerationItems;
+    }
 
-    /** List of data type sparse map entries */
-    const metadata::DataTypeId* mpDataTypeSparseMap;
+    /// @return number of data types in the const metadata map
+    inline size_t getNumberOfDataTypes() const
+    {
+        return getMetadataHeader().numberOfDataTypes;
+    }
 
-    /** Number of parameters */
-    size_t mNumberOfParameters;
+    /// @return Number of sparse map entries in the data type map
+    inline size_t getNumberOfDataTypeSparseMapEntries() const
+    {
+        return getMetadataHeader().numberOfDataTypeSparseMapEntries;
+    }
 
-    /** List of parameters */
-    const metadata::Parameter* mpParameters;
+    /// @return number of parameters in the const metadata map
+    inline size_t getNumberOfParameters() const
+    {
+        return getMetadataHeader().numberOfParameters;
+    }
 
-    /** Number of parameter lists */
-    size_t mNumberOfParameterLists;
+    /// @return number of parameter lists in the const metadata map
+    inline size_t getNumberOfParameterLists() const
+    {
+        return getMetadataHeader().numberOfParameterListMapEntries;
+    }
 
-    /** List of parameter lists */
-    const metadata::ParameterId* mpParameterLists;
+    /// @return number of responses in the const metadata map
+    inline size_t getNumberOfResponses() const
+    {
+        return getMetadataHeader().numberOfResponses;
+    }
 
-    /** Number of responses */
-    size_t mNumberOfResponses;
+    /// @return number of response lists in the const metadata map
+    inline size_t getNumberOfResponseLists() const
+    {
+        return getMetadataHeader().numberOfResponseListMapEntries;
+    }
 
-    /** List of responses */
-    const metadata::Response* mpResponses;
+    /// @return number of operations in the const metadata map
+    inline size_t getNumberOfOperations() const
+    {
+        return getMetadataHeader().numberOfOperations;
+    }
 
-    /** Number of response lists */
-    size_t mNumberOfResponseLists;
+    /// @return number of operation lists in the const metadata map
+    inline size_t getNumberOfOperationLists() const
+    {
+        return getMetadataHeader().numberOfOperationLists;
+    }
 
-    /** List of response lists */
-    const metadata::ResponseId* mpResponseLists;
+    /// @return number of security tags in the const metadata map
+    inline size_t getNumberOfSecurityTags() const
+    {
+        return getMetadataHeader().numberOfSecurityTags;
+    }
 
-    /** Number of operations */
-    size_t mNumberOfOperations;
+    /// @return Number of resource tree nodes
+    inline size_t getNumberOfResourceTreeNodes() const
+    {
+        return getMetadataHeader().numberOfResourceTreeNodes;
+    }
 
-    /** List of operations */
-    const metadata::Operation* mpOperations;
+    /// @return Number of sparse map entries in the resource tree
+    inline size_t getNumberOfResourceTreeSparseMapEntries() const
+    {
+        return getMetadataHeader().numberOfResourceTreeSparseMapEntries;
+    }
 
-    /** Number of operation lists */
-    size_t mNumberOfOperationLists;
+    /** @return array of strings */
+    inline const char* getStringMap() const
+    {
+        return reinterpret_cast<const char*>(
+            mpMetadataBlob + getMetadataHeader().offsetToStringMap);
+    }
 
-    /** List of operation lists */
-    const metadata::OperationList* mpOperationLists;
+    /** @return array of execution contexts */
+    inline const metadata::ExecutionContext* getExecutionContexts() const
+    {
+        return reinterpret_cast<const metadata::ExecutionContext*>(
+            mpMetadataBlob + getMetadataHeader().offsetToExecutionContexts);
+    }
 
-    /** Number of security tags */
-    size_t mNumberOfSecurityTags;
+    /** @return array of properties */
+    inline const metadata::Property* getProperties() const
+    {
+        return reinterpret_cast<const metadata::Property*>(
+            mpMetadataBlob + getMetadataHeader().offsetToProperties);
+    }
 
-    /** List of security tags */
-    const metadata::SecurityTag* mpSecurityTags;
+    /** @return array of property lists */
+    inline const metadata::PropertyId* getPropertyLists() const
+    {
+        return reinterpret_cast<const metadata::PropertyId*>(
+            mpMetadataBlob + getMetadataHeader().offsetToPropertyLists);
+    }
+
+    /** @return array of enumeration items */
+    inline const metadata::EnumerationItem* getEnumerationItems() const
+    {
+        return reinterpret_cast<const metadata::EnumerationItem*>(
+            mpMetadataBlob + getMetadataHeader().offsetToEnumerationItems);
+    }
+
+    /** @return array of data types */
+    inline const metadata::DataType* getDataTypes() const
+    {
+        return reinterpret_cast<const metadata::DataType*>(
+            mpMetadataBlob + getMetadataHeader().offsetToDataTypes);
+    }
+
+    /** @return array of data type sparse map entries */
+    inline const metadata::DataTypeId* getDataTypeSparseMap() const
+    {
+        return reinterpret_cast<const metadata::DataTypeId*>(
+            mpMetadataBlob + getMetadataHeader().offsetToDataTypeSparseMap);
+    }
+
+    /** @return array of parameters */
+    inline const metadata::Parameter* getParameters() const
+    {
+        return reinterpret_cast<const metadata::Parameter*>(
+            mpMetadataBlob + getMetadataHeader().offsetToParameters);
+    }
+
+    /** @return array of parameter lists */
+    inline const metadata::ParameterId* getParameterLists() const
+    {
+        return reinterpret_cast<const metadata::ParameterId*>(
+            mpMetadataBlob + getMetadataHeader().offsetToParameterLists);
+    }
+
+    /** @return array of responses */
+    inline const metadata::Response* getResponses() const
+    {
+        return reinterpret_cast<const metadata::Response*>(
+            mpMetadataBlob + getMetadataHeader().offsetToResponses);
+    }
+
+    /** @return array of response lists */
+    inline const metadata::ResponseId* getResponseLists() const
+    {
+        return reinterpret_cast<const metadata::ResponseId*>(
+            mpMetadataBlob + getMetadataHeader().offsetToResponseLists);
+    }
+
+    /** @return array of operations */
+    inline const metadata::Operation* getOperations() const
+    {
+        return reinterpret_cast<const metadata::Operation*>(
+            mpMetadataBlob + getMetadataHeader().offsetToOperations);
+    }
+
+    /** @return array of operation lists */
+    inline const metadata::OperationList* getOperationLists() const
+    {
+        return reinterpret_cast<const metadata::OperationList*>(
+            mpMetadataBlob + getMetadataHeader().offsetToOperationLists);
+    }
+
+    /** @return array of security tags */
+    inline const metadata::SecurityTag* getSecurityTags() const
+    {
+        return reinterpret_cast<const metadata::SecurityTag*>(
+            mpMetadataBlob + getMetadataHeader().offsetToSecurityTags);
+    }
+
+    /** @return array of resource tree nodes in the resource tree */
+    inline const metadata::ResourceTreeNode* getResourceTreeNodes() const
+    {
+        return reinterpret_cast<const metadata::ResourceTreeNode*>(
+            mpMetadataBlob + getMetadataHeader().offsetToResourceTreeNodes);
+    }
+
+    /** @return array of resource tree node sparse map entries */
+    inline const LocalResourceId* getResourceTreeSparseMap() const
+    {
+        return reinterpret_cast<const LocalResourceId*>(
+            mpMetadataBlob + getMetadataHeader().offsetToResourceTreeSparseMap);
+    }
 
     /** Returns a string by ID
     *
     * @param id ID of the object
     * @return Object or NULL if invalid id is given
     */
-    inline const char* getStringById(metadata::StringId id) const
-    {
-        if (id == metadata::INVALID_STRING)
-        {
-            return NULL;
-        }
-
-        if (id >= mStringMapLength)
-        {
-            return NULL;
-        }
-
-        return &mpStringMap[id];
-    }
+    const char* getStringById(metadata::StringId id) const;
 
     /** Returns a data type by ID
     *
     * @param id ID of the object
     * @return Object or NULL if invalid id is given
     */
-    inline const metadata::DataType* getDataTypeById(metadata::DataTypeId id) const
-    {
-        if (id == metadata::INVALID_DATATYPE)
-        {
-            return NULL;
-        }
-
-        size_t apiId = id >> metadata::API_ID_SHIFT;
-        id &= (1 << metadata::API_ID_SHIFT) - 1;
-
-        // Check overflow of bins
-        if (apiId + 1 >= mNumberOfDataTypeSparseMapEntries)
-        {
-            return NULL;
-        }
-
-        // Check overflow to next bin
-        if (id >= mpDataTypeSparseMap[apiId + 1])
-        {
-            return NULL;
-        }
-
-        id += mpDataTypeSparseMap[apiId];
-        return &mpDataTypes[id];
-    }
+    const metadata::DataType* getDataTypeById(metadata::DataTypeId id) const;
 
     /** Returns a data type by index
     *
@@ -144,305 +268,81 @@ struct MetadataMap
     * @param rDataTypeId On output contains ID of the data type
     * @return Object or NULL if invalid id is given
     */
-    inline const metadata::DataType* getDataTypeByIndex(size_t index, metadata::DataTypeId& rDataTypeId) const
-    {
-        if (index >= mNumberOfDataTypes)
-        {
-            return NULL;
-        }
-
-        // Resolve ID
-        metadata::ApiId apiId = 0;
-        while (index >= mpDataTypeSparseMap[apiId + 1])
-        {
-            ++apiId;
-        }
-        
-        rDataTypeId = static_cast<metadata::DataTypeId>(
-            (static_cast<metadata::DataTypeId>(apiId) << metadata::API_ID_SHIFT) + (index - mpDataTypeSparseMap[apiId]));
-        return &mpDataTypes[index];
-    }
+    const metadata::DataType* getDataTypeByIndex(size_t index, metadata::DataTypeId& rDataTypeId) const;
 
     /** Returns a property by ID
     *
     * @param id ID of the object
     * @return Object or NULL if invalid id is given
     */
-    inline const metadata::Property* getPropertyById(metadata::PropertyId id) const
-    {
-        if (id == metadata::INVALID_PROPERTY)
-        {
-            return NULL;
-        }
-
-        if (id >= mNumberOfProperties)
-        {
-            return NULL;
-        }
-
-        return &mpProperties[id];
-    }
+    const metadata::Property* getPropertyById(metadata::PropertyId id) const;
 
     /** Returns a property list by ID
     *
     * @param id ID of the object
     * @return Object or NULL if invalid id is given
     */
-    inline const metadata::PropertyList* getPropertyListById(metadata::PropertyListId id) const
-    {
-        if (id == metadata::INVALID_PROPERTY_LIST)
-        {
-            return NULL;
-        }
-
-        if (id >= mNumberOfPropertyLists)
-        {
-            return NULL;
-        }
-
-        return &metadata::PropertyList::toList(&mpPropertyLists[id]);
-    }
+    const metadata::PropertyList* getPropertyListById(metadata::PropertyListId id) const;
 
     /** Returns a enumeration item list by ID
     *
     * @param id ID of the object
     * @return Object or NULL if invalid id is given
     */
-    inline const metadata::EnumerationItemList* getEnumerationItemListById(metadata::EnumerationItemListId id) const
-    {
-        if (id == metadata::INVALID_ENUMERATION_ITEM_LIST)
-        {
-            return NULL;
-        }
-
-        if (id >= mNumberOfEnumerationItems)
-        {
-            return NULL;
-        }
-
-        return &metadata::EnumerationItemList::toList(&mpEnumerationItems[id]);
-    }
+    const metadata::EnumerationItemList* getEnumerationItemListById(metadata::EnumerationItemListId id) const;
 
     /** Returns a parameter by ID
     *
     * @param id ID of the object
     * @return Object or NULL if invalid id is given
     */
-    inline const metadata::Parameter* getParameterById(metadata::ParameterId id) const
-    {
-        if (id == metadata::INVALID_PARAMETER)
-        {
-            return NULL;
-        }
-
-        if (id >= mNumberOfParameters)
-        {
-            return NULL;
-        }
-
-        return &mpParameters[id];
-    }
+    const metadata::Parameter* getParameterById(metadata::ParameterId id) const;
 
     /** Returns a parameter list by ID
     *
     * @param id ID of the object
     * @return Object or NULL if invalid id is given
     */
-    inline const metadata::ParameterList* getParameterListById(metadata::ParameterListId id) const
-    {
-        if (id == metadata::INVALID_PARAMETER_LIST)
-        {
-            return NULL;
-        }
-
-        if (id >= mNumberOfParameterLists)
-        {
-            return NULL;
-        }
-
-        return &metadata::ParameterList::toList(&mpParameterLists[id]);
-    }
+    const metadata::ParameterList* getParameterListById(metadata::ParameterListId id) const;
 
     /** Returns a response by ID
     *
     * @param id ID of the object
     * @return Object or NULL if invalid id is given
     */
-    inline const metadata::Response* getResponseById(metadata::ResponseId id) const
-    {
-        if (id == metadata::INVALID_RESPONSE)
-        {
-            return NULL;
-        }
-
-        if (id >= mNumberOfResponses)
-        {
-            return NULL;
-        }
-
-        return &mpResponses[id];
-    }
+    const metadata::Response* getResponseById(metadata::ResponseId id) const;
 
     /** Returns a response list by ID
     *
     * @param id ID of the object
     * @return Object or NULL if invalid id is given
     */
-    inline const metadata::ResponseList* getResponseListById(metadata::ResponseListId id) const
-    {
-        if (id == metadata::INVALID_RESPONSE_LIST)
-        {
-            return NULL;
-        }
-
-        if (id >= mNumberOfResponseLists)
-        {
-            return NULL;
-        }
-
-        return &metadata::ResponseList::toList(&mpResponseLists[id]);
-    }
+    const metadata::ResponseList* getResponseListById(metadata::ResponseListId id) const;
 
     /** Returns a operation by ID
     *
     * @param id ID of the object
     * @return Object or NULL if invalid id is given
     */
-    inline const metadata::Operation* getOperationById(metadata::OperationId id) const
-    {
-        if (id == metadata::INVALID_OPERATION)
-        {
-            return NULL;
-        }
-
-        if (id >= mNumberOfOperations)
-        {
-            return NULL;
-        }
-
-        return &mpOperations[id];
-    }
+    const metadata::Operation* getOperationById(metadata::OperationId id) const;
 
     /** Returns a operation list by ID
     *
     * @param id ID of the object
     * @return Object or NULL if invalid id is given
     */
-    inline const metadata::OperationList* getOperationListById(metadata::OperationListId id) const
-    {
-        if (id == metadata::INVALID_OPERATION_LIST)
-        {
-            return NULL;
-        }
-
-        if (id >= mNumberOfOperationLists)
-        {
-            return NULL;
-        }
-
-        return &mpOperationLists[id];
-    }
+    const metadata::OperationList* getOperationListById(metadata::OperationListId id) const;
 
     /** Returns a security tag by ID
     *
     * @param id ID of the object
     * @return Object or NULL if invalid id is given
     */
-    inline const metadata::SecurityTag* getSecurityTagById(SecurityTagId id) const
-    {
-        if (id == metadata::INVALID_SECURITY_TAG)
-        {
-            return NULL;
-        }
+    const metadata::SecurityTag* getSecurityTagById(SecurityTagId id) const;
 
-        if (id >= mNumberOfSecurityTags)
-        {
-            return NULL;
-        }
-
-        return &mpSecurityTags[id];
-    }
-
-    /// @return number of strings in the const metadata map
-    size_t getNumberOfStrings() const
-    {
-        size_t count = 0;
-        for (size_t i = 0; i < mStringMapLength; i++)
-        {
-            if (mpStringMap[i] == 0)
-            {
-                count++;
-            }
-        }
-
-        return count;
-    }
-
-    /// @return number of properties in the const metadata map
-    inline size_t getNumberOfProperties() const
-    {
-        return mNumberOfProperties;
-    }
-
-    /// @return number of property lists in the const metadata map
-    inline size_t getNumberOfPropertyLists() const
-    {
-        return mNumberOfPropertyLists;
-    }
-
-    /// @return number of enumeration items in the const metadata map
-    inline size_t getNumberOfEnumerationItems() const
-    {
-        return mNumberOfEnumerationItems;
-    }
-
-    /// @return number of data types in the const metadata map
-    inline size_t getNumberOfDataTypes() const
-    {
-        return mNumberOfDataTypes;
-    }
-
-    /// @return number of parameters in the const metadata map
-    inline size_t getNumberOfParameters() const
-    {
-        return mNumberOfParameters;
-    }
-
-    /// @return number of parameter lists in the const metadata map
-    inline size_t getNumberOfParameterLists() const
-    {
-        return mNumberOfParameterLists;
-    }
-
-    /// @return number of responses in the const metadata map
-    inline size_t getNumberOfResponses() const
-    {
-        return mNumberOfResponses;
-    }
-
-    /// @return number of response lists in the const metadata map
-    inline size_t getNumberOfResponseLists() const
-    {
-        return mNumberOfResponseLists;
-    }
-
-    /// @return number of operations in the const metadata map
-    inline size_t getNumberOfOperations() const
-    {
-        return mNumberOfOperations;
-    }
-
-    /// @return number of operation lists in the const metadata map
-    inline size_t getNumberOfOperationLists() const
-    {
-        return mNumberOfOperationLists;
-    }
-
-    /// @return number of security tags in the const metadata map
-    inline size_t getNumberOfSecurityTags() const
-    {
-        return mNumberOfSecurityTags;
-    }
+private:
+    /** Metadata blob */
+    const uint8* mpMetadataBlob;
 };
 
 } // namespace whiteboard

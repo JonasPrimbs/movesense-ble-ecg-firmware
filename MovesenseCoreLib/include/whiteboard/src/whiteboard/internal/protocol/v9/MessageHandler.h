@@ -104,4 +104,4 @@ private:
 };
 
 } // namespace protocol_v9
-} // namespace whitespace
+} // namespace whiteboard

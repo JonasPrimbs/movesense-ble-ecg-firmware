@@ -11,6 +11,8 @@
 
 #include "whiteboard/unittest/TestProvider.h"
 
+#if WB_UNITTEST_BUILD
+
 namespace whiteboard
 {
 
@@ -109,4 +111,6 @@ private:
     wb::RequestId mNextRequestId;
 };
 
-}
+} // namespace whiteboard
+
+#endif

@@ -35,10 +35,6 @@ set(BSP_KINETIS_LINKTO "appflash" CACHE STRING "Link to")
 string(TOUPPER ${BSP_KINETIS_LINKTO} LINKTOUC)
 add_definitions(-DBSP_KINETIS_LINKTO_${LINKTOUC}=1)
 
-# Setup link check address for application (only)
-# NOTE: Ajdust this when changing the softdevice!
-set(LINK_STARTAT "0x1c000") 
-
 # OS configuration
 set(NEA_OS "freertos" CACHE STRING "Operating system")
 set_property(CACHE NEA_OS PROPERTY STRINGS

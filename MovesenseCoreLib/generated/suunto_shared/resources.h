@@ -21,7 +21,7 @@
 #include "whiteboard/builtinTypes/Vector3D.h"
 #include "whiteboard/builtinTypes/WrapperFor32BitPointer.h"
 
-#define WB_EXECUTION_CONTEXT_INSTANTION_REF(id)						static_cast<whiteboard::ExecutionContextId>(id)
+#define WB_EXECUTION_CONTEXT_INSTANTION_REF(id)					static_cast<whiteboard::ExecutionContextId>(id)
 #define WB_RESOURCE_VALUE(whiteboardId, localResourceId, executionContextId) \
 	static_cast<whiteboard::ResourceId::Value>( \
 		(static_cast<uint32>(localResourceId) << 16) | \
@@ -31,11 +31,6 @@
 
 #define WB_CALLER_CONTEXT										whiteboard::ID_INVALID_EXECUTION_CONTEXT
 
-
-/** Helper function for force linking of the library
-* (Visual C will ignore whole library if none of the symbols are referenced)
-*/
-void pullInWbResources();
 
 #include "../wb-resources/resources.h"
 

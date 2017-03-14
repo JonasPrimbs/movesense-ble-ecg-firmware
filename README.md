@@ -1,8 +1,8 @@
-## Overview
+## Overview ##
 
 Movesense sensor is a programmable multi-purpose device comprising accelerometer, gyroscope, magnetometer and thermometer together with optional hearthrate/IBI and intelligent gear ID APIs. The APIs follow the well known REST principle and can be used both internally by the partner app or externally via the iOS/Android libraries. API specification ([link to folder](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/resources/core/)), is based on Swagger 2.0 syntax.
 
-## API
+## API ##
 Resource | Description|Implemented
 ---------|------------|--------------
 /Info|API for accessing generic device information.| YES
@@ -20,18 +20,19 @@ Resource | Description|Implemented
 
 ** Due to unexceptionally high current consumption, disabled in the master release until fixed
 
-## Prerequisite
+## Prerequisite ##
 
  * [GNU Toolchain for ARM Embedded 5-2016-q2](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
  * [Ninja build tool](https://ninja-build.org/) - remember to add to path
  * [cmake >=3.6](https://cmake.org/download/)
  * [Visual Studio Redistributable 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
-
+ * [nrfutil package & python 2.7 (for OTA firmware update package creation)](https://github.com/NordicSemiconductor/pc-nrfutil)
+ 
 Optionally: 
 
  * Nordic Semiconductor's [nRF5x-Command-Line-Tools-Win32](https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF52-DK) - needed for flashing using JIG
 
-## Example App Build Flow
+## Example App Build Flow ##
 
 ```
 #!python
@@ -42,7 +43,18 @@ Optionally:
 > cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../SampleApp
 > ninja
 ```
-If successful, application binary can be found in the build folder with name *Movesense.hex*
+If successful, application binary can be found in the build folder with name *Movesense.hex*.
+
+### Updating sensor "over the air" ###
+
+If you want to create OTA firmware update package run command
+```
+ninja dfupkg
+```
+
+which places the OTA package with name *movesense_dfu.zip* in the build folder.
+
+### Updating sensor with programming jig ###
 
 if you are using a *Movesense programming JIG* you can flash the resulting .hex-file (and the nRF52 SoftDevice) with:
 ```
@@ -50,22 +62,24 @@ ninja flash
 ```
 or you can use any other nRF52 compatible programming software such as *nRFGo Studio*.
 
+
+
 ## What's New ##
 For information about releases, see the [CHANGES.md](https://bitbucket.org/suunto/movesense-device-lib/src/c1bbc4cf67c906cc37e22a420f43963f38a7fe0e/CHANGES.md?) file in repository.
 
-## Frequently Asked Questions
+## Frequently Asked Questions ##
 
 For FAQ please check http://stackoverflow.com/search?q=movesense
 
 If your problem is not addressed there, please [post](http://stackoverflow.com/questions/ask) a new question, and tag it with 'movesense' (i.e. include [tag:movesense] in the question body).
 
-## Bug Reports
+## Bug Reports ##
 
 Please report bugs by [raising](https://bitbucket.org/suunto/movesense-device-lib/issues/new) an Issue via Bitbucket.
 
-## Contributions
+## Contributions ##
 Your input is appreciated and we encourage you to post your contributions as pull requests to this repository.
 
-## License
+## License ##
 
 See the LICENSE file for more info.

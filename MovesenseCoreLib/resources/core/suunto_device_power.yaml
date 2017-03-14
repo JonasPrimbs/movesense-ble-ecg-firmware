@@ -1,10 +1,34 @@
+# Copyright Suunto Oy 2015-2016
+# All rights reserved.
+
 swagger: '2.0'
 
+# Document metadata
 info:
-  version: "0.0.1"
-  title: Battery API
+  version: "0.9.0"
+  title: /Device/Battery API
   description: |
-    API for the device's battery.
+    This file defines the /Device/Battery API.
+  termsOfService: http://suunto.com/wbapi/terms/
+  contact:
+    name: Suunto team
+    url: http://developer.suunto.com
+
+# Security definitions
+security:
+  - suuntoAccessCode:
+    - public
+
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+    flow: accessCode
+    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
+    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
+
+# Paths
 paths:
   /Device/Battery:
     x-executionContext: meas
@@ -21,6 +45,9 @@ paths:
             type: integer
             format: uint8
             x-unit: percent
+      security:
+        - suuntoAccessCode:
+          - public
 
   /Device/Power/BatteryLevel/Subscription:
     x-executionContext: meas
@@ -34,12 +61,17 @@ paths:
             type: integer
             format: uint8
             x-unit: percent
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
         x-notification:
           description: New value
           schema:
             type: integer
             format: uint8
             x-unit: percent
+      security:
+        - suuntoAccessCode:
+          - public
     delete:
       description: |
         Unsubscribe from battery charge level change notifications.
@@ -48,6 +80,9 @@ paths:
           description: Operation completed successfully
         x-std-errors:
           description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
 
   /Device/Power/BatteryState:
     x-executionContext: meas
@@ -59,6 +94,9 @@ paths:
           description: Battery state enumeration
           schema:
             $ref: '#/definitions/BatteryState'
+      security:
+        - suuntoAccessCode:
+          - public
 
   /Device/Power/BatteryState/Subscription:
     x-executionContext: meas
@@ -68,16 +106,26 @@ paths:
       responses:
         200:
           description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
         x-notification:
           description: New value
           schema:
             $ref: '#/definitions/BatteryState'
+      security:
+        - suuntoAccessCode:
+          - public
     delete:
       description: |
         Unsubscribe from battery state change notifications.
       responses:
         200:
           description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
 
   /Device/Power/ChargingState:
     x-executionContext: meas
@@ -91,6 +139,9 @@ paths:
             $ref: '#/definitions/ChargingState'
         204:
           description: Measurement source is unavailable
+      security:
+        - suuntoAccessCode:
+          - public
 
   /Device/Power/ChargingState/Subscription:
     x-executionContext: meas
@@ -102,16 +153,26 @@ paths:
           description: Operation completed successfully
           schema:
             $ref: '#/definitions/ChargingState'
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
         x-notification:
           description: New value
           schema:
             $ref: '#/definitions/ChargingState'
+      security:
+        - suuntoAccessCode:
+          - public
     delete:
       description: |
         Unsubscribe from battery charging state change notifications.
       responses:
         200:
           description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
 
 # Extra definitions
 definitions:

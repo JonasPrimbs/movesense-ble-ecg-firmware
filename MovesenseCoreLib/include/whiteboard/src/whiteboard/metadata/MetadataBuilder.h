@@ -2,13 +2,14 @@
 #pragma once
 
 #include "whiteboard/metadata/MetadataStructures.h"
+#include "whiteboard/Result.h"
 #include "whiteboard/Value.h"
 
 namespace whiteboard
 {
 
 // Forward declarations
-class ResourceSubtree;
+class MetadataMap;
 
 /** Class that can be used to construct ResourceSubtree dynamically.
  *
@@ -39,7 +40,7 @@ public:
      *
      * @return Pointer to new ResourceSubtree instance
      */
-    ResourceSubtree* finish();
+    MetadataMap* finish();
 
     /** Adds a string to resource metadata
      *
@@ -253,6 +254,9 @@ public:
     */
     metadata::ParameterListId addParameterList(size_t numberOfParameters, const metadata::ParameterId* parameterIds);
 
+    /** Response code that is used to indicate notifications */
+    static const Result NOTIFICATION = static_cast<Result>(0);
+
     /** Adds a response to resource metadata
     *
     * @param rResponse Response to add
@@ -378,7 +382,7 @@ private:
     static const size_t CHAR_ALLOCATION_STEP = 64;
 
     /** Number of items to allocate more when needed */
-    static const size_t ALLOCATION_STEP = 4;
+    static const size_t ALLOCATION_STEP = 8;
 
 private:
     /** API ID */
@@ -390,6 +394,18 @@ private:
     /** String map (id is offset of a string in the map) */
     char* mpStringMap;
 
+    /** Number of execution contexts */
+    size_t mNumberOfExecutionContexts;
+
+    /** List of execution contexts */
+    metadata::ExecutionContext* mpExecutionContexts;
+
+    /** Number of security tags */
+    size_t mNumberOfSecurityTags;
+
+    /** List of security tags */
+    metadata::SecurityTag* mpSecurityTags;
+
     /** Number of properties */
     size_t mNumberOfProperties;
 
@@ -397,7 +413,7 @@ private:
     metadata::Property* mpProperties;
 
     /** Number of property lists */
-    size_t mNumberOfPropertyLists;
+    size_t mNumberOfPropertyListMapEntries;
 
     /** List of property lists */
     metadata::PropertyId* mpPropertyLists;
@@ -421,7 +437,7 @@ private:
     metadata::Parameter* mpParameters;
 
     /** Number of parameter lists */
-    size_t mNumberOfParameterLists;
+    size_t mNumberOfParameterListMapEntries;
 
     /** List of parameter lists */
     metadata::ParameterId* mpParameterLists;
@@ -433,7 +449,7 @@ private:
     metadata::Response* mpResponses;
 
     /** Number of response lists */
-    size_t mNumberOfResponseLists;
+    size_t mNumberOfResponseListMapEntries;
 
     /** List of response lists */
     metadata::ResponseId* mpResponseLists;
@@ -445,7 +461,7 @@ private:
     metadata::Operation* mpOperations;
 
     /** Number of operation lists */
-    size_t mNumberOfOperationLists;
+    size_t mNumberOfOperationListMapEntries;
 
     /** List of operation lists */
     metadata::OperationList* mpOperationLists;

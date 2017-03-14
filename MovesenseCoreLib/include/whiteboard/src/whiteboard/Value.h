@@ -30,35 +30,6 @@ class UnknownStructure;
 class ValueAccessor;
 class ValueStorage;
 
-/* Value types. Be careful when making changes to this enumeration
- * because most changes will break compatibility as this needs to
- * match fixed data type IDs. */
-enum ValueType
-{
-    WB_TYPE_NONE = 0,
-
-    // Scalar types
-    WB_TYPE_BOOL,
-    WB_TYPE_INT8,
-    WB_TYPE_UINT8,
-    WB_TYPE_INT16,
-    WB_TYPE_UINT16,
-    WB_TYPE_INT32,
-    WB_TYPE_UINT32,
-    WB_TYPE_INT64,
-    WB_TYPE_UINT64,
-    WB_TYPE_FLOAT,
-    WB_TYPE_DOUBLE,
-    WB_TYPE_STRING,
-
-    WB_TYPE_BYTE_STREAM,
-    WB_TYPE_STRUCTURE,
-
-    // Some book keeping
-    WB_TYPE_NUMBER_OF_TYPES,
-    WB_TYPE_LAST_SCALAR = WB_TYPE_STRING
-};
-
 /** Wrapper for accessing binary data of Whiteboard API calls. */
 class WB_API Value
 {

@@ -129,4 +129,4 @@ public:
         IHandler& rHandler, WhiteboardId remoteWhiteboardIdInLocalScope, const DataMessageHeader& rMessageHeader) const = 0;
 };
 
-} // namespace whitespace
+} // namespace whiteboard

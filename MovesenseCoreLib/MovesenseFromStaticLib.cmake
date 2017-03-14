@@ -53,6 +53,11 @@ set(MOVESENSE_INCLUDE_DIRECTORIES
     whiteboard/unittest
 )
 
+# WB requires Unit test flag on DEBUG builds, so set them here. Otherwise init fails with repeating onGetRequest call recursion
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DWB_UNITTEST_BUILD")
+set(CMAKE_CXX_FLAGS_DEBUGWITHOUTDEBINFO "${CMAKE_CXX_FLAGS_DEBUGWITHOUTDEBINFO} -DWB_UNITTEST_BUILD")
+
+
 foreach(SUBDIR ${WB_INCLUDE_DIRECTORIES})
   file(GLOB SUBDIR_HEADERS "${CMAKE_CURRENT_LIST_DIR}/include/${SUBDIR}/*.h")
   string(REPLACE "/" "\\" SUBDIR_NAME ${SUBDIR})
@@ -71,3 +76,15 @@ set_property(TARGET movesense-core PROPERTY IMPORTED_LOCATION_RELWITHDEBINFO ${C
 set_property(TARGET movesense-core PROPERTY IMPORTED_LOCATION_RELEASE        ${CMAKE_CURRENT_LIST_DIR}/lib/${COMPILER}/${CMAKE_STATIC_LIBRARY_PREFIX}movesense-core${CMAKE_STATIC_LIBRARY_SUFFIX})
 
 include(${CMAKE_CURRENT_LIST_DIR}/tools/wbres/resources.cmake)
+
+
+# Setup link check address for application
+# NOTE: Ajdust this when changing the softdevice!
+set(LINK_STARTAT "0x1f000")
+
+################################
+# Exported variables
+################################
+
+# Variable that contains the filename of the softdevice hex-file that is supposed to be used with this version of Movesense Core-lib 
+set(MOVESENSE_INTENDED_SOFTDEVICE_HEX_FILE "s132_nrf52_3.0.0_softdevice.hex")

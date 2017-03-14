@@ -10,6 +10,8 @@
 #include "whiteboard/internal/comm/WhiteboardCommunication.h"
 #include <cstdlib>
 
+#if WB_UNITTEST_BUILD
+
 namespace whiteboard
 {
 
@@ -278,3 +280,5 @@ private:
 };
 
 } // namespace whiteboard
+
+#endif
