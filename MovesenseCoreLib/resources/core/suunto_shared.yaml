@@ -1,11 +1,37 @@
+# Copyright Suunto Oy 2016
+# All rights reserved.
+#
 swagger: '2.0'
 
+# Document metadata
 info:
-  version: "0.0.1"
+  version: "0.9.0"
   title: Shared types
   description: |
     This file defines shared types for all Suunto API.
 
+    See http://developer.suunto.com for more information.
+  termsOfService: http://suunto.com/wbapi/terms/
+  contact:
+    name: Suunto team
+    url: http://developer.suunto.com
+
+# Security definitions
+security:
+  - suuntoAccessCode:
+    - public
+
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+      write:user: Grants write access to user profile info.
+    flow: accessCode
+    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
+    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
+
+# Paths tag is required
 paths:
   x-workaround:
     x-get

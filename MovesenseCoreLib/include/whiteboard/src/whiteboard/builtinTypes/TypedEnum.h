@@ -66,7 +66,7 @@ public:
     inline TypedEnum(const TypedEnum& rOther) : value(rOther.value) {}
 
     /** Constructor that initializes enum class from enumeration value */
-    inline TypedEnum(EnumType v) : value(v) {}
+    inline TypedEnum(EnumType v) : value(static_cast<BaseType>(v)) {}
 
     /** Cast operator that implicitly casts this class to its base type
      *

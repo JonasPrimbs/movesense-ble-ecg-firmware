@@ -12,11 +12,12 @@
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs" // Caused by the WB_STATIC_VERIFY calls below
 #endif
 
+WB_HEADER_CHECK_DEFINE(WB_HAVE_DEBUG_NAMES);
+
 namespace whiteboard
 {
 
 // Forward declarations
-class IExecutionContext;
 class Whiteboard;
 
 /** Options for the operation can be given with this class. */
@@ -376,7 +377,7 @@ protected:
     /** These functions are called only by Whiteboard */
     friend class Whiteboard;
 
-#if UNITTEST_BUILD
+#if WB_UNITTEST_BUILD
     /** Gets the associated whiteboard instance
     *
     * @return Whiteboard instance

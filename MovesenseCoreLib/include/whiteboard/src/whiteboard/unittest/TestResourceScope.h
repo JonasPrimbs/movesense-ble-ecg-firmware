@@ -1,11 +1,10 @@
 #pragma once
 // Copyright (c) Suunto Oy 2016. All rights reserved.
 
+#if WB_UNITTEST_BUILD
+
 namespace whiteboard
 {
-
-// Forward declarations
-class ResourceSubtree;
 
 /**
  * RAII class for managing singleton instances of Whiteboard resource trees.
@@ -41,7 +40,7 @@ public:
     virtual ~EmptyTestResourceScope();
 
 private:
-    ResourceSubtree* const mpPrevResourceSubtree;
+    void* const mpPrevResourceSubtree;
 };
 
 /**
@@ -59,3 +58,5 @@ public:
 };
 
 } // namespace whiteboard
+
+#endif

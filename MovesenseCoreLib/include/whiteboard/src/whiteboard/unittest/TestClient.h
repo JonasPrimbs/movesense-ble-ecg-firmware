@@ -5,6 +5,12 @@
 #include "whiteboard/ResourceClient.h"
 #include "whiteboard/DpcFunctor.h"
 
+#if WB_UNITTEST_BUILD
+
+#if _MSC_VER
+#define strdup _strdup
+#endif
+
 namespace whiteboard
 {
 
@@ -49,20 +55,19 @@ template <class TProvider> bool WaitUntilRegistered(TProvider& provider)
 }
 
 
-/** Class that stores client request results */
-template <typename R>
-class TestResult
+/** Base class that stores client request results */
+class TestResultBase
 {
 public:
-    TestResult()
+    TestResultBase()
         : mResourceId(ID_INVALID_RESOURCE),
-          mCallResultCode(HTTP_CODE_INTERNAL_SERVER_ERROR),
-          mReturnResultCode(HTTP_CODE_INTERNAL_SERVER_ERROR),
-          mValueDataTypeId(0),
-          mHasValue(false)
+        mCallResultCode(HTTP_CODE_INTERNAL_SERVER_ERROR),
+        mReturnResultCode(HTTP_CODE_INTERNAL_SERVER_ERROR),
+        mValueDataTypeId(0),
+        mHasValue(false)
     {
     }
-    
+
     inline operator bool() const
     {
         return RETURN_OK(mCallResultCode) && mValidResponse && RETURN_OK(mReturnResultCode);
@@ -88,12 +93,67 @@ public:
         return RETURN_OK(mCallResultCode) && (expectedValueType == Value::getType(mValueDataTypeId));
     }
 
+    ResourceId mResourceId;
+    Result mCallResultCode;
+    bool mValidResponse;
+    Result mReturnResultCode;
+    LocalDataTypeId mValueDataTypeId;
+    bool mHasValue;
+};
+
+/** Class that stores client request results */
+template <typename R>
+class TestResult : public TestResultBase
+{
+public:
+    TestResult()
+    {
+    }
+
+    inline TestResult<R> operator=(const TestResult<R>& rResult)
+    {
+        mResourceId = rResult.mResourceId;
+        mCallResultCode = rResult.mCallResultCode;
+        mValidResponse = rResult.mValidResponse;
+        mReturnResultCode = rResult.mReturnResultCode;
+        mValueDataTypeId = rResult.mValueDataTypeId;
+        mHasValue = rResult.mHasValue;
+        mValue = rResult.mValue;
+        return *this;
+    }
+
     inline bool checkValue(const R& expectedValue) const
     {
         return *this && mHasValue && (expectedValue == mValue);
     }
 
-    inline bool checkValueStr(const char* expectedValue) const
+    inline void setValue(const typename Value::ConvertResult<R>::type rValue)
+    {
+        mHasValue = true;
+        mValue = rValue;
+    }
+
+    R mValue;
+};
+
+/** Base class for specialized versions that allocates memory for string results */
+class StringTestResultBase : public TestResultBase
+{
+public:
+    StringTestResultBase()
+        : mValue(NULL)
+    {
+    }
+
+    virtual ~StringTestResultBase()
+    {
+        if (mValue)
+        {
+            free(mValue);
+        }
+    }
+
+    inline bool checkValue(const char* expectedValue) const
     {
         if (!*this || !mHasValue) return false;
         if (expectedValue == NULL) return mValue == NULL;
@@ -101,13 +161,80 @@ public:
         return !strcmp(expectedValue, mValue);
     }
 
-    ResourceId mResourceId;
-    Result mCallResultCode;
-    bool mValidResponse;
-    Result mReturnResultCode;
-    LocalDataTypeId mValueDataTypeId;
-    bool mHasValue;
-    R mValue;
+    inline void setValue(const char* rValue)
+    {
+        mHasValue = true;
+        if (rValue != NULL)
+        {
+            mValue = strdup(rValue);
+        }
+    }
+
+    char* mValue;
+};
+
+template <>
+class TestResult<char*> : public StringTestResultBase
+{
+public:
+    inline TestResult()
+    {
+    }
+
+    inline TestResult(const TestResult<char*>& other)
+    {
+        *this = other;
+    }
+
+    inline TestResult<char*>& operator=(const TestResult<char*>& other)
+    {
+        *static_cast<TestResultBase*>(this) = static_cast<const TestResultBase&>(other);
+
+        if (mValue)
+        {
+            free(mValue);
+            mValue = NULL;
+        }
+
+        if (other.mValue != NULL)
+        {
+            mValue = strdup(other.mValue);
+        }
+
+        return *this;
+    }
+};
+
+template <>
+class TestResult<const char*> : public StringTestResultBase
+{
+public:
+    inline TestResult()
+    {
+    }
+
+    inline TestResult(const TestResult<const char*>& other)
+    {
+        *this = other;
+    }
+
+    inline TestResult<const char*>& operator=(const TestResult<const char*>& other)
+    {
+        *static_cast<TestResultBase*>(this) = static_cast<const TestResultBase&>(other);
+
+        if (mValue)
+        {
+            free(mValue);
+            mValue = NULL;
+        }
+
+        if (other.mValue != NULL)
+        {
+            mValue = strdup(other.mValue);
+        }
+
+        return *this;
+    }
 };
 
 /** GTEST helpers */
@@ -116,7 +243,7 @@ public:
 #define EXPECT_WBRESULT(expectedReturnResult, testResult)  EXPECT_TRUE(testResult.checkResult(expectedReturnResult))
 #define EXPECT_WBVALUETYPE(expectedValueType, testResult)  EXPECT_TRUE(testResult.checkValueType(expectedValueType))
 #define EXPECT_WBVALUE(expectedValue, testResult)  EXPECT_TRUE(testResult.checkValue(expectedValue))
-#define EXPECT_WBVALUESTR(expectedValue, testResult)  EXPECT_TRUE(testResult.checkValueStr(expectedValue))
+#define EXPECT_WBVALUESTR(expectedValue, testResult)  EXPECT_TRUE(testResult.checkValue(expectedValue))
 
 /** Helper value to indicate that TestClientWithDefaults should use resource ID that was resolved with previous
  * callGetResource or callAsyncGetResourceAndWait
@@ -499,8 +626,7 @@ private:
             mrResult.mValueDataTypeId = rResult.getSenderDataTypeId();
             if (mrResult.mValueDataTypeId == Value::DataTypeId<R>::value)
             {
-                mrResult.mHasValue = true;
-                mrResult.mValue = rResult.convertTo<R>();
+                mrResult.setValue(rResult.convertTo<R>());
             }
         }
 
@@ -824,3 +950,5 @@ private:
 typedef TestClientWithDefaults<> TestClient;
 
 } // namespace whiteboard
+
+#endif

@@ -12,9 +12,9 @@
 #include "whiteboard/integration/shared/safeString.h"
 #include "whiteboard/integration/shared/templateMetaprogramming.h"
 
-#include "whiteboard/integration/bsp/alignedAlloc.h"
 #include "whiteboard/integration/bsp/stackAlloc.h"
 #include "whiteboard/integration/bsp/heapAlloc.h"
+#include "whiteboard/integration/bsp/alignedAlloc.h"
 #include "whiteboard/integration/bsp/newOperator.h"
 
 #include "whiteboard/integration/bsp/ble.h"

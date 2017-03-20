@@ -2,6 +2,8 @@
 // Copyright (c) Suunto Oy 2016. All rights reserved.
 
 #include "whiteboard/Identifiers.h"
+#include "whiteboard/ResourceTree.h"
+#include "whiteboard/Result.h"
 #include "whiteboard/metadata/MetadataStructures.h"
 
 namespace whiteboard
@@ -10,6 +12,9 @@ namespace whiteboard
 // Forward declarations
 class LocalExecutionContext;
 class DynamicExecutionContext;
+class MetadataMap;
+
+typedef ExecutionContextId ExecutionContextCount;
 
 /** Map of execution contexts */
 class ExecutionContextMap FINAL
@@ -17,11 +22,8 @@ class ExecutionContextMap FINAL
 public:
     /**
     *	Initializes a new instance of the ExecutionContextMap class
-    *
-    *	@param numberOfExecutionContexts Number of WBRES generated execution contexts
-    *	@param pExecutionContexts List of WBRES generated execution contexts
     */
-    ExecutionContextMap(size_t numberOfExecutionContexts, const metadata::ExecutionContextInfo* pExecutionContexts);
+    ExecutionContextMap();
 
     /** Destructor */
     ~ExecutionContextMap();
@@ -30,9 +32,14 @@ public:
     *
     * @return Number of execution contexts
     */
-    inline size_t getNumberOfExecutionContexts() const
+    inline ExecutionContextCount getNumberOfExecutionContexts() const
     {
-        return mNumberOfExecutionContexts + mNumberOfDynamicExecutionContexts;
+        return 
+            mNumberOfExecutionContexts 
+#ifdef WB_UNITTEST_BUILD
+            + mNumberOfDynamicExecutionContexts
+#endif
+            ;
     }
 
     /** Returns a execution context by ID
@@ -42,6 +49,24 @@ public:
     */
     LocalExecutionContext* getExecutionContextById(ExecutionContextId id) const;
 
+    /** Adds WBRES generated execution contexts to the map
+    *
+    * @param numberOfExecutionContexts Number of WBRES generated execution contexts
+    * @param pExecutionContexts List of WBRES generated execution contexts
+    * @param hookInstaller Optional. Hook installer function that installs execution context hooks.
+    * @return Result of the operation
+    */
+    Result add(const MetadataMap& rMetadataMap, ResourceTree::HookInstallerFunc* hookInstaller);
+
+    /** Removes WBRES generated execution contexts from the map
+    *
+    * @param numberOfExecutionContexts Number of WBRES generated execution contexts
+    * @param pExecutionContexts List of WBRES generated execution contexts
+    * @return Result of the operation
+    */
+    Result remove(size_t numberOfExecutionContexts, const metadata::ExecutionContext* pExecutionContexts);
+
+#ifdef WB_UNITTEST_BUILD
     /** Adds execution context to the map
     *
     * @param pExecutionContext that should be added to map
@@ -54,6 +79,7 @@ public:
     * @param pExecutionContext that should be removed from the map
     */
     void remove(DynamicExecutionContext* pExecutionContext);
+#endif
 
     /** Iterator class for iterating execution contexts */
     class Iterator
@@ -82,10 +108,12 @@ public:
         ExecutionContextMap& mrOwner;
 
         /** Current execution context index (used for WBRES generated execution contexts) */
-        size_t mIndex;
+        ExecutionContextCount mIndex;
 
+#ifdef WB_UNITTEST_BUILD
         /** Current dynamic execution context */
         DynamicExecutionContext* mpCurrentDynamic;
+#endif
     };
 
     /** Gets new iterator instance
@@ -96,19 +124,18 @@ public:
 
 private:
     /** Number of WBRES generated execution contexts */
-    size_t mNumberOfExecutionContexts;
-
-    /** List of WBRES generated execution contexts */
-    const metadata::ExecutionContextInfo* mpExecutionContexts;
+    ExecutionContextCount mNumberOfExecutionContexts;
     
     /** List of constructed execution contexts */
-    LocalExecutionContext* mpExecutionContextInstances;
+    LocalExecutionContext** mpExecutionContextInstances;
 
+#ifdef WB_UNITTEST_BUILD
     /** Number of dynamic execution contexts added */
-    size_t mNumberOfDynamicExecutionContexts;
+    ExecutionContextCount mNumberOfDynamicExecutionContexts;
 
     /** First registered dynamic execution context */
     DynamicExecutionContext* mpFirstDynamicExecutionContext;
+#endif
 };
 
 } // namespace whiteboard

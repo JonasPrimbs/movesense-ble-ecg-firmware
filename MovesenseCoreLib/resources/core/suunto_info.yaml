@@ -1,11 +1,34 @@
+# Copyright Suunto Oy 2015-2016
+# All rights reserved.
+
 swagger: '2.0'
 
+# Document metadata
 info:
-  version: "0.0.1"
-  title: Info API
+  version: "0.9.0"
+  title: /Info API
   description: |
-    API for the device info
+    This file defines the /Info API.
+  termsOfService: http://suunto.com/wbapi/terms/
+  contact:
+    name: Suunto team
+    url: http://developer.suunto.com
 
+# Security definitions
+security:
+  - suuntoAccessCode:
+    - public
+
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+    flow: accessCode
+    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
+    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
+
+# Paths
 paths:
   /Info:
     x-executionContext: meas
@@ -17,6 +40,9 @@ paths:
           description: Device Information structure
           schema:
             $ref: '#/definitions/DeviceInfo'
+      security:
+        - suuntoAccessCode:
+          - public
 
   /Info/Version:
     x-executionContext: meas
@@ -32,6 +58,9 @@ paths:
           schema:
             type: string
           example: "1.0.0"
+      security:
+        - suuntoAccessCode:
+          - public
 
   /Info/Version/Hw:
     x-executionContext: meas
@@ -45,6 +74,9 @@ paths:
           schema:
             type: string
           example: "1740G1"
+      security:
+        - suuntoAccessCode:
+          - public
 
   /Info/Version/Touch:
     x-executionContext: meas
@@ -57,6 +89,11 @@ paths:
           schema:
             type: string
           example: "2.0.27"
+        423:
+          description: Another running request prevents getting version information
+      security:
+        - suuntoAccessCode:
+          - public
 
   /Info/Version/Ble:
     x-executionContext: application
@@ -69,6 +106,9 @@ paths:
           schema:
             type: string
           example: "2.3.13"
+      security:
+        - suuntoAccessCode:
+          - public
 
   /Info/Version/Gps:
     x-executionContext: meas
@@ -81,6 +121,9 @@ paths:
           schema:
             type: string
           example: "5.7.9-P1_5.7.9"
+      security:
+        - suuntoAccessCode:
+          - public
 
   /Info/Version/Ohr:
     x-executionContext: meas
@@ -95,6 +138,9 @@ paths:
           example: "5196"
         400:
           description: Bad request, operation failed. Returned also if optical HR sensor does not exist.
+      security:
+        - suuntoAccessCode:
+          - public
         
 # Extra definitions
 definitions:

@@ -21,7 +21,7 @@
 #include "whiteboard/builtinTypes/Vector3D.h"
 #include "whiteboard/builtinTypes/WrapperFor32BitPointer.h"
 
-#define WB_EXECUTION_CONTEXT_INSTANTION_REF(id)						static_cast<whiteboard::ExecutionContextId>(id)
+#define WB_EXECUTION_CONTEXT_INSTANTION_REF(id)					static_cast<whiteboard::ExecutionContextId>(id)
 #define WB_RESOURCE_VALUE(whiteboardId, localResourceId, executionContextId) \
 	static_cast<whiteboard::ResourceId::Value>( \
 		(static_cast<uint32>(localResourceId) << 16) | \
@@ -31,11 +31,6 @@
 
 #define WB_CALLER_CONTEXT										whiteboard::ID_INVALID_EXECUTION_CONTEXT
 
-
-/** Helper function for force linking of the library
-* (Visual C will ignore whole library if none of the symbols are referenced)
-*/
-void pullInWbResources();
 
 #include "../wb-resources/resources.h"
 #include "../suunto_shared/resources.h"
@@ -86,6 +81,46 @@ struct FUSION_HEADING
 	struct EVENT
 	{
 		typedef float NotificationType;
+	};
+
+	struct UNSUBSCRIBE
+	{
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+	};
+};
+
+struct FUSION_HEADING_ISCOMPASS
+{
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 10753, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 10753;
+
+	struct GET
+	{
+		typedef bool Response_HTTP_CODE_OK_Type;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+	};
+
+	struct SUBSCRIBE
+	{
+		typedef bool Response_HTTP_CODE_OK_Type;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+	};
+
+	struct EVENT
+	{
+		typedef bool NotificationType;
 	};
 
 	struct UNSUBSCRIBE

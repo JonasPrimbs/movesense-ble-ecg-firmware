@@ -34,4 +34,4 @@ bool calculateDataTypeSizeAndAlignment(const IDataTypeMetadataContainer& rMetada
     uint8& rAlignment);
 
 } // namespace protocol_v9
-} // namespace whitespace
+} // namespace whiteboard

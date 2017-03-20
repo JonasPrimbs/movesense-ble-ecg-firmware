@@ -1,172 +1,163 @@
+# This file defines Suunto Whiteboard API
+#
+# Copyright Suunto Oy 2015
+# All rights reserved.
+#
+# Swagger editor is located at http://vaas1410:81/#/
+#
+# NOTE! Editor remembers last file you have edited, but it is
+# not necessarily the version located in your local or shared repository. 
+# ALWAYS USE COPY + PASTE TO UPDATE THE EDITOR BEFORE DOING ANY EDITING!!!
+#
 swagger: '2.0'
 
+# Document metadata
 info:
-  version: "0.0.1"
-  title: Info API
+  version: "0.0.0"
+  title: Suunto SmartSensor2 DataLogger API
   description: |
-    API for the device info
+    This file defines Suunto API for generic DataLogger module
 
+    See http://developer.suunto.com for more information.
+  termsOfService: http://suunto.com/wbapi/terms/
+  contact:
+    name: Suunto team
+    url: http://developer.suunto.com
+  
+# Security definitions
+security:
+  - suuntoAccessCode:
+    - public
+    - read:user
+    - write:user
+    - read:contacts
+    - write:contacts
+    - test
+
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+      read:user: Grants read access to user profile info.
+      write:user: Grants write access to user profile info.
+      read:contacts: Grants read access to user's contants and memberships.
+      write:contacts: Grants write access to user's contants and memberships.
+      test: Grants read/write access to QA / test resources.
+    flow: accessCode
+    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
+    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
+    
+# Paths
 paths:
-  /Info:
-    x-executionContext: meas
-    get:
-      description: |
-        Query for Device Information.
-      responses:
-        200:
-          description: Device Information structure
-          schema:
-            $ref: '#/definitions/DeviceInfo'
-
-  /Info/Version:
-    x-executionContext: meas
-
-  /Info/Version/Sw:
-    x-executionContext: meas
-    get:
-      description: |
-        Query for Device Software Version Information.
-      responses:
-        200:
-          description: Three digit version number for the SW platform.
-          schema:
-            type: string
-            example: "1.0.0"
-
-  /Info/Version/Hw:
-    x-executionContext: meas
-    get:
-      description: |
-        Query for Device Hardware Version Information.
-      responses:
-        200:
-          description: Identifier for the HW configuration. Everytime there are changes in componets/PCB, this ID is updated.
-            In Suunto case, the format is varying number of <letter, number> pairs.
-          schema:
-            type: string
-            example: "1740G1"
-
-  /Info/Version/Touch:
-    x-executionContext: meas
-    get:
-      description: |
-        Query for Device Touch Controller Firmware Version Information.
-      responses:
-        200:
-          description: Three digit version number for the Touch Controller Firmware Version
-          schema:
-            type: string
-            example: "2.0.27"
-
-  /Info/Version/Ble:
+  /DataLogger/Config:
     x-executionContext: application
     get:
       description: |
-        Query for Device BLE Controller Firmware Version Information.
+        Reads config from DataLogger.
       responses:
         200:
-          description: Three digit version number for the BLE Controller Firmware Version
+          description: Operation completed successfully
           schema:
-            type: string
-            example: "2.3.13"
-
-  /Info/Version/Gps:
-    x-executionContext: meas
-    get:
-      description: |
-        Query for Device GPS Controller Firmware Version Information.
-      responses:
-        200:
-          description: Version identifier for the GPS controller.
-          schema:
-            type: string
-            example: "5.7.9-P1_5.7.9"
-
-  /Info/Version/Ohr:
-    x-executionContext: meas
-    get:
-      description: |
-        Query for device optical heartrate sensor firmware version information. 
-      responses:
-        200:
-          description: Version identifier for the OHR module.
-          schema:
-            type: string
-            example: "5196"
+            $ref: '#/definitions/DataLoggerConfig'
         400:
-          description: Bad request, operation failed. Returned also if optical HR sensor does not exist.
-        
+          description: Bad request. Memory could not be read from specified offset.
+      security:
+        - suuntoAccessCode:
+          - test          
+    put:
+      description: |
+        Writes new DataLogger config to device.
+      parameters:
+        -
+          name: config
+          in: body
+          description: New configuration for DataLogger
+          required: true
+          schema:
+            $ref: '#/definitions/DataLoggerConfig'
+      responses:
+        200:
+          description: Operation completed successfully
+        400:
+          description: Bad request.
+      security:
+        - suuntoAccessCode:
+          - test     
+    
+
+  /DataLogger/State:
+    x-executionContext: application
+    get:
+      description: |
+        Reads current DataLogger state.
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            $ref: '#/definitions/DataLoggerState'        
+      security:
+        - suuntoAccessCode:
+          - test          
+    put:
+      description: |
+        Changes DataLogger to a new state.
+      parameters:
+        -
+          name: newState
+          in: body
+          description: New state for DataLogger
+          required: true
+          schema:
+            $ref: '#/definitions/DataLoggerState'
+      responses:
+        200:
+          description: Operation completed successfully
+        400:
+          description: Bad request.
+      security:
+        - suuntoAccessCode:
+          - test     
+    
+
 # Extra definitions
 definitions:
-
-  DeviceInfo:
+  DataLoggerConfig:
     required:
-      - manufacturerName
-      - productName
-      - variant
-      - hwCompatibilityId
-      - serial
-      - pcbaSerial
-      - sw
-      - hw
+      - dataEntries
     properties:
-      manufacturerName:
-        description: Unique manufacturer name (this is not the original manufacturer name).
-        type: string
-        example: "Suunto"
-      productName:
-        description: Official product name visible to the consumers. This name is allocated by Suunto.
-        type: string
-        example: "Spartan Ultra"
-      variant:
-        description: Internal variant name. This name is allocated by Suunto.
-        type: string
-        example: "Amsterdam"
-      hwCompatibilityId:
-        description: Identifier defining which SW firmware can be installed on the device.
-          This ID together with the variant name is used to check/fetch the latest FW.
-          Different PCBAs which can run the same Firmware version have the same HwCompatibilityId.
-        type: string
-        example: "A"
-      serial:
-        description: Globally unique device serial number (12 digit)
-        type: string
-        example: "155110123456"
-      pcbaSerial:
-        description: Globally unique PCBA assemply identifier (this can be OEM specific) 
-        type: string
-        example: Suunto PCBA serial format = 01234112345678901234567894444N2YYWW
-      sw:
-        description: Three digit version number for the SW platform.
-        type: string
-        example: "1.0.0"      
-      hw:
-        description: Identifier for the HW configuration. Everytime there are changes in componets/PCB, this ID is updated.
-          In Suunto case, the format is varying number of <letter, number> pairs.
-        type: string
-        example: "1740G1"
-      additionalVersionInfo:
-        description: Array of structs containing pairs of version type identifier and version.
-        $ref: 'http://localhost:9000/suunto_shared.yaml#/definitions/VersionInfoArray'
-      addressInfo:
-        description: Array of structs containing pairs of address type identifier and address.
-        $ref: '#/definitions/AddressInfoArray'
+      dataEntries:
+        description: Array of structs containing wb-paths to the subscription of data to log.
+        $ref: '#/definitions/DataEntryArray'
 
-  AddressInfoArray:
+  DataEntryArray:
     required:
-      - addressInfo
+      - dataEntry
     properties:
-      addressInfo:
+      dataEntry:
         type: array
         items:
-          $ref: '#/definitions/AddressInfo'
-
-  AddressInfo:
+          $ref: '#/definitions/DataEntry'
+          
+  DataEntry:
     required:
-      - name
-      - address
+      - path
     properties:
-      name:
+      path:
         type: string
-      address:
-        type: string
+  
+  DataLoggerState:
+    description: |
+      State of the DataLogger component.
+    type: integer
+    format: uint8
+    enum:
+      - name: 'DATALOGGER_INVALID'
+        description: Unknown or Invalid state prior to initialization or due to comm error.
+        value: 1
+      - name: 'DATALOGGER_READY'
+        description: If we are ready for logging.
+        value: 2
+      - name: 'DATALOGGER_LOGGING'
+        description: If we are logging data.
+        value: 3

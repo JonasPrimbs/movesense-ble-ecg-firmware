@@ -1,12 +1,36 @@
+# Copyright Suunto Oy 2015-2016
+# All rights reserved.
+
 swagger: '2.0'
 
+# Document metadata
 info:
-  version: "0.0.1"
-  title: User Interface Indication API
+  version: "0.9.0"
+  title: /Device/UserInteraction/Indication API
   description: |
-    General User Interface Indication API
+    This file defines the /Device/UserInteraction/Indication (sound and vibra feedback effect sequence) API.
+  termsOfService: http://suunto.com/wbapi/terms/
+  contact:
+    name: Suunto team
+    url: http://developer.suunto.com
 
+# Security definitions
+security:
+  - suuntoAccessCode:
+    - public
+
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+    flow: accessCode
+    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
+    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
+
+# Paths
 paths:
+
   /Device/UserInteraction/Indication/Play:
     x-executionContext: meas
     put:
@@ -36,6 +60,11 @@ paths:
           description: Play request was denied because of higher priority effect already playing.
         500:
           description: driver error
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#put
+      security:
+        - suuntoAccessCode:
+          - public
 
   /Device/UserInteraction/Indication/Cancel:
     x-executionContext: meas
@@ -56,6 +85,11 @@ paths:
           description: Operation completed successfully
         404:
           description: Not found
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#put
+      security:
+        - suuntoAccessCode:
+          - public
 
   /Device/UserInteraction/Indication/Done:
     x-executionContext: meas
@@ -68,11 +102,16 @@ paths:
       responses:
         200:
           description: Client subscribtion completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
         x-notification:
           description: |
             Identifier of the composition effect that was finished
           schema:
             $ref: '#/definitions/CompositionId'
+      security:
+        - suuntoAccessCode:
+          - public
 
     delete:
       description: |
@@ -82,6 +121,9 @@ paths:
           description: Client unsubscribtion completed successfully
         x-std-errors:
           description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
 
 # Extra definitions
 definitions:

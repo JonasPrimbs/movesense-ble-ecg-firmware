@@ -19,7 +19,7 @@
 #define M_PI 3.141592653f
 #endif
 
-#define DEG_TO_RAD(DEG) ((DEG)*M_PI / 180)
-#define RAD_TO_DEG(RAD) ((RAD)*180 / M_PI)
+#define DEG_TO_RAD(DEG) ((DEG)*(M_PI / 180))
+#define RAD_TO_DEG(RAD) ((RAD)*(180 / M_PI))
 
 #endif // PI_H_

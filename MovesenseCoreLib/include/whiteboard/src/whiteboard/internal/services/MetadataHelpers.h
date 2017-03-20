@@ -11,7 +11,7 @@ namespace whiteboard
 {
 
 // Forward declarations
-struct MetadataMap;
+class MetadataMap;
 
 namespace services
 {

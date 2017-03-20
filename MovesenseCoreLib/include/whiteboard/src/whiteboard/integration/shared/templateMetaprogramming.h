@@ -4,7 +4,8 @@ Copyright (c) Suunto Oy 2015.
 All rights reserved.
 ******************************************************************************/
 
-#include "macros.h"
+#include "whiteboard/integration/shared/types.h"
+#include "whiteboard/integration/shared/pack.h"
 
 namespace whiteboard
 {
@@ -146,6 +147,16 @@ struct ByRef<T*>
 {
     typedef typename RemoveReference<T>::type* type;
 };
+
+/** Template for conditionally enabling template functions.
+*
+* @see C++11 std::enable_if
+*/
+template<bool B, class T = void>
+struct EnableIf {};
+
+template<class T>
+struct EnableIf<true, T> { typedef T type; };
 
 // Template struct for calculating real data type alignments
 template <typename Type> struct TypeAlignTest

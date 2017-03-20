@@ -93,7 +93,7 @@ public:
     * @param pFirst Pointer to first item
     * @param compare Function that compares list item with given comparand.
     *                Negative return value continues iteration.
-    *                Zero returns currrent item.
+    *                Zero returns current item.
     *                Positive value ends iteraton and returns NULL.
     * @param pComparand Comparand for comparison
     */

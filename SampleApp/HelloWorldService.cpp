@@ -14,8 +14,6 @@ const size_t HELLO_WORLD_PERIOD_MS  = 5000;
 
 const char* const HelloWorldService::LAUNCHABLE_NAME = "HelloSvc";
 
-static const whiteboard::ExecutionContextId sExecutionContextId =
-    WB_RES::LOCAL::EXAMPLE_HELLOWORLD::EXECUTION_CONTEXT;
 
     
 static const whiteboard::LocalResourceId sProviderResources[] = {
@@ -24,9 +22,9 @@ static const whiteboard::LocalResourceId sProviderResources[] = {
 
 
 HelloWorldService::HelloWorldService()
-    : ResourceClient(WBDEBUG_NAME(__FUNCTION__), sExecutionContextId),
-      ResourceProvider(WBDEBUG_NAME(__FUNCTION__), sExecutionContextId),
-      LaunchableModule(LAUNCHABLE_NAME, sExecutionContextId)
+    : ResourceClient(WBDEBUG_NAME(__FUNCTION__), WB_RES::LOCAL::EXAMPLE_HELLOWORLD::EXECUTION_CONTEXT),
+      ResourceProvider(WBDEBUG_NAME(__FUNCTION__), WB_RES::LOCAL::EXAMPLE_HELLOWORLD::EXECUTION_CONTEXT),
+      LaunchableModule(LAUNCHABLE_NAME, WB_RES::LOCAL::EXAMPLE_HELLOWORLD::EXECUTION_CONTEXT)
 {
     mCounter = 0;
     mTimer = whiteboard::ID_INVALID_TIMER;

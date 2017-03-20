@@ -2,9 +2,12 @@
 // Copyright (c) Suunto Oy 2016. All rights reserved.
 
 #include "whiteboard/internal/ResourceSubtree.h"
+#include "whiteboard/Identifiers.h"
 #include "whiteboard/Result.h"
 
 namespace whiteboard
+{
+namespace internal
 {
 
 /**
@@ -13,7 +16,7 @@ namespace whiteboard
 class ResourceTree FINAL
 {
 public:
-    
+
     /**
     *	Constructor.
     */
@@ -24,8 +27,8 @@ public:
     **/
     ~ResourceTree();
 
-    /** Clears the resource tree */
-    void clear();
+    /** Clears the resource tree and deletes all subtrees */
+    void clearAndDelete();
 
     /**
     * Adds a resource subtree to the given mount point.
@@ -57,28 +60,24 @@ public:
      * @return Pointer to first mounted resource subtree
      */
     ResourceSubtree* getFirstResourceSubtree();
-    
-    /**
-    * Gets resource metadata with given ID
+
+    /** Finds resource subtree with specified metadata map instance
     *
-    * @param localResourceId ID of the local resource
-    * @param rMetadata [out] On output contains resource metadata
-    * @param rpSubscriptionData [out] On output contains pointer to resource's subscripton information
-    * @return Result of the operation
+    * @param rMetadataMap Metadata map of the resource tree instance
+    * @return Pointer to subtree with given metadata
     */
-    Result getResourceById(
-        LocalResourceId localResourceId, ResourceMetadata& rMetadata, const ResourceSubscriptionData*& rpSubscriptionData) const;
+    ResourceSubtree* findSubtree(const MetadataMap& rMetadataMap);
 
     /**
     * Gets resource metadata with given ID
     *
     * @param localResourceId ID of the local resource
-    * @param rMetadata [out] On output contains resource metadata
-    * @param rpSubscriptionData [out] On output contains pointer to resource's subscripton information
+    * @param rMetadata On output contains resource metadata
+    * @param rSubscriptionData On output contains resource's subscription information
     * @return Result of the operation
     */
     Result getResourceById(
-        LocalResourceId localResourceId, ResourceMetadata& rMetadata, ResourceSubscriptionData*& rpSubscriptionData);
+        LocalResourceId localResourceId, ResourceMetadata& rMetadata, ResourceSubscriptionData& rSubscriptionData) const;
 
     /** Gets full path of a resource
     *
@@ -92,7 +91,7 @@ public:
     *	Gets a resource ID by full resource path
     *
     *	@param pFullPath Full path of the resource
-    *   @param clientId In case of path request originating from clientId should be 
+    *   @param clientId In case of path request originating from clientId should be
     *          provided so that the client pathVariables are cached at the same time.
     *	@return Resource ID with given path or ID_INVALID_RESOURCE if it is not found.
     */
@@ -102,7 +101,7 @@ public:
     class Iterator
     {
     public:
-        /** Constructor 
+        /** Constructor
          *
          * @param pFirstResourceSubtree First subtree for iteration
          */
@@ -121,7 +120,7 @@ public:
         */
         LocalResourceId operator*() const;
 
-        /** Prefix increment operator for advancing the iterator 
+        /** Prefix increment operator for advancing the iterator
          *
          * return Reference to this iterator
          */
@@ -130,22 +129,12 @@ public:
         /**
         * Gets resource metadata with given ID
         *
-        * @param rMetadata [out] On output contains resource metadata
-        * @param rpSubscriptionData [out] On output contains pointer to resource's subscripton information
+        * @param rMetadata On output contains resource metadata
+        * @param rSubscriptionData On output contains resource's subscription information
         * @return Result of the operation
         */
         Result getResourceById(
-            ResourceMetadata& rMetadata, const ResourceSubscriptionData*& rpSubscriptionData) const;
-
-        /**
-        * Gets resource metadata with given ID
-        *
-        * @param rMetadata [out] On output contains resource metadata
-        * @param rpSubscriptionData [out] On output contains pointer to resource's subscripton information
-        * @return Result of the operation
-        */
-        Result getResourceById(
-            ResourceMetadata& rMetadata, ResourceSubscriptionData*& rpSubscriptionData);
+            ResourceMetadata& rMetadata, ResourceSubscriptionData& rSubscriptionData) const;
 
     private:
         /** Current resource subtree */
@@ -155,7 +144,7 @@ public:
         size_t mResourceIndex;
     };
 
-    /** Gets new iterator instance 
+    /** Gets new iterator instance
     *
     * @return New iterator that points to first resource
     */
@@ -194,4 +183,5 @@ private:
     ResourceSubtree* mpFirstRegistered;
 };
 
+} // namespace internal
 } // namespace whiteboard

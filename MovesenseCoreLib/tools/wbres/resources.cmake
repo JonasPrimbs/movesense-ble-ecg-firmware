@@ -18,6 +18,13 @@ else()
   message(FATAL_ERROR "No support for host OS '${CMAKE_HOST_SYSTEM_NAME}'.")
 endif()
 
+if (NOT EXISTS ${WBRES_TOOL})
+  message(FATAL_ERROR "Could not find whiteboard resource tool from '${WBRES_TOOL}'.")
+elseif (("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Darwin") OR ("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Linux"))
+  # Make sure that tool has execution rights
+  execute_process(COMMAND chmod u+x ${WBRES_TOOL})
+endif()
+
 # Hard coded in wbres.exe
 list(APPEND WBRES_INTERNAL_INPUTS "${CMAKE_CURRENT_LIST_DIR}/resources/headerDefinitions.h")
 list(APPEND WBRES_INTERNAL_INPUTS "${CMAKE_CURRENT_LIST_DIR}/resources/sourceDefinitions.cpp")
@@ -29,7 +36,7 @@ list(APPEND WBRES_INTERNAL_INPUTS "${CMAKE_CURRENT_LIST_DIR}/resources/metadataS
 #   Name OutputVar
 #   [INCLUDE_DIRECTORIES [dir1 ...]]
 #   [[SOURCE_GROUP Name [source1 ...] ...]
-#   GENERATE [C] [CPP] [LIB] [METADATA]
+#   GENERATE [C] [CPP] [LIB] [METADATA [AS name]] [METADATA_BIN]
 #   [CPP_DEPENDS [dependency1 ...]]
 #   [EXPORT_SYMBOL SymbolName])
 #
@@ -50,7 +57,8 @@ list(APPEND WBRES_INTERNAL_INPUTS "${CMAKE_CURRENT_LIST_DIR}/resources/metadataS
 #   internal storage format that allows later combination with other 
 #   resources and libraries as well as metadata generation. Use METADATA
 #   to generate metadata for the application. Note that currently there
-#   can be only one metadata build step per application.
+#   can be only one metadata build step per application. Use METADATA_BIN
+#   to generate metadata in binary format.
 #   With CPP_DEPENDS you can specify a list of additional headers that
 #   are required for building CPP generated headers. EXPORT_SYMBOL defines
 #   name of preprocessor symbol that should be used to export symbols from
@@ -61,6 +69,7 @@ function (generate_wb_resources Name OutputVar)
   set(WBRES_OUTPUT_SOURCE ${PATH_GENERATED_ROOT}/${Name}/resources.cpp)
   set(WBRES_OUTPUT_LIB ${CMAKE_BINARY_DIR}/${Name}.wbo)
   set(WBRES_OUTPUT_METADATA ${CMAKE_BINARY_DIR}/${Name}/metadata.cpp)
+  set(WBRES_OUTPUT_METADATA_BIN ${CMAKE_BINARY_DIR}/${Name}.wbr)
   
   set(INCLUDE_DIRECTORIES)
   set(SOURCE_GROUP_NAME)
@@ -120,11 +129,11 @@ function (generate_wb_resources Name OutputVar)
       _add_wb_resources_source_group(SOURCE_GROUP_NAME SOURCE_GROUP_SOURCES)
       continue()
     elseif ("${arg}" STREQUAL "CPP_DEPENDS")
-      set(STATE 5)
+      set(STATE 7)
       _add_wb_resources_source_group(SOURCE_GROUP_NAME SOURCE_GROUP_SOURCES)
       continue()
     elseif ("${arg}" STREQUAL "EXPORT_SYMBOL")
-      set(STATE 6)
+      set(STATE 8)
       _add_wb_resources_source_group(SOURCE_GROUP_NAME SOURCE_GROUP_SOURCES)
       continue()
     endif()
@@ -139,32 +148,46 @@ function (generate_wb_resources Name OutputVar)
       set(STATE 3)
     elseif (STATE EQUAL 3)
       list(APPEND SOURCE_GROUP_SOURCES ${arg})
-    elseif (STATE EQUAL 4)
+    elseif ((STATE EQUAL 4) OR (STATE EQUAL 5))
       if (${arg} STREQUAL "C")
         list(APPEND OUTPUTS ${WBRES_OUTPUT_CHEADER})
         list(APPEND CMDLINE --cheaderFile "${WBRES_OUTPUT_CHEADER}")
+        set(STATE 4)
       elseif (${arg} STREQUAL "CPP")
         file(MAKE_DIRECTORY ${PATH_GENERATED_ROOT}/${Name})
         list(APPEND OUTPUTS ${WBRES_OUTPUT_HEADER})
         list(APPEND OUTPUTS ${WBRES_OUTPUT_SOURCE})
         list(APPEND CMDLINE --headerFile "${WBRES_OUTPUT_HEADER}" --sourceFile "${WBRES_OUTPUT_SOURCE}")
+        set(STATE 4)
       elseif (${arg} STREQUAL "LIB")
         list(APPEND HIDDEN_OUTPUTS ${WBRES_OUTPUT_LIB})
         list(APPEND CMDLINE --libFile "${WBRES_OUTPUT_LIB}")
+        set(STATE 4)
       elseif (${arg} STREQUAL "METADATA")
         file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/${Name})
         list(APPEND OUTPUTS ${WBRES_OUTPUT_METADATA})
         list(APPEND CMDLINE --metadataSourceFile "${WBRES_OUTPUT_METADATA}")
+        set(STATE 5)
+      elseif (${arg} STREQUAL "METADATA_BIN")
+        file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/${Name})
+        list(APPEND OUTPUTS ${WBRES_OUTPUT_METADATA_BIN})
+        list(APPEND CMDLINE --metadataBinaryFile "${WBRES_OUTPUT_METADATA_BIN}")
+        set(STATE 4)
+      elseif ((STATE EQUAL 5) AND (${arg} STREQUAL "AS"))
+        set(STATE 6)        
       else()
         message(FATAL_ERROR "Invalid parameter '${arg}'")
       endif()
-    elseif (STATE EQUAL 5)
+    elseif (STATE EQUAL 6)
+        set(STATE 4)
+        list(APPEND CMDLINE --metadataVarName "${arg}")
+    elseif (STATE EQUAL 7)
       if (${arg} MATCHES "^.*\\..*$") # *.*
         list(APPEND CMDLINE --cppDepends ${arg})
       else()
         list(APPEND CMDLINE --cppDepends ../${arg}/resources.h)
       endif()
-    elseif (STATE EQUAL 6)
+    elseif (STATE EQUAL 8)
       list(APPEND CMDLINE --exportSymbol ${arg})
     endif()
   endforeach()

@@ -79,7 +79,7 @@ public:
     */
     EventProcessor(
         IExecutionContext& rContext,
-        const metadata::ExecutionContextSettings& rSettings);
+        const metadata::ExecutionContext& rSettings);
 
     /** Destructor */
     ~EventProcessor();
@@ -127,7 +127,7 @@ public:
     WbThreadHandle getThreadHandle() const { return mEventThread; }
 
     /** Get the settings used to initialize this EventProcessor. */
-    const metadata::ExecutionContextSettings& getMetadata() const { return mrSettings; }
+    const metadata::ExecutionContext& getMetadata() const { return mrSettings; }
 
     /**
     * Gets the maximum stack depth used in creation of this thread.
@@ -202,7 +202,7 @@ private:
     IExecutionContext& mrContext;
 
     /** The execution context settings. */
-    const metadata::ExecutionContextSettings& mrSettings;
+    const metadata::ExecutionContext& mrSettings;
 
     /** Handle of the thread */
     volatile WbThreadHandle mEventThread;

@@ -38,7 +38,10 @@ extern PreLaunchCallback __preLaunchCallback;
 // Array to hold app's own module names
 extern const char * const*__MOVESENSE_APP_SPECIFIC_MODULES;
 
-
+// Main app thread stack size
+extern uint16_t g_WB_EXEC_CTX_APPLICATION_STACKSIZE;
+// and macro to set it
+#define MOVESENSE_APPLICATION_STACKSIZE(stackSizeInWords) uint16_t g_WB_EXEC_CTX_APPLICATION_STACKSIZE = (stackSizeInWords);
 
 // define macros that app use to specify their own launchable modules. Structurally result is a class with preLaunchHappened callback and array of the created modules. Modules are reserved from the heap
 #define MOVESENSE_PROVIDERS_BEGIN(NumModules) \
@@ -61,3 +64,14 @@ public:\
 };  \
 __MovesenseAppModuleHolder __launchableModuleHolder; const char * __MovesenseAppModuleHolder::__moduleNames[NumModules+1]; whiteboard::LaunchableModule* __MovesenseAppModuleHolder::__moduleObjs[NumModules+1];\
 const char *const *__MOVESENSE_APP_SPECIFIC_MODULES = __MovesenseAppModuleHolder::__moduleNames;
+
+extern const bool g_enableSerialComm;
+extern const bool g_enableBLEComm;
+
+#define MOVESENSE_FEATURES_BEGIN()
+
+#define SERIAL_COMMUNICATION(enable) const bool g_enableSerialComm = (enable);
+
+#define BLE_COMMUNICATION(enable) const bool g_enableBLEComm = (enable);
+
+#define MOVESENSE_FEATURES_END()
