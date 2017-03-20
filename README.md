@@ -22,7 +22,7 @@ Resource | Description|Implemented
 
 ## Prerequisite ##
 
- * [GNU Toolchain for ARM Embedded 5-2016-q2](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
+ * [GNU Toolchain for ARM Embedded 5-2016-q3](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
  * [Ninja build tool](https://ninja-build.org/) - remember to add to path
  * [cmake >=3.6](https://cmake.org/download/)
  * [Visual Studio Redistributable 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
