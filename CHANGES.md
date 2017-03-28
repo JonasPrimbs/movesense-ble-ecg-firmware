@@ -8,6 +8,7 @@
 ###Known Bugs:###
 - Magnetometer has been disabled for now to avoid accelerometer large current drain of v0.2.0.
 - Battery level service returns -1
+- iPhone BLE connection fails at device discovery
 
 ###Notes:###
 - REQUIRED: Update toolchain to **GNU Toolchain for ARM v. 5.4 2016q3** 
