@@ -37,6 +37,7 @@
 #define WB_EXEC_CTX_PRIMARYSERVICES              WB_EXECUTION_CONTEXT_INSTANTION_REF(0)
 #define WB_EXEC_CTX_APPLICATION                  WB_EXECUTION_CONTEXT_INSTANTION_REF(1)
 #define WB_EXEC_CTX_MEAS                         WB_EXECUTION_CONTEXT_INSTANTION_REF(2)
+#define WB_EXEC_CTX_UI                           WB_EXECUTION_CONTEXT_INSTANTION_REF(3)
 
 namespace WB_RES {
 
@@ -54,9 +55,36 @@ struct HeartRateQualityValues
 };
 typedef whiteboard::TypedEnum<HeartRateQualityValues, HeartRateQualityValues::Type, uint8> HeartRateQuality;
 
-struct UpgradeStateValues
+struct IntervalTrainingStateValues
 {
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 15363;
+
+	enum Type
+	{
+		DISABLED = 0U,
+		ENABLED = 1U,
+		INTERVAL = 2U,
+		RECOVERY = 3U,
+		COMPLETED = 4U
+	};
+};
+typedef whiteboard::TypedEnum<IntervalTrainingStateValues, IntervalTrainingStateValues::Type, uint8> IntervalTrainingState;
+
+struct IntervalTrainingTypeValues
+{
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 15364;
+
+	enum Type
+	{
+		DURATION = 0U,
+		DISTANCE = 1U
+	};
+};
+typedef whiteboard::TypedEnum<IntervalTrainingTypeValues, IntervalTrainingTypeValues::Type, uint8> IntervalTrainingType;
+
+struct UpgradeStateValues
+{
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 15365;
 
 	enum Type
 	{
@@ -112,7 +140,7 @@ struct WB_STRUCT_PACKED UpgradeStatus
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 15364;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 15366;
 	static const whiteboard::StructureValueSerializer<UpgradeStatus> serializer;
 	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<UpgradeStatus> cleaner;)
 

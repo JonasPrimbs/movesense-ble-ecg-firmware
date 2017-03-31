@@ -370,9 +370,11 @@ public:
     *
     * @param pStats Array that will receive pool statistics
     * @param maxNumberOfPools Maximum number of pools which statistics should be retrieved
+    * @param startIndex Pools are in fixed order index onwards to start getting stats
+    * @param totalNumberOfPools [out] Number of pools in total
     * @return Number of pools which data were retrieved
     */
-    static size_t getStatistics(WB_RES::PoolStats* pStats, size_t maxNumberOfPools);
+    static size_t getStatistics(WB_RES::PoolStats* pStats, size_t maxNumberOfPools, size_t startIndex, size_t& totalNumberOfPools);
 #endif
 
 private:
@@ -411,10 +413,14 @@ private:
     static Pool* spFirst;
     /** Next pool in linked list */
     Pool* mpNext;
+    /** Number of allocated items */
+    uint32 mAllocations;
     /** High water mark */
     uint32 mHighWaterMark;
     /** Cumulative wait time (allocations) */
     uint32 mBlockTimeMs;
+    /** Max single wait time (allocations) */
+    uint32 mMaxBlockTimeMs;
     /** Number of times the pool has been empty */
     uint32 mEmptyCount;
 #endif

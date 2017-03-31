@@ -5,10 +5,12 @@
 ******************************************************************************/
 
 #include "whiteboard/CommAdapter.h"
-#include "whiteboard/devicediscovery/ios/BLECentral.h"
 
 namespace whiteboard
 {
+
+// Forward declarations
+class BLECentral;
 
 /** Class that implements iOS BLE wrapper for whiteboard */
 class BleAdapter FINAL : public CommAdapter

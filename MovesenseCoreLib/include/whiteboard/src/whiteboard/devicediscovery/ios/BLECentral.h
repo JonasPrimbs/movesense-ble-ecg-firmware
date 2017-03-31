@@ -25,7 +25,9 @@ typedef std::function<void(const std::string& peripheralUUID, bool wasRemotelyIn
 typedef std::function<void(const std::string& peripheralUUID, const void* data, int dataLength)> BLECentralDidReceiveDataCallback;
 typedef std::function<void(const std::string& peripheralUUID, bool result)> BLECentralDidNotifyConnectToPeripheralCallback;
 typedef std::function<void(const std::string& peripheralUUID, bool wasRemotelyInitiated)> BLECentralDidNotifyDisconnectToPeripheralCallback;
-
+typedef std::function<void(const std::string& peripheralUUID, bool result)> BLECentralDidConnectPeripheralToWhiteboardCallback;
+typedef std::function<void(const std::string& peripheralUUID)> BLECentralDidDisconnectPeripheralFromWhiteboardCallback;
+    
 // Forward declarations
 struct WBCentralImpl;
 
@@ -63,7 +65,9 @@ public:
     BLECentralDidReceiveDataCallback didReceiveDataFromPeripheral;
     BLECentralDidNotifyConnectToPeripheralCallback didNotifyConnectToPeripheralCallback;
     BLECentralDidNotifyDisconnectToPeripheralCallback didNotifyDisconnectFromPeripheralCallback;
-
+    BLECentralDidConnectPeripheralToWhiteboardCallback didConnectPeripheralToWhiteboardCallback;
+    BLECentralDidDisconnectPeripheralFromWhiteboardCallback didDisconnectPeripheralFromWhiteboardCallback;
+    
     std::unique_ptr<WBCentralImpl> mCentralImpl; // PIMPL to WBCentral ObjC object
 
 private:

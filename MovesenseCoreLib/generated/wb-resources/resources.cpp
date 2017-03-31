@@ -17,7 +17,7 @@ WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ListOfStrings) == 4, AlignmentOfStructure_Lis
 WB_STATIC_VERIFY(sizeof(WbInfo) == 8, SizeOfStructure_WbInfo_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(WbInfo) == 4, AlignmentOfStructure_WbInfo_IsNotWhatExpected);
 
-WB_STATIC_VERIFY(sizeof(PoolStats) == 12, SizeOfStructure_PoolStats_IsNotWhatExpected);
+WB_STATIC_VERIFY(sizeof(PoolStats) == 44, SizeOfStructure_PoolStats_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(PoolStats) == 4, AlignmentOfStructure_PoolStats_IsNotWhatExpected);
 
 WB_STATIC_VERIFY(sizeof(PoolStatsList) == 8, SizeOfStructure_PoolStatsList_IsNotWhatExpected);
@@ -28,12 +28,6 @@ WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(EventQueueInfo) == 4, AlignmentOfStructure_Ev
 
 WB_STATIC_VERIFY(sizeof(EventQueueInfoList) == 8, SizeOfStructure_EventQueueInfoList_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(EventQueueInfoList) == 4, AlignmentOfStructure_EventQueueInfoList_IsNotWhatExpected);
-
-WB_STATIC_VERIFY(sizeof(BlockingObjectPoolStats) == 32, SizeOfStructure_BlockingObjectPoolStats_IsNotWhatExpected);
-WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(BlockingObjectPoolStats) == 4, AlignmentOfStructure_BlockingObjectPoolStats_IsNotWhatExpected);
-
-WB_STATIC_VERIFY(sizeof(BlockingObjectPoolStatsList) == 8, SizeOfStructure_BlockingObjectPoolStatsList_IsNotWhatExpected);
-WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(BlockingObjectPoolStatsList) == 4, AlignmentOfStructure_BlockingObjectPoolStatsList_IsNotWhatExpected);
 
 WB_STATIC_VERIFY(sizeof(SubscriptionInfo) == 16, SizeOfStructure_SubscriptionInfo_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(SubscriptionInfo) == 4, AlignmentOfStructure_SubscriptionInfo_IsNotWhatExpected);
@@ -101,10 +95,6 @@ const whiteboard::StructureValueSerializer<EventQueueInfo> EventQueueInfo::seria
 WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<EventQueueInfo> EventQueueInfo::cleaner;)
 const whiteboard::StructureValueSerializer<EventQueueInfoList> EventQueueInfoList::serializer;
 WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<EventQueueInfoList> EventQueueInfoList::cleaner;)
-const whiteboard::StructureValueSerializer<BlockingObjectPoolStats> BlockingObjectPoolStats::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<BlockingObjectPoolStats> BlockingObjectPoolStats::cleaner;)
-const whiteboard::StructureValueSerializer<BlockingObjectPoolStatsList> BlockingObjectPoolStatsList::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<BlockingObjectPoolStatsList> BlockingObjectPoolStatsList::cleaner;)
 const whiteboard::StructureValueSerializer<SubscriptionInfo> SubscriptionInfo::serializer;
 WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<SubscriptionInfo> SubscriptionInfo::cleaner;)
 const whiteboard::StructureValueSerializer<SubscriptionList> SubscriptionList::serializer;

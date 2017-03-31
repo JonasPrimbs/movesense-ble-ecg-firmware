@@ -21,6 +21,7 @@ struct OperationParameter
 {
     std::string dataType;
     std::string srcData;
+    bool isFile;
 };
 
 typedef std::vector<OperationParameter> OperationParameters_t;
@@ -38,6 +39,14 @@ public:
     /** Constructor. Parses given command line.
      */
     CmdLine(const std::string& commandLine);
+
+    /** Constructor. Parses given command line arguments.
+    */
+    CmdLine(const std::initializer_list<std::string>& arguments);
+
+    /** Constructor. Parses given command line arguments.
+    */
+    CmdLine(const std::vector<std::string>& arguments);
 
     /** Command line arguments */
     const CommandLineArguments_t commandlineArguments;

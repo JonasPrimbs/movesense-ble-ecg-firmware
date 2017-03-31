@@ -11,6 +11,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "")
     message(WARNING "Defaulting build type to 'Debug'")
 endif()
 
+set(OPTIMIZATIONS HIGH)
 
 if(NOT DEFINED LINKER_SCRIPT_NAME)
     set(LINKER_SCRIPT_NAME appflash)
@@ -40,7 +41,7 @@ include(build/compiler/${COMPILER}.cmake)
 include(${MOVESENSE_CORE_LIBRARY}/MovesenseFromStaticLib.cmake REQUIRED)
 
 set(EXECUTABLE_NAME Movesense)
-set(OPTIMIZATIONS LOW)
+
 set(PATH_GENERATED_ROOT ${CMAKE_CURRENT_BINARY_DIR}/generated)
 
 include_directories(${MOVESENSE_CORE_LIBRARY}/include/whiteboard/src)
@@ -70,6 +71,14 @@ add_definitions(-DWB_PORT="os/${WB_PORT}/port.h")
 #    file(COPY ${SUBDIR} DESTINATION ${CMAKE_BINARY_DIR}/generated)
 #endforeach()
 
+
+# The first one contains real application yaml with execution context definitions
+generate_wb_resources(
+    app_execution_contexts app_execution_contexts_RESOURCE_SOURCES
+    SOURCE_GROUP app_execution_contexts  ${CMAKE_CURRENT_SOURCE_DIR}/*_root.yaml
+    GENERATE C CPP LIB
+    CPP_DEPENDS wb-resources)
+ 
 # Generate our own resources
 generate_wb_resources(
     app-resources APP_RESOURCE_SOURCES
@@ -85,7 +94,7 @@ file(GLOB MOVESENSE_CORE_WBO_FILES  ${MOVESENSE_CORE_LIBRARY}/resources/*.wbo)
 # Combine libraries
 generate_wb_resources(
     app-metadata APP_METADATA_SOURCES
-    SOURCE_GROUP none GENERATED ${MOVESENSE_CORE_WBO_FILES} ${CMAKE_BINARY_DIR}/app-resources.wbo
+    SOURCE_GROUP none GENERATED ${MOVESENSE_CORE_WBO_FILES} ${CMAKE_BINARY_DIR}/app-resources.wbo ${CMAKE_BINARY_DIR}/app_execution_contexts.wbo
     GENERATE METADATA)
 
     

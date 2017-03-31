@@ -6,6 +6,6 @@
 static const unsigned short ROOT_LID = 0;
 static const unsigned short DEVICE_LID = 18446744073709551615;
 static const unsigned short DEVICE_MEASUREMENT_LID = 18446744073709551615;
-static const unsigned short DEVICE_MEASUREMENT_ANGULARVELOCITY_LID = 16384;
-static const unsigned short DEVICE_MEASUREMENT_ANGULARVELOCITY_HIGHSPEED_LID = 16385;
+static const unsigned short DEVICE_MEASUREMENT_ANGULARVELOCITY_LID = 17152;
+static const unsigned short DEVICE_MEASUREMENT_ANGULARVELOCITY_HIGHSPEED_LID = 17153;
 

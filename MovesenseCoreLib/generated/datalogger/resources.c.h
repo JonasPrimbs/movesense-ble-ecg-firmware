@@ -5,6 +5,6 @@
 
 static const unsigned short ROOT_LID = 0;
 static const unsigned short DATALOGGER_LID = 18446744073709551615;
-static const unsigned short DATALOGGER_CONFIG_LID = 16640;
-static const unsigned short DATALOGGER_STATE_LID = 16641;
+static const unsigned short DATALOGGER_CONFIG_LID = 17408;
+static const unsigned short DATALOGGER_STATE_LID = 17409;
 

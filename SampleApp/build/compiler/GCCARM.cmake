@@ -16,7 +16,7 @@ set(GCCARM_TYPEFIX "-U__INT32_TYPE__ -D__INT32_TYPE__=int \
 
 set(GCCARM_NRF5SDK_ERROR_DISABLES "-Wno-old-style-declaration -Wno-discarded-qualifiers -Wp,-w -Wno-write-strings")
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Os \
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
 -W -Wall -Werror -Wfatal-errors \
 -Wshadow -Wpointer-arith -Wcast-qual -Wwrite-strings -Wunreachable-code \
 -Wbad-function-cast -Wsign-compare \
@@ -24,19 +24,19 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Os \
 -Wno-cast-align -Wno-strict-aliasing -Wno-maybe-uninitialized \
 -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 \
 -fno-common -ffreestanding -fno-builtin -mapcs -gdwarf-3 \
--Os -std=gnu11 -ffunction-sections -fdata-sections \
+-std=gnu11 -ffunction-sections -fdata-sections \
 ${GCCARM_NRF5SDK_ERROR_DISABLES} \
 ${GCCARM_TYPEFIX}")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} \
--W -Wall -Werror -Wfatal-errors -Os \
+-W -Wall -Werror -Wfatal-errors \
 -Wshadow -Wpointer-arith -Wcast-qual -Wwrite-strings -Wunreachable-code \
 -Wsign-compare \
 -Wno-aggregate-return -Wno-unused-parameter -Wno-unused-function \
 -Wno-cast-align -Wno-strict-aliasing -Wno-maybe-uninitialized \
 -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 \
 -fno-common -ffreestanding -fno-builtin -mapcs -gdwarf-3 \
--Os -std=gnu++11 -ffunction-sections -fdata-sections \
+-std=gnu++11 -ffunction-sections -fdata-sections \
 -fno-rtti -fno-exceptions -fno-unwind-tables -fno-use-cxa-atexit -fno-threadsafe-statics \
 ${GCCARM_NRF5SDK_ERROR_DISABLES} \
 ${GCCARM_TYPEFIX}")
@@ -81,6 +81,22 @@ set(LIBRARY_GROUP_END "-Wl,--end-group")
 
 # We have to manually add c++ and math libraries
 set(LIBRARIES ${LIBRARIES} m stdc++)
+
+if (OPTIMIZATIONS STREQUAL "HIGH")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Os")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Os")
+elseif (OPTIMIZATIONS STREQUAL "MEDIUM")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
+elseif (OPTIMIZATIONS STREQUAL "LOW")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O1")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O1")
+elseif (OPTIMIZATIONS STREQUAL "NONE")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0")
+else()
+  message(FATAL_ERROR "Unsupported optimization level '${OPTIMIZATIONS}'")
+endif()
 
 # Set stack size definition
 add_definitions("-D__STACK_SIZE=1024")

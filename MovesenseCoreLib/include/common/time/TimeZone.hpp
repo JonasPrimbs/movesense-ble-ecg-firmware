@@ -129,7 +129,7 @@ namespace nea
     X3_(GP, Guadeloupe, America, Guadeloupe, Basse-Terre, -4, 0)                                   \
     X3_(GT, Guatemala, America, Guatemala, Guatemala, -6, 0)                                       \
     X3_(GY, Guyana, America, Guyana, Georgetown, -4, 0)                                            \
-    X3_(HT, Port_au_Prince, America, Haiti, Port-au-Prince, -5, 0)                                 \
+    X3_(HT, Port_au_Prince, America, Haiti, Port-au-Prince, -5, 6)                                 \
     X3_(HN, Tegucigalpa, America, Honduras, Tegucigalpa, -6, 0)                                    \
     X3_(JM, Jamaica, America, Jamaica, Kingston, -5, 0)                                            \
     X3_(MQ, Martinique, America, Martinique, Fort-de-France, -4, 0)                                \
@@ -229,8 +229,8 @@ namespace nea
     X3_(MY, Kuala_Lumpur, Asia, Malaysia, Kuala Lumpur, 8, 0)                                      \
     X3_(MY, Kuching, Asia, Malaysia, Kuching, 8, 0)                                                \
     X3_(MO, Macau, Asia, Macao, Macau, 8, 0)                                                       \
-    X3_(MN, Hovd, Asia, Mongolia, Hovd, 7, 21)                                                     \
-    X3_(MN, Ulaanbaatar, Asia, Mongolia, Ulaanbaatar, 8, 21)                                       \
+    X3_(MN, Hovd, Asia, Mongolia, Hovd, 7, 0)                                                      \
+    X3_(MN, Ulaanbaatar, Asia, Mongolia, Ulaanbaatar, 8, 0)                                        \
     X3_(MM, Rangoon, Asia, Myanmar, Rangoon, 6.5, 0)                                               \
     X3_(NP, Kathmandu, Asia, Nepal, Kathmandu, 5.75, 0)                                            \
     X3_(KP, Pyongyang, Asia, North Korea, Pyongyang, 8.5, 0)                                       \

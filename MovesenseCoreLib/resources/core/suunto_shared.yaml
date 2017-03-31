@@ -67,6 +67,30 @@ definitions:
         description: Heartrate data may contain errors. The sensor may be in non-optimal position and needs adjustment. 
         value: 1
 
+  IntervalTrainingState:
+    type: integer
+    format: uint8
+    enum:
+      - name: 'Disabled'
+        value: 0
+      - name: 'Enabled'
+        value: 1
+      - name: 'Interval'
+        value: 2
+      - name: 'Recovery'
+        value: 3
+      - name: 'Completed'
+        value: 4
+
+  IntervalTrainingType:
+    type: integer
+    format: uint8
+    enum:
+      - name: 'Duration'
+        value: 0
+      - name: 'Distance'
+        value: 1
+
   UpgradeStatus:
     required:
       - state

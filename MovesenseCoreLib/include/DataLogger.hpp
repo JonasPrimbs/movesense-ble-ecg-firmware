@@ -1,7 +1,7 @@
 // Copyright (c) Suunto Oy 2016. All rights reserved.
 #pragma once
 
-#include "wbresources/resources.h"
+#include "datalogger/resources.h"
 #include "buildconfig/hal/features.h"
 #include <whiteboard/LaunchableModule.h>
 

@@ -37,11 +37,26 @@ paths:
     get:
       description: |
         Returns information about Whiteboard pools and their usage.
+      parameters:
+        -
+          name: startIndex
+          in: query
+          description: |
+            Start index in the pool list, 0 starts from the beginning
+          required: false
+          type: integer
+          format: uint32
       responses:
+        100:
+          description: Operation completed successfully, there is more data available, use startIndex to query more.
+          schema:
+            $ref: '#/definitions/PoolStatsList'
         200:
           description: Operation completed successfully
           schema:
             $ref: '#/definitions/PoolStatsList'
+        416: 
+          description: startIndex out of range of number of pools.
       security:
         - suuntoAccessCode:
           - public
@@ -69,6 +84,22 @@ definitions:
         description: Maximum number of ever allocated items.
         type: integer
         format: uint16
+      allocations:
+        description: Total number of allocations ever. May overflow eventually.
+        type: integer
+        format: uint32
+      emptyCount:
+        description: Number of times pool has been empty. May overflow eventually.
+        type: integer
+        format: uint32
+      blockTimeMs:
+        description: Total amount of time pool has been empty in milliseconds. May overflow eventually.
+        type: integer
+        format: uint32
+      maxBlockTimeMs:
+        description: All time highest single block time
+        type: integer
+        format: uint32
 
   PoolStatsList:
     required:

@@ -1,7 +1,7 @@
 ///
 //
-//		Copyright (c) Suunto Oy 2015-2016.
-//		All rights reserved.
+//        Copyright (c) Suunto Oy 2015-2016.
+//        All rights reserved.
 //
 ///
 
@@ -21,6 +21,7 @@ enum /* : Size */
     MEGAHERTZ,
     BEAT_PER_MINUTE,
     REVOLUTION_PER_MINUTE,
+    STROKES_PER_MINUTE,
     UNIT_COUNT
 
 };
@@ -36,6 +37,7 @@ typedef Quantity<FREQUENCY, frequency::KILOHERTZ> Kilohertz;
 typedef Quantity<FREQUENCY, frequency::MEGAHERTZ> Megahertz;
 typedef Quantity<FREQUENCY, frequency::BEAT_PER_MINUTE> BeatPerMinute;
 typedef Quantity<FREQUENCY, frequency::REVOLUTION_PER_MINUTE> RevolutionPerMinute;
+typedef Quantity<FREQUENCY, frequency::STROKES_PER_MINUTE> StrokesPerMinute;
 
 // Base unit
 typedef Hertz Frequency;

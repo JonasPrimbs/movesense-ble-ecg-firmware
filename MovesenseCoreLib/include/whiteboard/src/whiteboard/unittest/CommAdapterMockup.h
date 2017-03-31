@@ -206,6 +206,12 @@ public:
 
     Result formatAddress(const Address& rAddress, size_t bufferSize, char* addressBuffer) OVERRIDE FINAL;
 
+    /**
+        For test to control the return result code of disableAdapter()
+        @param result Result code to return from disableAdapter(), result == static_cast<Result>(0) indicates "not used"
+    */
+    void setControlledDisableResult(const Result result) { mControlledDisableResult = result; }
+
 protected:
     static void indexToAddress(size_t index, whiteboard::Address& rAddressData);
     static size_t addressToIndex(const whiteboard::Address& rAddressData);
@@ -231,6 +237,9 @@ protected:
 
     /** Failure simulator instance */
     CommAdapterMockupFailureSimulator& mrFailureSimulator;
+
+    /** Disable result code controlled from the test itself */
+    Result mControlledDisableResult;
 };
 
 // Mockup that does asynchronous connects and sends

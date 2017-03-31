@@ -257,7 +257,7 @@ private:
             : Pool::ITypeAdapter(WB_OFFSETOF(Buffer, data) + alingUp(bufferSize), WB_TYPE_ALIGNMENT(Buffer))
         {
             WB_DEBUG_ASSERT(mItemSize % WB_TYPE_ALIGNMENT(Buffer) == 0);
-			WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(Buffer) == WB_MESSAGE_ALIGNMENT, BufferAlignmentIsNotWhatExpected);
+            WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(Buffer) == WB_MESSAGE_ALIGNMENT, BufferAlignmentIsNotWhatExpected);
         }
 
         /** Performs placement new for given array of objects

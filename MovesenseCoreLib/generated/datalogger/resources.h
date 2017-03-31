@@ -38,6 +38,7 @@
 #define WB_EXEC_CTX_PRIMARYSERVICES              WB_EXECUTION_CONTEXT_INSTANTION_REF(0)
 #define WB_EXEC_CTX_APPLICATION                  WB_EXECUTION_CONTEXT_INSTANTION_REF(1)
 #define WB_EXEC_CTX_MEAS                         WB_EXECUTION_CONTEXT_INSTANTION_REF(2)
+#define WB_EXEC_CTX_UI                           WB_EXECUTION_CONTEXT_INSTANTION_REF(3)
 
 namespace WB_RES {
 
@@ -45,7 +46,7 @@ WB_STRUCT_PACK_BEGIN()
 
 struct DataLoggerStateValues
 {
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 16643;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 17411;
 
 	enum Type
 	{
@@ -64,7 +65,7 @@ struct WB_STRUCT_PACKED DataEntry
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 16640;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 17408;
 	static const whiteboard::StructureValueSerializer<DataEntry> serializer;
 	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<DataEntry> cleaner;)
 
@@ -81,7 +82,7 @@ struct WB_STRUCT_PACKED DataEntryArray
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 16641;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 17409;
 	static const whiteboard::StructureValueSerializer<DataEntryArray> serializer;
 	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<DataEntryArray> cleaner;)
 
@@ -98,7 +99,7 @@ struct WB_STRUCT_PACKED DataLoggerConfig
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 16642;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 17410;
 	static const whiteboard::StructureValueSerializer<DataLoggerConfig> serializer;
 	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<DataLoggerConfig> cleaner;)
 
@@ -123,8 +124,8 @@ struct DATALOGGER;
 struct DATALOGGER_CONFIG
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 16640, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 16640;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 17408, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 17408;
 
 	struct GET
 	{
@@ -193,8 +194,8 @@ struct DATALOGGER_CONFIG
 struct DATALOGGER_STATE
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 16641, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 16641;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 17409, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 17409;
 
 	struct GET
 	{

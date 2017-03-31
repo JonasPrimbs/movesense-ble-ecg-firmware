@@ -41,7 +41,7 @@ WB_STRUCT_PACK_BEGIN()
 
 struct AdapterStateValues
 {
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 268;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 266;
 
 	enum Type
 	{
@@ -54,7 +54,7 @@ typedef whiteboard::TypedEnum<AdapterStateValues, AdapterStateValues::Type, uint
 
 struct RouteStateValues
 {
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 265;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 263;
 
 	enum Type
 	{
@@ -72,7 +72,7 @@ typedef whiteboard::TypedEnum<RouteStateValues, RouteStateValues::Type, uint8> R
 
 struct RoutingTableNotificationTypeValues
 {
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 270;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 268;
 
 	enum Type
 	{
@@ -85,7 +85,7 @@ typedef whiteboard::TypedEnum<RoutingTableNotificationTypeValues, RoutingTableNo
 
 struct ModuleCommandValues
 {
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 271;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 269;
 
 	enum Type
 	{
@@ -99,7 +99,7 @@ typedef whiteboard::TypedEnum<ModuleCommandValues, ModuleCommandValues::Type, ui
 
 struct ModuleStateValues
 {
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 272;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 270;
 
 	enum Type
 	{
@@ -115,7 +115,7 @@ typedef whiteboard::TypedEnum<ModuleStateValues, ModuleStateValues::Type, uint8>
 
 struct ThreadPriorityValues
 {
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 276;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 274;
 
 	enum Type
 	{
@@ -159,7 +159,7 @@ typedef whiteboard::TypedEnum<DataTypeTypeValues, DataTypeTypeValues::Type, uint
 
 struct ScalarTypeValues
 {
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 277;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 275;
 
 	enum Type
 	{
@@ -186,7 +186,7 @@ typedef whiteboard::TypedEnum<ScalarTypeValues, ScalarTypeValues::Type, uint8> S
 
 struct ScalarUnitValues
 {
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 278;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 276;
 
 	enum Type
 	{
@@ -255,8 +255,6 @@ struct WB_STRUCT_PACKED PoolStats;
 struct WB_STRUCT_PACKED PoolStatsList;
 struct WB_STRUCT_PACKED EventQueueInfo;
 struct WB_STRUCT_PACKED EventQueueInfoList;
-struct WB_STRUCT_PACKED BlockingObjectPoolStats;
-struct WB_STRUCT_PACKED BlockingObjectPoolStatsList;
 struct WB_STRUCT_PACKED SubscriptionInfo;
 struct WB_STRUCT_PACKED SubscriptionList;
 struct WB_STRUCT_PACKED CompactWbVersion;
@@ -579,6 +577,10 @@ struct WB_STRUCT_PACKED PoolStats
 	WB_ALIGN(2) uint16 size;
 	WB_ALIGN(2) uint16 allocated;
 	WB_ALIGN(2) uint16 highWaterMark;
+	WB_ALIGN(4) whiteboard::Optional< uint32 > allocations;
+	WB_ALIGN(4) whiteboard::Optional< uint32 > emptyCount;
+	WB_ALIGN(4) whiteboard::Optional< uint32 > blockTimeMs;
+	WB_ALIGN(4) whiteboard::Optional< uint32 > maxBlockTimeMs;
 
 	inline void visit(whiteboard::IStructureVisitor& rVisitor)
 	{
@@ -586,7 +588,11 @@ struct WB_STRUCT_PACKED PoolStats
 			.visit(name)
 			.visit(size)
 			.visit(allocated)
-			.visit(highWaterMark);
+			.visit(highWaterMark)
+			.visit(allocations)
+			.visit(emptyCount)
+			.visit(blockTimeMs)
+			.visit(maxBlockTimeMs);
 	}
 };
 
@@ -655,59 +661,11 @@ struct WB_STRUCT_PACKED EventQueueInfoList
 	}
 };
 
-struct WB_STRUCT_PACKED BlockingObjectPoolStats
-{
-	// Structure type identification and serialization
-	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 261;
-	static const whiteboard::StructureValueSerializer<BlockingObjectPoolStats> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<BlockingObjectPoolStats> cleaner;)
-
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> name;
-	WB_ALIGN(2) uint16 size;
-	WB_ALIGN(4) uint32 allocated;
-	WB_ALIGN(4) uint32 highWaterMark;
-	WB_ALIGN(4) uint32 allocations;
-	WB_ALIGN(4) uint32 emptyCount;
-	WB_ALIGN(4) uint32 emptyTimeMs;
-	WB_ALIGN(4) uint32 blockTimeMs;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(name)
-			.visit(size)
-			.visit(allocated)
-			.visit(highWaterMark)
-			.visit(allocations)
-			.visit(emptyCount)
-			.visit(emptyTimeMs)
-			.visit(blockTimeMs);
-	}
-};
-
-struct WB_STRUCT_PACKED BlockingObjectPoolStatsList
-{
-	// Structure type identification and serialization
-	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 262;
-	static const whiteboard::StructureValueSerializer<BlockingObjectPoolStatsList> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<BlockingObjectPoolStatsList> cleaner;)
-
-	WB_ALIGN(4) whiteboard::Array< BlockingObjectPoolStats > pools;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(pools);
-	}
-};
-
 struct WB_STRUCT_PACKED SubscriptionInfo
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 263;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 261;
 	static const whiteboard::StructureValueSerializer<SubscriptionInfo> serializer;
 	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<SubscriptionInfo> cleaner;)
 
@@ -728,7 +686,7 @@ struct WB_STRUCT_PACKED SubscriptionList
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 264;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 262;
 	static const whiteboard::StructureValueSerializer<SubscriptionList> serializer;
 	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<SubscriptionList> cleaner;)
 
@@ -745,7 +703,7 @@ struct WB_STRUCT_PACKED CompactWbVersion
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 266;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 264;
 	static const whiteboard::StructureValueSerializer<CompactWbVersion> serializer;
 	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<CompactWbVersion> cleaner;)
 
@@ -766,7 +724,7 @@ struct WB_STRUCT_PACKED RoutingTableEntry
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 267;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 265;
 	static const whiteboard::StructureValueSerializer<RoutingTableEntry> serializer;
 	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<RoutingTableEntry> cleaner;)
 
@@ -805,7 +763,7 @@ struct WB_STRUCT_PACKED RoutingTable
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 269;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 267;
 	static const whiteboard::StructureValueSerializer<RoutingTable> serializer;
 	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<RoutingTable> cleaner;)
 
@@ -824,7 +782,7 @@ struct WB_STRUCT_PACKED LaunchableModule
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 273;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 271;
 	static const whiteboard::StructureValueSerializer<LaunchableModule> serializer;
 	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<LaunchableModule> cleaner;)
 
@@ -843,7 +801,7 @@ struct WB_STRUCT_PACKED LaunchableList
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 274;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 272;
 	static const whiteboard::StructureValueSerializer<LaunchableList> serializer;
 	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<LaunchableList> cleaner;)
 
@@ -2362,28 +2320,11 @@ struct WHITEBOARD_INFO_SUBSCRIPTIONS
 
 struct WHITEBOARD_METRICS;
 
-struct WHITEBOARD_METRICS_BLOCKINGOBJECTPOOLS
+struct WHITEBOARD_METRICS_EVENTS
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 265, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 265;
-
-	struct GET
-	{
-		typedef BlockingObjectPoolStatsList Response_HTTP_CODE_OK_Type;
-
-		struct Parameters
-		{
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
-		};
-	};
-};
-
-struct WHITEBOARD_METRICS_EVENTS
-{
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 266, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 266;
 
 	struct GET
 	{
@@ -2397,7 +2338,7 @@ struct WHITEBOARD_METRICS_EVENTS
 
 				struct TypeValues
 				{
-					static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 279;
+					static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 277;
 				
 					enum Type
 					{
@@ -2468,16 +2409,76 @@ struct WHITEBOARD_METRICS_EVENTS
 struct WHITEBOARD_METRICS_POOLS
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 267, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 267;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 266, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 266;
 
 	struct GET
 	{
+		typedef PoolStatsList Response_HTTP_CODE_CONTINUE_Type;
 		typedef PoolStatsList Response_HTTP_CODE_OK_Type;
 
 		struct Parameters
 		{
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+			struct STARTINDEX
+			{
+				static const whiteboard::ParameterIndex Index = 0;
+
+				typedef uint32 Type;
+				typedef Type ConstReferenceType;
+			};
+
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
+		};
+
+		/** Reference wrapper for strongly typed parameter list for /Whiteboard/Metrics/Pools */
+		class ParameterListRef
+		{
+		private:
+			/** Prevent use of default constructor */
+			ParameterListRef() DELETED;
+
+			/** Prevent use of copy constructor */
+			ParameterListRef(const ParameterListRef&) DELETED;
+
+			/** Prevent use of assignment operator */
+			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
+
+		public:
+			/** Constructor that initializes this class from existing parameter list
+			*
+			* @param rParameterList Reference to parameter list that contains untyped parameters
+			*/
+			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
+				: mrParameterList(rParameterList)
+			{
+			}
+
+			/** Checks whether optional parameter STARTINDEX has a value
+			*
+			* @return A value indicating whether the parameter has a value
+			*/
+			inline bool hasStartIndex() const
+			{
+				if (mrParameterList.getNumberOfParameters() <= Parameters::STARTINDEX::Index)
+				{
+					return false;
+				}
+
+				return mrParameterList[Parameters::STARTINDEX::Index].getType() != whiteboard::WB_TYPE_NONE;
+			}
+
+			/** Gets STARTINDEX parameter value
+			*
+			* @return Current parameter value
+			*/
+			inline Parameters::STARTINDEX::ConstReferenceType getStartIndex() const
+			{
+				return mrParameterList[Parameters::STARTINDEX::Index].convertTo<Parameters::STARTINDEX::ConstReferenceType>();
+			}
+
+		private:
+			/** Reference to actual parameter list */
+			const whiteboard::ParameterList& mrParameterList;
 		};
 	};
 };
@@ -2487,8 +2488,8 @@ struct WHITEBOARD_SYSTEM;
 struct WHITEBOARD_SYSTEM_LAUNCHER
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 268, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 268;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 267, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 267;
 
 	struct GET
 	{
@@ -2636,8 +2637,8 @@ struct WHITEBOARD_TEST;
 struct WHITEBOARD_TEST_BYPASS
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 269, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 269;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 268, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 268;
 
 	struct GET
 	{
@@ -2784,8 +2785,8 @@ struct WHITEBOARD_TEST_BYPASS
 struct WHITEBOARD_TEST_ECHO
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 270, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 270;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 269, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 269;
 
 	struct GET
 	{
@@ -2846,8 +2847,8 @@ struct WHITEBOARD_TEST_ECHO
 struct WHITEBOARD_TEST_NULL
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 271, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 271;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 270, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 270;
 
 	struct PUT
 	{
@@ -2906,8 +2907,8 @@ struct WHITEBOARD_TEST_NULL
 struct WHITEBOARD_TEST_PING
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 272, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 272;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 271, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 271;
 
 	struct GET
 	{
@@ -2923,8 +2924,8 @@ struct WHITEBOARD_TEST_PING
 struct WHITEBOARD_TEST_ZERO
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 273, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 273;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 272, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 272;
 
 	struct GET
 	{

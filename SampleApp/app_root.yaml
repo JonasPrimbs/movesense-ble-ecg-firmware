@@ -25,6 +25,14 @@ executionContexts:
     stackSize: 512
     priority: normal
 
+# DUMMY ui-context until WBRES.exe gets fixed.
+  ui:
+    numberOfDpcs: 1
+    numberOfRequests: 1
+    numberOfResponses: 1
+    stackSize: 128
+    priority: low
+    
 apis:
   AccelerometerSample.*:
     apiId: 100

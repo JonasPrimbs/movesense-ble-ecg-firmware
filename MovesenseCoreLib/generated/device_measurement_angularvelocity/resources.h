@@ -38,6 +38,7 @@
 #define WB_EXEC_CTX_PRIMARYSERVICES              WB_EXECUTION_CONTEXT_INSTANTION_REF(0)
 #define WB_EXEC_CTX_APPLICATION                  WB_EXECUTION_CONTEXT_INSTANTION_REF(1)
 #define WB_EXEC_CTX_MEAS                         WB_EXECUTION_CONTEXT_INSTANTION_REF(2)
+#define WB_EXEC_CTX_UI                           WB_EXECUTION_CONTEXT_INSTANTION_REF(3)
 
 namespace WB_RES {
 
@@ -50,7 +51,7 @@ struct WB_STRUCT_PACKED FloatVector3DArray2
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 16384;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 17152;
 	static const whiteboard::StructureValueSerializer<FloatVector3DArray2> serializer;
 	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<FloatVector3DArray2> cleaner;)
 
@@ -67,7 +68,7 @@ struct WB_STRUCT_PACKED AngularVelocityValue
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 16385;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 17153;
 	static const whiteboard::StructureValueSerializer<AngularVelocityValue> serializer;
 	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<AngularVelocityValue> cleaner;)
 
@@ -96,8 +97,8 @@ struct DEVICE_MEASUREMENT;
 struct DEVICE_MEASUREMENT_ANGULARVELOCITY
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 16384, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 16384;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 17152, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 17152;
 
 	struct GET
 	{
@@ -134,8 +135,8 @@ struct DEVICE_MEASUREMENT_ANGULARVELOCITY
 struct DEVICE_MEASUREMENT_ANGULARVELOCITY_HIGHSPEED
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 16385, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 16385;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 17153, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 17153;
 
 	struct SUBSCRIBE
 	{

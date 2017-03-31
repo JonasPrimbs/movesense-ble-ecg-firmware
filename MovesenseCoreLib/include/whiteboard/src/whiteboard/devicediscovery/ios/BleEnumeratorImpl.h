@@ -46,7 +46,7 @@ private:
         DISCONNECT
     };
 
-    void updateDevices(const UpdateType);
+    void updateDevices(const std::string& uuid, const UpdateType);
     void setCallbacks();
 
 private:

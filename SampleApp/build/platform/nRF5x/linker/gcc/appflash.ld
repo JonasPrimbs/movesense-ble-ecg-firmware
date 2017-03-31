@@ -8,7 +8,7 @@ GROUP(-lgcc -lc -lnosys)
 MEMORY
 {
   FLASH (rx) : ORIGIN = 0x1f000, LENGTH = 0x40000
-  RAM (rwx) :  ORIGIN = 0x20002178, LENGTH = 0xde88
+  RAM (rwx) :  ORIGIN = 0x20002c88, LENGTH = 0xd378
   
   
   /** Location of non initialized RAM. Non initialized RAM is used for exchanging bond information
