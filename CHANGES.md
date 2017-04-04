@@ -1,4 +1,7 @@
 
+##Version 0.3.0.86 / 2##
+- Added wbo files that were lost in the merge. This fix connectivity that was broken since 31.March
+
 ##Version 0.3.0.86##
 
 ###Whats new:###
