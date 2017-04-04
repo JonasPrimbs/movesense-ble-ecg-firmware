@@ -1,0 +1,98 @@
+# Copyright Suunto Oy 2015-2016
+# All rights reserved.
+
+swagger: '2.0'
+
+# Document metadata
+info:
+  version: "0.9.0"
+  title: /Device/SystemEvent API
+  description: |
+    This file defines the /Device/SystemEvent API.
+  termsOfService: http://suunto.com/wbapi/terms/
+  contact:
+    name: Suunto team
+    url: http://developer.suunto.com
+
+# Security definitions
+security:
+  - suuntoAccessCode:
+    - public
+
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+    flow: accessCode
+    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
+    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
+
+# Paths
+paths:
+  /Device/SystemEvent:
+    x-executionContext: meas
+    get:
+      description: |
+        Retrieve logged system events.
+      parameters:
+        - name: SequenceNumber
+          in: query
+          required: false
+          description: | 
+            Sequence number, event messages are numbered from 1 onwards. 
+            If zero is used the oldest (smallest sequence number) is searched
+            and messages starting from the oldest one are returned.
+            Sequence number contained by response can be used in next request.
+          type: integer
+          format: uint32
+      responses:
+        200:
+          description: |
+            An array of system events following the given sequence number,
+            or starting from the oldest entry in the log (if any) if the
+            sequence number is not given.
+          schema:
+            $ref: '#/definitions/SystemEventLogEntryArray'
+      security:
+        - suuntoAccessCode:
+          - public
+
+definitions:
+  SystemEventLogEntryArray:
+    required:
+      - events
+    properties:
+      events:
+        type: array
+        items:
+          $ref: '#/definitions/SystemEventLogEntry'
+
+  SystemEventLogEntry:
+    required:
+      - sequenceNumber
+      - event
+      - compoundSystemState
+      - timestamp
+      - moduleID
+    properties:
+      sequenceNumber:
+        description: Sequence number of the event in the log
+        type: integer
+        format: uint32
+      event:
+        description: Log event data
+        type: string
+      compoundSystemState:
+        description: Compound system state indicator
+        type: integer
+        format: uint16
+      timestamp:
+        description: Unix time
+        type: integer
+        format: uint32
+        x-unit: second
+      moduleID:
+        description: ID of the module from which the event originates
+        type: integer
+        format: uint16
