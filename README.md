@@ -10,15 +10,14 @@ Resource | Description|Implemented
 /Logbook|Generic Logbook from where the logged data can be read| YES
 /Device/Measurement/AngularVelocity|API enabling reading or subscribing angular velocity data (based on gyroscope).| YES
 /Device/Measurement/LinearAcceleration|API enabling reading or subscribing linear acceleration data (based accelerometer).| YES
-/Device/Measurement/MagneticField|API enabling reading or subscribing magnetic field data (based on magnetometer).| YES**
-/Device/Measurement/Temperature|API enabling reading or subscribing temperature data (based on thermometer).| NO
+/Device/Measurement/MagneticField|API enabling reading or subscribing magnetic field data (based on magnetometer).| YES
+/Device/Measurement/Temperature|API enabling reading or subscribing temperature data (based on thermometer).| YES
+/Device/Component/Led|API for controlling the LED.| YES
 /Device/UserInteraction/Indication|API for controlling the LED.| NO
-/Device/Battery|API for reading the battery state.| YES
-/Dev/Time|API for accessing different time related services.| NO
+/Device/Power/BatteryLevel|API for reading the battery state.| YES
+/Dev/Time|API for accessing different time related services.| YES*
 /Device/SystemEvent|API for accessing system event log.| NO
 /Device/System/Mode|API for controlling the main system state (e.g. factory sleep).| PARTIAL
-
-** Due to unexceptionally high current consumption, disabled in the master release until fixed
 
 ## Prerequisite ##
 
@@ -40,7 +39,15 @@ Optionally:
 > cd movesense-device-lib
 > mkdir myBuild
 > cd myBuild
-> cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../SampleApp
+
+> cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/helloworld_app
+or
+> cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/plain_app
+or
+> cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/accelerometer_app
+or
+> cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/blinky_app
+
 > ninja
 ```
 If successful, application binary can be found in the build folder with name *Movesense.hex*.

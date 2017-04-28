@@ -249,7 +249,7 @@ def generateGroupsForResAndDatatype(resource, path, datatype, resourceGroups, re
                                             definitions[v['__datatype']],
                                             resourceGroups,
                                             resourceItems)
-
+            propGroup['__required'] = v['__required']
             subGroups.append(propGroup)
             resourceGroups.append(propGroup)
     
@@ -498,7 +498,7 @@ while(runAgain):
         #print("complexTypes handling for: ", k);
         
         requiredProps = []
-        if 'required' in v: 
+        if 'required' in v:
             requiredProps = v['required']
             #print("required: ",v['required'])
 
@@ -510,7 +510,7 @@ while(runAgain):
             
             # is prop required
             propvalue['__required'] = propname in requiredProps
-            
+
             if 'type' in propvalue and propvalue['type'] != 'array':
                 # prop is simple property => fill SBEM_FRM
                 frmString = frmFromSchema(propvalue)

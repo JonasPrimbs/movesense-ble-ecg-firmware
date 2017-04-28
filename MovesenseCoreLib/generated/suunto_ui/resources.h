@@ -67,7 +67,8 @@ struct TestFeatureIdValues
 		LOCKPOWERSTATE = 1,
 		DRAWUPDATEDREGIONBORDER = 2,
 		MEASUREFPS = 3,
-		OPENDURATION = 4
+		MEASUREDFPS = 4,
+		OPENDURATION = 5
 	};
 };
 typedef whiteboard::TypedEnum<TestFeatureIdValues, TestFeatureIdValues::Type, int32> TestFeatureId;
@@ -1488,7 +1489,8 @@ struct UI_TEST_VALUE_FEATUREID
 						LOCKPOWERSTATE = 1,
 						DRAWUPDATEDREGIONBORDER = 2,
 						MEASUREFPS = 3,
-						OPENDURATION = 4
+						MEASUREDFPS = 4,
+						OPENDURATION = 5
 					};
 				};
 				typedef whiteboard::TypedEnum<TypeValues, TypeValues::Type, int32> Type;
@@ -1554,7 +1556,8 @@ struct UI_TEST_VALUE_FEATUREID
 						LOCKPOWERSTATE = 1,
 						DRAWUPDATEDREGIONBORDER = 2,
 						MEASUREFPS = 3,
-						OPENDURATION = 4
+						MEASUREDFPS = 4,
+						OPENDURATION = 5
 					};
 				};
 				typedef whiteboard::TypedEnum<TypeValues, TypeValues::Type, int32> Type;
