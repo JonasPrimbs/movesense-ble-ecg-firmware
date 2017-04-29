@@ -215,3 +215,15 @@ apis:
   datalogger.*:
     apiId: 68
     defaultExecutionContext: PrimaryServices
+  suunto.device.component.led.*:
+    apiId: 69
+    defaultExecutionContext: PrimaryServices
+  suunto.device.component.MAX30004.*:
+    apiId: 70
+    defaultExecutionContext: PrimaryServices
+  device.measurement.temperature.*:
+    apiId: 71
+    defaultExecutionContext: PrimaryServices
+  suunto.device.component.DS24L65.*:
+    apiId: 72
+    defaultExecutionContext: PrimaryServices

@@ -22,6 +22,14 @@
 #include "hal/sensor/pressureSensor/ms5837-02ba/PressureProvider.hpp"
 #endif // def HAL_WANT_PRESSURE
 
+#ifdef BUILD_HAL_WANT_TMP112
+#include "hal/sensor/temperature/tmp112/TemperatureProvider.hpp"
+#endif // def BUILD_HAL_WANT_TMP112
+
+#ifdef BUILD_HAL_WANT_1WIRE
+#include "hal/sensor/security/ds24l65/DS24L65_provider.hpp"
+#endif // def BUILD_HAL_WANT_1WIRE
+
 #ifdef BUILD_HAL_WANT_TOUCH
 #include "hal/touchscreen/tma5xx/TouchProviderDriver.hpp"
 #endif // def BUILD_HAL_WANT_TOUCH
@@ -74,6 +82,12 @@ public:
 #ifdef BUILD_HAL_WANT_PRESSURE
         presDriver(HWCONFIG_PRESSURE_I2C_BUS),
 #endif
+#ifdef BUILD_HAL_WANT_TMP112
+        tmp112Driver(),
+#endif
+#ifdef BUILD_HAL_WANT_1WIRE
+        ds24l65Provider(),
+#endif
 #ifdef BUILD_HAL_WANT_TOUCH
         touchDriver(HWCONFIG_TOUCH_I2C_BUS),
 #endif
@@ -103,6 +117,12 @@ public:
 #ifdef BUILD_HAL_WANT_MAGNETOMETER
             hal::MagnetometerProvider::LAUNCHABLE_NAME,
 #endif
+#ifdef BUILD_HAL_WANT_TMP112
+            hal::TemperatureService::LAUNCHABLE_NAME,
+#endif
+#ifdef BUILD_HAL_WANT_1WIRE
+            hal::DS24L65Provider::LAUNCHABLE_NAME,
+#endif
 #ifdef _ENABLE_PMIC_MAXIM
             hal::PmicProvider::LAUNCHABLE_NAME,
 #endif
@@ -119,7 +139,6 @@ public:
 #if defined (BUILD_HAL_WANT_BUZZER) || defined (BUILD_HAL_WANT_VIBRA)
             hal::UserFeedbackProvider::LAUNCHABLE_NAME,
 #endif
-//            hal::RrProvider::LAUNCHABLE_NAME,
             NULL };
         return moduleList;
     }
@@ -137,6 +156,12 @@ public:
 #endif
 #ifdef BUILD_HAL_WANT_PRESSURE
     hal::PressureProvider presDriver;
+#endif
+#ifdef BUILD_HAL_WANT_TMP112
+    hal::TemperatureService tmp112Driver;
+#endif
+#ifdef BUILD_HAL_WANT_1WIRE
+    hal::DS24L65Provider ds24l65Provider;
 #endif
 #ifdef BUILD_HAL_WANT_TOUCH
     hal::TouchProviderDriver touchDriver;

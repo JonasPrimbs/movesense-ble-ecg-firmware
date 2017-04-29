@@ -1,0 +1,100 @@
+# This file defines Suunto Whiteboard API for Movesense Hackathon 2016 sample
+#
+swagger: '2.0'
+
+# Document metadata
+info:
+  version: "0.0.0"
+  title: Movesense Accelerometer sample app API 
+  description: |
+    This file defines API for Movesense Accelerometer Sample service
+
+    See http://movesense.com for more information.
+  termsOfService: http://suunto.com/wbapi/terms/
+  contact:
+    name: Suunto team
+    url: http://developer.suunto.com
+  
+
+# Security definitions
+security:
+  - suuntoAccessCode:
+    - public
+    
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+    flow: accessCode
+    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
+    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
+
+# Paths
+paths:
+  /Sample/Accelerometer/Data:
+    x-executionContext: meas
+    get:
+      description: |
+        Get a Data value.
+      responses:
+        200:
+          description: Sample service data (in practice acceleration magnitude)
+          schema:
+            $ref: '#/definitions/SampleDataValue'
+        204:
+          description: Measurement source is unavailable
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Sample/Accelerometer/Data/Subscription:
+    x-executionContext: meas
+    post:
+      description: |
+        Subscribe to periodic Data values.
+        See documentation on product-specific measurement periods at
+        http://XXX.suunto.com/XXX. If measurement source is unavailable, the
+        Measurement member will be empty. If present, Measurement member
+        contains single measurement result.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        x-notification:
+          description: New value
+          schema:
+            $ref: '#/definitions/SampleDataValue'
+      security:
+        - suuntoAccessCode:
+          - public
+    delete:
+      description: |
+        Unsubscribe from sample data values.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
+
+
+definitions:
+  SampleDataValue:
+    required:
+      - RelativeTime
+      - Value
+    properties:
+      RelativeTime:
+        description: Relative time of measurement
+        type: integer
+        format: uint32
+        x-unit: millisecond
+      Value:
+        description: Sample Data Value (in practice max absolute acceleration, over about 5 seconds when subscribed)
+        type: number
+        format: float
+        x-unit: m/s^2

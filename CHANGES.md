@@ -1,4 +1,23 @@
 
+##Version 0.3.1.105##
+
+###Whats new:###
+- Added Temperature provider
+- Added Led provider
+- Fixed "MagneticField provider exessive power use" bug
+- Fixed "Battery level service return -1" bug
+- Improved IDLE power consumption to ~100-150 uA without serial communication
+- Added documentation sub folder with initia data logging and power optimization documents
+
+###Known Bugs:###
+- /Info returns wrong version number
+- /../LinearAcceleration & /../AngularVelocity & /../MagneticField don't return valid data on GET, only SUBSCRIBE
+
+###Notes:###
+- REQUIRED: Use **GNU Toolchain for ARM v. 5.4 2016q3** 
+- To create DFU package for OTA update, compile application with "ninja dfupkg"
+
+
 ##Version 0.3.0.86 / 2##
 - Added wbo files that were lost in the merge. This fix connectivity that was broken since 31.March
 

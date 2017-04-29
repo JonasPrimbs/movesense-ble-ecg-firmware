@@ -8,12 +8,15 @@
 #include "common/services/SystemServices.hpp"
 #include "common/services/StandardServices.hpp"
 #include "common/services/LowPriorityServices.hpp"
+#include "nea/hal/sensor/AFE/MAX3000x/MAX30004_provider.hpp"
 #include "ApplicationServices.hpp"
 //#include "Hackathon2016SampleService.hpp"
 #include "HardwareServices.hpp"
 
 #include "DataLogger.hpp"
 #include "Logbook.hpp"
+#include "LedService.hpp"
+#include "nea/hal/sensor/temperature/tmp112/TemperatureProvider.hpp"
 
 
 class SmartSensor2Application
@@ -26,7 +29,7 @@ public:
 private:
     void runStartupClients();
 
-    
+
     whiteboard::services::WhiteboardServicesInstance mWbServices;
     //nea::inetgateway::InetGwLPProvider mInetGw;
     whiteboard::services::CommServices mCommServices;
@@ -39,8 +42,11 @@ private:
 
     ExtflashChunkStorage mChunkStorage;
     MeasStorage          mMeasStorage;
-        
+
     LogbookDb       mLogbookDb;
     DataLogger      mDataLogger;
     Logbook         mLogbook;
+    LedService      mLedService;
+
+    MAX30004Service mMax;
 };
