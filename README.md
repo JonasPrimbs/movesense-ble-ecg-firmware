@@ -50,7 +50,7 @@ or
 
 > ninja
 ```
-If successful, application binary can be found in the build folder with name *Movesense.hex*.
+*Note: As default, the SERIAL interface is enabled. If flashed/used without the JIG, remember to disable it to avoid excessive power consumption ([link to instructions](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/documentation/PowerOptimization.md?at=master&fileviewer=file-view-default))*
 
 ### Updating sensor "over the air" ###
 
