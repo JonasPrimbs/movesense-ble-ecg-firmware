@@ -40,7 +40,7 @@ Optionally:
 > mkdir myBuild
 > cd myBuild
 
-> cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/helloworld_app
+> cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/hello_world_app
 or
 > cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/accelerometer_app
 or
