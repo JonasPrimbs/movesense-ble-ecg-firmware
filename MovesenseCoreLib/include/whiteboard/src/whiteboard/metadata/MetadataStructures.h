@@ -6,7 +6,6 @@ All rights reserved.
 #include "whiteboard/integration/shared/types.h"
 #include "whiteboard/integration/shared/infinite.h"
 #include "whiteboard/integration/shared/templateMetaprogramming.h"
-#include "whiteboard/Functor.h"
 #include "quantity/quantity/quantity.h"
 
 namespace whiteboard
@@ -88,7 +87,7 @@ enum ValueType
 /** Type of a request */
 enum RequestType
 {
-    REQUEST_GET,
+    REQUEST_GET = 0,
     REQUEST_PUT,
     REQUEST_POST,
     REQUEST_DELETE,
@@ -98,7 +97,8 @@ enum RequestType
     REQUEST_GET_RESOURCE,
     REQUEST_RELEASE_RESOURCE,
 
-    NUMBER_OF_REQUEST_TYPES
+    NUMBER_OF_REQUEST_TYPES,
+    REQUEST_NOTYPE
 };
 
 namespace metadata

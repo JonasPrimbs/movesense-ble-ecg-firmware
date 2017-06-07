@@ -4,9 +4,14 @@
 #include "whiteboard/integration/port.h"
 #include "whiteboard/Identifiers.h"
 #include "whiteboard/Initialization.h"
-#include "wb-resources/resources.h"
 
 WB_HEADER_CHECK_DEFINE(WB_HAVE_POOL_STATISTICS)
+
+// Forward declarations
+namespace WB_RES
+{
+struct PoolStats;
+}
 
 namespace whiteboard
 {
@@ -460,7 +465,7 @@ const char* Pool::getName() const
 
 Pool::KeyType Pool::getNumberOfItems() const
 {
-    return mNumberOfItems;
+    return static_cast<Pool::KeyType>(mNumberOfItems);
 }
 
 Pool::KeyType Pool::getMaximumNumberOfItems() const

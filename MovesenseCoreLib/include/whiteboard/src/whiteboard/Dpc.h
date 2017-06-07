@@ -25,7 +25,7 @@ public:
     * @param rFunctor The DPC function to execute
     * @return New instance of DPC object or NULL if DPC could not be allocated
     */
-    static Dpc* allocate(ExecutionContextId executionContextId, IDpcFunctor& rFunctor);
+    static Dpc* allocate(const ExecutionContextId executionContextId, IDpcFunctor& rFunctor);
 
     /** Allocates a new DPC from given execution context of given Whiteboard instance. Used only in unit tests.
     *
@@ -34,7 +34,7 @@ public:
     * @param rWhiteboard Whiteboard instance to use
     * @return New instance of DPC object or NULL if DPC could not be allocated
     */
-    static Dpc* allocate(ExecutionContextId executionContextId, IDpcFunctor& rFunctor, Whiteboard& rWhiteboard);
+    static Dpc* allocate(const ExecutionContextId executionContextId, IDpcFunctor& rFunctor, const Whiteboard& rWhiteboard);
 
     /** Deallocates the DPC */
     void deallocate();

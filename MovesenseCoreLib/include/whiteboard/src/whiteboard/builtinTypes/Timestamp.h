@@ -33,8 +33,8 @@ struct WB_STRUCT_PACKED Timestamp
     // Structure type identification and serialization
     typedef int Structure;
     static const LocalDataTypeId DATA_TYPE_ID = 27;
-    static const StructureValueSerializer<Timestamp> serializer;
-    WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const StructureValueCleaner<Timestamp> cleaner;)
+    WB_API static const StructureValueSerializer<Timestamp> serializer;
+    WB_WHEN_STRUCTURE_CLEANING_NEEDED(WB_API static const StructureValueCleaner<Timestamp> cleaner;)
 
     // Visitor pattern implementation
     inline void visit(IStructureVisitor& rVisitor) { rVisitor.visit(timestamp); }

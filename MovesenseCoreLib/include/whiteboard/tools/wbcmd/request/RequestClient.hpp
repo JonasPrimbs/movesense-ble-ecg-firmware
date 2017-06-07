@@ -2,8 +2,8 @@
 #pragma once
 
 #include <whiteboard/ResourceClient.h>
+#include <whiteboard/integration/os/shared/semaphorecxx11.h>
 #include "plugin-api/plugin-api.hpp"
-#include "semaphorecxx11.h"
 
 namespace wbcmd
 {
@@ -17,7 +17,7 @@ public:
         const wbcmd::CmdLine& rCmdLine,
         const std::string& whiteboardAddress,
         const wb::IDataTypeMetadataContainer* pMetadataContainer,
-        semaphore& rOperationCompleted);
+        wb::cxx11::semaphore& rOperationCompleted);
     
     virtual ~RequestClient() { }
 
@@ -39,7 +39,7 @@ private:
     const std::string mWhiteboardAddress;
     const std::string mFullResourcePath;
     const wb::IDataTypeMetadataContainer* mpMetadataContainer;
-    semaphore& mrOperationCompleted;
+    wb::cxx11::semaphore& mrOperationCompleted;
 
     /// List of parameter related allocations that need cleaning after operation
     /// has completed. ByteStream objects must wait until operation has completed,

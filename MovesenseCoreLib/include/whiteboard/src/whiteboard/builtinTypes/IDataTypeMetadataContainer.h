@@ -1,8 +1,5 @@
 #pragma once
-/******************************************************************************
-    Copyright (c) Suunto Oy 2015.
-    All rights reserved.
-******************************************************************************/
+// Copyright (c) Suunto Oy 2015. All rights reserved.
 
 #include "wb-resources/resources.h"
 
@@ -10,7 +7,7 @@ namespace whiteboard
 {
 
 /** Interface for data type metadata information containers */
-class IDataTypeMetadataContainer
+class IDataTypeMetadataContainer : public IDynamicallyAllocatable
 {
 public:
     /** Destructor */

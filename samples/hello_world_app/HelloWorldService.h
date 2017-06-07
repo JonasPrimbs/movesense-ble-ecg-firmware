@@ -5,9 +5,8 @@
 #include <whiteboard/LaunchableModule.h>
 #include <whiteboard/ResourceProvider.h>
 
-class HelloWorldService FINAL : 
-    private whiteboard::ResourceProvider,
-    public whiteboard::LaunchableModule
+class HelloWorldService FINAL : private whiteboard::ResourceProvider,
+                                public whiteboard::LaunchableModule
 
 {
 public:
@@ -22,13 +21,13 @@ private:
 
     /** @see whiteboard::ILaunchableModule::deinitModule */
     virtual void deinitModule() OVERRIDE;
-    
+
     /** @see whiteboard::ILaunchableModule::startModule */
     virtual bool startModule() OVERRIDE;
 
     /** @see whiteboard::ILaunchableModule::stopModule */
     virtual void stopModule() OVERRIDE { mModuleState = WB_RES::ModuleStateValues::STOPPED; }
-    
+
     /**
     *	GET request handler.
     *
@@ -41,7 +40,6 @@ private:
     virtual void onGetRequest(const whiteboard::Request& request,
                               const whiteboard::ParameterList& parameters) OVERRIDE;
 
-    
     /**
     *	Subscribe notification callback.
     *
@@ -60,8 +58,7 @@ private:
     virtual void onUnsubscribe(const whiteboard::Request& request,
                                const whiteboard::ParameterList& parameters) OVERRIDE;
 
-protected:  
-    
+protected:
     /**
     *	Timer callback.
     *

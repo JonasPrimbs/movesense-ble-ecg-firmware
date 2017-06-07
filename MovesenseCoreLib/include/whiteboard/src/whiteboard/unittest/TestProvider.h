@@ -2,6 +2,7 @@
 // Copyright (c) Suunto Oy 2015. All rights reserved.
 
 #include "whiteboard/DpcFunctor.h"
+#include "whiteboard/Initialization.h"
 #include "whiteboard/ResourceProvider.h"
 #include "whiteboard/unittest/ScopedResource.h"
 
@@ -10,7 +11,11 @@
 namespace whiteboard
 {
 
-template <typename T> class TestValue
+// Forward declarations
+class WhiteboardMockup;
+
+template <typename T>
+class TestValue
 {
 private:
     T mValue;
@@ -62,6 +67,7 @@ public:
     }
 };
 
+/** Base class for test providers */
 class TestProviderBase : public ResourceProvider
 {
 public:
@@ -69,25 +75,25 @@ public:
     *	Constructor
     *	@param pName Name of the resource.
     *	@param executionContextId Providers execution context.
-    *	@param registerProvider Flag to enable registration of provider resource. Default true.
     *   @param rWhiteboard Whiteboard instance to use
     */
     TestProviderBase(
         const char* pName,
         ExecutionContextId executionContextId,
-        Whiteboard& rWhiteboard)
-        : ResourceProvider(WBDEBUG_NAME(__FUNCTION__), executionContextId),
-        mrWhiteboard(rWhiteboard),
-        mBindingFixed(false)
-    {
-        fixBinding();
-    }
+        Whiteboard& rWhiteboard);
+
+    /**
+    * Constructor
+    *
+    * @param pName Name of the resource.
+    * @param rWhiteboard Whiteboard instance to use
+    */
+    TestProviderBase(
+        const char* pName,
+        WhiteboardMockup& rWhiteboard);
 
     /** Desctructor */
-    virtual ~TestProviderBase()
-    {
-        if (mBindingFixed) unfixBinding();
-    }
+    virtual ~TestProviderBase();
 
 protected:
     /** Gets the associated whiteboard instance
@@ -164,12 +170,56 @@ public:
         }
     }
 
+    /**
+    *	Constructor
+    *	@param name Name of the resource.
+    *	@param registerProvider Flag to enable registration of provider resource. Default true.
+    *   @param rWhiteboard Whiteboard instance to use
+    */
+    TestProvider(
+        const char* name,
+        bool registerProvider,
+        WhiteboardMockup& rWhiteboard)
+        : TestProviderBase(name, rWhiteboard),
+          mResource(name, 0, rWhiteboard),
+          mRegisterProvider(registerProvider)
+    {
+        if (mRegisterProvider)
+        {
+            DpcFunctor::syncQueueOnce(getExecutionContextId(), mrWhiteboard, this, &TestProvider::initInWbContext);
+        }
+    }
+
+    /**
+    *	Constructor
+    *	@param name Name of the resource.
+    *	@param executionContextId Providers execution context.
+    *	@param registerProvider Flag to enable registration of provider resource.
+    *   @param rInitialValue Initial value
+    *   @param rWhiteboard Whiteboard instance to use
+    */
+    TestProvider(
+        const char* name,
+        bool registerProvider,
+        const T& rInitialValue,
+        WhiteboardMockup& rWhiteboard)
+        : TestProviderBase(name, rWhiteboard),
+          mResource(name, 0, rWhiteboard),
+          mRegisterProvider(registerProvider)
+    {
+        setValue(rInitialValue);
+        if (mRegisterProvider)
+        {
+            DpcFunctor::syncQueueOnce(getExecutionContextId(), mrWhiteboard, this, &TestProvider::initInWbContext);
+        }
+    }
+
     /** Desctructor */
     virtual ~TestProvider()
     {
         if (mRegisterProvider)
         {
-            DpcFunctor::syncQueueOnce(this->ResourceProvider::getExecutionContextId(), mrWhiteboard, this, &TestProvider::deinitInWbContext);
+            DpcFunctor::syncQueueOnce(getExecutionContextId(), mrWhiteboard, this, &TestProvider::deinitInWbContext);
         }
     }
 
@@ -215,6 +265,20 @@ public:
         NotifyStatus status(*this, mResource.getId(), mValue);
         DpcFunctor::queueOnce(getExecutionContextId(), mrWhiteboard, &TestProvider::notifyDpcHandler, &status);
         WbSemaphoreTryWait(status.mComplete, 500);
+    }
+
+    /** registerProviderResource */
+    Result callRegisterProviderResource(const LocalResourceId localResourceId)
+    {
+        return DpcFunctor::syncQueueOnce<Result, ResourceProvider, LocalResourceId>(
+            getExecutionContextId(), getWhiteboard(), this, &ResourceProvider::registerProviderResource, localResourceId);
+    }
+
+    /** unregisterProviderResource */
+    Result callUnregisterProviderResource(const LocalResourceId localResourceId)
+    {
+        return DpcFunctor::syncQueueOnce<Result, ResourceProvider, LocalResourceId>(
+            getExecutionContextId(), getWhiteboard(), this, &ResourceProvider::unregisterProviderResource, localResourceId);
     }
 
     /**
@@ -273,8 +337,13 @@ public:
     }
 
 protected:
+    /** Resource associated with the provider */
     ScopedResource<T, METADATA_CREATOR> mResource;
+
+    /** A value indicating whether provider has registered the resource automatically */
     bool mRegisterProvider;
+
+    /** Current value of the resource */
     TestValue<typename RemoveAll<T>::type> mValue;
 
     class NotifyStatus

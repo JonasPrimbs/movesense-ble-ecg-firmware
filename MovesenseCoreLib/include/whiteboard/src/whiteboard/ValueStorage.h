@@ -47,7 +47,9 @@ public:
     }
 
     /**
-    Default ctor for value storage, use if you don't need to store strings in this ValueStorage-object.
+    * Default constructor for value storage
+    *
+    * @note This does not allocate memory for storing string values (string literals can still be used)
     */
     ValueStorage()
         : mValueType(WB_TYPE_NONE)
@@ -56,10 +58,41 @@ public:
     {
     }
 
+    /**
+    * Constructor for value storage that is initialized with specific value.
+    * @note These do not allocate memory for storing string values (string literals can still be used)
+    * @param data The initialization value
+    */
+    ValueStorage(const NoType&);
+    ValueStorage(bool data);
+    ValueStorage(int8 data);
+    ValueStorage(uint8 data);
+    ValueStorage(int16 data);
+    ValueStorage(uint16 data);
+    ValueStorage(int32 data);
+    ValueStorage(uint32 data);
+    ValueStorage(int64 data);
+    ValueStorage(uint64 data);
+    ValueStorage(float data);
+    ValueStorage(double data);
+
+    /** Constructor for initializing value storage with string literal (or const char array)
+    *
+    * @tparam N Length of the string literal including zero terminator
+    * @param data The initialization value
+    */
+    template <size_t N>
+    ValueStorage(const char (& data) [N])
+        : mValueType(WB_TYPE_NONE)
+        , mpStorage(NULL)
+        , mStorageSize(0)
+    {
+        operator=<N>(data);
+    }
+
     /// Dtor
     ~ValueStorage()
     {
-        releaseValue();
     }
 
     /// @return The type of the value this ValueStorage stores currently.
@@ -75,6 +108,7 @@ public:
     @param data [in] Data to assing to this ValueStorage.
     @return *this
     */
+    ValueStorage& operator=(const NoType&);
     ValueStorage& operator=(bool data);
     ValueStorage& operator=(int8 data);
     ValueStorage& operator=(uint8 data);
@@ -86,8 +120,24 @@ public:
     ValueStorage& operator=(uint64 data);
     ValueStorage& operator=(float data);
     ValueStorage& operator=(double data);
-    ValueStorage& operator=(const char* data);
+
+    /** Assignment operator that stores string literal (or const char array) in this value storage
+    *
+    * @tparam N Length of the string literal including zero terminator
+    * @param data The value
+    */
+    template <size_t N>
+    inline ValueStorage& operator=(const char (& data)[N])
+    {
+        mValueType = WB_TYPE_STRING;
+        mValue.mString = const_cast<char*>(data);
+        return *this;
+    }
+
+    ValueStorage& operator=(const char* const data);
     ValueStorage& operator=(const Value& data);
+
+    bool operator==(const Value& data) const;
 
     /**
     Converts this ValueStorage to native type.
@@ -100,6 +150,13 @@ public:
     }
 
 private:
+    // Prevent use of constructors that would need dynamically allocated storage
+    template <size_t N>
+    ValueStorage(char(&data)[N]) DELETED;
+    template <typename T>
+    ValueStorage(T, typename EnableIf<IsSame<T, char*>::value>::type* = 0) DELETED;
+    template <typename T>
+    ValueStorage(T, typename EnableIf<IsSame<T, const char*>::value>::type* = 0) DELETED;
 
     /** Generalized result type (for TypedEnums) */
     template <typename T> struct ResultType
@@ -120,14 +177,6 @@ private:
     template <typename T>
     T convertToNative() const;
 
-    /** Resets string */
-    inline void releaseValue() 
-    {
-        if (mValueType == WB_TYPE_STRING) 
-        {
-            mValue.mString = NULL;
-        }
-    }
 
     friend class whiteboard::Value;
 
@@ -155,7 +204,7 @@ private:
     uint8* const mpStorage;
 
     /// Size of the extra storage
-    size_t mStorageSize;
+    const size_t mStorageSize;
 };
 
 // Specialization for TypedEnum

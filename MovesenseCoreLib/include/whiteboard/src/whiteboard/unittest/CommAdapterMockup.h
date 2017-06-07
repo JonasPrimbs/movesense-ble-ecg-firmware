@@ -4,10 +4,10 @@
 #include "whiteboard/WhiteboardConfig.h"
 #include "whiteboard/internal/BuildConfig.h"
 
-#include "whiteboard/CommAdapter.h"
+#include "whiteboard/comm/CommAdapter.h"
 #include "whiteboard/internal/BufferPool.h"
-#include "whiteboard/internal/comm/RoutingTable.h"
-#include "whiteboard/internal/comm/WhiteboardCommunication.h"
+#include "whiteboard/comm/internal/RoutingTable.h"
+#include "whiteboard/comm/internal/WhiteboardCommunication.h"
 #include <cstdlib>
 
 #if WB_UNITTEST_BUILD
@@ -202,7 +202,7 @@ public:
 
     whiteboard::Result disconnect(const whiteboard::Address& /*rDestination*/) OVERRIDE FINAL;
 
-    whiteboard::IBufferAllocator& getAllocator() const OVERRIDE FINAL;
+    whiteboard::IBufferAllocator& getAllocator() OVERRIDE FINAL;
 
     Result formatAddress(const Address& rAddress, size_t bufferSize, char* addressBuffer) OVERRIDE FINAL;
 
@@ -263,6 +263,8 @@ public:
 
     whiteboard::Result cancelConnect(const whiteboard::Address& /*rDestination*/, whiteboard::Result /*reason*/) OVERRIDE;
     whiteboard::Result cancelSend(whiteboard::Buffer* pBuffer, whiteboard::Result /*reason*/) OVERRIDE;
+
+    void setSendTimeout(uint32 sendDelay);
 
 private:
     static void onConnectCompletedInternal(AsyncCommAdapterMockup* pMockup);

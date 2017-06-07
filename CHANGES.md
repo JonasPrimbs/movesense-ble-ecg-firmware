@@ -1,3 +1,19 @@
+##Version 0.4.0.148##
+
+###Whats new:###
+- The new measurement provider for Acc/Gyro/Magn with sample rate and range support
+- New samples JumpMeter and PowerMode
+- Initial implementation of wakeup from poweroff with HR lead connect
+- Power off functionality (PUT value 1 to /Device/System/Mode)
+
+###Known Bugs:###
+- The changes in Sensor API's mean that for now the DataLogger is unusable for logging sensor data. We will release fix soon that addresses this issue
+- Accelerometer/Gyroscope/Magnetometer lag (start with delay) when subscribing a second time
+- Leaks after disconnect without unsubscribe command
+
+###Notes:###
+- REQUIRED: Use **GNU Toolchain for ARM v. 5.4 2016q3** 
+- To create DFU package for OTA update, compile application with "ninja dfupkg"
 
 ##Version 0.3.1.105##
 

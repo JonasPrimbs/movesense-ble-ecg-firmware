@@ -36,7 +36,7 @@
 //////////////////////////////////////////////////
 
 /** Maximum wait for EventProcessor dispatch timeout */
-#define WB_DEFAULT_DISPATCH_TIMEOUT_MS 50u
+#define WB_DEFAULT_DISPATCH_TIMEOUT_MS 500u // TODO: Make configurable
 
 //////////////////////////////////////////////////
 // WHITEBOARD COMMUNICATION
@@ -91,24 +91,6 @@
 
 /** Stack size of IP receiver thread */
 #define WB_IP_RECEIVER_STACK_DEPTH 384
-
-//////////////////////////////////////////////////
-// WHITEBOARD BUS ADAPTER
-//////////////////////////////////////////////////
-
-#if (WB_HAVE_BUS_COMM == 1)
-
-/** Number of extra header bytes to allocate for BUS buffers */
-#ifndef WB_BUS_BUFFER_HEADER_SPACE
-#error WB_BUS_BUFFER_HEADER_SPACE must be defined by build system
-#endif
-
-#else // (WB_HAVE_BUS_COMM == 1)
-
-#undef WB_BUS_BUFFER_HEADER_SPACE
-#define WB_BUS_BUFFER_HEADER_SPACE 0
-
-#endif // (WB_HAVE_BUS_COMM == 1)
 
 //////////////////////////////////////////////////
 // WHITEBOARD SERIAL ADAPTER

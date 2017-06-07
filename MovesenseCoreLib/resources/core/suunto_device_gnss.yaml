@@ -466,6 +466,165 @@ paths:
         - suuntoAccessCode:
           - public
 
+  /Device/GNSS/BestSNR:
+    x-executionContext: meas
+    get:
+      description: |
+        Get 5 best SNR.
+      responses:
+        200:
+          description: SNR of 5 best satellites.
+          schema:
+            type: number
+            format: float
+        204:
+          description: Measurement source is unavailable
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#get
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Device/GNSS/BestSNR/Subscription:
+    x-executionContext: meas
+    post:
+      description: |
+        Subscribes the client to receive SNR of 5 best satellites updates
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: number
+            format: float
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        x-notification:
+          description: |
+           Event notification.
+          schema:
+            type: number
+            format: float
+      security:
+        - suuntoAccessCode:
+          - public
+    delete:
+      description: |
+        Unsubscribes the client from value updates.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Device/GNSS/EHPE:
+    x-executionContext: meas
+    get:
+      description: |
+        Get EHPE.
+      responses:
+        200:
+          description: EHPE.
+          schema:
+            type: integer
+            format: uint16
+        204:
+          description: Measurement source is unavailable
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#get
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Device/GNSS/EHPE/Subscription:
+    x-executionContext: meas
+    post:
+      description: |
+        Subscribes the client to receive EHPE updates
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: integer
+            format: uint16
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        x-notification:
+          description: |
+           Event notification.
+          schema:
+            type: integer
+            format: uint16
+      security:
+        - suuntoAccessCode:
+          - public
+    delete:
+      description: |
+        Unsubscribes the client from value updates.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Device/GNSS/Satellites:
+    x-executionContext: meas
+    get:
+      description: |
+        Number of satellites.
+      responses:
+        200:
+          description: number of satellites.
+          schema:
+            type: integer
+            format: uint16
+        204:
+          description: Measurement source is unavailable
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#get
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Device/GNSS/Satellites/Subscription:
+    x-executionContext: meas
+    post:
+      description: |
+        Subscribes the client to receive satellites number updates
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: integer
+            format: uint16
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        x-notification:
+          description: |
+           Event notification.
+          schema:
+            type: integer
+            format: uint16
+      security:
+        - suuntoAccessCode:
+          - public
+    delete:
+      description: |
+        Unsubscribes the client from value updates.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
+
 # Extra definitions
 definitions:
 
@@ -659,7 +818,7 @@ definitions:
       hdop:
         description: Horizontal Dilution Of Precision (resolution 0.2)
         type: integer
-        format: uint8
+        format: uint16
       trickle:
         type: boolean
       fixRateApproximation:

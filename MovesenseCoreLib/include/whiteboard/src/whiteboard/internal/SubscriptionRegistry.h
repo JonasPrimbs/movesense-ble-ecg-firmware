@@ -30,12 +30,15 @@ struct Subscription
      */
     struct
     {
-        /** Reserved for future use
-        *
-        * @note: PathParameterCache uses one bit of this internally as subscription ref-counting for the same path variable,
-        *        that implementation needs to be changed if bits here are taken into use
-        */
-        uint8 reserved : 4;
+        /** Does client consider subscription notifications critical, i.e is it allowed to drop data on congestion */
+        uint8 isNonCriticalSubscription : 1;
+
+        /** Reserved for future use */
+        uint8 reserved : 2;
+
+        /** PathParameterCache uses one bit of this internally as subscription ref - counting for the same path variable,
+        that implementation needs to be changed if bits here are taken into use */
+        uint8 pathVariableRefCount : 1;
 
         /** ID of the execution context */
         ExecutionContextId executionContextId : 4;
@@ -52,6 +55,7 @@ struct Subscription
          */
         inline void operator=(const ClientId& rClientId)
         {
+            isNonCriticalSubscription = rClientId.isNonCriticalSubscription;
             reserved = rClientId.reserved;
             executionContextId = rClientId.executionContextId;
             whiteboardId = rClientId.whiteboardId;
@@ -64,7 +68,9 @@ struct Subscription
          */
         inline operator ClientId() const
         {
-            return ClientId(executionContextId, whiteboardId, localClientId);
+            ClientId newClientId(executionContextId, whiteboardId, localClientId);
+            newClientId.isNonCriticalSubscription = isNonCriticalSubscription;
+            return newClientId;
         }
 
         /** Checks whether this structure equals given client ID

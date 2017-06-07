@@ -6,7 +6,7 @@
 
 #include "whiteboard/Result.h"
 #include "whiteboard/Request.h"
-#include "whiteboard/internal/IBufferAllocator.h"
+#include "whiteboard/comm/IBufferAllocator.h"
 #include "whiteboard/internal/protocol/Messages.h"
 #include "whiteboard/WbVersion.h"
 
@@ -25,6 +25,21 @@ protected:
     inline ~IMessageDispatcher() {}
 
 public:
+
+    /** This class holds extra instructions for the dispatch */
+    struct DispatchOptions
+    {
+    public:
+        /// If true returns immediately with error, if the queue is full, else blocks and waits untill space in the queue.
+        bool dontBlockIfQueueFull;
+        
+        /// If true failure to deliver notifications for a subscriotion are considered fatal and dispatch will assert
+        bool isCriticalSubscription;
+
+        /// Default message dispatch options
+        static const DispatchOptions Default;
+    };
+
     /** Interface for classes that do actual buffer allocation and dispatching */
     class IDispatcher
     {
@@ -45,37 +60,28 @@ public:
         * @param pBuffer Buffer that contains the message that should be dispatched
         * @param whiteboardIdInLocalScope Destination whiteboard ID as seen by the local whiteboard
         * @param protocol Whiteboard comm protocol version
-        * @param dontBlockIfQueueFull If true returns immediately with error, if the queue is full, else blocks and waits untill space in the queue.
+        * @param rOptions Extra instructions for the dispatch
         * @return Result code of the dispatch operation.
+        * @ see whiteboard::IMessageDispatcher::DispatchOptions
         */
         virtual Result dispatch(const MessageType messageType, 
                                 Buffer* pBuffer,
                                 WhiteboardId whiteboardIdInLocalScope = LOCAL_WHITEBOARD_ID,
                                 ProtocolVersion protocol = WB_COMM_PROTO_CURRENT_VERSION,
-                                bool dontBlockIfQueueFull = false) = 0;
+                                const IMessageDispatcher::DispatchOptions& rOptions = DispatchOptions::Default) = 0;
     };
 
     /** Additional information for message routing */
     struct RoutingInfo
     {
-        /** Constructor
-         *
-         * @param _routed A value indicating whether the message is routed
-         * @param _rDestination Serial number of mesage destination
-         * @param _rSource Serial number of message source
-         */
-        RoutingInfo(bool _routed, const SuuntoSerial& _rDestination, const SuuntoSerial& _rSource)
-            : routed(_routed), rDestination(_rDestination), rSource(_rSource)
-        {}
-
         /** A value indicating whether the message is routed */
         bool routed;
 
         /** Serial number of mesage destination */
-        const SuuntoSerial& rDestination;
+        SuuntoSerial destination;
 
         /** Serial number of message source */
-        const SuuntoSerial& rSource;
+        const SuuntoSerial* pSource;
     };
 
     /**

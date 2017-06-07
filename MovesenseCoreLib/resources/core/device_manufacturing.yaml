@@ -1,0 +1,243 @@
+swagger: '2.0'
+
+info:
+  version: 0.0.9
+  title: API for creating and accessing manufacturing data
+  description: |
+    This file defines API for writing manufacturing time data into the device
+    non-volatile memory as well as reading it during normal operation.
+
+# Security definitions (these are for future use)
+security:
+  - suuntoAccessCode:
+    - public
+
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+    flow: accessCode
+    authorizationUrl: https://movesense.com/wbapi/login/oauth/authorize
+    tokenUrl: https://movesense.com/wbapi/login/oauth/access_token
+
+paths:
+  /Device/Manufacturing/MemoryErase:
+    post:
+      description: |
+        Erase whole configuration memory
+      responses:
+        200:
+          description: memory errased sucessfully
+        500:
+          description: memory errase error
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Device/Manufacturing/ProductData:
+    post:
+      description: |
+        Writing common product data into non-volatile memory.
+        This can only be done once.
+      parameters:
+        - name: data
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/ProductData'
+      responses:
+        201:
+          description: Data created successfully
+        500:
+          description: Not allowed - data already exists
+      security:
+        - suuntoAccessCode:
+          - public
+    get:
+      description: |
+        Read product related manufacturing data from the non-volatile memory.
+      responses:
+        200:
+          description: Data read successfully
+          schema:
+            $ref: '#/definitions/ProductData'
+        500:
+          description: Data does not exist
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Device/Manufacturing/CalibrationData:
+    post:
+      description: |
+        Writing manufacturing time calculated calibration data. Note: this can be done in one or multiple steps (e.g. for each sensor). POST used because PATCH not yet supported.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CalibrationData'
+      responses:
+        201:
+          description: Data created successfully
+        500:
+          description: Not allowed - data already exists (can only be programmed once)
+      security:
+        - suuntoAccessCode:
+          - public
+    get:
+      description: |
+        Read manufacturing time created calibration data from the non-volatile memory.
+      responses:
+        200:
+          description: Data read successfully
+          schema:
+            $ref: '#/definitions/CalibrationData'
+        500:
+          description: Data does not exist
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Device/Manufacturing/Step:
+    post:
+      description: |
+        Internally kept manufacturing process related steps / state.
+      parameters:
+        - name: step
+          description: |
+            Manufacturing step enumeration that was performed.
+          in: body
+          required: true
+          schema:
+            type: integer
+            format: uint8
+            minimum: 0
+            maximum: 31
+      responses:
+        200:
+          description: Step recorder successfully
+        409:
+          description: Step already recorded
+        500:
+          description: Not permitted
+      security:
+        - suuntoAccessCode:
+          - public
+    get:
+      description: |
+        Get the manufacturing steps that are already carried out
+      responses:
+        200:
+          description:  |
+            Array of manufacturing steps performed for the device
+          schema:
+            $ref: '#/definitions/StepsDone'
+        500:
+          description: General error
+      security:
+        - suuntoAccessCode:
+          - public
+
+definitions:
+
+  ProductData:
+    required:
+      - manufacturerName
+      - productName
+      - variant
+      - hwCompatibilityId
+      - serial
+      - pcbaSerial
+      - hw
+    properties:
+      manufacturerName:
+        description: Original manufacturer of the device
+        type: string
+        maxLength: 32
+        example: Suunto
+      productName:
+        description: Product name from PLM/Plasma
+        type: string
+        maxLength: 64
+        example: Movesense Sensor
+      variant:
+        description: NG SW variant name
+        type: string
+        maxLength: 16
+        example: Avocado
+      design:
+        description: Product design from PLM/Plasma
+        type: string
+        maxLength: 32
+        example: black
+      hwCompatibilityId:
+        description: Identifier defining which SW firmware can be installed on the device.
+          This ID together with the variant name is used to check/fetch the latest FW.
+          Different PCBAs which can run the same Firmware version have the same HwCompatibilityId.
+        type: string
+        maxLength: 8
+        example: A5
+      serial:
+        description: Globally unique serial number
+        type: string
+        minLength: 12
+        maxLength: 12
+        example: 155110123456
+      pcbaSerial:
+        type: string
+        maxLength: 64
+        example: 01234112345678901234567894444N2YYWW
+      hw:
+        description: Identifier for the HW configuration. Everytime there are changes in componets/PCB, this ID is updated.
+          In Suunto case, the format is varying number of <letter, number> pairs.
+        type: string
+        example: "1740G1"
+      addressInfo:
+        $ref: 'http://localhost:9000/suunto_shared.yaml#/definitions/AddressInfoArray'
+
+  CalibrationMatrix:
+    required:
+      - data
+    properties:
+      data:
+        type: array
+        items:
+          $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/FloatVector3D'
+        minItems: 3
+        maxItems: 3
+
+  CalibrationData:
+    properties:
+      acc_matrix:
+        $ref: '#/definitions/CalibrationMatrix'
+      acc_bias:
+        $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/FloatVector3D'
+      gyro_matrix:
+        $ref: '#/definitions/CalibrationMatrix'
+      magn_matrix:
+        $ref: '#/definitions/CalibrationMatrix'
+      magn_bias:
+        $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/FloatVector3D'
+
+  StepsDone:
+    required:
+      - steps
+    properties:
+      steps:
+        type: array
+        minItems: 0
+        maxItems: 32
+        items:
+          $ref: '#/definitions/Step'
+
+  Step:
+    required:
+      - stepNum
+    properties:
+      stepNum:
+        type: integer
+        format: uint8
+        minimum: 0
+        maximum: 31

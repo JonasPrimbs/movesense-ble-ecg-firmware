@@ -45,7 +45,7 @@
 #define sscanf sscanf_s
 #endif
 
-#define __WBRES__ 2.0
+#define __WBRES__ 2.1.0
 
 #define ELEMENTS(arr)		(sizeof(arr) / sizeof((arr)[0]))
 
@@ -202,6 +202,15 @@ inline bool startsWithIgnoreCase(const std::string& str, const std::string& star
     }
 
     return true;
+}
+
+inline bool endsWith(const std::string& str, const std::string& end)
+{
+    if (str.length() < end.length())
+        return false;
+
+    size_t offset = str.length() - end.length();
+    return str.substr(offset) == end;
 }
 
 inline bool endsWithIgnoreCase(const std::string& str, const std::string& end)

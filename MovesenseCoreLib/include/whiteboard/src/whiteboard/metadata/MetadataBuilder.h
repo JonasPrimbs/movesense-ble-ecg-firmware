@@ -18,7 +18,7 @@ class MetadataMap;
  * @note Generated resource subtree is compatible with WBRES generated subtrees,
  *       but is not optimized.
  */
-class MetadataBuilder FINAL
+class WB_API MetadataBuilder FINAL
 {
 public:
 

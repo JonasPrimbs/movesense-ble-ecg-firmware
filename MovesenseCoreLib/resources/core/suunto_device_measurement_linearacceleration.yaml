@@ -1,146 +1,133 @@
-# Copyright Suunto Oy 2015-2016
-# All rights reserved.
-
 swagger: '2.0'
 
-# Document metadata
 info:
-  version: "0.9.0"
-  title: /Device/Measurement/LinearAcceleration API
+  version: 0.0.1
+  title: Linear acceleration (Movesense-API)
   description: |
-    This file defines the /Device/Measurement/LinearAcceleration API.
-  termsOfService: http://suunto.com/wbapi/terms/
-  contact:
-    name: Suunto team
-    url: http://developer.suunto.com
+    This file defines interface for the linear acceleration API.
 
-# Security definitions
-security:
-  - suuntoAccessCode:
-    - public
-
-securityDefinitions:
-  suuntoAccessCode:
-    type: oauth2
-    scopes:
-      public: Grants read/write access to public resources.
-    flow: accessCode
-    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
-    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
-
-# Paths
 paths:
-  /Device/Measurement/LinearAcceleration:
+  /Meas/Acc/Info:
     x-executionContext: meas
     get:
       description: |
-        Get a linear acceleration value.
+        Get supported sample rates and ranges.
       responses:
         200:
-          description: Linear acceleration vector
+          description: Returns accelerometer information. See AccInfo.
           schema:
-            $ref: '#/definitions/LinearAccelerationValue'
-        204:
-          description: Measurement source is unavailable
-      security:
-        - suuntoAccessCode:
-          - public
+            $ref: '#/definitions/AccInfo'
 
-  /Device/Measurement/LinearAcceleration/Subscription:
+  /Meas/Acc/Config:
     x-executionContext: meas
-    post:
+    get:
       description: |
-        Subscribe to periodic linear acceleration values.
-        See documentation on product-specific measurement periods at
-        http://XXX.suunto.com/XXX. If measurement source is unavailable, the
-        Measurement member will be empty. If present, Measurement member
-        contains an array of a single measurement result. Delivery of periodic
-        values may be suspended when there hasn't been significant motion for
-        a device specific period of time. Delivery will commence after movement
-        is detected.
+        Get current linear acceleration measurement configuration.
+      responses:
+        200:
+          description: Returns accelerometer configurations. See AccConfig.
+          schema:
+            $ref: '#/definitions/AccConfig'
+
+    put:
+      description: |
+        Set linear acceleration measurement configuration.
+      parameters:
+        - name: config
+          in: body
+          description: New configurations for accelerometer
+          required: true
+          schema:
+            $ref: '#/definitions/AccConfig'
       responses:
         200:
           description: Operation completed successfully
-        x-std-errors:
-          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        503:
+          description: |
+            Not allowed to change configuration at the moment. E.g. when
+            active subcriptions exist.
+
+  /Meas/Acc/{SampleRate}:
+    x-executionContext: meas
+    parameters:
+       - $ref: '#/parameters/SampleRate'
+
+  /Meas/Acc/{SampleRate}/Subscription:
+    x-executionContext: meas
+    parameters:
+       - $ref: '#/parameters/SampleRate'
+    post:
+      description: |
+        Subscribe to periodic linear acceleration measurements.
+      responses:
+        200:
+          description: Operation completed successfully
+        501:
+          description: Non-supported sample rate
         x-notification:
-          description: New value
+          description: New measurements
           schema:
-            $ref: '#/definitions/LinearAccelerationValue'
-      security:
-        - suuntoAccessCode:
-          - public
+            $ref: '#/definitions/AccData'
+
     delete:
       description: |
         Unsubscribe from periodic linear acceleration values.
       responses:
         200:
           description: Operation completed successfully
-        x-std-errors:
-          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
-      security:
-        - suuntoAccessCode:
-          - public
 
-  /Device/Measurement/LinearAcceleration/HighSpeed:
-    x-executionContext: meas
-
-  /Device/Measurement/LinearAcceleration/HighSpeed/Subscription:
-    x-executionContext: meas
-    post:
-      description: |
-        Subscribe to high speed periodic linear acceleration values.
-        See documentation on product-specific measurement periods at
-        http://XXX.suunto.com/XXX. If measurement source is unavailable, the
-        Measurement member will be empty. If present, Measurement member
-        contains an array of at least one measurement result, but may contain
-        more. Delivery of periodic values may be suspended when there hasn't
-        been significant motion for a device specific period of time. Delivery
-        will commence after movement is detected.
-      responses:
-        200:
-          description: Operation completed successfully
-        x-std-errors:
-          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
-        x-notification:
-          description: New value(s)
-          schema:
-            $ref: '#/definitions/LinearAccelerationValue'
-      security:
-        - suuntoAccessCode:
-          - public
-    delete:
-      description: |
-        Unsubscribe from periodic high speed linear acceleration values.
-      responses:
-        200:
-          description: Operation completed successfully
-        x-std-errors:
-          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
-      security:
-        - suuntoAccessCode:
-          - public
+parameters:
+  SampleRate:
+    name: SampleRate
+    in: path
+    required: true
+    type: integer
+    format: int32
 
 definitions:
-  LinearAccelerationValue:
+  AccInfo:
     required:
-      - RelativeTime
+      - SampleRates
+      - Ranges
     properties:
-      RelativeTime:
-        description: Relative time of measurement
+      SampleRates:
+        description: Available sample rates for acceleration measurement.
+        type: array
+        items:
+          type: integer
+          format: uint16
+          x-unit: Hz
+      Ranges:
+        description: |
+          Available ranges for acceleration measurement. For example range
+          value 2 means the range is -2...+2 G.
+        type: array
+        items:
+          type: integer
+          format: uint8
+
+  AccConfig:
+    required:
+      - GRange
+    properties:
+      GRange:
+        description: |
+          Acceleration range. For example if set 2 the range is -2...+2 G.
+        type: integer
+        format: uint8
+
+  AccData:
+    required:
+      - Timestamp
+      - ArrayAcc
+    properties:
+      Timestamp:
+        description: Local timestamp of first measurement.
         type: integer
         format: uint32
         x-unit: millisecond
-      Measurement:
-        description: Linear acceleration measurement(s)
-        $ref: '#/definitions/FloatVector3DArray'
-        x-unit: m/s^2
-
-  FloatVector3DArray:
-    required:
-      - data
-    properties:
-      data:
+      ArrayAcc:
         type: array
+        x-unit: m/s^2
         items:
           $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/FloatVector3D'

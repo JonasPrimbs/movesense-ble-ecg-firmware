@@ -106,7 +106,7 @@ protected:
 *
 * @tparam StructureType Type of the structure
 */
-template <typename StructureType> class WB_API StructureValueSerializer FINAL 
+template <typename StructureType> class StructureValueSerializer FINAL 
     : public StructureValueSerializerBase
 {
 public:
@@ -139,7 +139,7 @@ private:
     }
 };
 
-template <typename ItemType> class WB_API StructureValueSerializer<Array<ItemType> > FINAL
+template <typename ItemType> class StructureValueSerializer<Array<ItemType> > FINAL
     : public StructureValueSerializerBase
 {
 public:
@@ -179,7 +179,7 @@ private:
 *
 * @tparam StructureType Type of the structure
 */
-template <typename StructureType> class WB_API StructureValueCleaner : public IValueCleaner
+template <typename StructureType> class StructureValueCleaner : public IValueCleaner
 {
 public:
     /** Default constructor */

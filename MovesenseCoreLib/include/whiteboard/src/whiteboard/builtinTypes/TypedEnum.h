@@ -23,7 +23,7 @@ namespace TypedEnumHelper
     @param value [in] Enumeration value to convert to string.
     @return the string representation of the value or NULL if invalid value given.
     */
-    const char* toString(LocalDataTypeId id, int32 value);
+    WB_API const char* toString(LocalDataTypeId id, int32 value);
 
     /** Converts valueName (string representation of the value) to the actual enumeration value.
 
@@ -35,7 +35,7 @@ namespace TypedEnumHelper
     @param rValue [out] The parsed value if call returned true 
     @return true if the parse succeeded and rValue is valid, else false and rValue is untouched.
     */
-    bool parseEnum(LocalDataTypeId id, const char* valueName, int32& rValue);
+    WB_API bool parseEnum(LocalDataTypeId id, const char* valueName, int32& rValue);
 }
 
 WB_STRUCT_PACK_BEGIN()
@@ -49,7 +49,7 @@ WB_STRUCT_PACK_BEGIN()
  * @tparam BaseType Underlying data storage type
  */
 template <typename Definition, typename DefinitionType, typename BaseType>
-class WB_API WB_STRUCT_PACKED TypedEnum : public Definition
+class WB_STRUCT_PACKED TypedEnum : public Definition
 {
 private:
     /** Type of the enumeration */

@@ -4,10 +4,10 @@
     All rights reserved.
 ******************************************************************************/
 
+#include <whiteboard/integration/os/shared/semaphorecxx11.h>
 #include <whiteboard/ResourceClient.h>
-#include <whiteboard/ICommunicationInterface.h>
 #include <whiteboard/DpcFunctor.h>
-#include <semaphorecxx11.h>
+#include <whiteboard/comm/CommAdapter.h>
 #include "wbcmd-resources/resources.h"
 
 namespace wbcmd
@@ -35,7 +35,7 @@ public:
      * @param pAdapter Communication adapter to use
      * @return Result of the operation
      */
-    std::pair<whiteboard::Result, wb::WhiteboardId> enableAdapterAndWaitForConnection(whiteboard::ICommunicationInterface* pAdapter)
+    std::pair<whiteboard::Result, wb::WhiteboardId> enableAdapterAndWaitForConnection(whiteboard::CommAdapter* pAdapter)
     {
         mSubscribeResult = NO_RESULT;
         mNotifyResult = NO_RESULT;
@@ -76,9 +76,9 @@ public:
 
 private:
     const whiteboard::Result NO_RESULT = static_cast<whiteboard::Result>(0);
-    const size_t CONNECTION_TIMEOUT = 5000;
+    const size_t CONNECTION_TIMEOUT = 50000;
 
-    /** Helper function that allows use of  syncQueueOnce with asyncSubscribe */
+    /** Helper function that allows use of syncQueueOnce with asyncSubscribe */
     whiteboard::Result asyncSubscribeHelper(whiteboard::ResourceId resourceId)
     {
         return asyncSubscribe(resourceId);
@@ -122,7 +122,7 @@ private:
     }
 
 private:
-    semaphore mCompleted;
+    wb::cxx11::semaphore mCompleted;
     volatile whiteboard::Result mSubscribeResult;
     volatile whiteboard::Result mNotifyResult;
     volatile whiteboard::WhiteboardId mWhiteboardId;

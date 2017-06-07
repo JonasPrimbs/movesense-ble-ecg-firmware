@@ -14,7 +14,7 @@ namespace whiteboard
 * @tparam DATA_TYPE Type of the items in the pool
 */
 template <typename KEY_TYPE, typename DATA_TYPE>
-class TypedPool FINAL
+class TypedPool FINAL : public IDynamicallyAllocatable
 {
 public:
     /** Type of the key */

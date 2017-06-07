@@ -10,12 +10,15 @@ namespace device_discovery {
 * BleEnumerator scans for BLE devices. When there is a change is the list of devices,
 * listener is notified via callback.
 */
-class BleEnumerator final : public IDeviceEnumerator
+class WB_API BleEnumerator final : public IDeviceEnumerator
 {
 public:
     /** Construct new instance for enumerating Whiteboard capable BLE devices.
+    *
+    * @param numberOfServiceUuids Number of service UUIDs in the array
+    * @param serviceUuids Array of service UUIDs that filter enumerated BLE devices
     **/
-    BleEnumerator();
+    BleEnumerator(size_t numberOfServiceUuids, const char** serviceUuids);
 
     /** Destructor */
     ~BleEnumerator();
@@ -26,15 +29,15 @@ public:
     */
     void init(const DeviceChangeListener_t listener) override;
 
-    /** Gets list of currently connected devices
+    /** Enumerates currently connected devices
     *
-    * @return List of currently connected devices
+    * @param enumCallback Callback that should be called for each of the connected device
     */
-    std::vector<Device*> getDevices() override;
+    void enumerateDevices(std::function<void(IDevice*)> enumCallback) override;
 
 private:
     /** The implementation */
-    class BleEnumeratorImpl* mpImplementation;
+    class IDeviceEnumerator* mpImplementation;
 };
 
 } // namespace device_discovery

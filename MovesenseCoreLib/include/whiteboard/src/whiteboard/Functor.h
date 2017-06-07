@@ -2,13 +2,14 @@
 // Copyright (c) Suunto Oy 2016. All rights reserved.
 
 #include "whiteboard/integration/shared/types.h"
+#include "whiteboard/integration/bsp/newOperator.h"
 
 namespace whiteboard
 {
 
 /// Parameterless callable interface with return value
 template <typename R>
-class IFunctor0
+class IFunctor0 : public IDynamicallyAllocatable
 {
 public:
     /** Destructor */
@@ -20,7 +21,7 @@ public:
 
 /// Callable interface, with return value & one parameter
 template <typename R, typename P1>
-class IFunctor1
+class IFunctor1 : public IDynamicallyAllocatable
 {
 public:
     /** Destructor */
@@ -32,7 +33,7 @@ public:
 
 /// Callable interface, with return value & two parameters
 template <typename R, typename P1, typename P2>
-class IFunctor2
+class IFunctor2 : public IDynamicallyAllocatable
 {
 public:
     /** Destructor */
@@ -44,7 +45,7 @@ public:
 
 /// Callable interface, with return value & three parameters
 template <typename R, typename P1, typename P2, typename P3>
-class IFunctor3
+class IFunctor3 : public IDynamicallyAllocatable
 {
 public:
     /** Destructor */
@@ -56,7 +57,7 @@ public:
 
 /// Callable interface, with return value & four parameters
 template <typename R, typename P1, typename P2, typename P3, typename P4>
-class IFunctor4
+class IFunctor4 : public IDynamicallyAllocatable
 {
 public:
     /** Destructor */

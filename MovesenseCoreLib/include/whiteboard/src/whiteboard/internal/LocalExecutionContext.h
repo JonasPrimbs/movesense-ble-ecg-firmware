@@ -2,6 +2,7 @@
 #pragma once
 
 #include "whiteboard/WbVersion.h"
+#include "whiteboard/comm/BufferPoolAllocator.h"
 #include "whiteboard/metadata/MetadataStructures.h"
 #include "whiteboard/internal/IExecutionContext.h"
 #include "whiteboard/internal/EventProcessor.h"
@@ -206,13 +207,13 @@ private:
     * @param pBuffer Buffer that contains the message that should be dispatched
     * @param whiteboardIdInLocalScope ID of the whiteboard in this local context
     * @param protocol The protocol version
-    * @param dontBlockIfQueueFull Optional - If false, and queue full, blocks until space in the queue to dispatch, else returns failure.
+    * @param rOptions Extra optional instructions for the dispatch
     */
     Result dispatch(const MessageType messageType,
                     Buffer* pBuffer,
                     WhiteboardId whiteboardIdInLocalScope,
                     ProtocolVersion protocol,
-                    bool dontBlockIfQueueFull) OVERRIDE FINAL;
+                    const IMessageDispatcher::DispatchOptions& rOptions) OVERRIDE FINAL;
 
     /**
     *	Checks whether the given thread is the event processor thread
@@ -228,6 +229,11 @@ protected:
     Whiteboard& mrWhiteboard;
 
 private:
+#ifdef WB_UNITTEST_BUILD
+    /** Buffer allocator */
+    BufferPoolAllocator mBufferAllocator;
+#endif
+
     /** The event processor. */
     EventProcessor mProcessor;
 

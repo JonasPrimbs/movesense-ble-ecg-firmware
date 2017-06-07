@@ -1,0 +1,21 @@
+Metadata-Version: 1.1
+Name: nrfutil
+Version: 2.2.0
+Summary: Nordic Semiconductor nrfutil utility and Python library
+Home-page: https://github.com/NordicSemiconductor/pc-nrfutil
+Author: Nordic Semiconductor ASA
+Author-email: UNKNOWN
+License: Modified BSD License
+Description: A Python package that includes the nrfutil utility and the nordicsemi library
+Keywords: nordic nrf51 nrf52 ble bluetooth dfu ota softdevice serialization nrfutil pc-nrfutil
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: MacOS
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Topic :: System :: Networking
+Classifier: Topic :: System :: Hardware :: Hardware Drivers
+Classifier: Topic :: Software Development :: Embedded Systems
+Classifier: License :: Other/Proprietary License
+Classifier: Programming Language :: Python :: 2.7

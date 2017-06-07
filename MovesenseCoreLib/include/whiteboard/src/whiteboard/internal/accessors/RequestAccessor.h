@@ -36,12 +36,19 @@ public:
     */
     inline static void setRequestId(Request& rRequest, RequestId requestId);
 
-    /** Sets resource ID associated with the the Request
+    /** Sets resource ID associated with the Request
     *
     * @param rRequest The request to access
     * @param resourceId New ID for the resource
     */
     inline static void setResourceId(const Request& rRequest, ResourceId resourceId);
+
+    /** Sets request updateType of the Request
+    *
+    * @param rRequest The request to access
+    * @param isUpdate New update type of this request
+    */
+    inline static void setUpdate(const Request& rRequest, bool isUpdate);
 };
 
 inline Request RequestAccessor::makeRequest(RequestType requestType, RequestId requestId, ClientId clientId, ResourceId resourceId)
@@ -49,6 +56,8 @@ inline Request RequestAccessor::makeRequest(RequestType requestType, RequestId r
     Request request;
     request.mState = Request::UNHANDLED;
     request.mRequestType = requestType;
+    request.mIsUpdate = 0;
+    request.mReserved = 0;
     request.mRequestId = requestId;
     request.mClientId = clientId;
     request.mResourceId = resourceId;
@@ -80,6 +89,11 @@ inline void RequestAccessor::setRequestId(Request& rRequest, RequestId requestId
 inline void RequestAccessor::setResourceId(const Request& rRequest, ResourceId resourceId)
 {
     const_cast<Request&>(rRequest).mResourceId = resourceId;
+}
+
+inline void RequestAccessor::setUpdate(const Request& rRequest, bool isUpdate)
+{
+    const_cast<Request&>(rRequest).mIsUpdate = isUpdate ? 1 : 0;
 }
 
 } // namespace whiteboard

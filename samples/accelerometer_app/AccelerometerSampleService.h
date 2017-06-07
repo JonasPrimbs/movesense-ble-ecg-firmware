@@ -8,10 +8,9 @@
 
 #include "wb-resources/resources.h"
 
-class AccelerometerSampleService FINAL : 
-    private whiteboard::ResourceClient,
-    private whiteboard::ResourceProvider,
-    public whiteboard::LaunchableModule
+class AccelerometerSampleService FINAL : private whiteboard::ResourceClient,
+                                         private whiteboard::ResourceProvider,
+                                         public whiteboard::LaunchableModule
 
 {
 public:
@@ -26,26 +25,13 @@ private:
 
     /** @see whiteboard::ILaunchableModule::deinitModule */
     virtual void deinitModule() OVERRIDE;
-    
+
     /** @see whiteboard::ILaunchableModule::startModule */
     virtual bool startModule() OVERRIDE;
 
     /** @see whiteboard::ILaunchableModule::stopModule */
     virtual void stopModule() OVERRIDE { mModuleState = WB_RES::ModuleStateValues::STOPPED; }
-    
-    /**
-    *	GET request handler.
-    *
-    *	@param requestId ID of the request
-    *	@param clientId ID of the client that should receive the result
-    *	@param resourceId ID of the associated resource
-    *	@param parameters List of parameters for the request
-    *	@return Result of the operation
-    */
-    virtual void onGetRequest(const whiteboard::Request& request,
-                              const whiteboard::ParameterList& parameters) OVERRIDE;
 
-    
     /**
     *	Subscribe notification callback.
     *
@@ -63,8 +49,7 @@ private:
     */
     virtual void onUnsubscribe(const whiteboard::Request& request,
                                const whiteboard::ParameterList& parameters) OVERRIDE;
-    
-    
+
     /**
     *	Callback for resource notifications.
     *   Note that this function will not be called for notifications that are
@@ -75,8 +60,8 @@ private:
     *	@param rValue Current value of the resource
     */
     virtual void onNotify(whiteboard::ResourceId resourceId, const whiteboard::Value& value,
-                            const whiteboard::ParameterList& parameters);
-    
+                          const whiteboard::ParameterList& parameters);
+
     /**
     *	Callback for asynchronous UNSUBSCRIBE requests
     *
@@ -85,10 +70,10 @@ private:
     *	@param resultCode Result code of the request
     *	@param rResultData Successful result contains the request result
     */
-    virtual void onUnsubscribeResult(whiteboard::RequestId requestId, 
-                                    whiteboard::ResourceId resourceId, 
-                                    whiteboard::Result resultCode, 
-                                    const whiteboard::Value& rResultData);
+    virtual void onUnsubscribeResult(whiteboard::RequestId requestId,
+                                     whiteboard::ResourceId resourceId,
+                                     whiteboard::Result resultCode,
+                                     const whiteboard::Value& rResultData);
     /**
     *	Callback for asynchronous SUBSCRIBE requests
     *
@@ -97,23 +82,17 @@ private:
     *	@param resultCode Result code of the request
     *	@param rResultData Successful result contains the request result
     */
-    virtual void onSubscribeResult(whiteboard::RequestId requestId, 
-                                    whiteboard::ResourceId resourceId, 
-                                    whiteboard::Result resultCode, 
-                                    const whiteboard::Value& rResultData);
-    
-    /// @see whiteabord::ResourceClient::onGetResult
-    virtual void onGetResult(whiteboard::RequestId requestId, 
-                            whiteboard::ResourceId resourceId, 
-                            whiteboard::Result resultCode, 
-                            const whiteboard::Value& rResultData) OVERRIDE;
+    virtual void onSubscribeResult(whiteboard::RequestId requestId,
+                                   whiteboard::ResourceId resourceId,
+                                   whiteboard::Result resultCode,
+                                   const whiteboard::Value& rResultData);
 
 private:
-    whiteboard::Result startRunning(whiteboard::RequestId &remoteRequestId);
+    whiteboard::Result startRunning(whiteboard::RequestId& remoteRequestId);
     whiteboard::Result stopRunning();
 
     whiteboard::RequestMap<2, void> mOngoingRequests; // For storing relations of incoming & outgoing requests
-            
+
     size_t mSamplesIncluded;
     float mMaxAccelerationSq;
 };

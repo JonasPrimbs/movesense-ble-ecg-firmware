@@ -1,0 +1,26 @@
+Build information:
+
+* System: Darwin-13.4.0
+* Hostname: buildserver-45.local
+* Timestamp: 2017-04-12 13:42:18 (YY-MM-DD HH:MM:SS, UTC)
+* Generator: Unix Makefiles
+* Build type: RelWithDebInfo
+* C Compiler: AppleClang (64-bit)
+* C++ Compiler: AppleClang (64-bit)
+* CMake version: 3.6.2
+* Boost version: 1.61.0
+* Boost libs: /usr/local/lib
+* SD API Versions: <SD_API_V2> <SD_API_V3>
+* SWIG version: 2.0.12
+* Pyhon version: 2.7.5
+* Pyhon libs: /usr/lib/libpython2.7.dylib
+* Git repo: pc-ble-driver-py
+** Git revision: 1a49e6bb2baa1cf6a8fd85bc7021b96cd02054b4
+** Git branch: release/0.8.1
+* Git repo: pc-ble-driver
+** Git revision: 69a481c1c95909d260e4c90767703da88631dd48
+** Git branch: HEAD
+* MD5 sums: 
+** 5b876cfe02e262eb755c3bf397cf06f3  pc_ble_driver_sd_api_v2.py
+** d66d689318fd4b6b4031211718bae8e1  _pc_ble_driver_sd_api_v2.so
+** 508ca328e2051b6d2aa6f966ea04d418  libpc_ble_driver_shared_sd_api_v2.dylib

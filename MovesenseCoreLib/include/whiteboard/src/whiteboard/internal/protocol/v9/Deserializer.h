@@ -232,6 +232,8 @@ bool Deserializer::deserializeClientId(ClientId& rClientId, WhiteboardId whitebo
             static_cast<ExecutionContextId>(binaryValue[0] & 0xF),
             whiteboardId,
             localClientId);
+
+        rClientId.isNonCriticalSubscription = static_cast<uint8>((binaryValue[0] & 0x80) >> 7);
     }
 
     return true;

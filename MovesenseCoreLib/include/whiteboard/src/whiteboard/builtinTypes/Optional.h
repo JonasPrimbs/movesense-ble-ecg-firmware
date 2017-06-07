@@ -20,7 +20,7 @@ WB_STRUCT_PACK_BEGIN()
 
 /** Structure that handles optionality of an structure member */
 template <typename ItemType>
-struct WB_API WB_STRUCT_PACKED Optional
+struct WB_STRUCT_PACKED Optional
 {
 private:
     friend class IStructureVisitor;

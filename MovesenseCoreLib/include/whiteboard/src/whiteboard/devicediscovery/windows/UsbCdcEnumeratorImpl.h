@@ -7,6 +7,9 @@
 namespace whiteboard {
 namespace device_discovery {
 
+// Forward declarations
+class UsbCdcDevice;
+
 /**
 * UsbCdcEnumerator listens for USB PnP events and detects new CDC serial port devices.
 * When there is a change is the list of devices, listener is notified via callback.
@@ -29,11 +32,11 @@ public:
     */
     void init(const DeviceChangeListener_t listener) override;
 
-    /** Gets list of currently connected devices
+    /** Enumerates currently connected devices
     *
-    * @return List of currently connected devices
+    * @param enumCallback Callback that should be called for each of the connected device
     */
-    std::vector<Device*> getDevices() override;
+    void enumerateDevices(std::function<void(IDevice*)> enumCallback) override;
 
 private:
     /** Updates the device list.
@@ -69,7 +72,7 @@ private:
 
 private:
     const std::vector<UsbDeviceId> mSupportedDevices;
-    std::vector<Device*> mDevices;
+    std::vector<UsbCdcDevice*> mDevices;
     DeviceChangeListener_t mDeviceChangedListener;
     UsbPnpNotifier notifier;
 };

@@ -2,6 +2,7 @@
 // Copyright(c) Suunto Oy 2015. All rights reserved.
 
 #include "whiteboard/Dpc.h"
+#include "whiteboard/ExecutionContext.h"
 
 namespace whiteboard
 {
@@ -177,8 +178,9 @@ public:
     /** Construct a new scoped Dpc with execution context, class instance and method call. */
     template <class Ty> DpcFunctor(const whiteboard::ExecutionContextId id, Ty* pInstance, void (Ty::*pFnMemberFunction)())
     {
-        FunctorImpl<Ty>* callTarget = NewAligned<FunctorImpl<Ty>, Ty*, void (Ty::*)()>(pInstance, pFnMemberFunction);
+        FunctorImpl<Ty>* callTarget = new FunctorImpl<Ty>(pInstance, pFnMemberFunction);
         callTarget->mpDpc = mpDpc = Dpc::allocate(id, *callTarget);
+        WB_ASSERT(NULL != mpDpc);
     }
 
     /// Trigger the async callback
@@ -189,9 +191,10 @@ public:
     {
         if (mpDpc)
         {
-            DeleteAligned(mpDpc->functorPtr());
+            IDpcFunctor* ptr = mpDpc->functorPtr();
             mpDpc->deallocate();
             mpDpc = NULL;
+            delete ptr;
         }
     }
 
@@ -237,6 +240,7 @@ private:
             mFunctionCall(rFunctionCall),
             mpDpc(Dpc::allocate(executionContextId, *this))
         {
+            WB_ASSERT(NULL != mpDpc);
             asyncCall();
         }
 
@@ -244,6 +248,7 @@ private:
             mFunctionCall(rFunctionCall),
             mpDpc(Dpc::allocate(executionContextId, *this, rWhiteboard))
         {
+            WB_ASSERT(NULL != mpDpc);
             asyncCall();
         }
 
@@ -257,7 +262,7 @@ private:
         {
             WB_DEBUG_ASSERT(mpDpc->isThisThread(WbThreadGetCurrent()));
             mFunctionCall();
-            DeleteAligned(this);
+            delete this;
         }
 
     private:
@@ -303,15 +308,13 @@ private:
     template <typename FunctionCallType>
     static void asyncCall(ExecutionContextId executionContextId, const FunctionCallType& rFunctionCall)
     {
-        NewAligned<AsyncDpcFunctionCallWrapper<FunctionCallType>, ExecutionContextId, const FunctionCallType&>(
-            executionContextId, rFunctionCall);
+        new AsyncDpcFunctionCallWrapper<FunctionCallType>(executionContextId, rFunctionCall);
     }
 
     template <typename FunctionCallType>
     static void asyncCall(ExecutionContextId executionContextId, Whiteboard& rWhiteboard, const FunctionCallType& rFunctionCall)
     {
-        NewAligned<AsyncDpcFunctionCallWrapper<FunctionCallType>, ExecutionContextId, Whiteboard&, const FunctionCallType&>(
-            executionContextId, rWhiteboard, rFunctionCall);
+        new AsyncDpcFunctionCallWrapper<FunctionCallType>(executionContextId, rWhiteboard, rFunctionCall);
     }
 
     class SyncDpcFunctionCallWrapper FINAL : public IDpcFunctor
@@ -322,27 +325,46 @@ private:
         WbSemaphoreHandle mSemaphore;
 
     public:
-        // TODO: handling for calls within the same thread context
         SyncDpcFunctionCallWrapper(ExecutionContextId executionContextId, IDpcFunctor& rFunctionCall) :
-            mrFunctionCall(rFunctionCall),
-            mpDpc(Dpc::allocate(executionContextId, *this)),
-            mSemaphore(WbSemaphoreCreate(0, 1))
+            mrFunctionCall(rFunctionCall)
         {
-            syncCall();
+            if (ExecutionContext::isCurrentThread(executionContextId))
+            {
+                mrFunctionCall();
+            }
+            else
+            {
+                mpDpc = Dpc::allocate(executionContextId, *this);
+                WB_ASSERT(NULL != mpDpc);
+                mSemaphore = WbSemaphoreCreate(0, 1);
+                mpDpc->queue(false);
+                WbSemaphoreWait(mSemaphore);
+                mpDpc->deallocate();
+                WbSemaphoreDelete(mSemaphore);
+            }
         }
 
         SyncDpcFunctionCallWrapper(ExecutionContextId executionContextId, Whiteboard& rWhiteboard, IDpcFunctor& rFunctionCall) :
-            mrFunctionCall(rFunctionCall),
-            mpDpc(Dpc::allocate(executionContextId, *this, rWhiteboard)),
-            mSemaphore(WbSemaphoreCreate(0, 1))
+            mrFunctionCall(rFunctionCall)
         {
-            syncCall();
+            if (ExecutionContext::isCurrentThread(executionContextId, rWhiteboard))
+            {
+                mrFunctionCall();
+            }
+            else
+            {
+                mpDpc = Dpc::allocate(executionContextId, *this, rWhiteboard);
+                WB_ASSERT(NULL != mpDpc);
+                mSemaphore = WbSemaphoreCreate(0, 1);
+                mpDpc->queue(false);
+                WbSemaphoreWait(mSemaphore);
+                mpDpc->deallocate();
+                WbSemaphoreDelete(mSemaphore);
+            }
         }
 
         ~SyncDpcFunctionCallWrapper()
         {
-            mpDpc->deallocate();
-            WbSemaphoreDelete(mSemaphore);
         }
 
         // DPC callback
@@ -351,13 +373,6 @@ private:
             WB_DEBUG_ASSERT(mpDpc->isThisThread(WbThreadGetCurrent()));
             mrFunctionCall();
             WbSemaphoreRelease(mSemaphore);
-        }
-
-    private:
-        void syncCall()
-        {
-            mpDpc->queue(false);
-            WbSemaphoreWait(mSemaphore);
         }
     };
 

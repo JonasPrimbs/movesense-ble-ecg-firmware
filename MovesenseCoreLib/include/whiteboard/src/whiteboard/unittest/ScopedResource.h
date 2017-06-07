@@ -11,6 +11,7 @@ namespace whiteboard
 
 // Forward declarations
 class Whiteboard;
+class WhiteboardMockup;
 
 /** Default metadata creator
 *
@@ -88,10 +89,29 @@ public:
 class ScopedResourceImpl
 {
 protected:
+    /** Constructor
+    *
+    * @param executionContextId ID of the execution context that owns the resource
+    * @param rWhiteboard Whiteboard instance where this resource is binded to
+    */
     ScopedResourceImpl(
         ExecutionContextId executionContextId,
         Whiteboard& rWhiteboard);
 
+    /** Constructor
+    *
+    * @param rWhiteboard WhiteboardMockup instance where this resource is binded to
+    */
+    ScopedResourceImpl(
+        WhiteboardMockup& rWhiteboard);
+
+    /** Intializes the resource 
+     *
+     * @param name Name of the resource
+     * @param accessRights Access rights to the resource
+     * @param localDataTypeId ID of the data type
+     * @param rMetadataCreator Metadata creator that will be used to create metadata for the resource
+     */
     void initialize(
         const char* name,
         metadata::SecurityMask accessRights,
@@ -99,14 +119,23 @@ protected:
         IMetadataCreator& rMetadataCreator);
 
 public:
+    /** Destructor */
     virtual ~ScopedResourceImpl();
 
+    /** Gets ID of the resource */
     ResourceId getId() const;
 
 private:
+    /** Associated Whiteboard instance */
     Whiteboard& mrWhiteboard;
+
+    /** Execution context of the resource */
     ExecutionContextId mExecutionContextId;
+
+    /** ID of the resource */
     LocalResourceId mLocalResourceId;
+
+    /** Dynamically constructed MetadataMap instance that contains metadata for this resource */
     MetadataMap* mpMetadataMap;
 };
 
@@ -117,6 +146,13 @@ template <typename T, typename METADATA_CREATOR = MetadataCreator>
 class ScopedResource : public ScopedResourceImpl
 {
 public:
+    /** Constructor
+    *
+    * @param name Name of the resource
+    * @param executionContextId ID of the execution context that owns the resource
+    * @param accessRights Access rights to the resource
+    * @param rWhiteboard Whiteboard instance where this resource is binded to
+    */
     ScopedResource(
         const char* name,
         ExecutionContextId executionContextId,
@@ -130,6 +166,24 @@ public:
         initialize(name, accessRights, Value::DataTypeId<typename RemoveAll<T>::type>::value, metadataCreator);
     }
 
+    /** Constructor
+     *
+     * @param name Name of the resource
+     * @param accessRights Access rights to the resource
+     * @param rWhiteboard WhiteboardMockup instance where this resource is binded to
+     */
+    ScopedResource(
+        const char* name,
+        metadata::SecurityMask accessRights,
+        WhiteboardMockup& rWhiteboard)
+        : ScopedResourceImpl(
+            rWhiteboard)
+    {
+        METADATA_CREATOR metadataCreator;
+        initialize(name, accessRights, Value::DataTypeId<typename RemoveAll<T>::type>::value, metadataCreator);
+    }
+
+    /** Destructor */
     virtual ~ScopedResource()
     { 
     }

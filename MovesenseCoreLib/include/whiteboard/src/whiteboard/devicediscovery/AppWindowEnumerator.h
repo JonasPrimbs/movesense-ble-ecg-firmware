@@ -11,7 +11,7 @@ namespace device_discovery {
 * be detectable, its window title must be in form 
 * When there is a change is the list of devices, listener is notified via callback.
 */
-class AppWindowEnumerator final : public IDeviceEnumerator
+class WB_API AppWindowEnumerator final : public IDeviceEnumerator
 {
 public:
     /** Construct new instance for enumerating application instances that will be detected
@@ -30,11 +30,11 @@ public:
      */
     void init(const DeviceChangeListener_t listener) override;
 
-    /** Gets list of currently connected devices
+    /** Enumerates currently connected devices
     *
-    * @return List of currently connected devices
+    * @param enumCallback Callback that should be called for each of the connected device
     */
-    std::vector<Device*> getDevices() override;
+    void enumerateDevices(std::function<void(IDevice*)> enumCallback) override;
 
 private:
     /** Implementation */

@@ -1,8 +1,8 @@
-#include "movesense.h"
 #include "AccelerometerSampleService.h"
+#include "movesense.h"
 
 MOVESENSE_APPLICATION_STACKSIZE(1024)
- 
+
 MOVESENSE_PROVIDERS_BEGIN(1)
 
 MOVESENSE_PROVIDER_DEF(AccelerometerSampleService)
@@ -10,6 +10,6 @@ MOVESENSE_PROVIDER_DEF(AccelerometerSampleService)
 MOVESENSE_PROVIDERS_END(1)
 
 MOVESENSE_FEATURES_BEGIN()
-    SERIAL_COMMUNICATION(true)
-    BLE_COMMUNICATION(true)
+SERIAL_COMMUNICATION(true)
+BLE_COMMUNICATION(true)
 MOVESENSE_FEATURES_END()

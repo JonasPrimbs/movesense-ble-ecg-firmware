@@ -7,7 +7,7 @@
 #include "whiteboard/integration/port.h"
 #include "whiteboard/integration/bsp/windows/internal/wininc.h"
 #include "whiteboard/devicediscovery/windows/WindowsHelpers.h"
-#include "whiteboard/devicediscovery/shared/semaphorecxx11.h"
+#include "whiteboard/integration/os/shared/semaphorecxx11.h"
 
 namespace whiteboard
 {
@@ -37,7 +37,7 @@ private: // Implementation
     static LRESULT CALLBACK callback(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 private:
-    semaphore mCreationSemaphore;
+    cxx11::semaphore mCreationSemaphore;
     const WindowCreatedOrDestoyedListener_t mListener;
     std::unique_ptr<HWND, WindowDeleter> mWindow;
     std::unique_ptr<VOID, NotifierDeleter> mNotifier;

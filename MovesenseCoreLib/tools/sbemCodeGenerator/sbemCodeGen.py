@@ -158,7 +158,7 @@ def valueExprFromItem(item):
 
     propchain = getItemPropChain(item)
     
-    print("valueExprFromItem for item: ", item['__property'])
+#    print("valueExprFromItem for item: ", item['__property'])
     # find out the possible wb::Optional's
     hasValueExpr = ""
     propertyExpr = ""
@@ -174,7 +174,7 @@ def valueExprFromItem(item):
         propterm = propterm.split('/')[-1]
         
 
-        print("- property: ", propterm) #, " : ", prop)
+#        print("- property: ", propterm) #, " : ", prop)
         propertyExpr += decapitalize(propterm)
 
         # Add index accessor here for each loop of array
@@ -242,7 +242,7 @@ def generateGroupsForResAndDatatype(resource, path, datatype, resourceGroups, re
         elif 'complex' == kind:
 
             propPath = path + k + "/"
-            print("complex propPath: ", propPath)
+#            print("complex propPath: ", propPath)
                 
             propGroup = generateGroupsForResAndDatatype(resource,
                                             propPath,
@@ -254,12 +254,12 @@ def generateGroupsForResAndDatatype(resource, path, datatype, resourceGroups, re
             resourceGroups.append(propGroup)
     
         elif 'array' == kind:
-            print('array kind: ', k)
+#            print('array kind: ', k)
             # find what kind of items the array has
             itemdef = v['items']
             if '$ref' in itemdef:
                 datatypename = itemdef['$ref'].split('/')[-1]
-                print('  - datatypename: ', datatypename)
+#                print('  - datatypename: ', datatypename)
                 
                 propPath = path + k + "/"
 
@@ -270,7 +270,7 @@ def generateGroupsForResAndDatatype(resource, path, datatype, resourceGroups, re
                                                 resourceItems)
 
                 if itemsGroup:
-                    print("itemsGroup path: ", itemsGroup['__property'])
+#                    print("itemsGroup path: ", itemsGroup['__property'])
                     # Array items are required
                     itemsGroup['__required'] = True
 
@@ -297,7 +297,7 @@ def generateGroupsForResAndDatatype(resource, path, datatype, resourceGroups, re
                                 '__required': True,
                                 '__INSERT_ASSERT': True
                          }
-                print("simple array: ", itemSubGroup)
+#                print("simple array: ", itemSubGroup)
                 subItems.append(itemSubGroup)
                 resourceItems.append(itemSubGroup)
 
@@ -357,7 +357,7 @@ for f in yamlFiles:
     if ('definitions' in obj):
         for k, v in obj['definitions'].iteritems():
             definitions[k] =v
-            print("yaml datatype: ", k)
+#            print("yaml datatype: ", k)
 
     stream.close()
 
@@ -391,7 +391,7 @@ for resFile in resourceFiles:
     
     separator_idx = resFile.rfind("/", 0, len(resFile) - len('/resources.h') - 1) 
     inc_file_name = resFile[separator_idx+1:]
-    print("inc_file_name: ", inc_file_name)
+#    print("inc_file_name: ", inc_file_name)
     resource_include_files.append(inc_file_name)
     
     currentResource = ""
@@ -405,7 +405,7 @@ for resFile in resourceFiles:
             # Match type structs
             m = patternForType.match(line)
             if (m):
-                print("XX type match, line ", m.groups())
+#                print("XX type match, line ", m.groups())
                 tn = m.group(1)
                 currentTypeName = tn
             elif (currentTypeName != ""):
@@ -419,7 +419,7 @@ for resFile in resourceFiles:
             # match resource structs
             m = patternForResource.match(line)
             if (m):
-                print("XX Resource match: ", m.groups())
+#                print("XX Resource match: ", m.groups())
                 res = m.group(1)
                 if (not rootFound):
                     if (res == "ROOT"):
@@ -457,7 +457,7 @@ for resName in resources.keys():
         cppName = cppNameFromResName(resName)
         if cppName in cppResourceNames:
             newResources[resName] = resources[resName]
-            print (resName)
+#            print (resName)
 
 resources = newResources
 newResources = None
@@ -520,7 +520,7 @@ while(runAgain):
                 #print ("simple property: ", propvalue)
             elif 'type' in propvalue and propvalue['type'] == 'array':
                 # do nothing?
-                print("array property: ", propname)
+#                print("array property: ", propname)
                 propvalue['SBEM_KIND'] = "array"
                 
             else:
@@ -688,6 +688,7 @@ with open("sbem_definitions.h", 'wb') as f_h:
         # write top of h.file
         print('#pragma once', file=f_h)
         print('#include "sbem_types.h"', file=f_h)
+        print('#include "common/core/dbgassert.h"', file=f_h)
 
         # write top of cpp.file
         print('#include "whiteboard/Value.h"', file=f_cpp)

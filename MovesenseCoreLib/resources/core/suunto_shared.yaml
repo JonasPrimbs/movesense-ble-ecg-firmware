@@ -35,7 +35,7 @@ securityDefinitions:
 paths:
   x-workaround:
     x-get
-      
+
 definitions:
   VersionInfoArray:
     required:
@@ -55,7 +55,7 @@ definitions:
         type: string
       version:
         type: string
-       
+
   HeartRateQuality:
     type: integer
     format: uint8
@@ -123,3 +123,32 @@ definitions:
       - name: 'FAILURE'
         description: The procedure has terminated unsuccessfully.
         value: 3
+
+  FloatVector3DArray:
+    required:
+      - data
+    properties:
+      data:
+        type: array
+        items:
+          $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/FloatVector3D'
+
+  AddressInfoArray:
+    required:
+      - addressInfo
+    description: Array of structs containing pairs of address type identifier and address.
+    properties:
+      addressInfo:
+        type: array
+        items:
+          $ref: '#/definitions/AddressInfo'
+
+  AddressInfo:
+    required:
+      - name
+      - address
+    properties:
+      name:
+        type: string
+      address:
+        type: string

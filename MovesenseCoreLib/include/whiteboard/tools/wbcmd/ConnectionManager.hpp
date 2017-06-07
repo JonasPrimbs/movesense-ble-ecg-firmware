@@ -23,11 +23,12 @@ public:
     /** Adds a new connection from given address string
      *
      * @param address Address to use for new connection
+     * @return A value indicating whether the address was successfully parsed and connection was added
      */
-    void addConnection(const std::string& address);
+    bool addConnection(const std::string& address);
 
     /** Enables device discovery */
-    void enableDiscovery(unsigned short vid, unsigned short pid);
+    void enableDiscovery(whiteboard::device_discovery::DeviceEnumeratorList_t& rEnumerators);
 
     /** Establishes connection to a whiteboard.
     *

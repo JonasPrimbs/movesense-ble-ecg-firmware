@@ -8,7 +8,7 @@
 #include "whiteboard/integration/port.h"
 #include "whiteboard/WhiteboardConfig.h"
 
-#include "whiteboard/internal/comm/RoutingTable.h"
+#include "whiteboard/comm/internal/RoutingTable.h"
 
 struct RoutingTableInfo
 {

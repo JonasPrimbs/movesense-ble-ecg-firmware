@@ -1,0 +1,121 @@
+swagger: '2.0'
+
+info:
+  version: L1RC1
+  title: NRF52 BLE Testing (Movesense)
+  description: |
+    API for testing low level BLE capabilities such as transmission
+
+paths:
+  /Component/Nrf52/Test/TxPow:
+    put:
+      description: |
+        Sets the Tx power level. Needs to be done before the test.
+      parameters:
+        - name: Level
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TxPow'
+      responses:
+        200:
+          description: |
+            Power level set succesfully
+        400:
+          description: |
+            Failed to set the power level. Error code included.
+              ILLEGAL_LEVEL               1
+              NOT_ALLOWED_IN_THIS_STATE   2
+          schema:
+            type: integer
+            format: uint8
+  /Component/Nrf52/Test/Mode:
+    get:
+      description: |
+        Get the currently active test mode
+      responses:
+        200:
+          description: |
+            Currently active test mode (returns LE_TEST_END if in IDLE - other params are all zero)
+          schema:
+            $ref: '#/definitions/TestMode'
+    put:
+      description: |
+        Sets the desired BLE test mode
+      parameters:
+        - name: mode
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TestMode'
+      responses:
+        200:
+          description: Test mode set succesfully
+        400:
+          description: |
+            Failed to set the test mode. Error code included.
+              DTM_ERROR_ILLEGAL_CHANNEL       1
+              DTM_ERROR_INVALID_STATE         2
+              DTM_ERROR_ILLEGAL_LENGTH        3
+              DTM_ERROR_ILLEGAL_CONFIGURATION 4
+          schema:
+            type: integer
+            format: uint8
+
+definitions:
+
+  TxPow:
+    type: object
+    required:
+      - level
+    properties:
+      level:
+        description: |
+          New output level, +4..-40, in steps of -4. 0 = +4, 11 = -40.
+        type: integer
+        format: uint8
+        minimum: 0
+        maximum: 11
+
+  TestMode:
+    type: object
+    required:
+      - cmd
+      - chn
+      - len
+      - payload
+    properties:
+      cmd:
+        description: |
+          LE_RESET = 0
+          LE_RECEIVER_TEST = 1
+          LE_TRANSMITTER_TEST = 2
+          LE_TEST_END = 3
+        type: integer
+        format: uint8
+        minimum: 0
+        maximum: 3
+      chn:
+        description: |
+          Phys. channel no. Actual frequency = (2402 + chn * 2)
+        type: integer
+        format: uint8
+        minimum: 0
+        maximum: 39
+      len:
+        description: |
+          Payload length
+        type: integer
+        format: uint8
+        minimum: 0
+        maximum: 37
+      payload:
+        description: |
+          Payload bit pattern
+            0 = DTM_PKT_PRBS9
+            1 = DTM_PKT_0X0F
+            2 = DTM_PKT_0X55
+        type: integer
+        format: uint32
+        minimum: 0
+        maximum: 2

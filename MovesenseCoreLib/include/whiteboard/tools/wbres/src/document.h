@@ -272,12 +272,12 @@ class String
 {
 public:
     String()
-        : mOffset(static_cast<size_t>(-1))
+        : mOffset(static_cast<size_t>(-1)), mpCompressionSourceString(NULL)
     {
     }
 
     String(const std::string& rValue)
-        : mOffset(static_cast<size_t>(-1)), mValue(rValue)
+        : mValue(rValue), mOffset(static_cast<size_t>(-1)), mpCompressionSourceString(NULL)
     {
     }
 
@@ -289,8 +289,11 @@ public:
     void save(OutputStream& rStream) const;
     static String* loadNew(InputStream& rStream);
 
-    size_t mOffset;
     std::string mValue;
+
+    // Valid only after packing
+    size_t mOffset;
+    String* mpCompressionSourceString;
 };
 
 class SecurityTag
@@ -1386,10 +1389,28 @@ public:
 class UniqueStringSelector : public SelectorBase<String>
 {
 public:
+    UniqueStringSelector(bool includeCompressionRemovedStrings)
+        : mIncludeCompressionRemovedStrings(includeCompressionRemovedStrings)
+    {
+    }
+
     virtual void select(Document* pDocument, std::vector<String*>& allObjects) override
     {
-        allObjects.insert(allObjects.end(), pDocument->mStrings.begin(), pDocument->mStrings.end());
+        std::vector<String*>::iterator end = pDocument->mStrings.end();
+        if (!mIncludeCompressionRemovedStrings)
+        {
+            end = std::find_if(
+                pDocument->mStrings.begin(),
+                pDocument->mStrings.end(),
+                [](const String* pString) { return pString->mpCompressionSourceString != nullptr; });
+
+        }
+        
+        allObjects.insert(allObjects.end(), pDocument->mStrings.begin(), end);
     }
+
+private:
+    bool mIncludeCompressionRemovedStrings;
 };
 
 class AllDataTypesSelector : public DataTypeSelector<DataType>

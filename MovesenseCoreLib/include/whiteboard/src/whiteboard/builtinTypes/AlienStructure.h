@@ -10,7 +10,7 @@ namespace whiteboard
 {
 
 /** Interface for retrieving data for serialization */
-class IStructureDataAccessor
+class IStructureDataAccessor : public IDynamicallyAllocatable
 {
 public:
     /** Destructor. */

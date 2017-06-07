@@ -16,7 +16,7 @@ namespace whiteboard
 #define WB_WHEN_STRUCTURE_CLEANING_NEEDED(stmt)   stmt
 
 /** Interface for value class cleaning (freeing temporary resources on scope exit) */
-class IValueCleaner
+class WB_API IValueCleaner
 {
 public:
     /** Cleans the value data after it has been used

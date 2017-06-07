@@ -403,7 +403,7 @@ protected:
 protected:
     int mWidth;
     int mHeight;
-    float maData[3 * 6];
+    float maData[4 * 8];
 };
 
 } // namespace nea

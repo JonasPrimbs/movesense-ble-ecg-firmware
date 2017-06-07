@@ -90,8 +90,8 @@ struct WB_STRUCT_BITFIELD_PACKED Date
     // Structure type identification and serialization
     typedef int Structure;
     static const LocalDataTypeId DATA_TYPE_ID = 24;
-    static const StructureValueSerializer<Date> serializer;
-    WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const StructureValueCleaner<Date> cleaner;)
+    WB_API static const StructureValueSerializer<Date> serializer;
+    WB_WHEN_STRUCTURE_CLEANING_NEEDED(WB_API static const StructureValueCleaner<Date> cleaner;)
 
     // Visitor pattern implementation
     inline void visit(IStructureVisitor& rVisitor) { rVisitor.visit(year).visit(month).visit(day); }

@@ -6,7 +6,7 @@
 #include "whiteboard/ParameterList.h"
 #include "whiteboard/ResourceProvider.h"
 #include "whiteboard/containers/NullPointerPoolAllocator.h"
-#include "whiteboard/internal/comm/IRoutingTableObserver.h"
+#include "whiteboard/comm/internal/IRoutingTableObserver.h"
 #include "whiteboard/internal/PathParameterCache.h"
 #include "whiteboard/internal/ResourceTree.h"
 #include "whiteboard/internal/Status.h"
@@ -86,9 +86,9 @@ public:
 
     /**
     * Get the buffer pool owned by the Whiteboard.
-    * @return pointer to the buffer pool.
+    * @return Reference to the BufferPool instance.
     */
-    static inline BufferPool* getBufferPool() { return getInstance()->mpBufferPool; }
+    inline BufferPool& getBufferPool() { return *mpBufferPool; }
 
     /** Initializes whiteboard
     *
@@ -722,6 +722,9 @@ private:
     friend class services::PoolStatsProvider;
     friend class services::SubscriptionsInfoProvider;
     friend class WhiteboardMockup;
+#if WB_UNITTEST_BUILD
+    friend class ResourceClient;
+#endif
 
     /**
     * Gets execution context with given local client ID
@@ -775,6 +778,13 @@ private:
     * @return Local resource client or NULL if client with given ID is not registered
     */
     ResourceClient* getLocalClientById(LocalClientId localClientId) const;
+
+    /**
+    * Ask the Whiteboard instance for a RequestClient instance with the given name string.
+    * @param clientName Pointer to the name string.
+    * @return Pointer to the instance, NULL if not found
+    */
+    ResourceClient* getLocalClientByName(const char* clientName) const;
 
     /**
     * Gets local resource provider with given ID

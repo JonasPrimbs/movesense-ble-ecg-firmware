@@ -1,13 +1,14 @@
 #pragma once
 // Copyright (c) Suunto Oy 2015. All rights reserved.
 
+#include "whiteboard/integration/port.h"
 #include "whiteboard/metadata/MetadataStructures.h"
 
 namespace whiteboard
 {
 
 /** Map of read-only resource metadata */
-class MetadataMap
+class WB_API MetadataMap
 {
 public:
     /** Constructor 

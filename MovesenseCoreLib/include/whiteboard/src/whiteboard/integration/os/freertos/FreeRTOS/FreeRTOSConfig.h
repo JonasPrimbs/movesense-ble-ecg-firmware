@@ -13,7 +13,11 @@
 #define configMAX_PRIORITIES					( 5 )
 
 /* Constants that describe the hardware and memory usage. */
-#define configTICK_RATE_HZ						1000
+
+/* Code using Whiteboard needs to declare this symbol, for example in code that initializes the Whiteboard. 
+   This has to be done in order for the port to use same tick rate as the host application */
+extern const uint32 gWbPortFreeRtosTickRate_Hz;
+#define configTICK_RATE_HZ						gWbPortFreeRtosTickRate_Hz
 
 /* Constants that build features in or out. */
 #define configUSE_MUTEXES						1

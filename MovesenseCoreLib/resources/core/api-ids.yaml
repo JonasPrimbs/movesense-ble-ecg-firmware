@@ -205,7 +205,7 @@ apis:
   suunto.augmented.heartrate.*:
     apiId: 65
     defaultExecutionContext: PrimaryServices
-  suunto.activity.daily.*:
+  suunto.outdoor.*:
     apiId: 66
     defaultExecutionContext: PrimaryServices
 
@@ -226,4 +226,19 @@ apis:
     defaultExecutionContext: PrimaryServices
   suunto.device.component.DS24L65.*:
     apiId: 72
+    defaultExecutionContext: PrimaryServices
+  suunto.activity.daily.*:
+    apiId: 73
+    defaultExecutionContext: PrimaryServices
+  suunto.system.settings.*:
+    apiId: 74
+    defaultExecutionContext: PrimaryServices
+  device.manufacturing.*:
+    apiId: 75
+    defaultExecutionContext: PrimaryServices
+  device.calibration.*:
+    apiId: 76
+    defaultExecutionContext: application
+  suunto.ble.test.*:
+    apiId: 77
     defaultExecutionContext: PrimaryServices

@@ -5,6 +5,7 @@
 #include <whiteboard/builtinTypes/UnknownStructure.h>
 #include <map>
 #include <string>
+#include <functional>
 
 namespace wbcmd
 {
@@ -232,8 +233,9 @@ private:
     /** Map of security tags */
     std::map<uint16, WB_RES::SecurityTagMetadata> mSecurityTags;
 
-    /** Map of strings */
-    std::map<uint16, std::string> mStrings;
+    /** Map of strings. Sorted in reverse order so that we can use
+    * std::map::lower_bound to find location of compressed strings. */
+    std::map<uint16, std::string, std::greater<uint16>> mStrings;
 };
 
 } // namespace wbcmd

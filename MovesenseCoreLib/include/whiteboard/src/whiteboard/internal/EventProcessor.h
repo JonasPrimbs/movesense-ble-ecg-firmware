@@ -1,7 +1,7 @@
 // Copyright (c) Suunto Oy 2014. All rights reserved.
 #pragma once
 
-#include "whiteboard/DpcFunctor.h"
+#include "whiteboard/Dpc.h"
 #include "whiteboard/internal/Whiteboard.h"
 #include "whiteboard/internal/BuildConfig.h"
 
@@ -164,9 +164,10 @@ public:
     *
     * @param rEvent Event that should be dispatched
     * @param timeout Max time to wait for free event queue slot if queue full.
+    * @param hardFail If true failure asserts
     * @return Return value of the operation
     */
-    Result dispatch(const WbEvent& rEvent, size_t timeout = WB_DEFAULT_DISPATCH_TIMEOUT_MS);
+    Result dispatch(const WbEvent& rEvent, size_t timeout = WB_DEFAULT_DISPATCH_TIMEOUT_MS, bool hardFail = true);
 
     /** @return true if the event processor has any pending request or response events */
     bool hasEvents() const

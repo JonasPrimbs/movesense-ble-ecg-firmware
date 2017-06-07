@@ -5,9 +5,8 @@
 #include <whiteboard/LaunchableModule.h>
 #include <whiteboard/ResourceClient.h>
 
-class BlinkyClient FINAL : 
-    private whiteboard::ResourceClient,
-    public whiteboard::LaunchableModule
+class BlinkyClient FINAL : private whiteboard::ResourceClient,
+                           public whiteboard::LaunchableModule
 
 {
 public:
@@ -22,15 +21,14 @@ private:
 
     /** @see whiteboard::ILaunchableModule::deinitModule */
     virtual void deinitModule() OVERRIDE;
-    
+
     /** @see whiteboard::ILaunchableModule::startModule */
     virtual bool startModule() OVERRIDE;
 
     /** @see whiteboard::ILaunchableModule::stopModule */
     virtual void stopModule() OVERRIDE;
-    
-protected:  
-    
+
+protected:
     /**
     *	Timer callback.
     *

@@ -1,14 +1,11 @@
 #pragma once
-/******************************************************************************
-    Copyright (c) Suunto Oy 2015.
-    All rights reserved.
-******************************************************************************/
+// Copyright (c) Suunto Oy 2015. All rights reserved.
 
 #include "whiteboard/containers/BlockingFreeListPoolAllocator.h"
 #include "whiteboard/containers/TypedPool.h"
+#include "whiteboard/comm/Buffer.h"
+#include "whiteboard/comm/IBufferAllocator.h"
 #include "whiteboard/internal/BuildConfig.h"
-#include "whiteboard/internal/Buffer.h"
-#include "whiteboard/internal/IBufferAllocator.h"
 #include "whiteboard/internal/Status.h"
 #include "whiteboard/internal/Whiteboard.h"
 
@@ -18,6 +15,28 @@ WB_HEADER_CHECK_DEFINE(WB_COMM_INTERNAL_MESSAGE_BUFFERS)
 
 namespace whiteboard
 {
+
+/** Communication buffer instance with actual data allocation
+* TODO: Align using alignas when we can use C++11 */
+template <size_t BUFFER_LENGTH> struct BufferInstance
+{
+    union
+    {
+        /** Header */
+        BufferHeader header;
+
+        /** Align following data to qword boundary */
+        WB_ALIGNED(uint64) aligner[(sizeof(BufferHeader) + (sizeof(uint64) - 1)) / sizeof(uint64)];
+    };
+
+    /** Data (align to qword boundary, so that structure members align correctly) */
+    uint8 data[(BUFFER_LENGTH + (WB_MESSAGE_ALIGNMENT - 1)) / WB_MESSAGE_ALIGNMENT * WB_MESSAGE_ALIGNMENT];
+};
+
+// Size should be divisible by eight so that array of buffers keep their aligment
+WB_STATIC_VERIFY(sizeof(BufferInstance<1>) % WB_MESSAGE_ALIGNMENT == 0, BufferSizeWillBreakAlignment);
+WB_STATIC_VERIFY(WB_OFFSETOF(BufferInstance<1>, data) % WB_MESSAGE_ALIGNMENT == 0, BufferDataIsNotCorrectlyAligned);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(BufferInstance<1>) == WB_MESSAGE_ALIGNMENT, BufferIsNotCorrectlyAligned);
 
 /**
 * Pool of typed data.
@@ -330,12 +349,6 @@ public:
     */
     StatusFlags probeStatus();
 
-    /** Gets buffer allocator instance that uses this pool
-     *
-     * @return Allocator instance
-     */
-    template <size_t PAYLOAD_OFFSET> inline static IBufferAllocator& getAllocator();
-
     /** Allocates a new buffer from buffer pool. Blocks calling
     * thread until a buffer is available.
     *
@@ -349,8 +362,8 @@ public:
     */
     Buffer* allocate(IBufferAllocator* pAllocator,
                      IBufferAllocator::PoolType pool,
-                     size_t payloadOffset,
-                     size_t payloadLength,
+                     uint16 payloadOffset,
+                     uint16 payloadLength,
                      size_t timeoutMs);
 
     /** Frees buffer back to buffer pool. No blocking.
@@ -358,33 +371,6 @@ public:
     * @param pBuffer Pointer to communication buffer
     */
     void free(Buffer* pBuffer);
-
-private:
-    /** Buffer allocator that uses this pool */
-    template <size_t PAYLOAD_OFFSET> class Allocator : public IBufferAllocator
-    {
-    public:
-        /** Gets length of the header needed for lower level protocol and offset where whiteboard
-        * protocol data can start */
-        inline size_t getPayloadOffset() const OVERRIDE FINAL { return PAYLOAD_OFFSET; }
-
-        /** Allocates buffer from the driver. Function should block
-        * until a buffer is available.
-        *
-        * @param pool Type of the pool where the buffer should allocated from
-        * @param payloadLength Number of bytes to allocate for the payload
-        * @param timeoutMs Timeout in milliseconds
-        * @return Pointer to allocated buffer. Allocation should always succeed.
-        */
-        inline Buffer* allocateBuffer(
-            IBufferAllocator::PoolType pool, uint32 payloadLength, size_t timeoutMs = WB_INFINITE) OVERRIDE FINAL;
-
-        /** Frees the buffer
-        *
-        * @param pBuffer Buffer that should be freed
-        */
-        inline void freeBuffer(Buffer* pBuffer) OVERRIDE FINAL;
-    };
 
 private:
 /* Nextgen memory requirements
@@ -431,26 +417,5 @@ private:
         uint8 mPools[NUMBER_OF_POOLS * sizeof(BufferInstancePool)];
     };
 };
-
-template <size_t PAYLOAD_OFFSET> inline IBufferAllocator& BufferPool::getAllocator()
-{
-    WB_STATIC_VERIFY(PAYLOAD_OFFSET % WB_MESSAGE_ALIGNMENT == 0, PayloadOffsetMustBeMultipleOfEightToKeepAligment);
-
-    static BufferPool::Allocator<PAYLOAD_OFFSET> instance;
-    return instance;
-}
-
-template <size_t PAYLOAD_OFFSET>
-inline Buffer* BufferPool::Allocator<PAYLOAD_OFFSET>::allocateBuffer(
-    IBufferAllocator::PoolType pool, uint32 payloadLength, size_t timeoutMs)
-{
-    return Whiteboard::getBufferPool()->allocate(this, pool, getPayloadOffset(), payloadLength, timeoutMs);
-}
-
-template <size_t PAYLOAD_OFFSET>
-inline void BufferPool::Allocator<PAYLOAD_OFFSET>::freeBuffer(Buffer* pBuffer)
-{
-    Whiteboard::getBufferPool()->free(pBuffer);
-}
 
 } // namespace whiteboard

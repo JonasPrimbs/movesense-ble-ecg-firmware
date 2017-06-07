@@ -37,7 +37,7 @@ public:
 };
 
 /** Resource subtree */
-class ResourceSubtree
+class ResourceSubtree : public IDynamicallyAllocatable
 {
 public:
     /**

@@ -92,7 +92,7 @@ public:
     bool isAllocated(const Pool&, KeyType id) const OVERRIDE
     {
         // This is slow, but should be used only in debug builds so we don't care.
-        KeyType current = mFirstFree;
+        KeyType current = static_cast<KeyType>(mFirstFree);
         while (current != Pool::INVALID_ID)
         {
             if (current == id)
@@ -136,7 +136,7 @@ public:
 
         while (currentSize < newSize)
         {
-            mpFreeNodes[currentSize] = mFirstFree;
+            mpFreeNodes[currentSize] = static_cast<KeyType>(mFirstFree);
             mFirstFree = currentSize++;
         }
 

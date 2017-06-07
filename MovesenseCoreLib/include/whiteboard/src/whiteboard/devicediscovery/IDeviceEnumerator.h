@@ -3,19 +3,38 @@
 
 #include <functional>
 #include <vector>
-#include "whiteboard/devicediscovery/Device.h"
-#include "whiteboard/CommAdapter.h"
+#include "whiteboard/devicediscovery/IDevice.h"
 
-namespace whiteboard
-{
-namespace device_discovery
-{
+namespace whiteboard {
+namespace device_discovery {
 
 /** Interface for device enumerator implementations */
-class IDeviceEnumerator
+class WB_API IDeviceEnumerator
 {
 public:
-    /// Event that happens when a new device is plugged into the system or a device is removed from the system.
+    /// Destructor
+    virtual ~IDeviceEnumerator() {}
+
+    /** Customized new operator to allocate memory from commonMemPool
+    *
+    * @param size Number of bytes to allocate
+    * @return Pointer to allocated memory block
+    */
+    static void* operator new(size_t size)
+    {
+        return WbMemAlloc(size);
+    }
+
+    /** Matching customized delete operator
+    *
+    * @param ptr Pointer to allocated memory block that should be freed
+    */
+    static void operator delete(void* ptr)
+    {
+        return WbMemFree(ptr);
+    }
+
+    /// Callback that is called when a new device is plugged into the system or a device is removed from the system.
     typedef std::function<void(IDeviceEnumerator&)> DeviceChangeListener_t;
 
     /** Initializes the enumerator
@@ -24,15 +43,14 @@ public:
      */
     virtual void init(const DeviceChangeListener_t listener) = 0;
 
-    /** Gets list of currently connected devices
+    /** Enumerates currently connected devices
      *
-     * @return List of currently connected devices
+     * @param enumCallback Callback that should be called for each of the connected device
      */
-    virtual std::vector<Device*> getDevices() = 0;
+    virtual void enumerateDevices(std::function<void(IDevice*)> enumCallback) = 0;
 };
 
 typedef std::vector<IDeviceEnumerator*> DeviceEnumeratorList_t;
 
 } // namespace device_discovery
-
 } // namespace whiteboard

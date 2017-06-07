@@ -11,7 +11,7 @@ namespace whiteboard
 class EventProcessor;
 
 /** Interface for execution contexts that abstracts message passing */
-class IExecutionContext
+class IExecutionContext : public IDynamicallyAllocatable
 {
 public:
     /** Destructor */

@@ -1,147 +1,132 @@
-# Copyright Suunto Oy 2015-2016
-# All rights reserved.
-
 swagger: '2.0'
 
-# Document metadata
 info:
-  version: "1.0.0"
-  title: /Device/Measurement/AngularVelocity API
-  description: |
-    This file defines the /Device/Measurement/AngularVelocity API.
-  termsOfService: http://suunto.com/wbapi/terms/
-  contact:
-    name: Suunto team
-    url: http://developer.suunto.com
+    version: 0.0.1
+    title: Angular velocity (Movesense-API)
+    description: |
+      This file defines interface for the angular velocity API.
 
-# Security definitions
-security:
-  - suuntoAccessCode:
-    - public
-
-securityDefinitions:
-  suuntoAccessCode:
-    type: oauth2
-    scopes:
-      public: Grants read/write access to public resources.
-    flow: accessCode
-    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
-    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
-
-# Paths
 paths:
-  /Device/Measurement/AngularVelocity:
+  /Meas/Gyro/Info:
     x-executionContext: meas
     get:
       description: |
-        Get an angular velocity value.
+        Get supported sample rates and ranges.
       responses:
         200:
-          description: Linear acceleration vector
+          description: Returns gyroscope information. See GyroInfo.
           schema:
-            $ref: '#/definitions/AngularVelocityValue'
-        204:
-          description: Measurement source is unavailable
-      security:
-        - suuntoAccessCode:
-          - public
+            $ref: '#/definitions/GyroInfo'
 
-  /Device/Measurement/AngularVelocity/Subscription:
+  /Meas/Gyro/Config:
     x-executionContext: meas
+    get:
+      description: |
+        Get current gyroscope measurement configuration.
+      responses:
+        200:
+          description: Returns gyroscope configurations. See GyroConfig.
+          schema:
+            $ref: '#/definitions/GyroConfig'
+
+    put:
+      description: |
+        Set current gyroscope measurement configuration.
+      parameters:
+        - name: config
+          in: body
+          description: New configurations for gyroscope
+          required: true
+          schema:
+            $ref: '#/definitions/GyroConfig'
+      responses:
+        200:
+          description: Operation completed successfully
+        503:
+          description: |
+            Not allowed to change configuration at the moment. E.g. when
+            active subcriptions exist.
+
+  /Meas/Gyro/{SampleRate}:
+    x-executionContext: meas
+    parameters:
+       - $ref: '#/parameters/SampleRate'
+
+  /Meas/Gyro/{SampleRate}/Subscription:
+    x-executionContext: meas
+    parameters:
+       - $ref: '#/parameters/SampleRate'
     post:
       description: |
-        Subscribe to periodic angular velocity values.
-        See documentation on product-specific measurement periods at
-        http://XXX.suunto.com/XXX. If measurement source is unavailable, the
-        Measurement member will be empty. If present, Measurement member
-        contains an array of a single measurement result. Delivery of periodic
-        values may be suspended when there hasn't been significant motion for
-        a device specific period of time. Delivery will commence after movement
-        is detected.
+        Subscribe to periodic gyroscope measurements.
       responses:
         200:
           description: Operation completed successfully
-        x-std-errors:
-          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        501:
+          description: Non-supported sample rate
         x-notification:
-          description: New value
+          description: New measurements
           schema:
-            $ref: '#/definitions/AngularVelocityValue'
-      security:
-        - suuntoAccessCode:
-          - public
+            $ref: '#/definitions/GyroData'
     delete:
-      description: |
-        Unsubscribe from periodic angular velocity values.
+      description: Unsubscribe from periodic gyroscope values.
       responses:
         200:
           description: Operation completed successfully
-        x-std-errors:
-          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
-      security:
-        - suuntoAccessCode:
-          - public
 
-  /Device/Measurement/AngularVelocity/HighSpeed:
-    x-executionContext: meas
-    
-  /Device/Measurement/AngularVelocity/HighSpeed/Subscription:
-    x-executionContext: meas
-    post:
-      description: |
-        Subscribe to high speed periodic angular velocity values.
-        See documentation on product-specific measurement periods at
-        http://XXX.suunto.com/XXX. If measurement source is unavailable, the
-        Measurement member will be empty. If present, Measurement member
-        contains an array of at least one measurement result, but may contain
-        more. Delivery of periodic values may be suspended when there hasn't
-        been significant motion for a device specific period of time. Delivery
-        will commence after movement is detected.
-      responses:
-        200:
-          description: Operation completed successfully
-        x-std-errors:
-          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
-        x-notification:
-          description: New value(s)
-          schema:
-            $ref: '#/definitions/AngularVelocityValue'
-      security:
-        - suuntoAccessCode:
-          - public
-    delete:
-      description: |
-        Unsubscribe from periodic high speed angular velocity values.
-      responses:
-        200:
-          description: Operation completed successfully
-        x-std-errors:
-          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
-      security:
-        - suuntoAccessCode:
-          - public
+parameters:
+  SampleRate:
+    name: SampleRate
+    in: path
+    required: true
+    type: integer
+    format: int32
 
 definitions:
-  AngularVelocityValue:
+  GyroInfo:
     required:
-      - RelativeTime
+      - SampleRates
+      - Ranges
     properties:
-      RelativeTime:
-        description: Relative time of measurement
+      SampleRates:
+        description: Available sample rates for gyroscope measurement.
+        type: array
+        items:
+          type: integer
+          format: uint16
+          x-unit: Hz
+      Ranges:
+        description: |
+          Available ranges for angular range measurement rate. For example range
+          value 500 means the range is -500...+500 dps.
+        type: array
+        items:
+          type: integer
+          format: uint16
+
+  GyroConfig:
+    required:
+      - DPSRange
+    properties:
+      DPSRange:
+        description: |
+          Degree per second range. For example if set 500 the range is
+          -500...+500 dps.
+        type: integer
+        format: uint16
+
+  GyroData:
+    required:
+      - Timestamp
+      - ArrayGyro
+    properties:
+      Timestamp:
+        description: Local timestamp of first measurement.
         type: integer
         format: uint32
         x-unit: millisecond
-      Measurement:
-        description: Angular velocity measurement(s)
-        $ref: '#/definitions/FloatVector3DArray2'
-        x-unit: rad/s
-
-  FloatVector3DArray2:
-    required:
-      - data
-    properties:
-      data:
+      ArrayGyro:
+        description: Measured angular velocity values (3D) in array.
         type: array
         items:
           $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/FloatVector3D'
-          

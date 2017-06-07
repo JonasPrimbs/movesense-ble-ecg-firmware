@@ -12,9 +12,9 @@ namespace whiteboard
 {
 
 /** This type is used in templatized client API calls to indicate that no parameter is passed to API */
-struct NoType
+struct WB_API NoType
 {
-    WB_API static const NoType NoValue;
+    static const NoType NoValue;
 };
 
 } // namespace whiteboard

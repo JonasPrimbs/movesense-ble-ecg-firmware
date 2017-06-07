@@ -33,23 +33,6 @@ class ValueStorage;
 /** Wrapper for accessing binary data of Whiteboard API calls. */
 class WB_API Value
 {
-private:
-    // Disallow some constructors to avoid nasty accidental misusage
-    template <typename T>
-    Value(const T* value) DELETED;
-
-    // No longs except in 64-bit linux where long == int64
-#if !(defined(__GNUC__) && defined(__LP64__))
-    Value(long value) DELETED;
-#endif
-
-    // Assignment operator is allowed only for internal use
-#ifdef WB_HAVE_CPLUSPLUS_11
-    inline Value& operator=(const Value&) = default;
-#else
-    inline Value& operator=(const Value&);
-#endif
-
 public:
     /** Empty value */
     static const Value Empty;
@@ -168,6 +151,23 @@ public:
     */
     template <typename NativeType>
     inline typename ConvertResult<NativeType>::type convertTo(const unit::Info& rSourceUnit, const unit::Info& rTargetUnit) const;
+
+private:
+    // Disallow some constructors to avoid nasty accidental misusage
+    template <typename T>
+    Value(const T* value) DELETED;
+
+    // No longs except in 64-bit linux where long == int64
+#if !(defined(__GNUC__) && defined(__LP64__))
+    Value(long value) DELETED;
+#endif
+
+    // Assignment operator is allowed only for internal use
+#ifdef WB_HAVE_CPLUSPLUS_11
+    inline Value& operator=(const Value&) = default;
+#else
+    inline Value& operator=(const Value&);
+#endif
 
 private:
 
@@ -534,7 +534,7 @@ template <typename NativeType> struct Value::DataTypeIdHelper<NativeType, false>
 };
 
 /* Conversion helper. Default case (Alignment problematic native types) */
-template <typename NativeType, bool isStructure> struct WB_API Value::ConversionHelper
+template <typename NativeType, bool isStructure> struct Value::ConversionHelper
 {
     /* Avoid alignment errors by copying to temporary variable */
     static inline NativeType convertTo(const Value& rValue)
@@ -547,56 +547,32 @@ template <typename NativeType, bool isStructure> struct WB_API Value::Conversion
 
 template <> struct WB_API Value::ConversionHelper<NoType, false>
 {
-    static inline NoType convertTo(const Value& /*rValue*/)
-    {
-        // NoType needs special handling to avoid compiler warnings
-        return NoType::NoValue;
-    }
+    static NoType convertTo(const Value& rValue);
 };
 
 template <> struct WB_API Value::ConversionHelper<bool, false>
 {
-    static inline bool convertTo(const Value& rValue)
-    {
-        // Bool doesn't need alignment fixing
-        return *static_cast<const bool*>(rValue.mpData);
-    }
+    static bool convertTo(const Value& rValue);
 };
 
 template <> struct WB_API Value::ConversionHelper<int8, false>
 {
-    static inline int8 convertTo(const Value& rValue)
-    {
-        // int8 doesn't need alignment fixing
-        return *static_cast<const int8*>(rValue.mpData);
-    }
+    static int8 convertTo(const Value& rValue);
 };
 
 template <> struct WB_API Value::ConversionHelper<uint8, false>
 {
-    static inline uint8 convertTo(const Value& rValue)
-    {
-        // uint8 doesn't need alignment fixing
-        return *static_cast<const uint8*>(rValue.mpData);
-    }
+    static uint8 convertTo(const Value& rValue);
 };
 
 template <> struct WB_API Value::ConversionHelper<char*, false>
 {
-    static inline const char* convertTo(const Value& rValue)
-    {
-        // string doesn't need alignment fixing
-        return static_cast<const char*>(rValue.mpData);
-    }
+    static const char* convertTo(const Value& rValue);
 };
 
 template <> struct WB_API Value::ConversionHelper<ByteStream, false>
 {
-    static inline const ByteStream& convertTo(const Value& rValue)
-    {
-        // ByteStream doesn't need alignment fixing
-        return *static_cast<const ByteStream*>(rValue.mpData);
-    }
+    static const ByteStream& convertTo(const Value& rValue);
 };
 
 template <> struct WB_API Value::ConversionHelper<UnknownStructure, false>
@@ -605,7 +581,7 @@ template <> struct WB_API Value::ConversionHelper<UnknownStructure, false>
 };
 
 /* Structure conversion */
-template <typename StructureType> struct WB_API Value::ConversionHelper<StructureType, true>
+template <typename StructureType> struct Value::ConversionHelper<StructureType, true>
 {
     static inline const StructureType& convertTo(const Value& rValue)
     {
@@ -623,6 +599,7 @@ inline typename Value::ConvertResult<NativeType>::type Value::convertTo(const un
     NativeType value = convertTo<NativeType>();
     unit::Value result;
     bool success = unit::tryConvert(rSourceUnit, rTargetUnit, static_cast<unit::Value>(value), result);
+    (void)success;
     WB_ASSERT(success);
     return static_cast<NativeType>(result);
 }

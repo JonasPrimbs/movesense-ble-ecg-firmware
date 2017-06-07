@@ -6,6 +6,8 @@
 
 bool TwinSpiInit();
 
+bool TwinSpiDeinit();
+
 
 /**
  * @brief Function for exchanging data over SPI bus without using EasyDMA

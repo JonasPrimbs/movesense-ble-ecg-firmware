@@ -28,6 +28,8 @@ add_custom_command(
         OUTPUT flash.3
         DEPENDS flash.2
         COMMAND nrfjprog.exe --family NRF52 --reset
+        COMMAND ping -n 6 127.0.0.1
+        COMMAND nrfjprog.exe --family NRF52 --reset
         COMMENT "Reset device"
 )
 

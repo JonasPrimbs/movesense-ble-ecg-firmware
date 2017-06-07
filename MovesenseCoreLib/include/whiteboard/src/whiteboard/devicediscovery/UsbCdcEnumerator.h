@@ -31,7 +31,7 @@ inline bool operator==(const UsbDeviceId& id1, const UsbDeviceId& id2)
 * UsbCdcEnumerator listens for USB PnP events and detects new CDC serial port devices.
 * When there is a change is the list of devices, listener is notified via callback.
 */
-class UsbCdcEnumerator final : public IDeviceEnumerator
+class WB_API UsbCdcEnumerator final : public IDeviceEnumerator
 {
 public:
     /** Construct new instance for enumerating USB CDC serial port devices.
@@ -55,11 +55,11 @@ public:
     */
     void init(const DeviceChangeListener_t listener) override;
 
-    /** Gets list of currently connected devices
+    /** Enumerates currently connected devices
     *
-    * @return List of currently connected devices
+    * @param enumCallback Callback that should be called for each of the connected device
     */
-    std::vector<Device*> getDevices() override;
+    void enumerateDevices(std::function<void(IDevice*)> enumCallback) override;
 
 private:
     /** The implementation */

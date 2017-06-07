@@ -4,7 +4,7 @@
 #include <vector>
 #include <thread>
 #include "whiteboard/devicediscovery/UsbCdcEnumerator.h"
-#include "whiteboard/devicediscovery/shared/semaphorecxx11.h"
+#include "whiteboard/integration/os/shared/semaphorecxx11.h"
 #include <IOKit/IOKitLib.h>
 #include <IOKit/IOMessage.h>
 #include <IOKit/IOCFPlugIn.h>
@@ -37,11 +37,11 @@ public:
     */
     void init(const DeviceChangeListener_t listener) override;
 
-    /** Gets list of currently connected devices
+    /** Enumerates currently connected devices
     *
-    * @return List of currently connected devices
+    * @param enumCallback Callback that should be called for each of the connected device
     */
-    std::vector<Device*> getDevices() override;
+    void enumerateDevices(std::function<void(IDevice*)> enumCallback) override;
 
     enum class UpdateType
     {
@@ -84,12 +84,12 @@ private:
 
 private:
     const std::vector<UsbDeviceId> mSupportedDevices;
-    std::vector<Device*> mDevices;
+    std::vector<IDevice*> mDevices;
     mutable std::mutex mDevicesMutex;
     DeviceChangeListener_t mDeviceChangedListener;
     
     CFRunLoopRef mRunLoop;
-    semaphore mListenerSema;
+    cxx11::semaphore mListenerSema;
     std::thread mPnpThread;
     io_iterator_t mDeviceAddedIterator;
     IONotificationPortRef mNotifyPort;

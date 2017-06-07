@@ -173,7 +173,7 @@ void Serializer::serializeClientId(ClientId clientId)
     WB_STATIC_VERIFY(sizeof(clientId.localClientId) == 2, ClientIdIsNotWhatExpected_1);
     WB_STATIC_VERIFY(WB_MAX_EXECUTION_CONTEXTS == 15, ClientIdIsNotWhatExpected_2);
 
-    ClientIdSerializationBuffer binaryValue = {clientId.executionContextId,
+    ClientIdSerializationBuffer binaryValue = { static_cast<uint8>(clientId.executionContextId | static_cast<uint8>(clientId.isNonCriticalSubscription << 7)),
                                                static_cast<uint8>(clientId.localClientId >> 8),
                                                static_cast<uint8>(clientId.localClientId & 0xff)};
 

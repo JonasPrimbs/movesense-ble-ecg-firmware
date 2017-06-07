@@ -29,11 +29,11 @@ public:
     */
     void init(const DeviceChangeListener_t listener) override;
 
-    /** Gets list of currently connected devices
+    /** Enumerates currently connected devices
     *
-    * @return List of currently connected devices
+    * @param enumCallback Callback that should be called for each of the connected device
     */
-    std::vector<Device*> getDevices() override;
+    void enumerateDevices(std::function<void(IDevice*)> enumCallback) override;
 
 public:
     void updateDevices(const bool initialUpdate);
@@ -65,7 +65,7 @@ public:
 
 private:
     const std::vector<UsbDeviceId> mSupportedDevices;
-    std::vector<Device*> mDevices;
+    std::vector<IDevice*> mDevices;
     DeviceChangeListener_t mDeviceChangedListener;
 };
 

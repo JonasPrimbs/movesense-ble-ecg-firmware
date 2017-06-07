@@ -20,7 +20,7 @@ WB_STRUCT_PACK_BEGIN()
 *
 * @tparam ItemType Type of the array item
 */
-template <typename ItemType> struct WB_API WB_STRUCT_PACKED Array FINAL
+template <typename ItemType> struct WB_STRUCT_PACKED Array FINAL
 {
 private:
     /** Library internal implementation can access these members */

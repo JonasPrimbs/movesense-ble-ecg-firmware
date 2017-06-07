@@ -35,7 +35,7 @@ class InternalServices;
 *   Instantiation wrapper for whiteboard services. This is the first module to start from the launchable modules as
 *   StartupProvider is constructed first.
 */
-class WhiteboardServicesInstance FINAL
+class WB_API WhiteboardServicesInstance FINAL
 {
 public:
 

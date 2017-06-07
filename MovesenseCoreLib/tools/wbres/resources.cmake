@@ -25,11 +25,6 @@ elseif (("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Darwin") OR ("${CMAKE_HOST_SYSTEM
   execute_process(COMMAND chmod u+x ${WBRES_TOOL})
 endif()
 
-# Hard coded in wbres.exe
-list(APPEND WBRES_INTERNAL_INPUTS "${CMAKE_CURRENT_LIST_DIR}/resources/headerDefinitions.h")
-list(APPEND WBRES_INTERNAL_INPUTS "${CMAKE_CURRENT_LIST_DIR}/resources/sourceDefinitions.cpp")
-list(APPEND WBRES_INTERNAL_INPUTS "${CMAKE_CURRENT_LIST_DIR}/resources/metadataSourceDefinitions.cpp")
-
 # Add commands to generate Whiteboard resources
 #
 # generate_wb_resources(
@@ -197,7 +192,7 @@ function (generate_wb_resources Name OutputVar)
   add_custom_command(
 	OUTPUT ${OUTPUTS} ${HIDDEN_OUTPUTS}
 	COMMAND "${WBRES_TOOL}" ${CMDLINE} ${INPUTS}
-	DEPENDS ${INPUTS} "${WBRES_TOOL}" ${WBRES_INTERNAL_INPUTS}
+	DEPENDS ${INPUTS} "${WBRES_TOOL}"
     VERBATIM
   )
 

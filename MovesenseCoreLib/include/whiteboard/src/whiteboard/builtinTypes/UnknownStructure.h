@@ -1,8 +1,5 @@
 #pragma once
-/******************************************************************************
-    Copyright (c) Suunto Oy 2015.
-    All rights reserved.
-******************************************************************************/
+// Copyright (c) Suunto Oy 2015. All rights reserved.
 
 #include "whiteboard/builtinTypes/IDataTypeMetadataContainer.h"
 
@@ -11,9 +8,10 @@ namespace whiteboard
 
 // Forward declarations
 class UnknownStructureAccessor;
+class MetadataMap;
 
 /** Interface of visitors that walk structure contents */
-class IStructureDataVisitor
+class IStructureDataVisitor : public IDynamicallyAllocatable
 {
 public:
     /** Destructor. */
@@ -312,6 +310,19 @@ public:
     bool deserialize(
         bool metadataForSenderDataType,
         const IDataTypeMetadataContainer& rMetadataContainer,
+        IStructureDataVisitor& rTreeVisitor) const;
+
+    /** Deserializes the structure and calls tree visitor members while doing so.
+    *
+    * @param metadataForSenderDataType A value indicating whether the dataTypeId and rMetadataContainer
+    *        are for sender data types
+    * @param rMetadataMap Metadata map that can describe the structure type
+    * @param rDataVisitor Structure visitor instance that should handle the data
+    * @return A value indicating whether the structure was successfully deserialized
+    */
+    bool deserialize(
+        bool metadataForSenderDataType,
+        const MetadataMap& rMetadataMap,
         IStructureDataVisitor& rTreeVisitor) const;
 
     /** Copies unknown structure to a new instance. Both of the instances

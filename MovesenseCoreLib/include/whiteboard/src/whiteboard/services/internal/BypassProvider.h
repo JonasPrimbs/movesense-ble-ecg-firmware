@@ -15,7 +15,7 @@ namespace services
 {
 
 /** Base class for bypassed resource */
-class BypassResource
+class BypassResource : public IDynamicallyAllocatable
 {
 public:
     /** Constructor 
@@ -227,7 +227,7 @@ protected: // <-- Protected due to unittests
     *	This will create BypassResource object for each bypassed resources and
     *	overtake the original resource provider.
     */
-    class SubstituteProvider FINAL : public ResourceProvider, private ResourceClient
+    class SubstituteProvider FINAL : public ResourceProvider, public IDynamicallyAllocatable, private ResourceClient
     {
     public:
         SubstituteProvider(ExecutionContextId executionContextId);

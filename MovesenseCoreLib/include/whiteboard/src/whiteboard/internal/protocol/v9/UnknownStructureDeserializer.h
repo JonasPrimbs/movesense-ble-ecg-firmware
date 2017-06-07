@@ -1,8 +1,5 @@
 #pragma once
-/******************************************************************************
-    Copyright (c) Suunto Oy 2015.
-    All rights reserved.
-******************************************************************************/
+// Copyright (c) Suunto Oy 2015. All rights reserved.
 
 #include "whiteboard/internal/protocol/IUnknownStructureDeserializer.h"
 
@@ -37,9 +34,9 @@ public:
     /** Deserializes the structure and calls tree visitor members while doing so.
     *
     * @param rStructure Structure that should be deserialized
-    * @param rMetadataContainer Metadata container that can describe the structure type
     * @param metadataForSenderDataType A value indicating whether the dataTypeId and rMetadataContainer
     *        are for sender data types
+    * @param rMetadataContainer Metadata container that can describe the structure type
     * @param rDataVisitor Structure visitor instance that should handle the data
     * @return A value indicating whether the structure was successfully deserialized
     */
@@ -47,6 +44,21 @@ public:
         const UnknownStructure& rStructure,
         bool metadataForSenderDataType,
         const IDataTypeMetadataContainer& rMetadataContainer,
+        IStructureDataVisitor& rDataVisitor) const OVERRIDE;
+
+    /** Deserializes the structure and calls tree visitor members while doing so.
+    *
+    * @param rStructure Structure that should be deserialized
+    * @param metadataForSenderDataType A value indicating whether the dataTypeId and rMetadataContainer
+    *        are for sender data types
+    * @param rMetadataMap Metadata map that can describe the structure type
+    * @param rDataVisitor Structure visitor instance that should handle the data
+    * @return A value indicating whether the structure was successfully deserialized
+    */
+    bool deserialize(
+        const UnknownStructure& rStructure,
+        bool metadataForSenderDataType,
+        const MetadataMap& rMetadataContainer,
         IStructureDataVisitor& rDataVisitor) const OVERRIDE;
 };
 

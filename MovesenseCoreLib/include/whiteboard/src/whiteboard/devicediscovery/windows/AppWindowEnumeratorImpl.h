@@ -1,17 +1,20 @@
 // Copyright (c) Suunto Oy 2015. All rights reserved.
 
 #include "whiteboard/devicediscovery/IDeviceEnumerator.h"
-#include "whiteboard/devicediscovery/shared/semaphorecxx11.h"
+#include "whiteboard/integration/os/shared/semaphorecxx11.h"
 #include "whiteboard/devicediscovery/windows/AppWindowPnpNotifier.h"
 
 namespace whiteboard {
 namespace device_discovery {
 
+// Forward declarations
+class AppWindowDevice;
+
 /** Information about enumerated device */
 struct DeviceInfo
 {
     /// The device serial number
-    std::string mSerial;
+    SuuntoSerial mSerial;
 
     /// The device description
     std::string mDescription;
@@ -40,11 +43,11 @@ public:
     */
     void init(const DeviceChangeListener_t listener) override;
 
-    /** Gets list of currently connected devices
+    /** Enumerates currently connected devices
     *
-    * @return List of currently connected devices
+    * @param enumCallback Callback that should be called for each of the connected device
     */
-    std::vector<Device*> getDevices() override;
+    void enumerateDevices(std::function<void(IDevice*)> enumCallback) override;
 
 private:
     /** Called when SimulatorPnPNotifier finds that top level window has been created or destroyed */
@@ -63,12 +66,12 @@ private:
     std::vector<DeviceInfo> doEnumerate();
 
 private:
-    std::vector<Device*> mDevices;
+    std::vector<AppWindowDevice*> mDevices;
     const std::vector<std::string> mKnownWindowTitles;
     DeviceChangeListener_t mDeviceChangedListener;
     AppWindowPnpNotifier mNotifier;
-    semaphore mUpdateThreadShutdownSemaphore;
-    semaphore mUpdateSemaphore;
+    cxx11::semaphore mUpdateThreadShutdownSemaphore;
+    cxx11::semaphore mUpdateSemaphore;
     std::thread mUpdateThread;
 };
 

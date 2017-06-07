@@ -16,19 +16,24 @@
 #include "DataLogger.hpp"
 #include "Logbook.hpp"
 #include "LedService.hpp"
-#include "nea/hal/sensor/temperature/tmp112/TemperatureProvider.hpp"
+#include "SettingsService.hpp"
+#include "ManufacturingService.hpp"
 
 
-class SmartSensor2Application
+class SmartSensor2Application : public whiteboard::ResourceClient
 {
 public:
     SmartSensor2Application();
     void applicationContextInit();
     virtual ~SmartSensor2Application();
 
+    virtual void onNotify(wb::ResourceId resourceId, const wb::Value& value, const wb::ParameterList& parameters) OVERRIDE;
+
+    virtual void onTimer(whiteboard::TimerId timerId) OVERRIDE FINAL;
+    
 private:
     void runStartupClients();
-
+    void stopHWServices();
 
     whiteboard::services::WhiteboardServicesInstance mWbServices;
     //nea::inetgateway::InetGwLPProvider mInetGw;
@@ -47,6 +52,12 @@ private:
     DataLogger      mDataLogger;
     Logbook         mLogbook;
     LedService      mLedService;
+    SettingsService mSettingsService;
+    ManufacturingService mManufacturingService;
 
-    MAX30004Service mMax;
+    // Shutdown timer
+    bool                mAppModulesStarted;
+    whiteboard::TimerId mShutdownTimerId;
+
+
 };

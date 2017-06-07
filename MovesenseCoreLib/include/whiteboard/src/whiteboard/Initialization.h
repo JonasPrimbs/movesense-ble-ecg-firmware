@@ -119,13 +119,13 @@ struct Config
 *
 * @param serialNumber Serial number to use
 * @param rConfiguration Runtime configuration to use
-* @param rMetadata Metadata of the Whiteboard.
+* @param pApplicationMetadata Optional. Metadata for the application.
 * @param hookInstaller Optional. Hook installer function.
 */
 WB_API void initialize(
     const char* serialNumber, 
     const Config& rConfiguration,
-    const whiteboard::MetadataMap& rMetadata = WbMetadata,
+    const whiteboard::MetadataMap * const pApplicationMetadata = &WbMetadata,
     ResourceTree::HookInstallerFunc* hookInstaller = NULL);
 
 /** Shuts down whiteboard library

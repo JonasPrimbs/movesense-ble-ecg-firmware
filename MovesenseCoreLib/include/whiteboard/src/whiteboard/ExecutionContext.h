@@ -7,6 +7,9 @@
 namespace whiteboard
 {
 
+// Forward declarations
+class Whiteboard;
+
 /** Interface for execution context related operations
  *
  * @note Avoid using these functions from unit test code that has multiple Whiteboards.
@@ -28,6 +31,15 @@ public:
     * @return true if the execution context is running in callers thread false if not
     */
     static bool isCurrentThread(ExecutionContextId executionContextId);
+
+    /**
+    * Checks whether this is the local execution thread of the given of execution context
+    *
+    * @param executionContextId ID of execution context to compare
+    * @param rWhiteboard Whiteboard instance to use
+    * @return true if the execution context is running in callers thread false if not
+    */
+    static bool isCurrentThread(ExecutionContextId executionContextId, const Whiteboard& rWhiteboard);
 
     /**
     * Waits until certain event has passed. While waiting execution context's event are handled.

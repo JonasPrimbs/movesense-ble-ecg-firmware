@@ -141,7 +141,7 @@ paths:
       security:
         - suuntoAccessCode:
           - public
-        
+
 # Extra definitions
 definitions:
 
@@ -185,7 +185,7 @@ definitions:
       sw:
         description: Three digit version number for the SW platform.
         type: string
-        example: "1.0.0"      
+        example: "1.0.0"
       hw:
         description: Identifier for the HW configuration. Everytime there are changes in componets/PCB, this ID is updated.
           In Suunto case, the format is varying number of <letter, number> pairs.
@@ -196,23 +196,4 @@ definitions:
         $ref: 'http://localhost:9000/suunto_shared.yaml#/definitions/VersionInfoArray'
       addressInfo:
         description: Array of structs containing pairs of address type identifier and address.
-        $ref: '#/definitions/AddressInfoArray'
-
-  AddressInfoArray:
-    required:
-      - addressInfo
-    properties:
-      addressInfo:
-        type: array
-        items:
-          $ref: '#/definitions/AddressInfo'
-
-  AddressInfo:
-    required:
-      - name
-      - address
-    properties:
-      name:
-        type: string
-      address:
-        type: string
+        $ref: 'http://localhost:9000/suunto_shared.yaml#/definitions/AddressInfoArray'

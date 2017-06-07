@@ -72,8 +72,8 @@ struct WB_STRUCT_BITFIELD_PACKED Time
     // Structure type identification and serialization
     typedef int Structure;
     static const LocalDataTypeId DATA_TYPE_ID = 26;
-    static const StructureValueSerializer<Time> serializer;
-    WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const StructureValueCleaner<Time> cleaner;)
+    WB_API static const StructureValueSerializer<Time> serializer;
+    WB_WHEN_STRUCTURE_CLEANING_NEEDED(WB_API static const StructureValueCleaner<Time> cleaner;)
 
     // Visitor pattern implementation
     inline void visit(IStructureVisitor& rVisitor)

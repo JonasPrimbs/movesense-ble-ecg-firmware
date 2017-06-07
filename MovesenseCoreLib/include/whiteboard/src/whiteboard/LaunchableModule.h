@@ -80,7 +80,7 @@ public:
     Get current state of the module
     @return State of the module
     */
-    inline WB_RES::ModuleState getModuleState() const { return mModuleState; }
+    inline WB_RES::ModuleState getModuleState() const { return static_cast<WB_RES::ModuleState::Type>(mModuleState); }
 
     /**
     Get the execution context of the launchable module.
@@ -90,7 +90,7 @@ public:
 
 protected:
     /** Current module state */
-    WB_RES::ModuleState mModuleState;
+    uint8 mModuleState; // In order to avoid exposing generated code out of the dll, stored as uint8
 
 private:
     /// name of the launchable module, will be used as an identifier for starting/stopping

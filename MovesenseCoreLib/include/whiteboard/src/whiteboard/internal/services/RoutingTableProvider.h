@@ -9,7 +9,7 @@
 #include "whiteboard/ResourceProvider.h"
 #include "whiteboard/containers/InterlockedQueue.h"
 #include "whiteboard/internal/BuildConfig.h"
-#include "whiteboard/internal/comm/IRoutingTableObserver.h"
+#include "whiteboard/comm/internal/IRoutingTableObserver.h"
 
 namespace whiteboard
 {

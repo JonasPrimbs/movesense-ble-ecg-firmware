@@ -34,7 +34,7 @@ public:
 /**
     Helper class for whiteboard metadata stream handling.
 */
-class MetadataStreamParser
+class WB_API MetadataStreamParser
 {
 public:
     /** Constructor */

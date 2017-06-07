@@ -1,94 +1,147 @@
-# Copyright Suunto Oy 2015-2016
-# All rights reserved.
-
 swagger: '2.0'
 
-# Document metadata
 info:
-  version: "0.9.0"
-  title: /Device/Measurement/MagneticField API
+  version: 0.0.1
+  title: Magnetic field (Movesense-API)
   description: |
-    This file defines /Device/Measurement/MagneticField API.
-  termsOfService: http://suunto.com/wbapi/terms/
-  contact:
-    name: Suunto team
-    url: http://developer.suunto.com
+    This file defines interface for magnetic field API.
 
-# Security definitions
-security:
-  - suuntoAccessCode:
-    - public
-
-securityDefinitions:
-  suuntoAccessCode:
-    type: oauth2
-    scopes:
-      public: Grants read/write access to public resources.
-    flow: accessCode
-    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
-    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
-
-# Paths
 paths:
-  /Device/Measurement/MagneticField:
+  /Meas/Magn/Info:
+    x-executionContext: meas
+    get:
+      description: Get info about the magnetometer.
+      responses:
+        200:
+          description: Returns magnetometer information. See MagnInfo.
+          schema:
+            $ref: '#/definitions/MagnInfo'
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Meas/Magn/Config:
     x-executionContext: meas
     get:
       description: |
-        Get a magnetic field value.
+        Get magnetometer configuration.
       responses:
         200:
-          description: Magnetic field vector with magnitude in microteslas
+          description: Returns magnetometer configurations. See MagnConfig.
           schema:
-            $ref: '#/definitions/MagneticFieldValue'
-        204:
-          description: Measurement source is unavailable
+            $ref: '#/definitions/MagnConfig'
       security:
         - suuntoAccessCode:
           - public
 
-  /Device/Measurement/MagneticField/Subscription:
+    put:
+      description: |
+        Set magnetometer configuration.
+      parameters:
+        - name: config
+          in: body
+          description: New configurations for magnetometer
+          required: true
+          schema:
+            $ref: '#/definitions/MagnConfig'
+      responses:
+        200:
+          description: Operation completed successfully
+        503:
+          description: |
+            Not allowed to change configuration at the moment. E.g. when
+            active subcriptions exist.
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Meas/Magn/{SampleRate}:
     x-executionContext: meas
+    parameters:
+       - $ref: '#/parameters/SampleRate'
+
+  /Meas/Magn/{SampleRate}/Subscription:
+    x-executionContext: meas
+    parameters:
+       - $ref: '#/parameters/SampleRate'
     post:
       description: |
-        Subscribe to periodic magnetic field vector.
-        See documentation on product-specific measurement periods at
-        http://XXX.suunto.com/XXX. If measurement source is unavailable, the
-        Measurement member will be empty.
+        Subscribe to periodic magnetometer measurements.
       responses:
         200:
           description: Operation completed successfully
-        x-std-errors:
-          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        501:
+          description: Non-supported sample rate
         x-notification:
-          description: New value
+          description: New measurements
           schema:
-            $ref: '#/definitions/MagneticFieldValue'
-      security:
-        - suuntoAccessCode:
-          - public
-    delete:
-      description: |
-        Unsubscribe from periodic magnetic field values.
-      responses:
-        200:
-          description: Operation completed successfully
-        x-std-errors:
-          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+            $ref: '#/definitions/MagnData'
       security:
         - suuntoAccessCode:
           - public
 
+    delete:
+      description: |
+        Unsubscribe from periodic linear acceleration values.
+      responses:
+        200:
+          description: Operation completed successfully
+      security:
+        - suuntoAccessCode:
+          - public
+
+parameters:
+  SampleRate:
+    name: SampleRate
+    in: path
+    required: true
+    type: integer
+    format: int32
+
 definitions:
-  MagneticFieldValue:
+  MagnInfo:
     required:
-      - RelativeTime
+      - SampleRates
+      - Scale
     properties:
-      RelativeTime:
-        description: Relative time of measurement
+      SampleRates:
+        description: Available sample rates for magnetometer measurement.
+        type: array
+        items:
+          type: integer
+          format: uint16
+          x-unit: Hz
+      Scale:
+        description: |
+          Available scales for magnetometer measurement. For example scale
+          value 400 means the range is -400...+400 ÂµT (microtesla).
+        type: array
+        items:
+          type: integer
+          format: uint16
+
+  MagnConfig:
+    required:
+      - Scale
+    properties:
+      Scale:
+        description: |
+          Magnetometer scale. For example if set 400 the range is
+          -400...+400 ÂµT (microtesla).
+        type: integer
+        format: uint16
+
+  MagnData:
+    required:
+      - Timestamp
+      - ArrayMagn
+    properties:
+      Timestamp:
+        description: Local timestamp of first measured data.
         type: integer
         format: uint32
         x-unit: millisecond
-      Measurement:
-        description: Magnetic field measurement in microteslas
-        $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/FloatVector3D'
-        x-unit: microtesla
+      ArrayMagn:
+        type: array
+        items:
+          $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/FloatVector3D'

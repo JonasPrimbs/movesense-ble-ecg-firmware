@@ -1,3 +1,8 @@
+## Announcement ##
+**API CHANGES!** Before you start to write an app check a new API for accelerometer, gyroscope, magnetic field!
+
+**Bug!** DataLogger is not working with a new Meas/* APIs. Read more on [CHANGES.md](CHANGES.md)
+
 ## Overview ##
 
 Movesense sensor is a programmable multi-purpose device comprising accelerometer, gyroscope, magnetometer and thermometer together with optional hearthrate/IBI and intelligent gear ID APIs. The APIs follow the well known REST principle and can be used both internally by the partner app or externally via the iOS/Android libraries. API specification ([link to folder](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/resources/core/)), is based on Swagger 2.0 syntax.
@@ -6,11 +11,11 @@ Movesense sensor is a programmable multi-purpose device comprising accelerometer
 Resource | Description|Implemented
 ---------|------------|--------------
 /Info|API for accessing generic device information.| YES
-/DataLogger|Generic logger capable of logging max. 8 different resources| YES
-/Logbook|Generic Logbook from where the logged data can be read| YES
-/Device/Measurement/AngularVelocity|API enabling reading or subscribing angular velocity data (based on gyroscope).| YES
-/Device/Measurement/LinearAcceleration|API enabling reading or subscribing linear acceleration data (based accelerometer).| YES
-/Device/Measurement/MagneticField|API enabling reading or subscribing magnetic field data (based on magnetometer).| YES
+/DataLogger|Generic logger capable of logging max. 8 different resources| NO! Bug will be fixed soon!
+/Logbook|Generic Logbook from where the logged data can be read| NO! Bug will be fixed soon!
+**/Meas/Gyro**|API enabling subscribing angular velocity data (based on gyroscope).| YES
+**/Meas/Acc**|API enabling subscribing linear acceleration data (based on accelerometer).| YES
+**/Meas/Magn**|API enabling subscribing magnetic field data (based on magnetometer).| YES
 /Device/Measurement/Temperature|API enabling reading or subscribing temperature data (based on thermometer).| YES
 /Device/Component/Led|API for controlling the LED.| YES
 /Device/UserInteraction/Indication|API for controlling the LED.| NO
@@ -70,7 +75,7 @@ or you can use any other nRF52 compatible programming software such as *nRFGo St
 
 
 ## What's New ##
-For information about releases, see the [CHANGES.md](https://bitbucket.org/suunto/movesense-device-lib/src/c1bbc4cf67c906cc37e22a420f43963f38a7fe0e/CHANGES.md?) file in repository.
+For information about releases, see the [CHANGES.md](CHANGES.md) file in repository.
 
 ## Frequently Asked Questions ##
 

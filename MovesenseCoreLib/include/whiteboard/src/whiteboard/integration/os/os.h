@@ -12,6 +12,7 @@
 #include "whiteboard/integration/os/eventQueue.h"
 #include "whiteboard/integration/os/threadNotification.h"
 #include "whiteboard/integration/os/threadStatistics.h"
+#include "whiteboard/integration/os/dynamicLinkLibrary.h"
 
 /** Initialize port */
 WB_API void WbPortInit();

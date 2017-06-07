@@ -6,6 +6,11 @@
 #include "whiteboard/Request.h"
 #include "whiteboard/Result.h"
 #include "whiteboard/Value.h"
+#include "whiteboard/ValueStorage.h"
+
+#if WB_UNITTEST_BUILD
+#include "whiteboard/unittest/RequestHook.h"
+#endif
 
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
@@ -33,10 +38,15 @@ public:
     /** @return timeout in ms to wait until the call is cancelled */
     inline size_t getTimeout() const { return mTimeoutMs; }
 
-    static const ResourceClient_RequestOptions Empty; ///< Empty request options, that can be used if no options required for the operation
+    /// Empty request options, that can be used if no options required for the operation
+    static const ResourceClient_RequestOptions Empty;
 
 private:
-    ResourceClient_RequestOptions() : mTimeoutMs(0) {}
+    // Prevent use of default constructor
+    ResourceClient_RequestOptions() DELETED;
+
+private:
+    /** Request timeout in milliseconds. Ignore in local Whiteboard queries. */
     size_t mTimeoutMs;
 };
 
@@ -49,9 +59,22 @@ public:
     @param timeoutMs [in] Request timeout in milliseconds (Timeout applies only to remote requests.
                           If zero, request won't timeout).
     @param forceAsync [in] Forces the request to be performed asynchronously, even if the resource is in the same context as the client.
+    @param isCriticalSubscription [in] Subscriptions only; Criticality of the subscription; allow data to be lost in case of congestion (
+    recipients event queues full or all message buffers in use. Usefull with subscriptions with high update frequency - e.g. measurement / 
+    sensor data.
+
+    In case of resource subscription of a path containing path parameters, the criticality flag affects ALL subscriptions of that path from
+    that client.
     */
-    ResourceClient_AsyncRequestOptions(RequestId* pRequestId, size_t timeoutMs = 0, bool forceAsync = false)
-        : mpRequestId(pRequestId), mTimeoutMs(timeoutMs), mForceAsync(forceAsync) {}
+    ResourceClient_AsyncRequestOptions(RequestId* pRequestId, size_t timeoutMs = 0, bool forceAsync = false, bool isCriticalSubscription = true)
+        : mpRequestId(pRequestId), 
+          mTimeoutMs(timeoutMs), 
+          mForceAsync(forceAsync ? 1 : 0), 
+          mIsCriticalSub(isCriticalSubscription ? 1 : 0), 
+          mReserved(0) 
+    {
+        (void)mReserved; // Gcc fix
+    }
 
     /** @return pointer to the requestId */
     inline RequestId* getRequestId() const { return mpRequestId; }
@@ -63,17 +86,36 @@ public:
     @return true if the operation should be explicitly performed asyncronously.
     By default whiteboard performs operation directly, if the requested resource is in the same context.
     */
-    inline bool getForceAsync() const { return mForceAsync; }
+    inline bool getForceAsync() const { return mForceAsync ? true : false; }
+
+    /**
+    @return true if notifications to subscriptions can be thrown away in case of congestion (client's event queue full or blocking object 
+    pools full).
+    */
+    inline bool isCriticalSubscription() const { return mIsCriticalSub ? true : false; }
 
     /// Empty async request options, that can be used if no options required for the operation
     static const ResourceClient_AsyncRequestOptions Empty;
 
 private:
-    ResourceClient_AsyncRequestOptions() : mpRequestId(NULL), mTimeoutMs(0), mForceAsync(false) {}
+    /** Prevent use of default constructor */
+    ResourceClient_AsyncRequestOptions() DELETED;
 
+private:
+    /** Optional pointer to variable where ID of the request will be saved. */
     RequestId* mpRequestId;
+
+    /** Request timeout in milliseconds. Ignore in local Whiteboard queries. */
     size_t mTimeoutMs;
-    bool mForceAsync;
+    
+    /** A value indicating whether request should be always performed asynchronously */
+    uint8 mForceAsync : 1;
+    
+    /** A value indicating whether subscription request is considered critical  */
+    uint8 mIsCriticalSub : 1;
+    
+    /** Reserved for future use */
+    uint8 mReserved : 6;
 };
 
 /**
@@ -373,6 +415,55 @@ public:
         RequestType requestType,
         const ParameterList& rParameters);
 
+#if WB_UNITTEST_BUILD
+    /**
+    *   Unit test API for setting response overriding for results supposed to be coming from Whiteboard
+    *   to a specific client instance. When a request made by the client is matched to a specified hook
+    *   it is intercepted and a response specified in the hook will be sent back to the client to enable
+    *   client instance testing without going through Whiteboard itself.
+    *   (HTTP_CODE_INVALID == pRequestHooks[i].mCallResult) inidcates end of table terminator.
+    *
+    *   @param rClientId ID of the client for which the hook table is intetended
+    *   @param pRequestHooks Pointer to the hook table, NULL to disable hooks
+    *   @param pWhiteboard Optional parameter to select mockup WB instance instead of default WB
+    *   @return HTTP_CODE_NOT_FOUND returned if client not found, otherwise HTTP_CODE_OK
+    */
+    static Result setRequestHooks(const LocalClientId& rClientId,
+                                  const RequestHookDef* pRequestHooks,
+                                  const Whiteboard* pWhiteboard = NULL);
+
+    /**
+    *   Unit test API for setting response overriding for results supposed to be coming from Whiteboard
+    *   to a specific client instance. When a request made by the client is matched to a specified hook
+    *   it is intercepted and a response specified in the hook will be sent back to the client to enable
+    *   client instance testing without going through Whiteboard itself.
+    *   (HTTP_CODE_INVALID == pRequestHooks[i].mCallResult) inidcates end of table terminator.
+    *
+    *   @param clientName Name string of the client for which the hook table is intetended
+    *   @param pRequestHooks Pointer to the hook table, NULL to disable hooks
+    *   @param pWhiteboard Optional parameter to select mockup WB instance instead of default WB
+    *   @return HTTP_CODE_NOT_FOUND returned if client not found, otherwise HTTP_CODE_OK
+    */
+    static Result setRequestHooks(const char* clientName,
+                                  const RequestHookDef* pRequestHooks,
+                                  const Whiteboard* pWhiteboard = NULL);
+
+protected:
+    /**
+    *   Internal method for assigning the RequestHook table pointer to the specific client instance.
+    *
+    *   @param pRequestHooks Pointer to the hook table, NULL to disable hooks
+    */
+    void setRequestHooks(const RequestHookDef* pRequestHooks);
+
+    /// Pointer to the optional request hook table given from unit test case
+    const RequestHookDef* mpRequestHookTabRef;    // storage reference for filter table defined in test scope
+    /// Counter to fake RequestId numbers
+    RequestId mTestRequestCount;
+    /// Storage for parameters to be passed in case of request hook override match
+    RequestHookParams mTestReqParams;
+#endif
+
 protected:
     /** These functions are called only by Whiteboard */
     friend class Whiteboard;
@@ -383,6 +474,12 @@ protected:
     * @return Whiteboard instance
     */
     virtual Whiteboard& getWhiteboard();
+
+    /**
+    *   Async callback function set for DPC to produce async call to pass overridden
+    *   request response with paramteres to the RequestClient instance.
+    */
+    void responseAsyncWrapper();
 #endif
 
     /**

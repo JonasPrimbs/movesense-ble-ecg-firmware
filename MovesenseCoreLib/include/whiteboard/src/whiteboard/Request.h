@@ -67,6 +67,17 @@ public:
         return mClientId;
     }
 
+    /** @return true if the request is an update that overrides previous similar request from the client.
+    
+    Currently used only if RequestType is SUBSCRIPTION.
+    
+    @see whiteboard::RequestType
+    */
+    inline bool isUpdate() const
+    {
+        return mIsUpdate == 0 ? false : true;
+    }
+
 public:
     /** Default constructor */
     Request();
@@ -105,7 +116,13 @@ private:
     mutable uint8 mState;
 
     // Type of the request
-    uint8 mRequestType;
+    uint8 mRequestType : 4;
+
+    // Is this request update to the previous request
+    uint8 mIsUpdate : 1;
+
+    // Not used at the moment
+    uint8 mReserved : 3;
 
     // Request ID of the request
     RequestId mRequestId;

@@ -17,7 +17,6 @@
 #include "hal/sensor/magnetometer/ak09912/MagnetometerProvider.hpp"
 #endif // def HAL_WANT_MAGNETOMETER
 
-
 #ifdef HAL_WANT_PRESSURE
 #include "hal/sensor/pressureSensor/ms5837-02ba/PressureProvider.hpp"
 #endif // def HAL_WANT_PRESSURE
@@ -25,6 +24,10 @@
 #ifdef BUILD_HAL_WANT_TMP112
 #include "hal/sensor/temperature/tmp112/TemperatureProvider.hpp"
 #endif // def BUILD_HAL_WANT_TMP112
+
+#ifdef BUILD_HAL_WANT_HEARTRATE
+#include "hal/sensor/AFE/MAX3000x/MAX30004_provider.hpp"
+#endif // def BUILD_HAL_WANT_HEARTRATE
 
 #ifdef BUILD_HAL_WANT_1WIRE
 #include "hal/sensor/security/ds24l65/DS24L65_provider.hpp"
@@ -120,6 +123,9 @@ public:
 #ifdef BUILD_HAL_WANT_TMP112
             hal::TemperatureService::LAUNCHABLE_NAME,
 #endif
+#ifdef BUILD_HAL_WANT_HEARTRATE
+            hal::MAX30004Provider::LAUNCHABLE_NAME,
+#endif
 #ifdef BUILD_HAL_WANT_1WIRE
             hal::DS24L65Provider::LAUNCHABLE_NAME,
 #endif
@@ -159,6 +165,9 @@ public:
 #endif
 #ifdef BUILD_HAL_WANT_TMP112
     hal::TemperatureService tmp112Driver;
+#endif
+#ifdef BUILD_HAL_WANT_HEARTRATE
+    hal::MAX30004Provider max30004Provider;
 #endif
 #ifdef BUILD_HAL_WANT_1WIRE
     hal::DS24L65Provider ds24l65Provider;

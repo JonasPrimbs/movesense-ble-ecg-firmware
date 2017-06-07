@@ -10,18 +10,18 @@
 #include <stddef.h>
 
 #if defined(_MSC_VER)
-#if (_MSC_VER < 1800)
-#error Only Visual Studio 2013 and later are supported
-#endif
+  #if (_MSC_VER < 1800)
+    #error Only Visual Studio 2013 and later are supported
+  #endif
 #endif
 
 #ifndef ELEMENTS
-/**
-Returns the number of elements in an array.
-\param	array	A symbol name of an array.
-\hideinitializer
-*/
-#define ELEMENTS(array) (sizeof(array) / sizeof(array[0]))
+  /**
+  Returns the number of elements in an array.
+  \param	array	A symbol name of an array.
+  \hideinitializer
+  */
+  #define ELEMENTS(array) (sizeof(array) / sizeof(array[0]))
 #endif
 
 /**
@@ -33,17 +33,17 @@ Macro for getting an offset of a struct member.
 */
 
 #ifdef __GNUC__
-// GCC warns about non-POD type member offsetof and warnings are now errors
-// for now the warning is disabled in the GCC builds
-#pragma GCC diagnostic ignored "-Winvalid-offsetof"
+  // GCC warns about non-POD type member offsetof and warnings are now errors
+  // for now the warning is disabled in the GCC builds
+  #pragma GCC diagnostic ignored "-Winvalid-offsetof"
 #endif
 
 #if defined(__builtin_offsetof)
-#define WB_OFFSETOF(type, member) __builtin_offsetof (type, member)
+  #define WB_OFFSETOF(type, member) __builtin_offsetof (type, member)
 #elif defined(offsetof)
-#define WB_OFFSETOF(type, member) offsetof(type, member)
+  #define WB_OFFSETOF(type, member) offsetof(type, member)
 #else
-#define WB_OFFSETOF(type, member) (size_t)(&(((type*)0)->member))
+  #define WB_OFFSETOF(type, member) (size_t)(&(((type*)0)->member))
 #endif
 
 /**
@@ -56,18 +56,18 @@ Returns the size of a member of a struct.
 * Macro for defining variables and types without causing xxx defined but not used warning
 */
 #if __GNUC__
-#define WB_ATTRIBUTE_UNUSED __attribute__((unused))
+  #define WB_ATTRIBUTE_UNUSED __attribute__((unused))
 #else
-#define WB_ATTRIBUTE_UNUSED
+  #define WB_ATTRIBUTE_UNUSED
 #endif
 
 /**
 * Macro for defining global variables that should not be initialized
 */
 #ifdef __ICCARM__
-#define WB_NO_INIT __no_init
+  #define WB_NO_INIT __no_init
 #else
-#define WB_NO_INIT
+  #define WB_NO_INIT
 #endif
 
 /** @def WB_STATIC_VERIFY(cond, tag)
@@ -164,6 +164,15 @@ Returns larger item
 */
 #define WB_MAX(a, b) ((a) > (b) ? (a) : (b))
 
+/** Converts non negative number at compile time to next largest
+ *  multiple
+ *
+ * @param number Number to convert
+ * @param multiple Factor which multiple will be returned
+ */
+#define WB_ROUND_UP(number, multiple) \
+    (((number) + ((multiple) - 1)) / (multiple) * (multiple))
+
 /** Checks whether given number is power of two
 http://www.exploringbinary.com/ten-ways-to-check-if-an-integer-is-a-power-of-two-in-c/
 */
@@ -177,49 +186,49 @@ http://www.exploringbinary.com/ten-ways-to-check-if-an-integer-is-a-power-of-two
 #define WB_COMMA ,
 
 #if (__cplusplus >= 201103L) || _MSC_VER >= 1900
-#define WB_HAVE_CPLUSPLUS_11
+  #define WB_HAVE_CPLUSPLUS_11
 #endif
 
 #if defined(WB_HAVE_CPLUSPLUS_11)
 
-/** C++11 override specifier that enforces virtual function override. */
-#ifndef OVERRIDE
-#define OVERRIDE override
-#endif
+  /** C++11 override specifier that enforces virtual function override. */
+  #ifndef OVERRIDE
+    #define OVERRIDE override
+  #endif
 
-/** C++11 delete specifier to specify explicitly unimplemented methods. */
-#ifndef DELETED
-#define DELETED = delete
-#endif
+  /** C++11 delete specifier to specify explicitly unimplemented methods. */
+  #ifndef DELETED
+    #define DELETED = delete
+  #endif
 
-/** C++11 final specifier to specify class & virtual functions that cannot be inherited. */
-#ifndef FINAL
-#define FINAL final
-#endif
+  /** C++11 final specifier to specify class & virtual functions that cannot be inherited. */
+  #ifndef FINAL
+    #define FINAL final
+  #endif
 
-/** C++11 final specifier to specify that only explicit conversion / constructions 
-    are allowed. */
-#ifndef EXPLICIT
-#define EXPLICIT explicit
-#endif
+  /** C++11 final specifier to specify that only explicit conversion / constructions 
+      are allowed. */
+  #ifndef EXPLICIT
+    #define EXPLICIT explicit
+  #endif
 
-#else // WB_HAVE_CPLUSPLUS_11
+  #else // WB_HAVE_CPLUSPLUS_11
 
-#ifndef OVERRIDE
-#define OVERRIDE /**/
-#endif
+  #ifndef OVERRIDE
+    #define OVERRIDE /**/
+  #endif
 
-#ifndef DELETED
-#define DELETED /**/
-#endif
+  #ifndef DELETED
+    #define DELETED /**/
+  #endif
 
-#ifndef FINAL
-#define FINAL /**/
-#endif
+  #ifndef FINAL
+    #define FINAL /**/
+  #endif
 
-#ifndef EXPLICIT
-#define EXPLICIT /**/
-#endif
+  #ifndef EXPLICIT
+    #define EXPLICIT /**/
+  #endif
 
 #endif // WB_HAVE_CPLUSPLUS_11
 
@@ -228,16 +237,34 @@ http://www.exploringbinary.com/ten-ways-to-check-if-an-integer-is-a-power-of-two
 #define WB_BE_TAG(a,b,c,d) (((a) << 0) | ((b) << 8) | ((c) << 16) | ((d) << 24))
 
 #ifdef WB_HAVE_DEBUG_NAMES
-#define WBDEBUG_NAME(name) name
+  #define WBDEBUG_NAME(name) name
 #else
-#define WBDEBUG_NAME(name) NULL
+  #define WBDEBUG_NAME(name) NULL
 #endif
 
 #if WB_UNITTEST_BUILD
-#define WB_PUBLIC_IN_UNITTESTS(visibility) public
+  #define WB_PUBLIC_IN_UNITTESTS(visibility) public
 #else
-#define WB_PUBLIC_IN_UNITTESTS(visibility) visibility
+  #define WB_PUBLIC_IN_UNITTESTS(visibility) visibility
 #endif
 
 /** Include header checks */
 #include "whiteboard/integration/shared/headerCheck.h"
+
+#if defined(_MSC_VER)
+  #if defined(WB_DECLARE_API_EXPORT)
+    #define WB_API __declspec(dllexport)
+    #define WB_INTERNAL
+  #elif defined(WB_DECLARE_API_IMPORT)
+    #define WB_API __declspec(dllimport)
+    #define WB_INTERNAL
+  #endif
+#elif defined(__GNUC__) || defined(__clang__)
+  #define WB_API __attribute__((visibility("default")))
+  #define WB_INTERNAL __attribute__((visibility("hidden")))
+#endif
+
+#ifndef WB_API
+  #define WB_API
+  #define WB_INTERNAL
+#endif

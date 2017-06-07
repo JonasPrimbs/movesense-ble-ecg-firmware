@@ -32,6 +32,12 @@ public:
     /** Invalid pointer ID */
     static const WrappedPointerId INVALID_WRAPPER_ID = static_cast<WrappedPointerId>(-1);
 
+    /** Create internal allocations */
+    static void create();
+
+    /** Destroy internal allocations */
+    static void destroy();
+
     /** Allocates new pointer wrapper for given pointer */
     static WrappedPointerId allocate(const void* pointer);
 
@@ -51,7 +57,7 @@ public:
 *
 * @tparam ItemType Type of the pointer
 */
-template <typename ItemType> class WB_API WB_STRUCT_PACKED WrapperFor32BitPointer
+template <typename ItemType> class WB_STRUCT_PACKED WrapperFor32BitPointer
 {
 private:
     /** Library internal implementation can access these members */
@@ -139,7 +145,7 @@ WB_STATIC_VERIFY(sizeof(void*) == 4, SizeOf_Pointer_Is_Not_4_Bytes);
  *
  * @tparam ItemType Type of the pointer
  */
-template <typename ItemType> class WB_API WB_STRUCT_PACKED WrapperFor32BitPointer
+template <typename ItemType> class WB_STRUCT_PACKED WrapperFor32BitPointer
 {
 private:
     /** Library internal implementation can access these members */

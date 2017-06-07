@@ -13,6 +13,8 @@ namespace whiteboard
 */
 enum Result
 {
+    HTTP_CODE_INVALID = 0,      /** Indication of no result. Not part of the HTTP codes definition */
+
     /* INFORMATIONAL 1xx */
     HTTP_CODE_CONTINUE = 100,   /** HTTP 1.1: Continue with request, only partial content transmitted */
     HTTP_CODE_SWITCHING = 101,  /** HTTP 1.1: Switching protocols */

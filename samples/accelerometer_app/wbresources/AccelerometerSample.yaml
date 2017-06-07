@@ -14,39 +14,11 @@ info:
   contact:
     name: Suunto team
     url: http://developer.suunto.com
-  
-
-# Security definitions
-security:
-  - suuntoAccessCode:
-    - public
-    
-securityDefinitions:
-  suuntoAccessCode:
-    type: oauth2
-    scopes:
-      public: Grants read/write access to public resources.
-    flow: accessCode
-    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
-    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
 
 # Paths
 paths:
   /Sample/Accelerometer/Data:
     x-executionContext: meas
-    get:
-      description: |
-        Get a Data value.
-      responses:
-        200:
-          description: Sample service data (in practice acceleration magnitude)
-          schema:
-            $ref: '#/definitions/SampleDataValue'
-        204:
-          description: Measurement source is unavailable
-      security:
-        - suuntoAccessCode:
-          - public
 
   /Sample/Accelerometer/Data/Subscription:
     x-executionContext: meas
@@ -66,9 +38,6 @@ paths:
           description: New value
           schema:
             $ref: '#/definitions/SampleDataValue'
-      security:
-        - suuntoAccessCode:
-          - public
     delete:
       description: |
         Unsubscribe from sample data values.
@@ -77,10 +46,6 @@ paths:
           description: Operation completed successfully
         x-std-errors:
           description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
-      security:
-        - suuntoAccessCode:
-          - public
-
 
 definitions:
   SampleDataValue:
