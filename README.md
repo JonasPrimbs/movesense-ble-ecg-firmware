@@ -1,5 +1,5 @@
-## Announcement ##
-**API CHANGES!** Before you start to write an app check a new API for accelerometer, gyroscope, magnetic field!
+## Announcements ##
+**API CHANGES!** Before you start to write an app check the new API for accelerometer, gyroscope, magnetic field! The new API supports now higher data rates.
 
 **Bug!** DataLogger is not working with a new Meas/* APIs. Read more on [CHANGES.md](CHANGES.md)
 
