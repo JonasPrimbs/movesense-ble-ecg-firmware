@@ -101,8 +101,8 @@ private:
 
     whiteboard::ResourceId getResourceId(whiteboard::LocalResourceId localResourceId) const;
 
-    inline size_t getResourceCount(const whiteboard::ResourceId::Value resArray[]) const;
+    inline size_t getResourceCount(const whiteboard::ResourceId resArray[]) const;
 
-    whiteboard::ResourceId::Value mResourcesToLog[MAX_RESOURCE_COUNT]; // Max+1 resourceIds, last is terminator. use the uint32_t "Value" packed form
-    whiteboard::ResourceId::Value mSubscribedResources[MAX_RESOURCE_COUNT]; // Max+1 resourceIds, last is terminator
+    whiteboard::ResourceId mResourcesToLog[MAX_RESOURCE_COUNT]; // Max+1 resourceIds, last is terminator.
+    whiteboard::ResourceId mSubscribedResources[MAX_RESOURCE_COUNT]; // Max+1 resourceIds, last is terminator
 };

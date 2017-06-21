@@ -155,7 +155,7 @@ void JumpCounterService::jumpFound(size_t nJumpSamples)
 
     // Calc jump length
     // TODO: Add support for flexible samplerate
-    const float ONE_PER_SAMPLE_RATE = 1.0f / 52.0f;
+    const float ONE_PER_SAMPLE_RATE = 1.0f / (float)ACC_SAMPLERATE;
     const float EARTH_G = 9.81f;
 
     float jumpDuration = (float)nJumpSamples * ONE_PER_SAMPLE_RATE;

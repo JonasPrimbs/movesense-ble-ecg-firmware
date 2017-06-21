@@ -1,8 +1,6 @@
 ## Announcements ##
 **API CHANGES!** Before you start to write an app check the new API for accelerometer, gyroscope, magnetic field! The new API supports now higher data rates.
 
-**Bug!** DataLogger is not working with a new Meas/* APIs. Read more on [CHANGES.md](CHANGES.md)
-
 ## Overview ##
 
 Movesense sensor is a programmable multi-purpose device comprising accelerometer, gyroscope, magnetometer and thermometer together with optional hearthrate/IBI and intelligent gear ID APIs. The APIs follow the well known REST principle and can be used both internally by the partner app or externally via the iOS/Android libraries. API specification ([link to folder](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/resources/core/)), is based on Swagger 2.0 syntax.
@@ -22,7 +20,7 @@ Resource | Description|Implemented
 /Device/Power/BatteryLevel|API for reading the battery state.| YES
 /Dev/Time|API for accessing different time related services.| YES*
 /Device/SystemEvent|API for accessing system event log.| NO
-/Device/System/Mode|API for controlling the main system state (e.g. factory sleep).| PARTIAL
+/Device/System/Mode|API for controlling the main system state (e.g. factory sleep).| YES
 
 ## Prerequisite ##
 

@@ -1,3 +1,19 @@
+##Version 0.4.1.184##
+
+###Whats new:###
+- Fixed: DataLogger for new Accelerometer, Gyroscope & Magnetometer APIs
+- Fixed: Accelerometer/Gyroscope/Magnetometer lag (start with delay) when subscribing a second time
+- Fixed: /Info returns wrong version number
+
+###Known Bugs:###
+- Leaks after disconnect without unsubscribe command
+- DataLogger stores (or Logbook returns) wrong data if more than one path is specified in /DataLogger/Config
+- DataLogger only stores the first element of an array (e.g. for /Meas/Acc/xxx it stores the 1st measurement in the AccData-package)
+
+###Notes:###
+- REQUIRED: Use **GNU Toolchain for ARM v. 5.4 2016q3** 
+- To create DFU package for OTA update, compile application with "ninja dfupkg"
+
 ##Version 0.4.0.148##
 
 ###Whats new:###

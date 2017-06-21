@@ -168,6 +168,14 @@ struct LOGBOOK_ENTRIES
 			const whiteboard::ParameterList& mrParameterList;
 		};
 	};
+
+	struct DELETE
+	{
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+	};
 };
 
 struct LOGBOOK_ISFULL

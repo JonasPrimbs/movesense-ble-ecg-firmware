@@ -70,6 +70,10 @@ private:
     virtual void onNotify(wb::ResourceId resourceId, const wb::Value& value,
                           const wb::ParameterList& parameters) OVERRIDE;
 
+    /** @see whiteboard::ResourceProvider::onDeleteRequest */
+    virtual void onDeleteRequest(const whiteboard::Request& rRequest,
+                         const whiteboard::ParameterList& parameters) OVERRIDE;
+
     void onSubscribeResult(wb::RequestId requestId, wb::ResourceId resourceId,
                      wb::Result resultCode, const wb::Value& resultData) OVERRIDE { DEBUG_ASSERT(resultCode == wb::HTTP_CODE_OK); }
 
@@ -81,7 +85,7 @@ private:
     ExtflashChunkStorage &mChunkStorage;
     MeasStorage &mMeasStorage;
 
-    
+
     friend class LogbookTest; // Used for testing
     /**
     *   Close open, but unused logbookDb and open logbookDb when it is in use.
@@ -97,13 +101,13 @@ private:
 
     void resetGetLogDataState();
     void resetGetLogDescriptorsState();
-    
+
     uint16_t mCurrentDescriptorItemIndex;
     uint16_t mCurrentDescriptorGroupIndex;
-    
+
     uint32_t mCurrentDataChunkAddress;
     uint32_t mCurrentDataChunkOffset;
     uint16_t mDescriptorizedResourceIds[16];
-    
+
     bool isResourceDescriptorized(wb::LocalResourceId resourceId, uint16_t & nextFreeIndex) const;
 };

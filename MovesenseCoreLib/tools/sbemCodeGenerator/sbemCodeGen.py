@@ -6,6 +6,7 @@ import re
 
 import glob, os
 
+oldDir = os.getcwd()
 
 # In case we run this code in IDLE, set some useful command line parameters
 if "idlelib" in sys.modules and len(sys.argv) == 1:
@@ -342,7 +343,7 @@ for f in yamlFiles:
     obj = yaml.load(stream)
     yamlTrees.append(obj)
     if 'paths' in obj:
-        for k, v in obj['paths'].iteritems():
+        for k, v in sorted(obj['paths'].iteritems()):
             if k.endswith('/Subscription'):
                 k = k[:-len('/Subscription')]
                 if k in resources:
@@ -457,7 +458,7 @@ for resName in resources.keys():
         cppName = cppNameFromResName(resName)
         if cppName in cppResourceNames:
             newResources[resName] = resources[resName]
-#            print (resName)
+#            print ("newResources: ", resName)
 
 resources = newResources
 newResources = None
@@ -553,27 +554,19 @@ resourcesWithSimpleType = {}
 resourcesWithComplexType = {}
 items = []
 for k,v in sorted(resources.iteritems()):
-    # skip if resource does not have get with response
+    # skip if resource does not have subscribe verb with response
 
-    if not ('get' in v or 'subscription' in v):
+    if not ('subscription' in v):
         continue
 
-    if 'get' in v:
-        verb = v['get']
-        if not (('responses' in verb) and \
-           (200 in verb['responses']) and \
-           ('schema' in verb['responses'][200])):
-            #print(k, " Skipped for lack of response!")
-            continue
-    
-    elif 'subscription' in v:
+    if 'subscription' in v:
         verb = v['subscription']
 
-    
-    if 'get' in v:
-        schema = verb['responses'][200]['schema']
-    elif 'subscription' in v:
+    # find schema from subscription definition
+    if 'subscription' in v:
         schema = verb['responses']['x-notification']
+        if 'schema' in schema:
+            schema = schema['schema']
     
     frmString = frmFromSchema(schema)
     id = cppNameFromResName(k)
@@ -594,7 +587,10 @@ for k,v in sorted(resources.iteritems()):
     # didn't get FRM directly
     # study datatypes and try to get from there
     elif '$ref' in schema:
+#        print ("'$ref' in schema:: ", k)
         datatypename = schema['$ref'].split('/')[-1]
+#        print ("datatypename: ", datatypename)
+
         if datatypename in definitions:
             datatype = definitions[datatypename]
             v['__datatype'] = datatypename
@@ -844,7 +840,7 @@ with open("sbem_definitions.h", 'wb') as f_h:
         for k,v in sorted(resourcesThatNeedSbemMethods.iteritems()):
             itemsToDo = v['SBEM_ITEMS_TODO']
 
-            writeMethodCode = '\nsize_t writeToSbemBuffer_' +cppNameFromResName(k) + '(void *buffer, const WB_RES::LOCAL::' + cppNameFromResName(k) + '::GET::Response_HTTP_CODE_OK_Type &data)'
+            writeMethodCode = '\nsize_t writeToSbemBuffer_' +cppNameFromResName(k) + '(void *buffer, const WB_RES::LOCAL::' + cppNameFromResName(k) + '::EVENT::NotificationType &data)'
             writeMethodCode += '{\n'
             writeMethodCode += '    uint8_t *pos = static_cast<uint8_t*>(buffer);\n'
 
@@ -874,7 +870,7 @@ with open("sbem_definitions.h", 'wb') as f_h:
 
             print(writeMethodCode, file=f_cpp)
 
-            print('\nsize_t writeToSbemBuffer_' +cppNameFromResName(k) + '(void *buffer, const WB_RES::LOCAL::' + cppNameFromResName(k) + '::GET::Response_HTTP_CODE_OK_Type &data);', file=f_h)
+            print('\nsize_t writeToSbemBuffer_' +cppNameFromResName(k) + '(void *buffer, const WB_RES::LOCAL::' + cppNameFromResName(k) + '::EVENT::NotificationType &data);', file=f_h)
             
 
         # Generate function to calculate sbem packet length for given resource & data
@@ -883,7 +879,7 @@ with open("sbem_definitions.h", 'wb') as f_h:
             getLengthMethodCode = ""
             itemsToDo = v['SBEM_ITEMS_TODO']
     
-            getLengthMethodCode += '\nsize_t getSbemLength_' +cppNameFromResName(k) + '(const WB_RES::LOCAL::' + cppNameFromResName(k) + '::GET::Response_HTTP_CODE_OK_Type &data)\n'
+            getLengthMethodCode += '\nsize_t getSbemLength_' +cppNameFromResName(k) + '(const WB_RES::LOCAL::' + cppNameFromResName(k) + '::EVENT::NotificationType &data)\n'
             getLengthMethodCode += '{\n'
 
             sizeExpr = ""
@@ -907,7 +903,7 @@ with open("sbem_definitions.h", 'wb') as f_h:
             print(getLengthMethodCode, file=f_cpp)
 
             # and declaration to .h file
-            print('\nsize_t getSbemLength_' +cppNameFromResName(k) + '(const WB_RES::LOCAL::' + cppNameFromResName(k) + '::GET::Response_HTTP_CODE_OK_Type &data);', file=f_h)
+            print('\nsize_t getSbemLength_' +cppNameFromResName(k) + '(const WB_RES::LOCAL::' + cppNameFromResName(k) + '::EVENT::NotificationType &data);', file=f_h)
 
         # Generate generic getSbemLengthConst method (for resources with fixed size data)
         getLengthMethodCode = '\nint16_t getSbemLengthConst(whiteboard::LocalResourceId localResId)\n'
@@ -955,7 +951,7 @@ with open("sbem_definitions.h", 'wb') as f_h:
             itemsToDo = v['SBEM_ITEMS_TODO']
 
             getLengthMethodCode += '    case WB_RES::LOCAL::' + cppNameFromResName(k) + '::LID:\n'
-            getLengthMethodCode += '        return getSbemLength_' +cppNameFromResName(k) + '(data.convertTo<WB_RES::LOCAL::' + cppNameFromResName(k) + '::GET::Response_HTTP_CODE_OK_Type>());\n'
+            getLengthMethodCode += '        return getSbemLength_' +cppNameFromResName(k) + '(data.convertTo<WB_RES::LOCAL::' + cppNameFromResName(k) + '::EVENT::NotificationType>());\n'
 
                     
         getLengthMethodCode += '    }\n'
@@ -977,7 +973,7 @@ with open("sbem_definitions.h", 'wb') as f_h:
             itemsToDo = v['SBEM_ITEMS_TODO']
 
             writeMethodCode += '    case WB_RES::LOCAL::' + cppNameFromResName(k) + '::LID:\n'
-            writeMethodCode += '        return writeToSbemBuffer_' +cppNameFromResName(k) + '(buffer, data.convertTo<WB_RES::LOCAL::' + cppNameFromResName(k) + '::GET::Response_HTTP_CODE_OK_Type>());\n'
+            writeMethodCode += '        return writeToSbemBuffer_' +cppNameFromResName(k) + '(buffer, data.convertTo<WB_RES::LOCAL::' + cppNameFromResName(k) + '::EVENT::NotificationType>());\n'
 
                     
         writeMethodCode += '    }\n'        
@@ -1061,3 +1057,7 @@ with open("sbem_definitions.h", 'wb') as f_h:
         print("{\n", file=f_cpp)
         print("    return BEFORE_GROUPS_ID + 1;\n", file=f_cpp)
         print("}\n", file=f_cpp)
+
+
+if "idlelib" in sys.modules and len(sys.argv) == 1:
+    os.chdir(oldDir)
