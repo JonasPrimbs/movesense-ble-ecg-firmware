@@ -7,6 +7,8 @@
 
 typedef enum {
     POWER_MODE_IDLE = 0,
+    POWER_MODE_SLOW_ADVERTISE,
+    POWER_MODE_FAST_ADVERTISE,
     POWER_MODE_ACCELEROMETER,
     POWER_MODE_GYROSCOPE,
     POWER_MODE_MAGNETOMETER,
@@ -61,11 +63,11 @@ private:
     void enterPowerMode(POWER_MODE_e newMode);
 
     // Power mode logic
-    whiteboard::TimerId mPowerModeTimer;
+    volatile whiteboard::TimerId mPowerModeTimer;
     uint32_t mPowerModeCounter;
 
     // Led blinker
-    whiteboard::TimerId mLedTimer;
+    volatile whiteboard::TimerId mLedTimer;
     uint32_t mLedCounter;
     uint32_t mLedCount;
 };

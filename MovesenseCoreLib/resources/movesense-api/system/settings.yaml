@@ -1,0 +1,42 @@
+swagger: '2.0'
+
+info:
+  version: NA
+  title: Settings - Movesense-API
+  description: |
+    This file defines the settings API for a Movesense device.
+  x-api-type: public
+
+paths:
+  /System/Settings/UartOn:
+    get:
+      description: |
+        Gets the UART state
+      responses:
+        200:
+          description: State updated succesfully.
+    put:
+      description: |
+        Sets the UART state after reset
+      parameters:
+      - name: State
+        required: true
+        in: query
+        type: boolean
+      responses:
+        200:
+          description: State updated succesfully.
+
+  /System/Settings/PowerOffAfterReset:
+    put:
+      description: |
+        Orders the device to issue PowerOff after the next reset/boot-up.
+        This setting automatically set to FALSE after the next reset/boot-up.
+      parameters:
+        - name: State
+          required: true
+          in: query
+          type: boolean
+      responses:
+        200:
+          description: State updated succesfully.

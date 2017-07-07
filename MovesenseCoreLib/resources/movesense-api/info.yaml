@@ -1,0 +1,93 @@
+swagger: "2.0"
+
+info:
+  version: NA
+  title: Info - Movesense-API
+  description: |
+    This file defines API for reading different device related information.
+  x-api-type: public
+
+paths:
+
+  /Info:
+    get:
+      description:      Query for device information.
+      responses:
+        200:
+          description:  Device information structure
+          schema:
+            $ref:       '#/definitions/DeviceInfo'
+
+definitions:
+
+  DeviceInfo:
+    required:
+      - manufacturerName
+      - productName
+      - variant
+      - hwCompatibilityId
+      - serial
+      - pcbaSerial
+      - sw
+      - hw
+      - apiLevel
+    properties:
+      manufacturerName:
+        description:  Original Equipment Manufacturer (OEM)
+        type:         string
+        example:      "Amer Sports"
+      brandName:
+        description:  Brand name of the device
+        type:         string
+        example:      "Suunto"
+      productName:
+        description:  Official product name visible to the consumers
+        type:         string
+        example:      "Movesense Swim Sensor"
+      variant:
+        description:  Internal SW variant name
+        type:         string
+        example:      "Avocado"
+      design:
+        description:  Product design name
+        type:         string
+        example:      "black"
+      hwCompatibilityId:
+        description: |
+          Identifier defining which firmware can be installed on the device.
+          This ID together with the variant name is used to check/fetch the
+          latest FW. Different PCBAs which can run the same Firmware, have the
+          same HwCompatibilityId.
+        type:         string
+        example:      "A"
+      serial:
+        description:  Globally unique device serial number (12 digit)
+        type:         string
+        example:      "155110123456"
+      pcbaSerial:
+        description:  |
+          Globally unique PCBA assemply identifier (this can be OEM specific).
+        type:         string
+        example:      "01234112345678901234567894444N2YYWW"
+      sw:
+        description:  Version number of the firmware.
+        type:         string
+        example:      "1.0.0"
+      hw:
+        description: |
+          Identifier for the HW configuration. Everytime there are changes in
+          componets/PCB, this ID is updated. In Suunto case, the format is
+          varying number of <letter, number> pairs.
+        type:         string
+        example:      "1740G1"
+      additionalVersionInfo:
+        $ref:         'types.yaml#/definitions/VersionInfoArray'
+      addressInfo:
+        description: Array of structs containing pairs of address type identifier and address.
+        type: array
+        items:
+          $ref: 'types.yaml#/definitions/AddressInfo'
+      apiLevel:
+        description:  Movesense-api level. This is defined by single number.
+        type:         string
+        example:      "2"

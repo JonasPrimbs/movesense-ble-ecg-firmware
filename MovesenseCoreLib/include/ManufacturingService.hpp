@@ -4,7 +4,6 @@
 #include <whiteboard/LaunchableModule.h>
 #include <whiteboard/ResourceProvider.h>
 #include "hal/manufacturingdata/manufacturingdata.h"
-#include "suunto_device_manufacturing/resources.h"
 
 #define STEPDATA_OFFSET         0x70B00
 #define CALIBRATIONDATA_OFFSET  0x70500
@@ -14,13 +13,6 @@
 
 #define ERROR_NO_DATA           -2
 #define ERROR_NOT_EMPTY         -1
-
-#define ADDR_SIZE               4
-
-struct AddressInfo {
-    char name[64];
-    char address[64];
-};
 
 #define PD_MNFR_NAME_LEN        32
 #define PD_PRODUCT_NAME_LEN     64
@@ -76,10 +68,16 @@ private:
     void CalibrationDataGet(const whiteboard::Request& request,
             const whiteboard::ParameterList& parameters);
 
+    void CalibrationDataDelete(const whiteboard::Request& request,
+            const whiteboard::ParameterList& parameters);
+
     void StepDataPost(const whiteboard::Request& request,
             const whiteboard::ParameterList& parameters);
 
     void StepDataGet(const whiteboard::Request& request,
+            const whiteboard::ParameterList& parameters);
+
+    void StepDataDelete(const whiteboard::Request& request,
             const whiteboard::ParameterList& parameters);
 
     virtual void onGetRequest(const whiteboard::Request& request,
@@ -88,12 +86,15 @@ private:
     virtual void onPostRequest(const whiteboard::Request& request,
                               const whiteboard::ParameterList& parameters) OVERRIDE;
 
+    virtual void onDeleteRequest(const whiteboard::Request& request,
+                              const whiteboard::ParameterList& parameters) OVERRIDE;
+
 
     bool isEmpty(uint32_t *data, size_t size);
     bool isEmpty(uint32_t offset, size_t size);
 
     void notData(uint32_t *data, size_t size);
-    bool EraseSettingsMemory();
+    bool eraseManufacturingFlashPage();
 
     uint32_t stepStringToEnum(const char *string);
     void stepEnumToString(char* buffer, size_t buffer_size, const uint32_t &value);

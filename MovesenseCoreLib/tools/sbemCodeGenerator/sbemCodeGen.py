@@ -346,13 +346,11 @@ for f in yamlFiles:
         for k, v in sorted(obj['paths'].iteritems()):
             if k.endswith('/Subscription'):
                 k = k[:-len('/Subscription')]
-                if k in resources:
+                if k not in resources:
+                    resources[k] = {}
                     #print("merged subscription to parent path: ",k)
-                    resources[k]['subscription'] = v['post']
-                else:
-                    #print("Removed subscription resource: ",k)
-                    continue
-            else:                
+                resources[k]['subscription'] = v['post']
+            else:
                 resources[k] = v
 
     if ('definitions' in obj):
@@ -555,8 +553,10 @@ resourcesWithComplexType = {}
 items = []
 for k,v in sorted(resources.iteritems()):
     # skip if resource does not have subscribe verb with response
+#    print("resource: ", k)
 
     if not ('subscription' in v):
+#        print("resource: ", k, " skipping, no subscription")
         continue
 
     if 'subscription' in v:

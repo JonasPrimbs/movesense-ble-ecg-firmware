@@ -41,6 +41,12 @@ public:
         return oldBits;
     }
 
+    // Returns true if given bits are set, otherwise false
+    bool isSet(uint32 mask)
+    {
+        return (mBits & mask) == mask;
+    }
+
     // Atomically sets given bits and returns the original bitmap value.
     uint32 setAtomic(uint32 mask)
     {

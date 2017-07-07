@@ -1,0 +1,128 @@
+swagger: '2.0'
+
+info:
+  version: NA
+  title: Angular Velocity - Movesense-API
+  description: |
+    This file defines interface for the gyroscope API.
+  x-api-type: public
+
+paths:
+
+  /Meas/Gyro/Info:
+    get:
+      description: |
+        Get supported sample rates and ranges.
+      responses:
+        200:
+          description: Returns gyroscope information.
+          schema:
+            $ref: '#/definitions/GyroInfo'
+
+  /Meas/Gyro/Config:
+    get:
+      description: |
+        Get current gyroscope measurement configuration.
+      responses:
+        200:
+          description: Returns gyroscope configurations.
+          schema:
+            $ref: '#/definitions/GyroConfig'
+    put:
+      description: |
+        Set current gyroscope measurement configuration.
+      parameters:
+        - name: config
+          in: body
+          description: New configurations for gyroscope
+          required: true
+          schema:
+            $ref: '#/definitions/GyroConfig'
+      responses:
+        200:
+          description: Operation completed successfully
+        503:
+          description: |
+            Not allowed to change configuration at the moment. E.g. when
+            active subcriptions exist.
+
+  /Meas/Gyro/{SampleRate}/Subscription:
+    parameters:
+       - $ref: '#/parameters/SampleRate'
+    post:
+      description: |
+        Subscribe to periodic gyroscope measurements.
+      responses:
+        200:
+          description: Operation completed successfully
+        501:
+          description: Non-supported sample rate
+        x-notification:
+          description: New measurements
+          schema:
+            $ref: '#/definitions/GyroData'
+    delete:
+      description: Unsubscribe from periodic gyroscope values.
+      responses:
+        200:
+          description: Operation completed successfully
+
+parameters:
+  SampleRate:
+    name: SampleRate
+    in: path
+    required: true
+    type: integer
+    format: int32
+
+definitions:
+  GyroInfo:
+    required:
+      - SampleRates
+      - Ranges
+    properties:
+      SampleRates:
+        description: Available sample rates for gyroscope measurement.
+        type: array
+        items:
+          type: integer
+          format: uint16
+          x-unit: Hz
+      Ranges:
+        description: |
+          Available ranges for angular range measurement rate. For example range
+          value 500 means the range is -500...+500 dps.
+        type: array
+        items:
+          type: integer
+          format: uint16
+          x-unit: deg/s
+
+  GyroConfig:
+    required:
+      - DPSRange
+    properties:
+      DPSRange:
+        description: |
+          Degree per second range. For example if set 500 the range is
+          -500...+500 dps.
+        type: integer
+        format: int32
+        x-unit: deg/s
+
+  GyroData:
+    required:
+      - Timestamp
+      - ArrayGyro
+    properties:
+      Timestamp:
+        description: Local timestamp of first measurement.
+        type: integer
+        format: uint32
+        x-unit: millisecond
+      ArrayGyro:
+        description: Measured angular velocity values (3D) in array.
+        type: array
+        x-unit: dps (degree per second)
+        items:
+          $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/FloatVector3D'

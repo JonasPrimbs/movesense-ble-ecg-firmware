@@ -196,4 +196,6 @@ definitions:
         $ref: 'http://localhost:9000/suunto_shared.yaml#/definitions/VersionInfoArray'
       addressInfo:
         description: Array of structs containing pairs of address type identifier and address.
-        $ref: 'http://localhost:9000/suunto_shared.yaml#/definitions/AddressInfoArray'
+        type: array
+        items:
+          $ref: 'suunto_shared.yaml#/definitions/AddressInfo'

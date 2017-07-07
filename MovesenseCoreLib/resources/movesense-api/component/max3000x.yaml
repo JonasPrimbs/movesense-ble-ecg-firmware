@@ -1,0 +1,115 @@
+swagger: '2.0'
+
+info:
+  version: NA
+  title: MAX3000x - Movesense-API
+  description: |
+    This file defines API for the Maxim MAX3000x AFE service.
+  x-api-type: private
+    
+paths:
+
+  /Component/MAX3000x/HeartRateData/Subscription:
+    post:
+      description: |
+        Subscription to inter-beat interval data (R-R).
+      responses:
+        200:
+          description: Operation completed successfully
+        x-notification:
+          description: |
+            Notifications comprise the latest RR data (ms)
+          schema:
+            $ref: 'types.yaml#/definitions/HRData'
+
+    delete:
+      description: |
+        Unsubscribe heartrate / R-R data stream
+      responses:
+        200:
+          description: Operation completed successfully
+
+  /Component/MAX3000x/WakeUp:
+    get:
+      description: |
+        Get the active wake-up trigger state
+      responses:
+        200:
+          description: |
+            Current wake-up trigger state
+          schema:
+            type: integer
+            format: uint8
+    put:
+      description: |
+      parameters:
+        - name: newState
+          in: body
+          description: New trigger state
+          required: true
+          schema:
+            type: integer
+            format: uint8
+      responses:
+        200:
+          description: |
+            State updated successfully
+        400:
+          description: |
+            Not able to set the wake-up trigger
+          
+  /Component/MAX3000x/Version:
+    get:
+      description: |
+        Get available versions of the MAX chip
+      responses:
+        200:
+          description:  |
+            Available version information for the MAX3000x chip
+          schema:
+            $ref: 'types.yaml#/definitions/VersionInfoArray'
+        500:
+          description: General error
+
+  /Component/MAX3000x/Register:
+    get:
+      description: Get the defined register value
+      parameters:
+        - name: addr
+          description: 7 -bit register address
+          required: true
+          in: query
+          type: integer
+          format: uint8
+          minimum: 0
+          maximum: 128
+      responses:
+        200:
+          description: Register value (32 bit)
+          schema:
+            type: integer
+            format: uint32
+        500:
+          description: General error
+    put:
+      description: Write to the defined register
+      parameters:
+        - name: addr
+          description: 7 -bit register address
+          required: true
+          in: query
+          type: integer
+          format: uint8
+          minimum: 0
+          maximum: 128
+        - name: value
+          required: true
+          in: query
+          type: integer
+          format: uint32
+      responses:
+        200:
+          description: Register written successfully
+        500:
+          description: General error
+

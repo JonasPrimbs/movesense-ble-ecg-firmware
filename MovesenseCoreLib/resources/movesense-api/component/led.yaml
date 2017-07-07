@@ -1,0 +1,23 @@
+swagger: '2.0'
+
+info:
+  version: NA
+  title: LED - Movesense-API
+  description: |
+    This file defines API for controlling the LED(s).
+  x-api-type: private
+
+paths:
+  /Component/Led:
+    put:
+      description: |
+        Means to change the state of the LED.
+      parameters:
+        - name: isOn
+          in: query
+          description: New LED state
+          required: true
+          type: boolean
+      responses:
+        200:
+          description: Operation completed successfully

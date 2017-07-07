@@ -1,0 +1,164 @@
+swagger: '2.0'
+
+info:
+  version: NA
+  title: DS24L65 - Movesense-API
+  description: |
+    This file defines API for accessing the DS24L65 chip features and connected 1-wire slave devices.
+  x-api-type: private
+    
+paths:
+  /Component/DS24L65/Active:
+    get:
+      description: |
+        Returns the DS24L65 state.
+      responses:
+        200:
+          description: State read successfully
+          schema:
+            description: False = DS24L65 not active, True = DS24L65 active.
+            type: boolean
+            default: false
+        500:
+          description: Failed to get the state
+    put:
+      description: |
+        Activate / deactivate the DS24L65 chip.
+      parameters:
+        - name: isActive
+          required: true
+          in: query
+          type: boolean
+      responses:
+        200:
+          description: Operation carried out successfully
+        500:
+          description: Operation failed
+
+  /Component/DS24L65/Command:
+    put:
+      description: |
+        Executes a command(s) on the DS24L65.
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/CommandsObject'
+      responses:
+        200:
+          description: Command(s) execution successfully
+        500:
+          description: Failed to execute the command
+
+  /Component/DS24L65/Register:
+    get:
+      description: |
+        Returns the contents of the register.
+      parameters:
+        - name: address
+          required: true
+          in: query
+          type: integer
+          format: uint8
+          minimum: 0
+          maximum: 255
+      responses:
+        200:
+          description: Register read successfully
+          schema:
+            type: integer
+            format: uint8
+            minimum: 0
+            maximum: 255
+        500:
+          description: Failed/not allowed to read the register value
+    put:
+      description: |
+        Writes value to the defined register
+      parameters:
+        - name: address
+          required: true
+          in: query
+          type: integer
+          format: uint8
+          minimum: 0
+          maximum: 255
+        - name: value
+          required: true
+          in: query
+          type: integer
+          format: uint8
+          minimum: 0
+          maximum: 255
+      responses:
+        200:
+          description: Register read successfully
+        500:
+          description: Failed/not allowed to write the value to the register
+
+  /Component/DS24L65/UserMemory:
+    put:
+      description: |
+        Means to write data to non-volatile user memory (64 bytes).
+      parameters:
+        - name: data
+          required: true
+          in: body
+          schema:
+              $ref: '#/definitions/EEprom64ByteArray'
+      responses:
+        200:
+          description: Data written successfully
+        500:
+          description: Not allowed - memory write protected
+    get:
+      description: |
+        Read user memory contents.
+      responses:
+        200:
+          description: Data read successfully
+          schema:
+              $ref: '#/definitions/EEprom64ByteArray'
+        500:
+          description: Data does not exist
+
+definitions:
+
+  CommandsObject:
+    required:
+      - commands
+    properties:
+      commands:
+        type: array
+        items:
+          $ref: '#/definitions/CommandObject'
+
+  CommandObject:
+    required:
+      - code
+      - value
+    properties:
+      code:
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 255
+      value:
+        description: -1 = N/A
+        type: integer
+        format: int32
+        minimum: -1
+        maximum: 255
+
+  EEprom64ByteArray:
+    required:
+      - data
+    properties:
+      data:
+        type: array
+        minItems: 1
+        maxItems: 64
+        items:
+          type: integer
+          format: uint8

@@ -32,12 +32,11 @@
 
 
 #include "../wb-resources/resources.h"
-#include "../suunto_shared/resources.h"
+#include "../movesense_types/resources.h"
 
 #define WB_EXEC_CTX_PRIMARYSERVICES              WB_EXECUTION_CONTEXT_INSTANTION_REF(0)
 #define WB_EXEC_CTX_APPLICATION                  WB_EXECUTION_CONTEXT_INSTANTION_REF(1)
 #define WB_EXEC_CTX_MEAS                         WB_EXECUTION_CONTEXT_INSTANTION_REF(2)
-#define WB_EXEC_CTX_UI                           WB_EXECUTION_CONTEXT_INSTANTION_REF(3)
 
 namespace WB_RES {
 
@@ -50,7 +49,7 @@ struct WB_STRUCT_PACKED CommandsObject
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18432;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 3072;
 	static const whiteboard::StructureValueSerializer<CommandsObject> serializer;
 	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<CommandsObject> cleaner;)
 
@@ -67,7 +66,7 @@ struct WB_STRUCT_PACKED EEprom64ByteArray
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18433;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 3073;
 	static const whiteboard::StructureValueSerializer<EEprom64ByteArray> serializer;
 	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<EEprom64ByteArray> cleaner;)
 
@@ -96,8 +95,8 @@ struct DEVICE_COMPONENT_DS24L65;
 struct DEVICE_COMPONENT_DS24L65_ACTIVE
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 18432, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 18432;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3072, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 3072;
 
 	struct GET
 	{
@@ -166,8 +165,8 @@ struct DEVICE_COMPONENT_DS24L65_ACTIVE
 struct DEVICE_COMPONENT_DS24L65_COMMAND
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 18433, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 18433;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3073, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 3073;
 
 	struct PUT
 	{
@@ -223,11 +222,28 @@ struct DEVICE_COMPONENT_DS24L65_COMMAND
 	};
 };
 
+struct DEVICE_COMPONENT_DS24L65_READROM
+{
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3074, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 3074;
+
+	struct GET
+	{
+		typedef uint64 Response_HTTP_CODE_OK_Type;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+	};
+};
+
 struct DEVICE_COMPONENT_DS24L65_REGISTER
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 18434, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 18434;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3075, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 3075;
 
 	struct GET
 	{
@@ -355,11 +371,28 @@ struct DEVICE_COMPONENT_DS24L65_REGISTER
 	};
 };
 
+struct DEVICE_COMPONENT_DS24L65_SCAN
+{
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3076, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 3076;
+
+	struct GET
+	{
+		typedef uint8 Response_HTTP_CODE_OK_Type;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+	};
+};
+
 struct DEVICE_COMPONENT_DS24L65_USERMEMORY
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 18435, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 18435;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3077, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 3077;
 
 	struct GET
 	{

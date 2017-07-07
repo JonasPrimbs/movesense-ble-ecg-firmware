@@ -32,12 +32,11 @@
 
 
 #include "../wb-resources/resources.h"
-#include "../suunto_shared/resources.h"
+#include "../movesense_types/resources.h"
 
 #define WB_EXEC_CTX_PRIMARYSERVICES              WB_EXECUTION_CONTEXT_INSTANTION_REF(0)
 #define WB_EXEC_CTX_APPLICATION                  WB_EXECUTION_CONTEXT_INSTANTION_REF(1)
 #define WB_EXEC_CTX_MEAS                         WB_EXECUTION_CONTEXT_INSTANTION_REF(2)
-#define WB_EXEC_CTX_UI                           WB_EXECUTION_CONTEXT_INSTANTION_REF(3)
 
 namespace WB_RES {
 
@@ -50,7 +49,7 @@ struct WB_STRUCT_PACKED SystemEventLogEntry
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 6144;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 1536;
 	static const whiteboard::StructureValueSerializer<SystemEventLogEntry> serializer;
 	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<SystemEventLogEntry> cleaner;)
 
@@ -75,7 +74,7 @@ struct WB_STRUCT_PACKED SystemEventLogEntryArray
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 6145;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 1537;
 	static const whiteboard::StructureValueSerializer<SystemEventLogEntryArray> serializer;
 	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<SystemEventLogEntryArray> cleaner;)
 
@@ -100,8 +99,8 @@ struct DEVICE;
 struct DEVICE_SYSTEMEVENT
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 6144, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 6144;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 1536, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 1536;
 
 	struct GET
 	{

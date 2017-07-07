@@ -2,6 +2,8 @@
 #include <whiteboard/ResourceProvider.h>
 #include <whiteboard/ResourceClient.h>
 
+#include "hal/systemevent.h"
+
 namespace nea
 {
 
@@ -52,18 +54,6 @@ private:
      */
     void onPutRequest(const whiteboard::Request& request,
                       const whiteboard::ParameterList& parameters) OVERRIDE;
-
-    /**
-    *	Callback for asynchronous resource PUT requests
-    *
-    *	@param requestId ID of the request
-    *	@param resourceId Successful request contains ID of the resource
-    *	@param resultCode Result code of the request
-    *	@param rResultData Successful result contains the request result
-    */
-    void onPutResult(wb::RequestId requestId, wb::ResourceId resourceId,
-                     wb::Result resultCode, const wb::Value& resultData) OVERRIDE;
-
 
     /**
      *  Subscribe notification callback.

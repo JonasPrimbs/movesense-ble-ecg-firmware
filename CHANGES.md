@@ -1,3 +1,20 @@
+##Version 0.5.0.341##
+
+###Whats new:###
+- Changed API: /Info, /Meas/Temp, /Mem/DataLogger, /Mem/Logbook, /System/Energy, /System/Mode, /System/Settings, /Time
+- New API: /Comm/Ble, /Meas/HR, /Misc/Gear
+- Fixed: Logbook: DataLogger stores (or Logbook returns) wrong data if more than one path is specified in /DataLogger/Config
+- Fixed: DataLogger only stores the first element of an array (e.g. for /Meas/Acc/xxx it stores the 1st measurement in the AccData-package)
+
+###Known Bugs:###
+- Leaks after disconnect without unsubscribe command
+- Maximum subscription rate for Acc/Gyro/Magn is only 104Hz
+- Acc and Gyro subscribed in pair and with that order return wrong data.
+
+###Notes:###
+- REQUIRED: Use **GNU Toolchain for ARM v. 5.4 2016q3**
+- To create DFU package for OTA update, compile application with "ninja dfupkg"
+
 ##Version 0.4.1.184##
 
 ###Whats new:###

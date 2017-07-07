@@ -24,9 +24,16 @@ public:
 private:
     uint8_t currentCommand;
     uint8_t currentChannel;
+    uint8_t currentChannelEnd;
     uint8_t currentPayloadLength;
     uint32_t currentPayloadPattern;
+    uint8_t currentTimeout;
+    bool hasValueCurrentChannelEnd;
 
+    volatile bool softdeviceDisabled;
+    void initDTM();
+
+    
     /** @see whiteboard::ILaunchableModule::initModule */
     virtual bool initModule() OVERRIDE;
 

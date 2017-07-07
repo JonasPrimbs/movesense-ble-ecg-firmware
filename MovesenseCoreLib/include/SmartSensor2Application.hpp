@@ -2,19 +2,22 @@
 #pragma once
 
 #include <whiteboard/ResourceClient.h>
-#include <inetgw/inetgwlp/InetGwLPProvider.h>
+//#include <inetgw/inetgwlp/InetGwLPProvider.h> TODO: Uncomment when we enable inetgw support
 #include <whiteboard/services/WhiteboardServices.h>
 #include <whiteboard/services/CommServices.h>
+
 #include "common/services/SystemServices.hpp"
 #include "common/services/StandardServices.hpp"
 #include "common/services/LowPriorityServices.hpp"
 #include "nea/hal/sensor/AFE/MAX3000x/MAX30004_provider.hpp"
+
 #include "ApplicationServices.hpp"
-//#include "Hackathon2016SampleService.hpp"
+
 #include "HardwareServices.hpp"
 
 #include "DataLogger.hpp"
 #include "Logbook.hpp"
+#include "BleService.hpp"
 #include "LedService.hpp"
 #include "SettingsService.hpp"
 #include "ManufacturingService.hpp"
@@ -36,7 +39,7 @@ private:
     void stopHWServices();
 
     whiteboard::services::WhiteboardServicesInstance mWbServices;
-    //nea::inetgateway::InetGwLPProvider mInetGw;
+    //nea::inetgateway::InetGwLPProvider mInetGw; TODO: Uncomment when we enable inetgw support
     whiteboard::services::CommServices mCommServices;
 
     nea::SystemServices mSystemServices;
@@ -52,6 +55,7 @@ private:
     DataLogger      mDataLogger;
     Logbook         mLogbook;
     LedService      mLedService;
+    BleService      mBleService;
     SettingsService mSettingsService;
     ManufacturingService mManufacturingService;
 

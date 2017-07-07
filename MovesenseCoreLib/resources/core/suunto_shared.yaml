@@ -133,16 +133,6 @@ definitions:
         items:
           $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/FloatVector3D'
 
-  AddressInfoArray:
-    required:
-      - addressInfo
-    description: Array of structs containing pairs of address type identifier and address.
-    properties:
-      addressInfo:
-        type: array
-        items:
-          $ref: '#/definitions/AddressInfo'
-
   AddressInfo:
     required:
       - name
