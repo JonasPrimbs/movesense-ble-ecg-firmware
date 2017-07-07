@@ -1,26 +1,28 @@
 ## Announcements ##
-**API CHANGES!** Before you start to write an app check the new API for accelerometer, gyroscope, magnetic field! The new API supports now higher data rates.
+**API CHANGES!** Before you start to write an app check the new API!
 
 ## Overview ##
 
-Movesense sensor is a programmable multi-purpose device comprising accelerometer, gyroscope, magnetometer and thermometer together with optional hearthrate/IBI and intelligent gear ID APIs. The APIs follow the well known REST principle and can be used both internally by the partner app or externally via the iOS/Android libraries. API specification ([link to folder](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/resources/core/)), is based on Swagger 2.0 syntax.
+Movesense sensor is a programmable multi-purpose device comprising accelerometer, gyroscope, magnetometer and thermometer together with optional heartrate/IBI and intelligent gear ID APIs. The APIs follow the well known REST principle and can be used both internally by the partner app or externally via the iOS/Android libraries. API specification ([link to folder](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/resources/core/)), is based on Swagger 2.0 syntax.
 
 ## API ##
 Resource | Description|Implemented
 ---------|------------|--------------
-/Info|API for accessing generic device information.| YES
-/DataLogger|Generic logger capable of logging max. 8 different resources| NO! Bug will be fixed soon!
-/Logbook|Generic Logbook from where the logged data can be read| NO! Bug will be fixed soon!
-**/Meas/Gyro**|API enabling subscribing angular velocity data (based on gyroscope).| YES
-**/Meas/Acc**|API enabling subscribing linear acceleration data (based on accelerometer).| YES
-**/Meas/Magn**|API enabling subscribing magnetic field data (based on magnetometer).| YES
-/Device/Measurement/Temperature|API enabling reading or subscribing temperature data (based on thermometer).| YES
-/Device/Component/Led|API for controlling the LED.| YES
-/Device/UserInteraction/Indication|API for controlling the LED.| NO
-/Device/Power/BatteryLevel|API for reading the battery state.| YES
-/Dev/Time|API for accessing different time related services.| YES*
-/Device/SystemEvent|API for accessing system event log.| NO
-/Device/System/Mode|API for controlling the main system state (e.g. factory sleep).| YES
+**/Comm/Ble**|API for managing BLE | YES
+**/Info**|API for accessing generic device information.| YES
+/Meas/Acc|API enabling subscribing linear acceleration data (based on accelerometer).| YES
+/Meas/Gyro|API enabling subscribing angular velocity data (based on gyroscope).| YES
+**/Meas/HR**|API enabling subscribing heart rate data.| YES
+/Meas/Magn|API enabling subscribing magnetic field data (based on magnetometer).| YES
+**/Meas/Temp**|API enabling reading or subscribing temperature data (based on thermometer).| YES
+**/Mem/DataLogger**|Generic logger capable of logging max. 8 different resources| YES
+**/Mem/Logbook**|Generic Logbook from where the logged data can be read| YES
+**/Misc/Gear**| API to get the globally unique Movesense ID associated with the physical gear | YES
+**/System/Energy**|API for reading the battery state.| YES
+**/System/Mode**|API for controlling the main system state (e.g. factory sleep).| YES
+**/System/Settings**| Settings API for a Movesense device. | YES
+**/Time**|API for accessing different time related services.| YES
+/Ui/Ind|API for controlling the LED.| NO
 
 ## Prerequisite ##
 
@@ -43,11 +45,11 @@ Optionally:
 > mkdir myBuild
 > cd myBuild
 
-> cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/hello_world_app
+> cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/hello_world_app
 or
-> cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/accelerometer_app
+> cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/accelerometer_app
 or
-> cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/blinky_app
+> cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/blinky_app
 
 > ninja
 ```

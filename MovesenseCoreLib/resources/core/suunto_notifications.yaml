@@ -1,0 +1,179 @@
+# Copyright Suunto Oy 2017
+# All rights reserved.
+
+swagger: '2.0'
+
+info:
+  version: "0.9.0"
+  title: Notifications API
+  description: This file defines notifications API
+  termsOfService: http://suunto.com/wbapi/terms/
+  contact:
+    name: Suunto team
+    url: http://developer.suunto.com
+
+security:
+  - suuntoAccessCode:
+    - public
+
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+    flow: accessCode
+    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
+    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
+
+paths:
+  /Notification/Ack:
+    x-executionContext: application
+    put:
+      description: Mark notification as seen/handled
+      parameters:
+        -
+          name: id
+          in: query
+          description: Notification id
+          required: true
+          type: integer
+          format: uint8
+      responses:
+        200:
+          description: Notification marked as handled
+        404:
+          description: Notification id not found (it was either dropped or overriden by more important notification)
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Notification/Filter/ImportanceLevel:
+    x-executionContext: application
+    get:
+      description: Current importance level
+      responses:
+        200:
+          description: Operation completed successfully
+      security:
+        - suuntoAccessCode:
+          - public
+    put:
+      description: Set currently used importance level
+      parameters:
+        -
+          name: value
+          in: body
+          description: Notifications less important than this will be ignored
+          required: true
+          schema:
+            $ref: '#/definitions/NotificationImportance'
+      responses:
+        200:
+          description: Operation completed successfully
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Notification/Trigger:
+    x-executionContext: application
+
+  /Notification/Trigger/Subscription:
+    x-executionContext: application
+    post:
+      description: Notification subscription
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: number
+            format: float
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        x-notification:
+          description: Event notification.
+          schema:
+            $ref: '#/definitions/Notification'
+      security:
+        - suuntoAccessCode:
+          - public
+    delete:
+      description: Unsubscribe
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Notification/Create:
+    x-executionContext: application
+    put:
+      description: Send a notification
+      parameters:
+        -
+          name: name
+          in: body
+          description: Notification payload
+          required: true
+          schema:
+            $ref: '#/definitions/Notification'
+      responses:
+        200:
+          description: Notification sent succesfully
+        507:
+          description: Notification ignored since provider has not enough space for queue and has more important notifications
+        400:
+          description: Bad request.
+      security:
+        - suuntoAccessCode:
+          - public
+
+definitions:
+  NotificationArgument:
+    properties:
+      keyhash:
+        description: Key
+        type: integer
+        format: uint32
+      value:
+        description: Value
+        type: string
+    required:
+      - keyhash
+      - value
+  Notification:
+    properties:
+      id:
+        description: Notification id
+        type: integer
+        format: uint8
+      importance:
+        description: Importance level
+        $ref: '#/definitions/NotificationImportance'
+      templateName:
+        description: HTML template name
+        type: string
+      payload:
+        type: array
+        items:
+          $ref: '#/definitions/NotificationArgument'
+    required:
+      - templateName
+      - payload
+      - importance
+  NotificationImportance:
+    type: integer
+    format: uint8
+    enum:
+      - name: DEBUG
+        value: 1
+      - name: IDLE
+        value: 5
+      - name: LOW
+        value: 10
+      - name: MEDIUM
+        value: 150
+      - name: HIGH
+        value: 250

@@ -1,7 +1,7 @@
 #include "JumpCounterService.h"
 #include "app-resources/resources.h"
 #include "common/core/debug.h"
-#include "suunto_device_measurement_linearacceleration/resources.h"
+#include "meas_acc/resources.h"
 #include "whiteboard/builtinTypes/UnknownStructure.h"
 #include "whiteboard/integration/bsp/shared/debug.h"
 

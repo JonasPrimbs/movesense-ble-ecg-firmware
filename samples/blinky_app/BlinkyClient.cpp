@@ -4,7 +4,7 @@
 #include "common/core/debug.h"
 
 #include "app-resources/resources.h"
-#include "suunto_device_component_led/resources.h"
+#include "component_led/resources.h"
 #include "whiteboard/builtinTypes/UnknownStructure.h"
 
 #include <float.h>
@@ -68,5 +68,5 @@ void BlinkyClient::onTimer(whiteboard::TimerId timerId)
 
     bool bLedOn = (mCounter & 0x1) != 0;
     // Make PUT request to switch on/off led. bool is converted automatically to whiteboard::Value.
-    asyncPut(WB_RES::LOCAL::DEVICE_COMPONENT_LED::ID, AsyncRequestOptions::Empty, bLedOn);
+    asyncPut(WB_RES::LOCAL::COMPONENT_LED::ID, AsyncRequestOptions::Empty, bLedOn);
 }

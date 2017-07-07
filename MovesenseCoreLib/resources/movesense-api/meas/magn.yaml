@@ -1,0 +1,124 @@
+swagger: '2.0'
+
+info:
+  version: NA
+  title: Magnetic field - Movesense-API
+  description: |
+    This file defines interface for magnetic field API.
+  x-api-type: public
+
+paths:
+
+  /Meas/Magn/Info:
+    get:
+      description: Get info about the magnetometer.
+      responses:
+        200:
+          description: Returns magnetometer information. See MagnInfo.
+          schema:
+            $ref: '#/definitions/MagnInfo'
+
+  /Meas/Magn/Config:
+    get:
+      description: |
+        Get magnetometer configuration.
+      responses:
+        200:
+          description: Returns magnetometer configurations. See MagnConfig.
+          schema:
+            $ref: '#/definitions/MagnConfig'
+    put:
+      description: |
+        Set magnetometer configuration.
+      parameters:
+        - name: config
+          in: body
+          description: New configurations for magnetometer
+          required: true
+          schema:
+            $ref: '#/definitions/MagnConfig'
+      responses:
+        200:
+          description: Operation completed successfully
+        503:
+          description: |
+            Not allowed to change configuration at the moment. E.g. when
+            active subcriptions exist.
+
+  /Meas/Magn/{SampleRate}/Subscription:
+    parameters:
+       - $ref: '#/parameters/SampleRate'
+    post:
+      description: |
+        Subscribe to periodic magnetometer measurements.
+      responses:
+        200:
+          description: Operation completed successfully
+        501:
+          description: Non-supported sample rate
+        x-notification:
+          description: New measurements
+          schema:
+            $ref: '#/definitions/MagnData'
+    delete:
+      description: |
+        Unsubscribe from periodic linear acceleration values.
+      responses:
+        200:
+          description: Operation completed successfully
+
+parameters:
+  SampleRate:
+    name: SampleRate
+    in: path
+    required: true
+    type: integer
+    format: int32
+
+definitions:
+  MagnInfo:
+    required:
+      - SampleRates
+      - Scale
+    properties:
+      SampleRates:
+        description: Available sample rates for magnetometer measurement.
+        type: array
+        items:
+          type: integer
+          format: uint16
+          x-unit: Hz
+      Scale:
+        description: |
+          Available scales for magnetometer measurement. For example scale
+          value 400 means the range is -400...+400 µT (microtesla).
+        type: array
+        items:
+          type: integer
+          format: uint16
+
+  MagnConfig:
+    required:
+      - Scale
+    properties:
+      Scale:
+        description: |
+          Magnetometer scale. For example if set 400 the range is
+          -400...+400 µT (microtesla).
+        type: integer
+        format: uint16
+
+  MagnData:
+    required:
+      - Timestamp
+      - ArrayMagn
+    properties:
+      Timestamp:
+        description: Local timestamp of first measured data.
+        type: integer
+        format: uint32
+        x-unit: millisecond
+      ArrayMagn:
+        type: array
+        items:
+          $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/FloatVector3D'

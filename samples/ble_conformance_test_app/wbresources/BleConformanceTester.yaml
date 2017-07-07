@@ -1,0 +1,93 @@
+swagger: '2.0'
+
+info:
+  version: NA
+  title: BLE Conformance Test App
+  description: |
+    Provider for BLE type approval tests capable of running with battery on.
+
+paths:
+  /BleConformance:
+    put:
+      description: |
+        Run BLE conformance test specified in the parameters. During test the BLE will be unavailable.
+        Sensor will reset after the test is completed.
+      parameters:
+        - name: test
+          in: body
+          description: Test parameters
+          required: true
+          schema:
+            $ref: '#/definitions/BleTestParams'
+      responses:
+        200:
+          description: Test started successfully
+        400:
+          description: Bad request
+        503:
+          description: Service unavailable
+
+definitions:
+  BleTestParams:
+    type: object
+    required:
+      - powerLvl
+      - cmd
+      - chn
+      - len
+      - payload
+      - timeout
+    properties:
+      powerLvl:
+        description: |
+          New output level, +4..-40, in steps of -4. 0 = +4, 11 = -40.
+        type: integer
+        format: uint8
+        minimum: 0
+        maximum: 11
+      cmd:
+        description: |
+          LE_RECEIVER_TEST = 1
+          LE_TRANSMITTER_TEST = 2
+        type: integer
+        format: uint8
+        minimum: 1
+        maximum: 2
+      chn:
+        description: |
+          Phys. channel no. Actual frequency = (2402 + chn * 2)
+        type: integer
+        format: uint8
+        minimum: 0
+        maximum: 39
+      chn_end:
+        description: |
+          Phys. channel no. of end of sweep. Actual frequency = (2402 + chn * 2)
+          Note: if timeout = 0, chn_end cannot be set
+        type: integer
+        format: uint8
+        minimum: 0
+        maximum: 39
+      len:
+        description: |
+          Payload length
+        type: integer
+        format: uint8
+        minimum: 0
+        maximum: 37
+      payload:
+        description: |
+          Payload bit pattern
+            0 = DTM_PKT_PRBS9
+            1 = DTM_PKT_0X0F
+            2 = DTM_PKT_0X55
+            0xffffffff = DTM_PKT_VENDORSPECIFIC (CW Carrier)
+        type: integer
+        format: uint32
+      timeout:
+        description: |
+          Time to run the test in seconds before reset. if "0" run forever. 
+        type: integer
+        format: uint8
+        minimum: 0
+        maximum: 255

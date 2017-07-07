@@ -212,33 +212,63 @@ apis:
   device.measurement.angularvelocity.*:
     apiId: 67
     defaultExecutionContext: PrimaryServices
-  datalogger.*:
+  suunto.notifications.*:
     apiId: 68
     defaultExecutionContext: PrimaryServices
-  suunto.device.component.led.*:
+  suunto.simulator.*:
     apiId: 69
     defaultExecutionContext: PrimaryServices
-  suunto.device.component.MAX30004.*:
+  datalogger.*:
     apiId: 70
     defaultExecutionContext: PrimaryServices
-  device.measurement.temperature.*:
+  suunto.device.component.led.*:
     apiId: 71
     defaultExecutionContext: PrimaryServices
-  suunto.device.component.DS24L65.*:
+  suunto.device.component.MAX30004.*:
     apiId: 72
     defaultExecutionContext: PrimaryServices
-  suunto.activity.daily.*:
+  device.measurement.temperature.*:
     apiId: 73
     defaultExecutionContext: PrimaryServices
-  suunto.system.settings.*:
+  suunto.device.component.DS24L65.*:
     apiId: 74
     defaultExecutionContext: PrimaryServices
-  device.manufacturing.*:
+  suunto.activity.daily.*:
     apiId: 75
     defaultExecutionContext: PrimaryServices
-  device.calibration.*:
+  settings.*:
     apiId: 76
-    defaultExecutionContext: application
-  suunto.ble.test.*:
+    defaultExecutionContext: PrimaryServices
+  manufacturing.*:
     apiId: 77
     defaultExecutionContext: PrimaryServices
+  device.calibration.*:
+    apiId: 78
+    defaultExecutionContext: application
+  nrf52.*:
+    apiId: 79
+    defaultExecutionContext: PrimaryServices
+  ble.*:
+    apiId: 80
+    defaultExecutionContext: PrimaryServices
+  acc.*:
+    apiId: 81
+    defaultExecutionContext: meas
+  gyro.*:
+    apiId: 82
+    defaultExecutionContext: meas
+  magn.*:
+    apiId: 83
+    defaultExecutionContext: meas
+  led.*:
+    apiId: 84
+    defaultExecutionContext: meas
+  temp.*:
+    apiId: 85
+    defaultExecutionContext: meas
+  lsm6ds3.*:
+    apiId: 86
+    defaultExecutionContext: meas
+  hr.*:
+    apiId: 87
+    defaultExecutionContext: meas

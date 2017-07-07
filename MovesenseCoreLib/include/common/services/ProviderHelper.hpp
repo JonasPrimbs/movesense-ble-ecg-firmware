@@ -57,6 +57,7 @@ inline bool doAsyncUnsubscribe(
 }
 
 #define ONGET_CASE(a, b)            case R_ID(a): returnResult(request, wb::HTTP_CODE_OK, ResponseOptions::Empty, b); return
+#define ONGET_CASE_EMPTY(a)         case R_ID(a): returnResult(request, wb::HTTP_CODE_OK); return
 #define ONGET_CASE_TEXT(a, b)       case R_ID(a): do{ nea::Text<32> __tmp = b;  returnResult(request, wb::HTTP_CODE_OK, ResponseOptions::Empty, __tmp.c_str()); return; }while(0)
 #define ONGET_CASE_TYPE(a, b, c)    case R_ID(a): do{ c __tmp = (b);  returnResult(request, wb::HTTP_CODE_OK, ResponseOptions::Empty, __tmp); return; }while(0)
 #define RANGE_RETURN \
@@ -70,15 +71,15 @@ inline bool doAsyncUnsubscribe(
 #define ONSUB_CASE_TEXT(a, b)       case R_ID(a): do{ nea::Text<32> __tmp = b;  returnResult(request, wb::HTTP_CODE_OK,  ResponseOptions::Empty, __tmp.c_str()); return; }while(0)
 #define ONSUB_CASE_TYPE(a, b, c)    case R_ID(a): do{ c __tmp = (b);  returnResult(request, wb::HTTP_CODE_OK,  ResponseOptions::Empty, __tmp); return; }while(0)
 
-void doAsyncSubscribeResources(whiteboard::ResourceClient* pClient, const whiteboard::ResourceId resourceIds[], const uint8_t size);
+void doAsyncSubscribeResources(whiteboard::ResourceClient* pClient, const whiteboard::ResourceId resourceIds[], const uint8_t size, const bool criticalResources = true);
 void doAsyncUnsubscribeResources(whiteboard::ResourceClient* pClient, const whiteboard::ResourceId resourceIds[], const uint8_t size);
 
 /** Interface for easily subscribing to multiple resources at once.
 * TODO: Probably should be moved to be as whiteboard as registerProviderResources is. */
 template<uint8_t size>
-void doAsyncSubscribeResources(whiteboard::ResourceClient* pClient, const whiteboard::ResourceId(&resourceIds)[size])
+void doAsyncSubscribeResources(whiteboard::ResourceClient* pClient, const whiteboard::ResourceId(&resourceIds)[size], const bool criticalResources = true)
 {
-    doAsyncSubscribeResources(pClient, resourceIds, size);
+    doAsyncSubscribeResources(pClient, resourceIds, size, criticalResources);
 }
 
 /** Interface for easily unsubscribing from multiple resources at once.

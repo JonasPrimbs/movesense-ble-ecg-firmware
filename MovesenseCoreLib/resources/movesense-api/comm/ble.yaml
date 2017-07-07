@@ -1,0 +1,146 @@
+swagger: '2.0'
+
+info:
+  version: NA
+  title: Bluetooth - Movesense-API
+  description: |
+    API for managing bluetooth.
+  x-api-type: public
+
+paths:
+
+  /Comm/Ble/Addr:
+    get:
+      description: |
+        Read the local BLE MAC address.
+      responses:
+        200:
+          description: Operation completed successfully.
+          schema:
+            type: string
+            example: 00-14-22-01-23-45
+            minLength: 17
+            maxLength: 17
+
+  /Comm/Ble/Adv:
+    post:
+      description: |
+        Start advertising.
+      parameters:
+        - name: data
+          in: body
+          description: Advertising targets (broadcast or directed)
+          required: false
+          schema:
+            $ref: '#/definitions/AdvParams'
+      responses:
+        201:
+          description: Operation completed successfully
+        409:
+          description: Already advertising
+
+    get:
+      description: |
+        Get the advertising state.
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            $ref: '#/definitions/AdvState'
+
+    delete:
+      description: |
+        Stop advertising.
+      responses:
+        200:
+          description: Operation completed successfully
+
+  /Comm/Ble/Adv/Settings:
+    get:
+      description: |
+        Read the current advertisement settings. MAY return the AdvSettings without the AdvPacket & ScanRespPacket properties.
+      responses:
+        200:
+          description: Operation completed successfully.
+          schema:
+            $ref: '#/definitions/AdvSettings'
+
+    put:
+      description: |
+        Define new advertisement settings. Can be changed while advertising which resets the timeout.
+        Note: these settings are restored to default after reset
+        Note: if AdvPacket or ScanRespPacket are not set, uses previously set or default
+      parameters:
+        - name: newSettings
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AdvSettings'
+      responses:
+        200:
+          description: Operation completed successfully.
+        400:
+          description: Error in parameters
+
+definitions:
+  AdvParams:
+    type: object
+    properties:
+      PeerAddr:
+        description: Address of the peer in directed advertising. If not set, do broadcast advertising.
+        type: string
+        example: 00-14-22-01-23-45
+        minLength: 17
+        maxLength: 17
+
+  AdvState:
+    type: object
+    required:
+    - isAdvertising
+    properties:
+      isAdvertising:
+        description: True if advertising is currently enabled.
+        type: boolean
+      PeerAddr:
+        description: Address of the peer in directed advertising. If not set, broadcast advertising active.
+        type: string
+        example: 00-14-22-01-23-45
+        minLength: 17
+        maxLength: 17
+
+  AdvSettings:
+    type: object
+    required:
+    - Interval
+    - Timeout
+    properties:
+      AdvPacket:
+        description: Advertising packet content as byte array. If not set, uses previously set or default.
+          See e.g. https://www.pubnub.com/blog/2015-04-14-building-android-beacon-android-ibeacon-tutorial-overview/
+        type: array
+        items:
+          type: integer
+          format: uint8
+        minLength: 0
+        maxLength: 31
+      ScanRespPacket:
+        description: Scan Response packet content as byte array. If not set, uses previously set or default.
+        type: array
+        items:
+          type: integer
+          format: uint8
+        minLength: 0
+        maxLength: 31
+      Interval:
+        description: Advertising interval between 32 and 16384 in 0.625 ms units
+        type: integer
+        format: uint16
+        minimum: 32
+        maximum: 16384
+      Timeout:
+        description: Advertising timeout in seconds. 0 == advertise forever
+        type: integer
+        format: uint16
+        minimum: 0
+        maximum: 32767
+        x-unit: s

@@ -13,7 +13,7 @@ namespace nea
 
 /** Notifies subscribed listeners about current system time once a second. */
 class TimeProvider : public whiteboard::ResourceProvider, public whiteboard::LaunchableModule
-#ifndef APP_BOOTLOADER
+#if !defined(APP_BOOTLOADER) && !defined(APP_SS2_APPLICATION)
     , public whiteboard::ResourceClient
 #endif
 {
@@ -54,7 +54,7 @@ private:
 
     void updateTimeResource();
 
-#ifndef APP_BOOTLOADER
+#if !defined(APP_BOOTLOADER) && !defined(APP_SS2_APPLICATION)
     /** @see whiteboard::ResourceClient::onNotify */
     void onNotify(whiteboard::ResourceId resourceId, const whiteboard::Value& value,
         const whiteboard::ParameterList& parameters) OVERRIDE;
@@ -72,7 +72,7 @@ private:
     // TODO: Volatile int64 is not atomic. Should probably instead use uint32_t
     //       since that is enough past year 2100
     volatile int64 mSeconds;
-#ifndef APP_BOOTLOADER
+#if !defined(APP_BOOTLOADER) && !defined(APP_SS2_APPLICATION)
     nea::TimeZone::Id mLocalTime;
     int mTimeZoneOffset;
     int64 mLastHourTimestamp;

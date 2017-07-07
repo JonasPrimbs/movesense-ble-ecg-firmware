@@ -1,11 +1,12 @@
 // Copyright (c) Suunto Oy 2017. All rights reserved.
 #pragma once
 
-#include "device_calibration/resources.h"
 #include "nea/common/math/Matrix.h"
 #include <whiteboard/LaunchableModule.h>
 #include <whiteboard/ResourceClient.h>
 #include <whiteboard/ResourceProvider.h>
+
+#include "misc_calibration/resources.h"
 
 enum class CalibrationState : uint8_t {
     IDLE = 0,
@@ -102,7 +103,7 @@ private:
     CalibrationMode mMode;
 
     // Calibration sequence
-    WB_RES::FloatVector3DArray mSequence;
+    WB_RES::CalibrationSequence mSequence;
     //References
     float mGravity;
     float mMagneticField;

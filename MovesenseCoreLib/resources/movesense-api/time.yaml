@@ -1,0 +1,54 @@
+swagger: '2.0'
+
+info:
+  version: NA
+  title: Time - Movesense-API
+  description: |
+    API for setting and reading device EPOCH time.
+  x-api-type: public
+
+paths:
+  /Time:
+    get:
+      description: |
+        Gets current time in number of microseconds since epoch 1.1.1970 (UTC).
+        If not explicitly set, contains number of seconds since reset.
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: integer
+            format: int64
+    put:
+      description: |
+        Sets current time in number of microseconds since epoch 1.1.1970 (UTC).
+      parameters:
+        - name: value
+          in: query
+          description: New time value.
+          required: true
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Operation completed successfully
+
+  /Time/Subscription:
+    post:
+      description: |
+        Subscription to the device time. Notifications are given every second.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-notification:
+          description: |
+            Current time in microseconds since epoch 1.1.1970 (UTC).
+          schema:
+            type: integer
+            format: int64
+    delete:
+      description: |
+        Unsubscribes an active subscription.
+      responses:
+        200:
+          description: Operation completed successfully

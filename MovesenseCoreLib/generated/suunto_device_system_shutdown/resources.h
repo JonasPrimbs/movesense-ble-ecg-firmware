@@ -32,12 +32,11 @@
 
 
 #include "../wb-resources/resources.h"
-#include "../suunto_shared/resources.h"
+#include "../movesense_types/resources.h"
 
 #define WB_EXEC_CTX_PRIMARYSERVICES              WB_EXECUTION_CONTEXT_INSTANTION_REF(0)
 #define WB_EXEC_CTX_APPLICATION                  WB_EXECUTION_CONTEXT_INSTANTION_REF(1)
 #define WB_EXEC_CTX_MEAS                         WB_EXECUTION_CONTEXT_INSTANTION_REF(2)
-#define WB_EXEC_CTX_UI                           WB_EXECUTION_CONTEXT_INSTANTION_REF(3)
 
 namespace WB_RES {
 
@@ -57,8 +56,8 @@ struct DEVICE_SYSTEM;
 struct DEVICE_SYSTEM_SHUTDOWN
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 7424, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 7424;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 2560, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 2560;
 
 	struct PUT
 	{

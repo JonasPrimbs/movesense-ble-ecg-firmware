@@ -32,12 +32,10 @@
 
 
 #include "../wb-resources/resources.h"
-#include "../suunto_shared/resources.h"
 
 #define WB_EXEC_CTX_PRIMARYSERVICES              WB_EXECUTION_CONTEXT_INSTANTION_REF(0)
 #define WB_EXEC_CTX_APPLICATION                  WB_EXECUTION_CONTEXT_INSTANTION_REF(1)
 #define WB_EXEC_CTX_MEAS                         WB_EXECUTION_CONTEXT_INSTANTION_REF(2)
-#define WB_EXEC_CTX_UI                           WB_EXECUTION_CONTEXT_INSTANTION_REF(3)
 
 namespace WB_RES {
 
@@ -45,7 +43,7 @@ WB_STRUCT_PACK_BEGIN()
 
 struct ActiveProcessorValues
 {
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 9728;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 2048;
 
 	enum Type
 	{
@@ -71,8 +69,8 @@ struct DEV_SYSTEM_DISPLAY;
 struct DEV_SYSTEM_DISPLAY_RECORD
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 9728, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 9728;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 2048, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 2048;
 
 	struct PUT
 	{
@@ -131,8 +129,8 @@ struct DEV_SYSTEM_DISPLAY_RECORD
 struct DEV_SYSTEM_DISPLAY_SAVE
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 9729, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 9729;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 2049, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 2049;
 
 	struct PUT
 	{
@@ -191,8 +189,8 @@ struct DEV_SYSTEM_DISPLAY_SAVE
 struct DEV_SYSTEM_LPAPPVERSION
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 9730, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 9730;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 2050, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 2050;
 
 	struct GET
 	{
@@ -206,8 +204,8 @@ struct DEV_SYSTEM_LPAPPVERSION
 struct DEV_SYSTEM_LPDALIVERSION
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 9731, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 9731;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 2051, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 2051;
 
 	struct GET
 	{
@@ -221,8 +219,8 @@ struct DEV_SYSTEM_LPDALIVERSION
 struct DEV_SYSTEM_LPFILESYSTEMVERSION
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 9732, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 9732;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 2052, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 2052;
 
 	struct GET
 	{
@@ -238,8 +236,8 @@ struct DEV_SYSTEM_LPFILESYSTEMVERSION
 struct DEV_SYSTEM_LPUPDATEPROGRESS
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 9733, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 9733;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 2053, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 2053;
 
 	struct GET
 	{
@@ -255,8 +253,8 @@ struct DEV_SYSTEM_MEMORY;
 struct DEV_SYSTEM_MEMORY_FREE
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 9734, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 9734;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 2054, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 2054;
 
 	struct GET
 	{
@@ -270,8 +268,8 @@ struct DEV_SYSTEM_MEMORY_FREE
 struct DEV_SYSTEM_MEMORY_ISSUFFICIENT
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 9735, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 9735;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 2055, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 2055;
 
 	struct GET
 	{
@@ -287,8 +285,8 @@ struct DEV_SYSTEM_MEMORY_ISSUFFICIENT
 struct DEV_SYSTEM_MEMORY_LOWESTFREE
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 9736, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 9736;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 2056, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 2056;
 
 	struct GET
 	{
@@ -302,8 +300,8 @@ struct DEV_SYSTEM_MEMORY_LOWESTFREE
 struct DEV_SYSTEM_MEMORY_SIZE
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 9737, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 9737;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 2057, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 2057;
 
 	struct GET
 	{
@@ -317,8 +315,8 @@ struct DEV_SYSTEM_MEMORY_SIZE
 struct DEV_SYSTEM_MEMORY_USED
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 9738, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 9738;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 2058, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 2058;
 
 	struct GET
 	{
@@ -332,8 +330,8 @@ struct DEV_SYSTEM_MEMORY_USED
 struct DEV_SYSTEM_UPDATELPAPP
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 9739, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 9739;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 2059, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 2059;
 
 	struct PUT
 	{
@@ -440,8 +438,8 @@ struct DEV_SYSTEM_UPDATELPAPP
 struct DEV_SYSTEM_UPDATELPDALI
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 9740, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 9740;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 2060, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 2060;
 
 	struct PUT
 	{
@@ -548,8 +546,8 @@ struct DEV_SYSTEM_UPDATELPDALI
 struct DEV_SYSTEM_UPDATELPFILESYSTEM
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 9741, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 9741;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 2061, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 2061;
 
 	struct PUT
 	{

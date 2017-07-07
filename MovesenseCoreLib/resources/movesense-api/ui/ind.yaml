@@ -1,0 +1,49 @@
+swagger: '2.0'
+
+info:
+  version: NA
+  title: Indication - Movesense-API
+  description: |
+    API for creating different types of user indications.
+  x-api-type: public
+  
+paths:
+
+  /Ui/Ind/Visual:
+    get:
+      description: |
+        Get the state of the visual indication
+      responses:
+        200:
+          description: Current state of the visual indication
+          schema:
+            $ref: '#/definitions/VisualIndState'
+    put:
+      description: |
+        Set the state of the visual indication
+      parameters:
+      - name: newState
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/VisualIndType'
+      responses:
+        200:
+          description: State set succesfully
+
+definitions:
+  VisualIndState:
+    required:
+      - state
+    properties:
+      state:
+        $ref: '#/definitions/VisualIndType'
+  VisualIndType:
+    type: integer
+    format: uint16
+    minimum: 0
+    maximum: 1
+    x-enumNames:
+      - NO_VISUAL_INDICATIONS
+      - CONTINUOUS_VISUAL_INDICATION
+      

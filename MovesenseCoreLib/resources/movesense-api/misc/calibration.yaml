@@ -1,0 +1,142 @@
+swagger: '2.0'
+
+info:
+  version: NA
+  title: Calibration - Movesense-API
+  description: |
+    This file defines API for putting the device into calibration mode.
+  x-api-type: private
+    
+paths:
+
+  /Misc/Calibration/Mode:
+    put:
+      description: |
+        Set calibration mode
+      parameters:
+        - name: mode
+          in: query
+          required: true
+          description: |
+            0: no mode set, 1: PREDEFINED_TILT_SEQUENCE, 2: PREDEFINED_MAGNETIC_FIELD_SEQUENCE, 3: RANDOM_TILT_SEQUENCE (user)
+          type: integer
+          format: uint8
+          minimum: 0
+          maximum: 3
+      responses:
+        200:
+          description: Mode set succefully and device ready to proceed.
+        500:
+          description: Not permitted in this state or failed to change mode.
+
+  /Misc/Calibration/References:
+    put:
+      description: Set the local calibration references. Initial sequence start position is (0,0,1).
+      parameters:
+        - name: gravity
+          in: query
+          description: Reference gravity during the sequence. Sequence steps are relative to this.
+          type: number
+          format: float
+          required: true
+          default: 9.81
+          minimum: 9
+          maximum: 10
+          x-unit: m/s^2 
+        - name: magneticField
+          in: query
+          description: Reference magnetic field during the sequence. Sequence steps are relative to this.
+          type: number
+          format: float
+          required: true
+          default: 100
+          minimum: 0
+          maximum: 1000
+          x-unit: uT 
+        - name: aveSamplesAcceleration
+          in: query
+          description: # of samples for acceleration average estimation
+          type: integer
+          format: uint8
+          required: true
+          default: 10
+          minimum: 0
+          maximum: 1000
+        - name: aveSamplesMagneticField
+          in: query
+          description: # of samples for magnetic field average estimation
+          type: integer
+          format: uint8
+          required: true
+          default: 10
+          minimum: 0
+          maximum: 1000
+      responses:
+        200:
+          description: Local references updated succefully. 
+        500:
+          description: Not permitted in this state
+
+  /Misc/Calibration/Sequence:
+    put:
+      description: Set the calibration sequence (tilt or magnetic field depending on the set mode)
+      parameters:
+        - name: sequence
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CalibrationSequence'
+      responses:
+        200:
+          description: Operation completed successfully
+        500:
+          description: Not permitted in this state or not sufficient sequence to perform calibration
+
+  /Misc/Calibration/State:
+    put:
+      description: |
+        Set the calibration state. Used in modes 1 and 2 by the calibrator to tell the device. In mode 3 the device itself changes the state. Responses may take time (especially for the SEQUENCE_DONE) and hence the set timeouts may need tuning.
+      parameters:
+        - name: state
+          in: query
+          required: true
+          type: integer
+          format: uint8
+          description: |
+            0: IDLE, 1: SEQUENCE_ON, 2: STEP_ON, 3: STEP_DONE, 4: SEQUENCE_DONE
+          default: 0
+          minimum: 0
+          maximum: 4
+      responses:
+        200:
+          description: State changed and device ready to proceed.
+        500:
+          description: Not permitted
+
+    get:
+      description: |
+        Get the current calibration state
+      responses:
+        200:
+          description:  |
+            Calibration state the device is currently at.
+          schema:
+            type: integer
+            format: uint8
+        500:
+          description: General error
+
+definitions:
+
+  CalibrationSequence:
+    required:
+      - vector
+    properties:
+      vector:
+        type: array
+        minItems: 1
+        maxItems: 20
+        items:
+          $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/FloatVector3D'
+          x-unit: dec
+

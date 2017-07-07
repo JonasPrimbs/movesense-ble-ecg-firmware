@@ -1,0 +1,102 @@
+# Type of the document;
+wbres:
+  version: "2.0"
+  type: "root"
+
+# Forward declared
+executionContexts:
+  PrimaryServices:
+  application:
+  meas:
+
+# Note api ids do NOT have to be global; but for easier maintenance they currently are; only id:s 0 and 1 are reserved for fixed-ids and whiteboard.
+# In future these could be moved to root.yaml of each application and freely reordered there.
+# Movesense ordering: first from 3-> suunto specific yamls, then 50-> movesense api's
+apis:
+  types.*:
+    apiId: 2
+    defaultExecutionContext: PrimaryServices
+  suunto.device.system.debug.*:
+    apiId: 3
+    defaultExecutionContext: PrimaryServices
+  suunto.device.power.*:
+    apiId: 4
+    defaultExecutionContext: PrimaryServices
+  device.measurement.angularvelocity.*:
+    apiId: 5
+    defaultExecutionContext: PrimaryServices
+  suunto.device.systemevent.*:
+    apiId: 6
+    defaultExecutionContext: PrimaryServices
+  time.*:
+    apiId: 7
+    defaultExecutionContext: PrimaryServices
+  suunto.dev.system.*:
+    apiId: 8
+    defaultExecutionContext: PrimaryServices
+  mode.*:
+    apiId: 9
+    defaultExecutionContext: meas
+  suunto.device.system.shutdown.*:
+    apiId: 10
+    defaultExecutionContext: PrimaryServices
+  max3000x.*:
+    apiId: 11
+    defaultExecutionContext: meas
+  suunto.device.component.DS24L65.*:
+    apiId: 12
+    defaultExecutionContext: PrimaryServices
+  info.*:
+    apiId: 13
+    defaultExecutionContext: meas
+  manufacturing.*:
+    apiId: 14
+    defaultExecutionContext: PrimaryServices
+  energy.*:
+    apiId: 50
+    defaultExecutionContext: meas
+  datalogger.*:
+    apiId: 51
+    defaultExecutionContext: meas
+  logbook.*:
+    apiId: 52
+    defaultExecutionContext: PrimaryServices
+  settings.*:
+    apiId: 53
+    defaultExecutionContext: PrimaryServices
+  calibration.*:
+    apiId: 54
+    defaultExecutionContext: application
+  ble.*:
+    apiId: 55
+    defaultExecutionContext: PrimaryServices
+  nrf52.*:
+    apiId: 56
+    defaultExecutionContext: PrimaryServices
+  lsm6ds3.*:
+    apiId: 57
+    defaultExecutionContext: meas
+  led.*:
+    apiId: 58
+    defaultExecutionContext: meas
+  acc.*:
+    apiId: 59
+    defaultExecutionContext: meas
+  gyro.*:
+    apiId: 60
+    defaultExecutionContext: meas
+  magn.*:
+    apiId: 61
+    defaultExecutionContext: meas
+  temp.*:
+    apiId: 62
+    defaultExecutionContext: meas
+  lsm6ds3.*:
+    apiId: 63
+    defaultExecutionContext: meas
+  hr.*:
+    apiId: 64
+    defaultExecutionContext: meas
+  gear.*:
+    apiId: 65
+    defaultExecutionContext: PrimaryServices

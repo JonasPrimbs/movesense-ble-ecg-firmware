@@ -50,7 +50,7 @@ private:
     hal::SystemEventProvider mSystemEventProvider;
 
     // @TODO: move to debug startup
-    hal::MemAccessService mMemAccessService;
+//    hal::MemAccessService mMemAccessService;
 };
 
 }   // namespace nea

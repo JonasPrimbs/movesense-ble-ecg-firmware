@@ -768,6 +768,8 @@ definitions:
       - coordinates
       - altitudeFromMSL
       - ehpe
+    optional:
+      - evpe
     properties:
       fixValid:
         type: boolean
@@ -788,6 +790,10 @@ definitions:
         format: float
       ehpe:
         description: Estimated Horizontal Position Error ([m])
+        type: number
+        format: float
+      evpe:
+        description: Estimated Vertical Position Error ([m])
         type: number
         format: float
 

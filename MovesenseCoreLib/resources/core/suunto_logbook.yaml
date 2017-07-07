@@ -291,6 +291,15 @@ paths:
     get:
       description: |
         Read training log descriptors and stream the descriptor file.
+      parameters:
+        -
+          name: offset
+          in: query
+          description: |
+            The offset of the logbook descriptor file where to continue reading.
+          required: false
+          type: integer
+          format: int32
       responses:
         100:
           description: |
@@ -305,14 +314,16 @@ paths:
             Returns a byte stream value type.
           schema:
             $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/ByteStream'
+        416:
+          description: Bad request. Offset out of range.
         x-std-errors:
           description: See common error codes http://developer.suunto.com/api/std-errors#get
       security:
         - suuntoAccessCode:
           - public
     parameters:
-       -
-         $ref: '#/parameters/LogId'
+      -
+        $ref: '#/parameters/LogId'
 
   /Logbook/byId/{LogId}/Data:
     x-executionContext: application
@@ -321,6 +332,15 @@ paths:
         Read SBEM data from a log entry and stream it. The SBEM data
         may be either be uncompressed or compressed with Heatshrink.
         Uncompressed data can be detected by FOURCC 'SBEM' at beginning of data.
+      parameters:
+        -
+          name: offset
+          in: query
+          description: |
+            The offset of the logbook data file where to continue reading.
+          required: false
+          type: integer
+          format: int32
       responses:
         100:
           description: |
@@ -337,14 +357,109 @@ paths:
             $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/ByteStream'
         404:
           description: Referenced log not found in LogBook.
+        416:
+          description: Bad request. Offset out of range.
         x-std-errors:
           description: See common error codes http://developer.suunto.com/api/std-errors#get
       security:
         - suuntoAccessCode:
           - public
     parameters:
-       -
-         $ref: '#/parameters/LogId'
+      -
+        $ref: '#/parameters/LogId'
+
+  /Logbook/byId/{LogId}/Summary:
+    x-executionContext: application
+    get:
+      description: |
+        Read summary SBEM data from a log entry and stream it. The returned data
+        is uncompressed SBEM.
+      parameters:
+        -
+          name: offset
+          in: query
+          description: |
+            The offset of the logbook summary file where to continue reading.
+          required: false
+          type: integer
+          format: int32
+      responses:
+        100:
+          description: |
+            Partial operation completed successfully.
+            New identical request may be sent to continue.
+            Returns a byte stream value type.
+          schema:
+            $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/ByteStream'
+        200:
+          description: |
+            Operation completed successfully.
+            Returns a byte stream value type.
+          schema:
+            $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/ByteStream'
+        404:
+          description: Referenced log not found in LogBook.
+        416:
+          description: Bad request. Offset out of range.
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#get
+      security:
+        - suuntoAccessCode:
+          - public
+    parameters:
+      -
+        $ref: '#/parameters/LogId'
+
+  /Logbook/byId/{LogId}/Flags:
+    x-executionContext: application
+    get:
+      description: |
+        Read Logbook entry bit flags for an exercise:
+        SUMMARY_ALL_SYNCED = 0x01
+        VALUES_ALL_SYNCED  = 0x02
+        SYNC_CONTENT_ERROR = 0x04
+        IMPORTANT_LOG      = 0x08
+        RECOVERED          = 0x10
+        FROM_MC            = 0x20
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: integer
+            format: uint16
+        404:
+          description: Not found. LogId does not exist.
+      security:
+        - suuntoAccessCode:
+          - public
+    put:
+      description: |
+        set Logbook entry bit flags for an exercise:
+        SUMMARY_ALL_SYNCED = 0x01
+        VALUES_ALL_SYNCED  = 0x02
+        SYNC_CONTENT_ERROR = 0x04
+        IMPORTANT_LOG      = 0x08
+        RECOVERED          = 0x10
+        FROM_MC            = 0x20
+      parameters:
+        -
+          name: flags
+          in: query
+          description: The logbook entry flags for an exercise.
+          required: true
+          type: integer
+          format: uint16
+      responses:
+        200:
+          description: Operation completed successfully
+        404:
+          description: Not found. LogId does not exist.
+      security:
+        - suuntoAccessCode:
+          - public
+    parameters:
+      -
+        $ref: '#/parameters/LogId'
         
   /Logbook/Log/{LogIndex}/Flags:
     x-executionContext: application
@@ -356,6 +471,8 @@ paths:
         SYNC_CONTENT_ERROR = 0x04
         IMPORTANT_LOG      = 0x08
         RECOVERED          = 0x10
+        RECEIVED_FROM_MC   = 0x20
+        VALUES_REMOVED     = 0x40
       responses:
         200:
           description: Operation completed successfully
@@ -374,6 +491,9 @@ paths:
         VALUES_ALL_SYNCED  = 0x02
         SYNC_CONTENT_ERROR = 0x04
         IMPORTANT_LOG      = 0x08
+        RECOVERED          = 0x10
+        RECEIVED_FROM_MC   = 0x20
+        VALUES_REMOVED     = 0x40
       parameters:
         -
           name: flags

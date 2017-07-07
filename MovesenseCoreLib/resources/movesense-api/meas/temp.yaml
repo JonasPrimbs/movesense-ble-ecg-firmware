@@ -1,0 +1,91 @@
+swagger: '2.0'
+
+info:
+  version: NA
+  title: Temperature - Movesense-API
+  description: |
+    API for getting and subscribing Movesense device internal temperature
+  x-api-type: public
+
+paths:
+
+  /Meas/Temp/Info:
+    get:
+      description: |
+        Get the supported temperature range and accuracy
+      responses:
+        200:
+          description: Temperature range and accuracy
+          schema:
+            $ref: '#/definitions/TempInfo'
+  /Meas/Temp:
+    get:
+      description: |
+        Get the current temperature value in Kelvins
+      responses:
+        200:
+          description: Temperature value with optional timestamp
+          schema:
+            $ref: '#/definitions/TemperatureValue'
+        204:
+          description: Measurement source is unavailable
+
+  /Meas/Temp/Subscription:
+    post:
+      description: |
+        Subscribe to temperature readings. Notification is sent every time the temperature changes (maximally once per second).
+      responses:
+        200:
+          description: Operation completed successfully
+        x-notification:
+          description: The newest temperature measurement
+          schema:
+            $ref: '#/definitions/TemperatureValue'
+    delete:
+      description: |
+        Cancel the subscription
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes at http://bitbucket.org/movesense-device-lib/api/std-errors#subscribe
+
+definitions:
+
+  TempInfo:
+    required:
+      - Min
+      - Max
+      - Accuracy
+    properties:
+      Min:
+        description: Minimum supported temperature measurement
+        type: integer
+        format: int32
+        x-unit: kelvin
+      Max:
+        description: Maximum supported temperature measurement
+        type: integer
+        format: int32
+        x-unit: kelvin
+      Accuracy:
+        description: Accuracy of the measurement within the supported range (-Accuracy - +Accuracy).
+        type: number
+        format: float
+        x-unit: kelvin
+
+  TemperatureValue:
+    required:
+      - Timestamp
+      - Measurement
+    properties:
+      Timestamp:
+        description: Local timestamp of the measurement
+        type: integer
+        format: uint32
+        x-unit: millisecond
+      Measurement:
+        description: Temperature measurement
+        type: number
+        format: float
+        x-unit: kelvin

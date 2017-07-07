@@ -1,0 +1,67 @@
+swagger: '2.0'
+
+info:
+  version: NA
+  title: Heartrate - Movesense-API
+  description: |
+    This file defines API for the heartrate measurement.
+  x-api-type: public
+
+paths:
+
+  /Meas/HR/Info:
+    get:
+      description: |
+        Get the supported HR range and accuracy
+      responses:
+        200:
+          description: HR range and accuracy
+          schema:
+            $ref: '#/definitions/HRInfo'
+
+  /Meas/HR/Subscription:
+    post:
+      description: |
+        Combined subscription to average HR and R-R data.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-notification:
+          description: |
+            Notifications comprise average HR (Hz) with the latest RR (ms) data
+          schema:
+            $ref: 'types.yaml#/definitions/HRData'
+
+    delete:
+      description: |
+        Unsubscribe heartrate / R-R data stream
+      responses:
+        200:
+          description: Operation completed successfully
+
+definitions:
+  HRInfo:
+    required:
+      - Min
+      - Max
+      - Accuracy
+    properties:
+      Min:
+        description: Minimum supported RR interval
+        example: 10
+        type: integer
+        format: uint16
+        x-unit: ms
+      Max:
+        description: Maximum supported RR interval
+        example: 250
+        format: uint16
+        type: integer
+        x-unit: ms
+      Accuracy:
+        description: Accuracy of the RR measurement within the supported range (-Accuracy - +Accuracy).
+        example: 8
+        type: number
+        format: float
+        x-unit: ms
+

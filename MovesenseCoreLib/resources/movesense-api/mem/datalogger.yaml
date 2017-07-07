@@ -1,0 +1,103 @@
+swagger: '2.0'
+
+info:
+  version: NA
+  title: DataLogger API - Movesense-API
+  description: |
+    This file defines API for generic DataLogger.
+  x-api-type: public
+
+paths:
+
+  /Mem/DataLogger/Config:
+    get:
+      description: |
+        Reads config from DataLogger.
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            $ref: '#/definitions/DataLoggerConfig'
+        400:
+          description: Bad request. Memory could not be read from specified offset.
+    put:
+      description: |
+        Writes new DataLogger config to device.
+      parameters:
+        - name: config
+          in: body
+          description: New configuration for DataLogger
+          required: true
+          schema:
+            $ref: '#/definitions/DataLoggerConfig'
+      responses:
+        200:
+          description: Operation completed successfully
+        400:
+          description: Bad request.
+    
+  /Mem/DataLogger/State:
+    get:
+      description: |
+        Reads current DataLogger state.
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            $ref: '#/definitions/DataLoggerState'        
+    put:
+      description: |
+        Changes DataLogger to a new state.
+      parameters:
+        - name: newState
+          in: body
+          description: New state for DataLogger
+          required: true
+          schema:
+            $ref: '#/definitions/DataLoggerState'
+      responses:
+        200:
+          description: Operation completed successfully
+        400:
+          description: Bad request.
+    
+definitions:
+  DataLoggerConfig:
+    required:
+      - dataEntries
+    properties:
+      dataEntries:
+        description: Array of structs containing wb-paths to the subscription of data to log.
+        $ref: '#/definitions/DataEntryArray'
+
+  DataEntryArray:
+    required:
+      - dataEntry
+    properties:
+      dataEntry:
+        type: array
+        items:
+          $ref: '#/definitions/DataEntry'
+          
+  DataEntry:
+    required:
+      - path
+    properties:
+      path:
+        type: string
+  
+  DataLoggerState:
+    description: |
+      State of the DataLogger component.
+    type: integer
+    format: uint8
+    enum:
+      - name: 'DATALOGGER_INVALID'
+        description: Unknown or Invalid state prior to initialization or due to comm error.
+        value: 1
+      - name: 'DATALOGGER_READY'
+        description: If we are ready for logging.
+        value: 2
+      - name: 'DATALOGGER_LOGGING'
+        description: If we are logging data.
+        value: 3

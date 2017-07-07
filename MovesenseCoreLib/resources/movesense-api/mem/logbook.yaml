@@ -1,0 +1,322 @@
+swagger: '2.0'
+
+info:
+  version: NA
+  title: Logbook - Movesense-API
+  description: |
+    This file defines API for logbook.
+  x-api-type: public
+
+paths:
+
+  /Mem/Logbook/Logging:
+    get:
+      description: |
+        Returns number of current amount of subscribers.
+      responses:
+        200:
+          description: Amount of subscribers
+          schema:
+            type: integer
+            format: uint16
+
+  /Mem/Logbook/Logging/Subscription:
+    post:
+      description: |
+        Subscribes the client and opens new log file if client is the first subscriber.
+      responses:
+        200:
+          description: Operation completed successfully
+        423:
+          description: Not opening new log files when device shutdown is initiated.
+        507:
+          description: Not enough free disk space.
+        500:
+          description: Creating new log files failed.
+        x-notification:
+          description: |
+           Event notification.
+          schema:
+            type: integer
+            format: uint16
+    delete:
+      description: |
+        Unsubscribes the client and closes open log file if amount of subscribers is zero.
+      responses:
+        200:
+          description: Operation completed successfully
+
+  /Mem/Logbook/IsOpen:
+    get:
+      description: |
+        Is log open
+      responses:
+        200:
+          description: 
+          schema:
+            type: boolean
+
+  /Mem/Logbook/IsOpen/Subscription:
+    post:
+      description: |
+        Is log open
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: boolean
+        x-notification:
+          description: |
+           Event notification.
+          schema:
+            type: boolean
+    delete:
+      description: |
+        Unsubscribes
+      responses:
+        200:
+          description: Operation completed successfully
+
+  /Mem/Logbook/IsFull:
+    get:
+      description: |
+        Is periodic logging stopped because not enough log space left
+      responses:
+        200:
+          description:
+          schema:
+            type: boolean
+
+  /Mem/Logbook/IsFull/Subscription:
+    post:
+      description: |
+        Is periodic logging stopped because not enough log space left
+      responses:
+        200:
+          description: Operation completed successfully
+        x-notification:
+          description: |
+           Event notification.
+          schema:
+            type: boolean
+    delete:
+      description: |
+        Unsubscribes
+      responses:
+        200:
+          description: Operation completed successfully
+
+  /Mem/Logbook/UnsynchronisedLogs:
+    get:
+      description: |
+        Returns number of unsynchronised logs
+      responses:
+        200:
+          description: Amount of unsynchronized logs
+          schema:
+            type: integer
+            format: uint16
+
+  /Mem/Logbook/UnsynchronisedLogs/Subscription:
+    post:
+      description: |
+        number of unsynchronised log
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: integer
+            format: uint16
+        x-notification:
+          description: |
+           Event notification.
+          schema:
+            type: integer
+            format: uint16
+    delete:
+      description: |
+        Unsubscribes
+      responses:
+        200:
+          description: Operation completed successfully
+
+  /Mem/Logbook/Entries:
+    get:
+      description: |
+        List Log contents. 
+      parameters:
+        - name: StartAfterId
+          in: query
+          description: Log ID after which the list of the items starts from.
+            If the StartAfter is null or empty,
+            the list of the items starts from beginning.
+          required: false
+          type: integer
+          format: uint32
+      responses:
+        100:
+          description: Operation completed partially.
+            Not all log entries fit in the list, please ask again with StartAfterId parameter.
+          schema:
+             $ref: '#/definitions/LogEntries'
+        200:
+          description: |
+            Zero or more log entries describing the log entry contents.
+            Zero number of log entries indicates end of log iteration.
+          schema:
+             $ref: '#/definitions/LogEntries'
+        404:
+          description: |
+            StartAfterId was not found in logs
+    delete:
+      description: |
+        Deletes the content of the whole Logbook.
+      responses:
+        200:
+          description: Operation completed successfully
+
+  /Mem/Logbook/byId/{LogId}/Descriptors:
+    get:
+      description: |
+        Read training log descriptors and stream the descriptor file.
+      responses:
+        100:
+          description: |
+            Partial operation completed successfully.
+            New identical request may be sent to continue.
+            Returns a byte stream value type.
+          schema:
+            $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/ByteStream'
+        200:
+          description: |
+            Operation completed successfully.
+            Returns a byte stream value type.
+          schema:
+            $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/ByteStream'
+    parameters:
+       - $ref: '#/parameters/LogId'
+
+  /Mem/Logbook/byId/{LogId}/Data:
+    get:
+      description: |
+        Read SBEM data from a log entry and stream it. The SBEM data
+        may be either be uncompressed or compressed with Heatshrink.
+        Uncompressed data can be detected by FOURCC 'SBEM' at beginning of data.
+      responses:
+        100:
+          description: |
+            Partial operation completed successfully.
+            New identical request may be sent to continue.
+            Returns a byte stream value type.
+          schema:
+            $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/ByteStream'
+        200:
+          description: |
+            Operation completed successfully.
+            Returns a byte stream value type.
+          schema:
+            $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/ByteStream'
+        404:
+          description: Referenced log not found in LogBook.
+
+    parameters:
+       - $ref: '#/parameters/LogId'
+        
+  /Mem/Logbook/Log/{LogIndex}/Flags:
+    get:
+      description: |
+        Read Logbook entry bit flags for an exercise:
+        SUMMARY_ALL_SYNCED = 0x01
+        VALUES_ALL_SYNCED  = 0x02
+        SYNC_CONTENT_ERROR = 0x04
+        IMPORTANT_LOG      = 0x08
+        RECOVERED          = 0x10
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: integer
+            format: uint16
+        416:
+          description: Bad request. LogIndex not in range.
+    put:
+      description: |
+        set Logbook entry bit flags for an exercise:
+        SUMMARY_ALL_SYNCED = 0x01
+        VALUES_ALL_SYNCED  = 0x02
+        SYNC_CONTENT_ERROR = 0x04
+        IMPORTANT_LOG      = 0x08
+      parameters:
+        - name: flags
+          in: query
+          description: The logbook entry flags for an exercise.
+          required: true
+          type: integer
+          format: uint16
+      responses:
+        200:
+          description: Operation completed successfully
+        416:
+          description: Bad request. LogIndex not in range.
+    parameters:
+      - $ref: '#/parameters/LogIndex'
+
+  /Mem/Logbook/Log/{LogIndex}/Remove:
+    put:
+      description: |
+        Remove given Logbook entry.
+      responses:
+        200:
+          description: Operation completed successfully
+        416:
+          description: Bad request. LogIndex not in range.
+    parameters:
+      - $ref: '#/parameters/LogIndex'
+
+definitions:
+  LogEntries:
+    required:
+      - elements
+    properties:
+      elements:
+        description: |
+          Zero or more log entries describing log contents.
+          Zero entries are received if log iteration has completed.
+        type: array
+        items:
+          $ref: '#/definitions/LogEntry'
+
+  LogEntry:
+    required:
+      - Id
+      - ModificationTimestamp
+    properties:
+      Id:
+        description: Id of the log entry.
+        type: integer
+        format: uint32
+      ModificationTimestamp:
+        description: |
+          Timestamp of last modification to entry in seconds after 0:00
+          Jan 1st 1970 (UTC) without leap seconds.
+        type: integer
+        format: uint32
+      Size:
+        type: integer
+        format: uint64
+
+parameters:
+  LogId:
+    name: LogId
+    in: path
+    required: true
+    type: integer
+    format: int32
+
+  LogIndex:
+    name: LogIndex
+    in: path
+    required: true
+    type: integer
+    format: int32
+

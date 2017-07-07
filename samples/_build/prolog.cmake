@@ -17,7 +17,8 @@ add_definitions(-D__STDC_LIMIT_MACROS)
 
 set(TOOLS_PATH ${MOVESENSE_CORE_LIBRARY}/tools)
 
-if (APPLE OR UNIX OR FORCE_LINUX)
+# check if the host is windows
+if (NOT CMAKE_HOST_WIN32)
     message(STATUS "PATH_TOOL_PYTHON will use python from shell PATH")
     set(PATH_TOOL_PYTHON python)
 else()

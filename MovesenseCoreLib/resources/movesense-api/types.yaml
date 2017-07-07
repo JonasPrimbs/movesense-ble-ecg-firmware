@@ -1,0 +1,73 @@
+swagger: '2.0'
+
+info:
+  version: NA
+  title: Common types - Movesense-API
+  description: |
+    Commonly available types in addition to Whiteboard built-in types.
+  x-api-type: public
+
+paths:
+  x-workaround:
+    x-get
+
+definitions:
+
+  VersionInfoArray:
+    required:
+      - versionInfo
+    properties:
+      versionInfo:
+        type: array
+        items:
+          $ref: '#/definitions/VersionInfo'
+
+  VersionInfo:
+    required:
+      - name
+      - version
+    properties:
+      name:
+        type: string
+        minLength: 1
+        maxLength: 16
+      version:
+        type: string
+        minLength: 1
+        maxLength: 16
+
+  AddressInfo:
+    required:
+      - name
+      - address
+    properties:
+      name:
+        description: Address type (BLE, WIFI)
+        type: string
+        example: BLE
+        minLength: 3
+        maxLength: 16
+      address:
+        description: Address value
+        type: string
+        example: 80-1F-02-4E-F1-70
+        minLength: 1
+        maxLength: 16
+
+  HRData:
+    required:
+      - average
+      - rrData
+    properties:
+      average:
+        description: Average heart rate in Hz
+        type: number
+        format: float
+        x-unit: Hz
+      rrData:
+        description: RR-interval values in ms
+        type: array
+        items:
+          type: integer
+          format: uint16
+

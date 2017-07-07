@@ -1,0 +1,123 @@
+# Copyright Suunto Oy 2016-2017
+# All rights reserved.
+
+swagger: '2.0'
+
+#Document metadata
+info:
+  version: "0.9.0"
+  title: /Logbook/SummarySync API
+  description: |
+    This file defines Logbook Summary Sync API for /Logbook/SummarySync resources.
+  termsOfService: http://suunto.com/wbapi/terms/
+  contact:
+    name: Suunto team
+    url: http://developer.suunto.com
+
+
+#Security definitions
+security:
+  - suuntoAccessCode:
+    - public
+
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+    flow: accessCode
+    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
+    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
+
+#Paths
+paths:
+  /Logbook/SummarySync/SyncState:
+    x-executionContext: application
+
+  /Logbook/SummarySync/SyncState/Subscription:
+    x-executionContext: application
+    post:
+      description: |
+        Subscribes the client to receive synchronization status updates
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            $ref: 'http://localhost:9000/suunto_inetgw.yaml#/definitions/SyncClientSyncStatus'
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        x-notification:
+          description: |
+           Event notification.
+          schema:
+            $ref: 'http://localhost:9000/suunto_inetgw.yaml#/definitions/SyncClientSyncStatus'
+      security:
+        - suuntoAccessCode:
+          - public
+    delete:
+      description: |
+        Unsubscribes the client from receive synchronization status updates.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Logbook/SummarySync/Command:
+    x-executionContext: application
+    put:
+      description: |
+        Used by the sync provider to issue sync commands.
+      parameters:
+        - name: value
+          in: body
+          description: Synchronization command
+          required: true
+          schema:
+            $ref: 'http://localhost:9000/suunto_inetgw.yaml#/definitions/SyncCommand'
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Logbook/SummarySync/Progress:
+    x-executionContext: application
+
+  /Logbook/SummarySync/Progress/Subscription:
+    x-executionContext: application
+    post:
+      description: |
+        Subscribes the client to receice synchronization progress updates.
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            $ref: 'http://localhost:9000/suunto_inetgw.yaml#/definitions/SyncClientSyncProgress'
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        x-notification:
+          description: |
+           Event notification.
+          schema:
+            $ref: 'http://localhost:9000/suunto_inetgw.yaml#/definitions/SyncClientSyncProgress'
+      security:
+        - suuntoAccessCode:
+          - public
+    delete:
+      description: |
+        Unsubscribes the client from synchronization progress value updates.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public

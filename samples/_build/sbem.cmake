@@ -4,7 +4,7 @@ set(GENERATED_SBEM_SOURCES
   "${CMAKE_BINARY_DIR}/generated/sbem-code/sbem_definitions.h"
 )
 
-set(ALL_YAML_GLOBS ${MOVESENSE_CORE_LIBRARY}/resources/whiteboard/builtinTypes/*.yaml ${MOVESENSE_CORE_LIBRARY}/resources/whiteboard/services/*.yaml ${MOVESENSE_CORE_LIBRARY}/resources/core/*.yaml ${CMAKE_CURRENT_SOURCE_DIR}/wbresources/*.yaml)
+set(ALL_YAML_GLOBS ${MOVESENSE_CORE_LIBRARY}/resources/whiteboard/builtinTypes/*.yaml ${MOVESENSE_CORE_LIBRARY}/resources/whiteboard/services/*.yaml ${MOVESENSE_CORE_LIBRARY}/resources/core/*.yaml ${MOVESENSE_CORE_LIBRARY}/resources/movesense-api/*.yaml ${MOVESENSE_CORE_LIBRARY}/resources/movesense-api/meas/*.yaml ${CMAKE_CURRENT_SOURCE_DIR}/wbresources/*.yaml)
 set(RESOURCE_FILE_FOLDERS ${MOVESENSE_CORE_LIBRARY}/generated/)
 file(GLOB ALL_YAML_FILES ${ALL_YAML_GLOBS})
 

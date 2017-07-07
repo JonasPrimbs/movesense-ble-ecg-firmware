@@ -22,18 +22,6 @@ securityDefinitions:
     tokenUrl: https://movesense.com/wbapi/login/oauth/access_token
 
 paths:
-  /Device/Manufacturing/MemoryErase:
-    post:
-      description: |
-        Erase whole configuration memory
-      responses:
-        200:
-          description: memory errased sucessfully
-        500:
-          description: memory errase error
-      security:
-        - suuntoAccessCode:
-          - public
 
   /Device/Manufacturing/ProductData:
     post:
@@ -99,6 +87,17 @@ paths:
       security:
         - suuntoAccessCode:
           - public
+    delete:
+      description: |
+        Delete the existing calibration data.
+        Note: this can only be done in Factory Calibration Mode
+      responses:
+        200:
+          description: Calibration data deleted successfully
+        409:
+          description: No calibration data
+        500:
+          description: Failed. This operation is permitted only in Factory Calibration Mode.
 
   /Device/Manufacturing/Step:
     post:
@@ -139,6 +138,28 @@ paths:
       security:
         - suuntoAccessCode:
           - public
+    delete:
+      description: |
+        Delete a specific step. This is needed in case certain step needs to be redo.
+        Note: this can only be done in Factory Calibration Mode
+      parameters:
+        - name: step
+          description: |
+            Step to be deleted
+          in: body
+          required: true
+          schema:
+            type: integer
+            format: uint8
+            minimum: 0
+            maximum: 31
+      responses:
+        200:
+          description: Step deleted successfully
+        409:
+          description: Step not found
+        500:
+          description: Failed. This operation is permitted only in Factory Calibration Mode.
 
 definitions:
 
@@ -195,7 +216,10 @@ definitions:
         type: string
         example: "1740G1"
       addressInfo:
-        $ref: 'http://localhost:9000/suunto_shared.yaml#/definitions/AddressInfoArray'
+        description: Array of structs containing pairs of address type identifier and address.
+        type: array
+        items:
+          $ref: 'suunto_shared.yaml#/definitions/AddressInfo'
 
   CalibrationMatrix:
     required:
