@@ -21,6 +21,7 @@
 #include "LedService.hpp"
 #include "SettingsService.hpp"
 #include "ManufacturingService.hpp"
+#include "IndicationService.hpp"
 
 
 class SmartSensor2Application : public whiteboard::ResourceClient
@@ -58,6 +59,7 @@ private:
     BleService      mBleService;
     SettingsService mSettingsService;
     ManufacturingService mManufacturingService;
+    IndicationService mIndicationService;
 
     // Shutdown timer
     bool                mAppModulesStarted;

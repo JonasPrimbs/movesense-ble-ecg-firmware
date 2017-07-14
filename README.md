@@ -1,5 +1,6 @@
 ## Announcements ##
 **API CHANGES!** Before you start to write an app check the new API!
+**Known bugs!** Check the [CHANGES.md](CHANGES.md)
 
 ## Overview ##
 
@@ -8,21 +9,23 @@ Movesense sensor is a programmable multi-purpose device comprising accelerometer
 ## API ##
 Resource | Description|Implemented
 ---------|------------|--------------
-**/Comm/Ble**|API for managing BLE | YES
+/Comm/Ble|API for managing BLE | YES
 **/Info**|API for accessing generic device information.| YES
 /Meas/Acc|API enabling subscribing linear acceleration data (based on accelerometer).| YES
 /Meas/Gyro|API enabling subscribing angular velocity data (based on gyroscope).| YES
-**/Meas/HR**|API enabling subscribing heart rate data.| YES
-/Meas/Magn|API enabling subscribing magnetic field data (based on magnetometer).| YES
-**/Meas/Temp**|API enabling reading or subscribing temperature data (based on thermometer).| YES
-**/Mem/DataLogger**|Generic logger capable of logging max. 8 different resources| YES
-**/Mem/Logbook**|Generic Logbook from where the logged data can be read| YES
-**/Misc/Gear**| API to get the globally unique Movesense ID associated with the physical gear | YES
-**/System/Energy**|API for reading the battery state.| YES
-**/System/Mode**|API for controlling the main system state (e.g. factory sleep).| YES
-**/System/Settings**| Settings API for a Movesense device. | YES
-**/Time**|API for accessing different time related services.| YES
-/Ui/Ind|API for controlling the LED.| NO
+/Meas/HR|API enabling subscribing heart rate data.| YES
+/Meas/Magn|API enabling subscribing magnetic field data (based on magnetometer).| YES\*
+/Meas/Temp|API enabling reading or subscribing temperature data (based on thermometer).| YES
+/Mem/DataLogger|Generic logger capable of logging max. 8 different resources| YES
+/Mem/Logbook|Generic Logbook from where the logged data can be read| YES
+/Misc/Gear| API to get the globally unique Movesense ID associated with the physical gear | YES
+/System/Energy|API for reading the battery state.| YES
+/System/Mode|API for controlling the main system state (e.g. factory sleep).| YES
+/System/Settings| Settings API for a Movesense device. | YES
+/Time|API for accessing different time related services.| YES
+**/Ui/Ind**|API for controlling the LED.| YES
+
+\* - Limited only to the old HW
 
 ## Prerequisite ##
 
