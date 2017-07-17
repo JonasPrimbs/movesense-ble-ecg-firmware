@@ -9,9 +9,15 @@ typedef enum {
     POWER_MODE_IDLE = 0,
     POWER_MODE_SLOW_ADVERTISE,
     POWER_MODE_FAST_ADVERTISE,
-    POWER_MODE_ACCELEROMETER,
-    POWER_MODE_GYROSCOPE,
-    POWER_MODE_MAGNETOMETER,
+    POWER_MODE_ACCEL_13,
+    POWER_MODE_ACCEL_104,
+    POWER_MODE_ACCEL_833,
+    POWER_MODE_GYRO_13,
+    POWER_MODE_GYRO_104,
+    POWER_MODE_GYRO_833,
+    POWER_MODE_MAGN_13,
+    POWER_MODE_MAGN_104,
+    POWER_MODE_MAGN_833,
     POWER_MODE_POWER_OFF, // TODO: move last!
 } POWER_MODE_e;
 
@@ -61,6 +67,10 @@ private:
     void startLedBlinkSequence(int flashTimes, int speedMs);
     void leavePowerMode(POWER_MODE_e mode);
     void enterPowerMode(POWER_MODE_e newMode);
+
+    // Sample rate & sample count test
+    int32_t mSampleRate;
+    int32_t mSampleCount;
 
     // Power mode logic
     volatile whiteboard::TimerId mPowerModeTimer;

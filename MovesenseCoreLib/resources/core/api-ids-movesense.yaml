@@ -100,3 +100,6 @@ apis:
   gear.*:
     apiId: 65
     defaultExecutionContext: PrimaryServices
+  ind.*:
+    apiId: 66
+    defaultExecutionContext: PrimaryServices

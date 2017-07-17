@@ -20,7 +20,6 @@ const size_t LED_BLINK_INTERVAL_MS = 400;
 
 const char* const PowerModesClient::LAUNCHABLE_NAME = "PowMod";
 
-#define SAMPLE_RATE 13
 
 PowerModesClient::PowerModesClient()
     : ResourceClient(WBDEBUG_NAME(__FUNCTION__), WB_EXEC_CTX_APPLICATION),
@@ -75,6 +74,9 @@ void PowerModesClient::startLedBlinkSequence(int flashTimes, int speedMs)
 void PowerModesClient::enterPowerMode(POWER_MODE_e newMode)
 {
     DEBUGLOG("enterPowerMode: mode: %d", newMode);
+    // Reset sample rate and count
+    mSampleRate = 0;
+    mSampleCount = 0;
     switch (newMode)
     {
     case POWER_MODE_IDLE:
@@ -100,19 +102,36 @@ void PowerModesClient::enterPowerMode(POWER_MODE_e newMode)
 
         break;
     }
-    case POWER_MODE_ACCELEROMETER:
+    case POWER_MODE_ACCEL_13:
+        mSampleRate = (!mSampleRate)?13:mSampleRate;
+    case POWER_MODE_ACCEL_104:
+        mSampleRate = (!mSampleRate)?104:mSampleRate;
+    case POWER_MODE_ACCEL_833:
+        mSampleRate = (!mSampleRate)?833:mSampleRate;
+
         // subscribe to accelerometer
-        asyncSubscribe(WB_RES::LOCAL::MEAS_ACC_SAMPLERATE::ID, NULL, SAMPLE_RATE);
+        asyncSubscribe(WB_RES::LOCAL::MEAS_ACC_SAMPLERATE::ID, NULL, mSampleRate);
         break;
 
-    case POWER_MODE_GYROSCOPE:
-        // subscribe to accelerometer
-        asyncSubscribe(WB_RES::LOCAL::MEAS_GYRO_SAMPLERATE::ID, NULL, SAMPLE_RATE);
+    case POWER_MODE_GYRO_13:
+        mSampleRate = (!mSampleRate)?13:mSampleRate;
+    case POWER_MODE_GYRO_104:
+        mSampleRate = (!mSampleRate)?104:mSampleRate;
+    case POWER_MODE_GYRO_833:
+        mSampleRate = (!mSampleRate)?833:mSampleRate;
+
+        // subscribe to gyroscope
+        asyncSubscribe(WB_RES::LOCAL::MEAS_GYRO_SAMPLERATE::ID, NULL, mSampleRate);
         break;
 
-    case POWER_MODE_MAGNETOMETER:
-        // subscribe to accelerometer
-        asyncSubscribe(WB_RES::LOCAL::MEAS_MAGN_SAMPLERATE::ID, NULL, SAMPLE_RATE);
+    case POWER_MODE_MAGN_13:
+        mSampleRate = (!mSampleRate)?13:mSampleRate;
+    case POWER_MODE_MAGN_104:
+        mSampleRate = (!mSampleRate)?104:mSampleRate;
+    case POWER_MODE_MAGN_833:
+        mSampleRate = (!mSampleRate)?833:mSampleRate;
+            // subscribe to magnetometer
+        asyncSubscribe(WB_RES::LOCAL::MEAS_MAGN_SAMPLERATE::ID, NULL, mSampleRate);
         break;
 
     case POWER_MODE_POWER_OFF:
@@ -145,19 +164,44 @@ void PowerModesClient::leavePowerMode(POWER_MODE_e mode)
         asyncDelete(WB_RES::LOCAL::COMM_BLE_ADV::ID);
         break;
 
-    case POWER_MODE_ACCELEROMETER:
+    case POWER_MODE_ACCEL_13:
+    case POWER_MODE_ACCEL_104:
+    case POWER_MODE_ACCEL_833:
+
         // un-subscribe from accelerometer
-        asyncUnsubscribe(WB_RES::LOCAL::MEAS_ACC_SAMPLERATE::ID, NULL, SAMPLE_RATE);
+        asyncUnsubscribe(WB_RES::LOCAL::MEAS_ACC_SAMPLERATE::ID, NULL, mSampleRate);
+        
+        // Test sample rate
+        {
+            int32_t calculatedSR = mSampleCount * 1000/ TIME_PER_POWERMODE_MS;
+            DEBUGLOG("Accel calculatedSR: %d, requested: %d", calculatedSR, mSampleRate);
+        }
         break;
 
-    case POWER_MODE_GYROSCOPE:
-        // un-subscribe from accelerometer
-        asyncUnsubscribe(WB_RES::LOCAL::MEAS_GYRO_SAMPLERATE::ID, NULL, SAMPLE_RATE);
+    case POWER_MODE_GYRO_13:
+    case POWER_MODE_GYRO_104:
+    case POWER_MODE_GYRO_833:
+        // un-subscribe from gyroscope
+        asyncUnsubscribe(WB_RES::LOCAL::MEAS_GYRO_SAMPLERATE::ID, NULL, mSampleRate);
+        
+        // Test sample rate
+        {
+            int32_t calculatedSR = mSampleCount * 1000/ TIME_PER_POWERMODE_MS;
+            DEBUGLOG("Gyro calculatedSR: %d, requested: %d", calculatedSR, mSampleRate);
+        }
         break;
 
-    case POWER_MODE_MAGNETOMETER:
-        // un-subscribe from accelerometer
-        asyncUnsubscribe(WB_RES::LOCAL::MEAS_MAGN_SAMPLERATE::ID, NULL, SAMPLE_RATE);
+    case POWER_MODE_MAGN_13:
+    case POWER_MODE_MAGN_104:
+    case POWER_MODE_MAGN_833:
+        // un-subscribe from magnetometer
+        asyncUnsubscribe(WB_RES::LOCAL::MEAS_MAGN_SAMPLERATE::ID, NULL, mSampleRate);
+        
+        // Test sample rate
+        {
+            int32_t calculatedSR = mSampleCount * 1000/ TIME_PER_POWERMODE_MS;
+            DEBUGLOG("Magn calculatedSR: %d, requested: %d", calculatedSR, mSampleRate);
+        }
         break;
 
     case POWER_MODE_POWER_OFF:
@@ -207,19 +251,37 @@ void PowerModesClient::onTimer(whiteboard::TimerId timerId)
 }
 
 void PowerModesClient::onNotify(whiteboard::ResourceId resourceId,
-                                const whiteboard::Value& rValue,
+                                const whiteboard::Value& value,
                                 const whiteboard::ParameterList& rParameters)
 {
     switch (resourceId.getConstId())
     {
     case WB_RES::LOCAL::MEAS_ACC_SAMPLERATE::ID:
         DEBUGLOG("MEAS_ACC_SAMPLERATE notification.");
+        {
+            const WB_RES::AccData& accValue =
+            value.convertTo<const WB_RES::AccData&>();
+
+            mSampleCount += accValue.arrayAcc.size();
+        }
         break;
     case WB_RES::LOCAL::MEAS_GYRO_SAMPLERATE::ID:
         DEBUGLOG("MEAS_GYRO_SAMPLERATE notification.");
+        {
+            const WB_RES::GyroData& gyroValue =
+                value.convertTo<const WB_RES::GyroData&>();
+
+            mSampleCount += gyroValue.arrayGyro.size();
+        }
         break;
     case WB_RES::LOCAL::MEAS_MAGN_SAMPLERATE::ID:
         DEBUGLOG("MEAS_MAGN_SAMPLERATE notification.");
+        {
+            const WB_RES::MagnData& magnValue =
+                value.convertTo<const WB_RES::MagnData&>();
+
+            mSampleCount += magnValue.arrayMagn.size();
+        }
         break;
 
     default:
