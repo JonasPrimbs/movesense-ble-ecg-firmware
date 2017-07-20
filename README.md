@@ -14,7 +14,7 @@ Resource | Description|Implemented
 /Meas/Acc|API enabling subscribing linear acceleration data (based on accelerometer).| YES
 /Meas/Gyro|API enabling subscribing angular velocity data (based on gyroscope).| YES
 /Meas/HR|API enabling subscribing heart rate data.| YES
-/Meas/Magn|API enabling subscribing magnetic field data (based on magnetometer).| YES\*
+/Meas/Magn|API enabling subscribing magnetic field data (based on magnetometer).| YES
 /Meas/Temp|API enabling reading or subscribing temperature data (based on thermometer).| YES
 /Mem/DataLogger|Generic logger capable of logging max. 8 different resources| YES
 /Mem/Logbook|Generic Logbook from where the logged data can be read| YES
@@ -25,7 +25,6 @@ Resource | Description|Implemented
 /Time|API for accessing different time related services.| YES
 **/Ui/Ind**|API for controlling the LED.| YES
 
-\* - Limited only to the old HW
 
 ## Prerequisite ##
 

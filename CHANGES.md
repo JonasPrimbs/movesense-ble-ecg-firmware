@@ -1,3 +1,17 @@
+##Version 0.5.2.384 ##
+
+###Whats new:###
+- Fixed: Missing support for magnetometer - LIS2MDL (only new HW)
+
+###Known Bugs:###
+- Leaks after disconnect without unsubscribe command
+- Maximum subscription rate is only 104Hz for Acc/Gyro/Magn
+- Lost some values for Acc and Gyro
+
+###Notes:###
+- REQUIRED: Use **GNU Toolchain for ARM v. 5.4 2016q3**
+- To create DFU package for OTA update, compile application with "ninja dfupkg"
+
 ##Version 0.5.1.372 ##
 
 ###Whats new:###
