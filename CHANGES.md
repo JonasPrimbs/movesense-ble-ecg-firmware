@@ -5,7 +5,7 @@
 
 ###Known Bugs:###
 - Leaks after disconnect without unsubscribe command
-- Maximum subscription rate is only 104Hz for Acc/Gyro/Magn
+- Maximum subscription rate is only 104Hz for Acc/Gyro/Magn (old HW)
 - Lost some values for Acc and Gyro
 
 ###Notes:###
