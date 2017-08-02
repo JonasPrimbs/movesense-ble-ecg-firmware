@@ -6,6 +6,8 @@
 
 #include "whiteboard/Identifiers.h"
 #include "whiteboard/ParameterList.h"
+#include "whiteboard/Result.h"
+#include "whiteboard/ResourceClient.h"
 
 #include "whiteboard/builtinTypes/Array.h"
 #include "whiteboard/builtinTypes/ByteStream.h"
@@ -124,12 +126,17 @@ struct COMM_BLE_ADDR
 
 	struct GET
 	{
-		typedef const char* Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const char*, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
@@ -141,16 +148,24 @@ struct COMM_BLE_ADV
 
 	struct GET
 	{
-		typedef AdvState Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const AdvState&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct POST
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_CREATED> HTTP_CODE_CREATED;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_CONFLICT> HTTP_CODE_CONFLICT;
+
 		struct Parameters
 		{
 			struct DATA
@@ -160,6 +175,8 @@ struct COMM_BLE_ADV
 				typedef AdvParams Type;
 				typedef const Type& ConstReferenceType;
 			};
+
+			typedef DATA Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -214,14 +231,27 @@ struct COMM_BLE_ADV
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			const whiteboard::Api::OptionalParameter<Parameters::DATA::ConstReferenceType>& = whiteboard::NoType::NoValue)
+		{
+		}
 	};
 
 	struct DELETE
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
@@ -233,16 +263,24 @@ struct COMM_BLE_ADV_SETTINGS
 
 	struct GET
 	{
-		typedef AdvSettings Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const AdvSettings&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_BAD_REQUEST> HTTP_CODE_BAD_REQUEST;
+
 		struct Parameters
 		{
 			struct NEWSETTINGS
@@ -252,6 +290,8 @@ struct COMM_BLE_ADV_SETTINGS
 				typedef AdvSettings Type;
 				typedef const Type& ConstReferenceType;
 			};
+
+			typedef NEWSETTINGS Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -292,6 +332,12 @@ struct COMM_BLE_ADV_SETTINGS
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::NEWSETTINGS::ConstReferenceType)
+		{
+		}
 	};
 };
 

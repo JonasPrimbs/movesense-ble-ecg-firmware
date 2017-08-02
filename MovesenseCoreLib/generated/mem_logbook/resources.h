@@ -6,6 +6,8 @@
 
 #include "whiteboard/Identifiers.h"
 #include "whiteboard/ParameterList.h"
+#include "whiteboard/Result.h"
+#include "whiteboard/ResourceClient.h"
 
 #include "whiteboard/builtinTypes/Array.h"
 #include "whiteboard/builtinTypes/ByteStream.h"
@@ -102,8 +104,9 @@ struct MEM_LOGBOOK_ENTRIES
 
 	struct GET
 	{
-		typedef LogEntries Response_HTTP_CODE_CONTINUE_Type;
-		typedef LogEntries Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const LogEntries&, whiteboard::HTTP_CODE_CONTINUE> HTTP_CODE_CONTINUE;
+		typedef whiteboard::StronglyTypedResult<const LogEntries&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_FOUND> HTTP_CODE_NOT_FOUND;
 
 		struct Parameters
 		{
@@ -114,6 +117,8 @@ struct MEM_LOGBOOK_ENTRIES
 				typedef uint32 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef STARTAFTERID Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -168,14 +173,27 @@ struct MEM_LOGBOOK_ENTRIES
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			const whiteboard::Api::OptionalParameter<Parameters::STARTAFTERID::ConstReferenceType>& = whiteboard::NoType::NoValue)
+		{
+		}
 	};
 
 	struct DELETE
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
@@ -187,33 +205,64 @@ struct MEM_LOGBOOK_ISFULL
 
 	struct GET
 	{
-		typedef bool Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<bool, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct SUBSCRIBE
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct EVENT
 	{
 		typedef bool NotificationType;
-	};
+		typedef NotificationType ConstReferenceNotificationType;
 
-	struct UNSUBSCRIBE
-	{
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			const whiteboard::Api::OptionalParameter<ConstReferenceNotificationType>&)
+		{
+		}
+	};
+
+	struct UNSUBSCRIBE
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
@@ -225,35 +274,64 @@ struct MEM_LOGBOOK_ISOPEN
 
 	struct GET
 	{
-		typedef bool Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<bool, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct SUBSCRIBE
 	{
-		typedef bool Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<bool, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct EVENT
 	{
 		typedef bool NotificationType;
-	};
+		typedef NotificationType ConstReferenceNotificationType;
 
-	struct UNSUBSCRIBE
-	{
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			const whiteboard::Api::OptionalParameter<ConstReferenceNotificationType>&)
+		{
+		}
+	};
+
+	struct UNSUBSCRIBE
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
@@ -269,7 +347,8 @@ struct MEM_LOGBOOK_LOG_LOGINDEX_FLAGS
 
 	struct GET
 	{
-		typedef uint16 Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<uint16, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_RANGE_NOT_SATISFIABLE> HTTP_CODE_RANGE_NOT_SATISFIABLE;
 
 		struct Parameters
 		{
@@ -280,6 +359,8 @@ struct MEM_LOGBOOK_LOG_LOGINDEX_FLAGS
 				typedef int32 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef LOGINDEX Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -320,10 +401,19 @@ struct MEM_LOGBOOK_LOG_LOGINDEX_FLAGS
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::LOGINDEX::ConstReferenceType)
+		{
+		}
 	};
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_RANGE_NOT_SATISFIABLE> HTTP_CODE_RANGE_NOT_SATISFIABLE;
+
 		struct Parameters
 		{
 			struct LOGINDEX
@@ -334,6 +424,8 @@ struct MEM_LOGBOOK_LOG_LOGINDEX_FLAGS
 				typedef Type ConstReferenceType;
 			};
 
+			typedef LOGINDEX Parameter1;
+
 			struct FLAGS
 			{
 				static const whiteboard::ParameterIndex Index = 1;
@@ -341,6 +433,8 @@ struct MEM_LOGBOOK_LOG_LOGINDEX_FLAGS
 				typedef uint16 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef FLAGS Parameter2;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 2;
 		};
@@ -390,6 +484,13 @@ struct MEM_LOGBOOK_LOG_LOGINDEX_FLAGS
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::LOGINDEX::ConstReferenceType,
+			Parameters::FLAGS::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -401,6 +502,9 @@ struct MEM_LOGBOOK_LOG_LOGINDEX_REMOVE
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_RANGE_NOT_SATISFIABLE> HTTP_CODE_RANGE_NOT_SATISFIABLE;
+
 		struct Parameters
 		{
 			struct LOGINDEX
@@ -410,6 +514,8 @@ struct MEM_LOGBOOK_LOG_LOGINDEX_REMOVE
 				typedef int32 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef LOGINDEX Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -450,6 +556,12 @@ struct MEM_LOGBOOK_LOG_LOGINDEX_REMOVE
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::LOGINDEX::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -461,33 +573,67 @@ struct MEM_LOGBOOK_LOGGING
 
 	struct GET
 	{
-		typedef uint16 Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<uint16, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct SUBSCRIBE
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_LOCKED> HTTP_CODE_LOCKED;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INSUFFICIENT_STORAGE> HTTP_CODE_INSUFFICIENT_STORAGE;
+
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct EVENT
 	{
 		typedef uint16 NotificationType;
-	};
+		typedef NotificationType ConstReferenceNotificationType;
 
-	struct UNSUBSCRIBE
-	{
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			const whiteboard::Api::OptionalParameter<ConstReferenceNotificationType>&)
+		{
+		}
+	};
+
+	struct UNSUBSCRIBE
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
@@ -499,35 +645,64 @@ struct MEM_LOGBOOK_UNSYNCHRONISEDLOGS
 
 	struct GET
 	{
-		typedef uint16 Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<uint16, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct SUBSCRIBE
 	{
-		typedef uint16 Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<uint16, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct EVENT
 	{
 		typedef uint16 NotificationType;
-	};
+		typedef NotificationType ConstReferenceNotificationType;
 
-	struct UNSUBSCRIBE
-	{
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			const whiteboard::Api::OptionalParameter<ConstReferenceNotificationType>&)
+		{
+		}
+	};
+
+	struct UNSUBSCRIBE
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
@@ -543,8 +718,9 @@ struct MEM_LOGBOOK_BYID_LOGID_DATA
 
 	struct GET
 	{
-		typedef whiteboard::ByteStream Response_HTTP_CODE_CONTINUE_Type;
-		typedef whiteboard::ByteStream Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::ByteStream&, whiteboard::HTTP_CODE_CONTINUE> HTTP_CODE_CONTINUE;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::ByteStream&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_FOUND> HTTP_CODE_NOT_FOUND;
 
 		struct Parameters
 		{
@@ -555,6 +731,8 @@ struct MEM_LOGBOOK_BYID_LOGID_DATA
 				typedef int32 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef LOGID Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -595,6 +773,12 @@ struct MEM_LOGBOOK_BYID_LOGID_DATA
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::LOGID::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -606,8 +790,8 @@ struct MEM_LOGBOOK_BYID_LOGID_DESCRIPTORS
 
 	struct GET
 	{
-		typedef whiteboard::ByteStream Response_HTTP_CODE_CONTINUE_Type;
-		typedef whiteboard::ByteStream Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::ByteStream&, whiteboard::HTTP_CODE_CONTINUE> HTTP_CODE_CONTINUE;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::ByteStream&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
@@ -618,6 +802,8 @@ struct MEM_LOGBOOK_BYID_LOGID_DESCRIPTORS
 				typedef int32 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef LOGID Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -658,6 +844,12 @@ struct MEM_LOGBOOK_BYID_LOGID_DESCRIPTORS
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::LOGID::ConstReferenceType)
+		{
+		}
 	};
 };
 

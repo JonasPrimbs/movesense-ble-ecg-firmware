@@ -144,9 +144,10 @@ public:
         */
         void placementDestructArray(UntypedData* pArray, KeyType numberOfItems) const OVERRIDE
         {
-            for (KeyType i = 0; i < numberOfItems; ++i)
+            T* pItem = static_cast<T*>(pArray);
+            for (KeyType i = 0; i < numberOfItems; ++i, ++pItem)
             {
-                (static_cast<T*>(pArray)[i]).~T();
+                (*pItem).~T();
             }
         }
 
@@ -191,7 +192,7 @@ public:
         * @param pArray Array that is target for placement destruct
         * @param numberOfItems Number of items in the array
         */
-        void placementDestructArray(UntypedData* pArray, KeyType numberOfItems) const OVERRIDE
+        void placementDestructArray(UntypedData* /*pArray*/, KeyType /*numberOfItems*/) const OVERRIDE
         {
         }
 

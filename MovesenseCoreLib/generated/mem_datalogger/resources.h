@@ -6,6 +6,8 @@
 
 #include "whiteboard/Identifiers.h"
 #include "whiteboard/ParameterList.h"
+#include "whiteboard/Result.h"
+#include "whiteboard/ResourceClient.h"
 
 #include "whiteboard/builtinTypes/Array.h"
 #include "whiteboard/builtinTypes/ByteStream.h"
@@ -129,16 +131,25 @@ struct MEM_DATALOGGER_CONFIG
 
 	struct GET
 	{
-		typedef DataLoggerConfig Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const DataLoggerConfig&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_BAD_REQUEST> HTTP_CODE_BAD_REQUEST;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_BAD_REQUEST> HTTP_CODE_BAD_REQUEST;
+
 		struct Parameters
 		{
 			struct CONFIG
@@ -148,6 +159,8 @@ struct MEM_DATALOGGER_CONFIG
 				typedef DataLoggerConfig Type;
 				typedef const Type& ConstReferenceType;
 			};
+
+			typedef CONFIG Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -188,6 +201,12 @@ struct MEM_DATALOGGER_CONFIG
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::CONFIG::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -199,16 +218,24 @@ struct MEM_DATALOGGER_STATE
 
 	struct GET
 	{
-		typedef DataLoggerState Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<DataLoggerState, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_BAD_REQUEST> HTTP_CODE_BAD_REQUEST;
+
 		struct Parameters
 		{
 			struct NEWSTATE
@@ -218,6 +245,8 @@ struct MEM_DATALOGGER_STATE
 				typedef DataLoggerState Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef NEWSTATE Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -258,6 +287,12 @@ struct MEM_DATALOGGER_STATE
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::NEWSTATE::ConstReferenceType)
+		{
+		}
 	};
 };
 

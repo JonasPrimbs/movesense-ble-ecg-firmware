@@ -20,7 +20,6 @@ const size_t LED_BLINK_INTERVAL_MS = 400;
 
 const char* const PowerModesClient::LAUNCHABLE_NAME = "PowMod";
 
-
 PowerModesClient::PowerModesClient()
     : ResourceClient(WBDEBUG_NAME(__FUNCTION__), WB_EXEC_CTX_APPLICATION),
       LaunchableModule(LAUNCHABLE_NAME, WB_EXEC_CTX_APPLICATION)
@@ -103,34 +102,34 @@ void PowerModesClient::enterPowerMode(POWER_MODE_e newMode)
         break;
     }
     case POWER_MODE_ACCEL_13:
-        mSampleRate = (!mSampleRate)?13:mSampleRate;
+        mSampleRate = (!mSampleRate) ? 13 : mSampleRate;
     case POWER_MODE_ACCEL_104:
-        mSampleRate = (!mSampleRate)?104:mSampleRate;
+        mSampleRate = (!mSampleRate) ? 104 : mSampleRate;
     case POWER_MODE_ACCEL_833:
-        mSampleRate = (!mSampleRate)?833:mSampleRate;
+        mSampleRate = (!mSampleRate) ? 833 : mSampleRate;
 
         // subscribe to accelerometer
         asyncSubscribe(WB_RES::LOCAL::MEAS_ACC_SAMPLERATE::ID, NULL, mSampleRate);
         break;
 
     case POWER_MODE_GYRO_13:
-        mSampleRate = (!mSampleRate)?13:mSampleRate;
+        mSampleRate = (!mSampleRate) ? 13 : mSampleRate;
     case POWER_MODE_GYRO_104:
-        mSampleRate = (!mSampleRate)?104:mSampleRate;
+        mSampleRate = (!mSampleRate) ? 104 : mSampleRate;
     case POWER_MODE_GYRO_833:
-        mSampleRate = (!mSampleRate)?833:mSampleRate;
+        mSampleRate = (!mSampleRate) ? 833 : mSampleRate;
 
         // subscribe to gyroscope
         asyncSubscribe(WB_RES::LOCAL::MEAS_GYRO_SAMPLERATE::ID, NULL, mSampleRate);
         break;
 
     case POWER_MODE_MAGN_13:
-        mSampleRate = (!mSampleRate)?13:mSampleRate;
+        mSampleRate = (!mSampleRate) ? 13 : mSampleRate;
     case POWER_MODE_MAGN_104:
-        mSampleRate = (!mSampleRate)?104:mSampleRate;
+        mSampleRate = (!mSampleRate) ? 104 : mSampleRate;
     case POWER_MODE_MAGN_833:
-        mSampleRate = (!mSampleRate)?833:mSampleRate;
-            // subscribe to magnetometer
+        mSampleRate = (!mSampleRate) ? 833 : mSampleRate;
+        // subscribe to magnetometer
         asyncSubscribe(WB_RES::LOCAL::MEAS_MAGN_SAMPLERATE::ID, NULL, mSampleRate);
         break;
 
@@ -170,10 +169,10 @@ void PowerModesClient::leavePowerMode(POWER_MODE_e mode)
 
         // un-subscribe from accelerometer
         asyncUnsubscribe(WB_RES::LOCAL::MEAS_ACC_SAMPLERATE::ID, NULL, mSampleRate);
-        
+
         // Test sample rate
         {
-            int32_t calculatedSR = mSampleCount * 1000/ TIME_PER_POWERMODE_MS;
+            int32_t calculatedSR = mSampleCount * 1000 / TIME_PER_POWERMODE_MS;
             DEBUGLOG("Accel calculatedSR: %d, requested: %d", calculatedSR, mSampleRate);
         }
         break;
@@ -183,10 +182,10 @@ void PowerModesClient::leavePowerMode(POWER_MODE_e mode)
     case POWER_MODE_GYRO_833:
         // un-subscribe from gyroscope
         asyncUnsubscribe(WB_RES::LOCAL::MEAS_GYRO_SAMPLERATE::ID, NULL, mSampleRate);
-        
+
         // Test sample rate
         {
-            int32_t calculatedSR = mSampleCount * 1000/ TIME_PER_POWERMODE_MS;
+            int32_t calculatedSR = mSampleCount * 1000 / TIME_PER_POWERMODE_MS;
             DEBUGLOG("Gyro calculatedSR: %d, requested: %d", calculatedSR, mSampleRate);
         }
         break;
@@ -196,10 +195,10 @@ void PowerModesClient::leavePowerMode(POWER_MODE_e mode)
     case POWER_MODE_MAGN_833:
         // un-subscribe from magnetometer
         asyncUnsubscribe(WB_RES::LOCAL::MEAS_MAGN_SAMPLERATE::ID, NULL, mSampleRate);
-        
+
         // Test sample rate
         {
-            int32_t calculatedSR = mSampleCount * 1000/ TIME_PER_POWERMODE_MS;
+            int32_t calculatedSR = mSampleCount * 1000 / TIME_PER_POWERMODE_MS;
             DEBUGLOG("Magn calculatedSR: %d, requested: %d", calculatedSR, mSampleRate);
         }
         break;
@@ -260,7 +259,7 @@ void PowerModesClient::onNotify(whiteboard::ResourceId resourceId,
         DEBUGLOG("MEAS_ACC_SAMPLERATE notification.");
         {
             const WB_RES::AccData& accValue =
-            value.convertTo<const WB_RES::AccData&>();
+                value.convertTo<const WB_RES::AccData&>();
 
             mSampleCount += accValue.arrayAcc.size();
         }

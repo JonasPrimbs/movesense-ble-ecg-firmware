@@ -6,6 +6,8 @@
 
 #include "whiteboard/Identifiers.h"
 #include "whiteboard/ParameterList.h"
+#include "whiteboard/Result.h"
+#include "whiteboard/ResourceClient.h"
 
 #include "whiteboard/builtinTypes/Array.h"
 #include "whiteboard/builtinTypes/ByteStream.h"
@@ -74,6 +76,9 @@ struct DEV_SYSTEM_DISPLAY_RECORD
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_ACCEPTABLE> HTTP_CODE_NOT_ACCEPTABLE;
+
 		struct Parameters
 		{
 			struct START
@@ -83,6 +88,8 @@ struct DEV_SYSTEM_DISPLAY_RECORD
 				typedef bool Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef START Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -123,6 +130,12 @@ struct DEV_SYSTEM_DISPLAY_RECORD
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::START::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -134,6 +147,8 @@ struct DEV_SYSTEM_DISPLAY_SAVE
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
 		struct Parameters
 		{
 			struct FILENAME
@@ -143,6 +158,8 @@ struct DEV_SYSTEM_DISPLAY_SAVE
 				typedef const char* Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef FILENAME Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -183,6 +200,12 @@ struct DEV_SYSTEM_DISPLAY_SAVE
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::FILENAME::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -194,10 +217,17 @@ struct DEV_SYSTEM_LPAPPVERSION
 
 	struct GET
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
@@ -209,10 +239,17 @@ struct DEV_SYSTEM_LPDALIVERSION
 
 	struct GET
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
@@ -224,12 +261,17 @@ struct DEV_SYSTEM_LPFILESYSTEMVERSION
 
 	struct GET
 	{
-		typedef const char* Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const char*, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
@@ -241,10 +283,64 @@ struct DEV_SYSTEM_LPUPDATEPROGRESS
 
 	struct GET
 	{
+		typedef whiteboard::StronglyTypedResult<uint8, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
+	};
+
+	struct SUBSCRIBE
+	{
+		typedef whiteboard::StronglyTypedResult<uint8, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
+	};
+
+	struct EVENT
+	{
+		typedef uint8 NotificationType;
+		typedef NotificationType ConstReferenceNotificationType;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			const whiteboard::Api::OptionalParameter<ConstReferenceNotificationType>&)
+		{
+		}
+	};
+
+	struct UNSUBSCRIBE
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
@@ -258,10 +354,17 @@ struct DEV_SYSTEM_MEMORY_FREE
 
 	struct GET
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
@@ -273,12 +376,18 @@ struct DEV_SYSTEM_MEMORY_ISSUFFICIENT
 
 	struct GET
 	{
-		typedef bool Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<bool, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NO_CONTENT> HTTP_CODE_NO_CONTENT;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
@@ -290,10 +399,17 @@ struct DEV_SYSTEM_MEMORY_LOWESTFREE
 
 	struct GET
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
@@ -305,10 +421,17 @@ struct DEV_SYSTEM_MEMORY_SIZE
 
 	struct GET
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
@@ -320,10 +443,17 @@ struct DEV_SYSTEM_MEMORY_USED
 
 	struct GET
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
@@ -335,6 +465,9 @@ struct DEV_SYSTEM_UPDATELPAPP
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_BAD_REQUEST> HTTP_CODE_BAD_REQUEST;
+
 		struct Parameters
 		{
 			struct LOCALRESOURCEID
@@ -345,6 +478,8 @@ struct DEV_SYSTEM_UPDATELPAPP
 				typedef Type ConstReferenceType;
 			};
 
+			typedef LOCALRESOURCEID Parameter1;
+
 			struct BINARYSIZE
 			{
 				static const whiteboard::ParameterIndex Index = 1;
@@ -353,6 +488,8 @@ struct DEV_SYSTEM_UPDATELPAPP
 				typedef Type ConstReferenceType;
 			};
 
+			typedef BINARYSIZE Parameter2;
+
 			struct MAXCHUNKSIZE
 			{
 				static const whiteboard::ParameterIndex Index = 2;
@@ -360,6 +497,8 @@ struct DEV_SYSTEM_UPDATELPAPP
 				typedef uint32 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef MAXCHUNKSIZE Parameter3;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 3;
 		};
@@ -432,6 +571,14 @@ struct DEV_SYSTEM_UPDATELPAPP
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::LOCALRESOURCEID::ConstReferenceType,
+			Parameters::BINARYSIZE::ConstReferenceType,
+			const whiteboard::Api::OptionalParameter<Parameters::MAXCHUNKSIZE::ConstReferenceType>& = whiteboard::NoType::NoValue)
+		{
+		}
 	};
 };
 
@@ -443,6 +590,9 @@ struct DEV_SYSTEM_UPDATELPDALI
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_BAD_REQUEST> HTTP_CODE_BAD_REQUEST;
+
 		struct Parameters
 		{
 			struct LOCALRESOURCEID
@@ -453,6 +603,8 @@ struct DEV_SYSTEM_UPDATELPDALI
 				typedef Type ConstReferenceType;
 			};
 
+			typedef LOCALRESOURCEID Parameter1;
+
 			struct BINARYSIZE
 			{
 				static const whiteboard::ParameterIndex Index = 1;
@@ -461,6 +613,8 @@ struct DEV_SYSTEM_UPDATELPDALI
 				typedef Type ConstReferenceType;
 			};
 
+			typedef BINARYSIZE Parameter2;
+
 			struct MAXCHUNKSIZE
 			{
 				static const whiteboard::ParameterIndex Index = 2;
@@ -468,6 +622,8 @@ struct DEV_SYSTEM_UPDATELPDALI
 				typedef uint32 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef MAXCHUNKSIZE Parameter3;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 3;
 		};
@@ -540,6 +696,14 @@ struct DEV_SYSTEM_UPDATELPDALI
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::LOCALRESOURCEID::ConstReferenceType,
+			Parameters::BINARYSIZE::ConstReferenceType,
+			const whiteboard::Api::OptionalParameter<Parameters::MAXCHUNKSIZE::ConstReferenceType>& = whiteboard::NoType::NoValue)
+		{
+		}
 	};
 };
 
@@ -551,6 +715,9 @@ struct DEV_SYSTEM_UPDATELPFILESYSTEM
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_BAD_REQUEST> HTTP_CODE_BAD_REQUEST;
+
 		struct Parameters
 		{
 			struct LOCALRESOURCEID
@@ -561,6 +728,8 @@ struct DEV_SYSTEM_UPDATELPFILESYSTEM
 				typedef Type ConstReferenceType;
 			};
 
+			typedef LOCALRESOURCEID Parameter1;
+
 			struct BINARYSIZE
 			{
 				static const whiteboard::ParameterIndex Index = 1;
@@ -569,6 +738,8 @@ struct DEV_SYSTEM_UPDATELPFILESYSTEM
 				typedef Type ConstReferenceType;
 			};
 
+			typedef BINARYSIZE Parameter2;
+
 			struct MAXCHUNKSIZE
 			{
 				static const whiteboard::ParameterIndex Index = 2;
@@ -576,6 +747,8 @@ struct DEV_SYSTEM_UPDATELPFILESYSTEM
 				typedef uint32 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef MAXCHUNKSIZE Parameter3;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 3;
 		};
@@ -648,6 +821,14 @@ struct DEV_SYSTEM_UPDATELPFILESYSTEM
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::LOCALRESOURCEID::ConstReferenceType,
+			Parameters::BINARYSIZE::ConstReferenceType,
+			const whiteboard::Api::OptionalParameter<Parameters::MAXCHUNKSIZE::ConstReferenceType>& = whiteboard::NoType::NoValue)
+		{
+		}
 	};
 };
 

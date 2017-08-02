@@ -1,6 +1,7 @@
 #pragma once
 // Copyright (c) Suunto Oy 2014. All rights reserved.
 
+#include "whiteboard/ApiHelpers.h"
 #include "whiteboard/Identifiers.h"
 #include "whiteboard/ParameterList.h"
 #include "whiteboard/Request.h"
@@ -18,6 +19,7 @@
 #endif
 
 WB_HEADER_CHECK_DEFINE(WB_HAVE_DEBUG_NAMES);
+WB_HEADER_CHECK_DEFINE(WB_UNITTEST_BUILD);
 
 namespace whiteboard
 {
@@ -73,7 +75,7 @@ public:
           mIsCriticalSub(isCriticalSubscription ? 1 : 0), 
           mReserved(0) 
     {
-        (void)mReserved; // Gcc fix
+        WB_NOT_USED(mReserved);
     }
 
     /** @return pointer to the requestId */
@@ -111,9 +113,9 @@ private:
     /** A value indicating whether request should be always performed asynchronously */
     uint8 mForceAsync : 1;
     
-    /** A value indicating whether subscription request is considered critical  */
+    /** A value indicating whether subscription request is considered critical */
     uint8 mIsCriticalSub : 1;
-    
+
     /** Reserved for future use */
     uint8 mReserved : 6;
 };
@@ -177,8 +179,8 @@ public:
     *	@return Result of the operation
     */
     Result getResource(const char* pFullPath,
-                              ResourceId& rResourceId,
-                              const RequestOptions& rOptions = RequestOptions::Empty);
+                       ResourceId& rResourceId,
+                       const RequestOptions& rOptions = RequestOptions::Empty);
 
     /**
     *	Performs asynchronous resource resolving
@@ -399,21 +401,25 @@ public:
     bool stopTimer(TimerId timerId);
 
     /**
-    *   This unsafe method is for internal use only - or for porting Whiteboard to specific environment!
+    *   This unsafe method is only for adapting other interfaces on top of Whiteboard!
     *
     *	Performs asynchronous request.
     *
     *	@param resourceId ID of the associated resource
-    *	@param rOptions Options for this async operation, @see whiteboard::ResourceClient::AsyncRequestOptions
     *	@param requestType Type of the request
+    *	@param rOptions Options for this async operation, @see whiteboard::ResourceClient::AsyncRequestOptions
     *	@param rParameters List of request parameters
     *	@return Result of the operation
     */
-    Result asyncRequestInternal(
+    WB_FORCE_INLINE
+    Result WB_FORCE_INLINE_ATTRIBUTE asyncRequestVariant(
         ResourceId resourceId,
-        const AsyncRequestOptions& rOptions,
         RequestType requestType,
-        const ParameterList& rParameters);
+        const AsyncRequestOptions& rOptions,
+        const ParameterList& rParameters)
+    {
+        return asyncRequestInternal(resourceId, requestType, rOptions, rParameters);
+    }
 
 #if WB_UNITTEST_BUILD
     /**
@@ -620,6 +626,23 @@ private:
     void setLocalClientId(LocalClientId clientId);
 
     /**
+    *   This unsafe method is for internal use only - or for porting Whiteboard to specific environment!
+    *
+    *	Performs asynchronous request.
+    *
+    *	@param resourceId ID of the associated resource
+    *	@param requestType Type of the request
+    *	@param rOptions Options for this async operation, @see whiteboard::ResourceClient::AsyncRequestOptions
+    *	@param rParameters List of request parameters
+    *	@return Result of the operation
+    */
+    Result asyncRequestInternal(
+        ResourceId resourceId,
+        RequestType requestType,
+        const AsyncRequestOptions& rOptions,
+        const ParameterList& rParameters);
+
+    /**
     *	Performs asynchronous PUT of a stream.
     *
     *	@param rRequest Request information
@@ -684,10 +707,14 @@ private:
 
     /** Stream handle that is used for splitting large PUT streams into multiple smaller requests */
     StreamHandle mInternalStreamId;
+
+    /** Flag that is used internally to piggy back information about compile time type check */
+    static const uint8 TYPE_CHECKED = 0x80;
 };
 
+WB_FORCE_INLINE
 template <typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
-inline Result ResourceClient::asyncGet(
+WB_FORCE_INLINE_ATTRIBUTE Result ResourceClient::asyncGet(
     ResourceId resourceId,
     const ResourceClient::AsyncRequestOptions& rOptions,
     const P1& rP1,
@@ -699,55 +726,20 @@ inline Result ResourceClient::asyncGet(
     const P7& rP7,
     const P8& rP8)
 {
-    ParameterListInstance<8> parameters;
-    new (&parameters[0]) Value(rP1);
-    new (&parameters[1]) Value(rP2);
-    new (&parameters[2]) Value(rP3);
-    new (&parameters[3]) Value(rP4);
-    new (&parameters[4]) Value(rP5);
-    new (&parameters[5]) Value(rP6);
-    new (&parameters[6]) Value(rP7);
-    new (&parameters[7]) Value(rP8);
-
-    return asyncRequestInternal(
-        resourceId,
-        rOptions,
-        REQUEST_GET,
-        parameters);
+    return asyncRequest(resourceId, REQUEST_GET, rOptions,
+        static_cast<typename Api::ParameterType<P1>::type>(rP1),
+        static_cast<typename Api::ParameterType<P2>::type>(rP2),
+        static_cast<typename Api::ParameterType<P3>::type>(rP3),
+        static_cast<typename Api::ParameterType<P4>::type>(rP4),
+        static_cast<typename Api::ParameterType<P5>::type>(rP5),
+        static_cast<typename Api::ParameterType<P6>::type>(rP6),
+        static_cast<typename Api::ParameterType<P7>::type>(rP7),
+        static_cast<typename Api::ParameterType<P8>::type>(rP8));
 }
 
+WB_FORCE_INLINE
 template <typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
-    inline Result ResourceClient::asyncPut(
-        ResourceId resourceId,
-        const ResourceClient::AsyncRequestOptions& rOptions,
-        const P1& rP1,
-        const P2& rP2,
-        const P3& rP3,
-        const P4& rP4,
-        const P5& rP5,
-        const P6& rP6,
-        const P7& rP7,
-        const P8& rP8)
-{
-    ParameterListInstance<8> parameters;
-    new (&parameters[0]) Value(rP1);
-    new (&parameters[1]) Value(rP2);
-    new (&parameters[2]) Value(rP3);
-    new (&parameters[3]) Value(rP4);
-    new (&parameters[4]) Value(rP5);
-    new (&parameters[5]) Value(rP6);
-    new (&parameters[6]) Value(rP7);
-    new (&parameters[7]) Value(rP8);
-
-    return asyncRequestInternal(
-        resourceId,
-        rOptions,
-        REQUEST_PUT,
-        parameters);
-}
-
-template <typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
-inline Result ResourceClient::asyncPost(
+WB_FORCE_INLINE_ATTRIBUTE Result ResourceClient::asyncPut(
     ResourceId resourceId,
     const ResourceClient::AsyncRequestOptions& rOptions,
     const P1& rP1,
@@ -759,25 +751,20 @@ inline Result ResourceClient::asyncPost(
     const P7& rP7,
     const P8& rP8)
 {
-    ParameterListInstance<8> parameters;
-    new (&parameters[0]) Value(rP1);
-    new (&parameters[1]) Value(rP2);
-    new (&parameters[2]) Value(rP3);
-    new (&parameters[3]) Value(rP4);
-    new (&parameters[4]) Value(rP5);
-    new (&parameters[5]) Value(rP6);
-    new (&parameters[6]) Value(rP7);
-    new (&parameters[7]) Value(rP8);
-
-    return asyncRequestInternal(
-        resourceId,
-        rOptions,
-        REQUEST_POST,
-        parameters);
+    return asyncRequest(resourceId, REQUEST_PUT, rOptions,
+        static_cast<typename Api::ParameterType<P1>::type>(rP1),
+        static_cast<typename Api::ParameterType<P2>::type>(rP2),
+        static_cast<typename Api::ParameterType<P3>::type>(rP3),
+        static_cast<typename Api::ParameterType<P4>::type>(rP4),
+        static_cast<typename Api::ParameterType<P5>::type>(rP5),
+        static_cast<typename Api::ParameterType<P6>::type>(rP6),
+        static_cast<typename Api::ParameterType<P7>::type>(rP7),
+        static_cast<typename Api::ParameterType<P8>::type>(rP8));
 }
 
+WB_FORCE_INLINE
 template <typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
-inline Result ResourceClient::asyncDelete(
+WB_FORCE_INLINE_ATTRIBUTE Result ResourceClient::asyncPost(
     ResourceId resourceId,
     const ResourceClient::AsyncRequestOptions& rOptions,
     const P1& rP1,
@@ -789,25 +776,20 @@ inline Result ResourceClient::asyncDelete(
     const P7& rP7,
     const P8& rP8)
 {
-    ParameterListInstance<8> parameters;
-    new (&parameters[0]) Value(rP1);
-    new (&parameters[1]) Value(rP2);
-    new (&parameters[2]) Value(rP3);
-    new (&parameters[3]) Value(rP4);
-    new (&parameters[4]) Value(rP5);
-    new (&parameters[5]) Value(rP6);
-    new (&parameters[6]) Value(rP7);
-    new (&parameters[7]) Value(rP8);
-
-    return asyncRequestInternal(
-        resourceId,
-        rOptions,
-        REQUEST_DELETE,
-        parameters);
+    return asyncRequest(resourceId, REQUEST_POST, rOptions,
+        static_cast<typename Api::ParameterType<P1>::type>(rP1),
+        static_cast<typename Api::ParameterType<P2>::type>(rP2),
+        static_cast<typename Api::ParameterType<P3>::type>(rP3),
+        static_cast<typename Api::ParameterType<P4>::type>(rP4),
+        static_cast<typename Api::ParameterType<P5>::type>(rP5),
+        static_cast<typename Api::ParameterType<P6>::type>(rP6),
+        static_cast<typename Api::ParameterType<P7>::type>(rP7),
+        static_cast<typename Api::ParameterType<P8>::type>(rP8));
 }
 
+WB_FORCE_INLINE
 template <typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
-inline Result ResourceClient::asyncSubscribe(
+WB_FORCE_INLINE_ATTRIBUTE Result ResourceClient::asyncDelete(
     ResourceId resourceId,
     const ResourceClient::AsyncRequestOptions& rOptions,
     const P1& rP1,
@@ -819,25 +801,20 @@ inline Result ResourceClient::asyncSubscribe(
     const P7& rP7,
     const P8& rP8)
 {
-    ParameterListInstance<8> parameters;
-    new (&parameters[0]) Value(rP1);
-    new (&parameters[1]) Value(rP2);
-    new (&parameters[2]) Value(rP3);
-    new (&parameters[3]) Value(rP4);
-    new (&parameters[4]) Value(rP5);
-    new (&parameters[5]) Value(rP6);
-    new (&parameters[6]) Value(rP7);
-    new (&parameters[7]) Value(rP8);
-
-    return asyncRequestInternal(
-        resourceId,
-        rOptions,
-        REQUEST_SUBSCRIBE,
-        parameters);
+    return asyncRequest(resourceId, REQUEST_DELETE, rOptions,
+        static_cast<typename Api::ParameterType<P1>::type>(rP1),
+        static_cast<typename Api::ParameterType<P2>::type>(rP2),
+        static_cast<typename Api::ParameterType<P3>::type>(rP3),
+        static_cast<typename Api::ParameterType<P4>::type>(rP4),
+        static_cast<typename Api::ParameterType<P5>::type>(rP5),
+        static_cast<typename Api::ParameterType<P6>::type>(rP6),
+        static_cast<typename Api::ParameterType<P7>::type>(rP7),
+        static_cast<typename Api::ParameterType<P8>::type>(rP8));
 }
 
+WB_FORCE_INLINE
 template <typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
-inline Result ResourceClient::asyncUnsubscribe(
+WB_FORCE_INLINE_ATTRIBUTE Result ResourceClient::asyncSubscribe(
     ResourceId resourceId,
     const ResourceClient::AsyncRequestOptions& rOptions,
     const P1& rP1,
@@ -849,21 +826,40 @@ inline Result ResourceClient::asyncUnsubscribe(
     const P7& rP7,
     const P8& rP8)
 {
-    ParameterListInstance<8> parameters;
-    new (&parameters[0]) Value(rP1);
-    new (&parameters[1]) Value(rP2);
-    new (&parameters[2]) Value(rP3);
-    new (&parameters[3]) Value(rP4);
-    new (&parameters[4]) Value(rP5);
-    new (&parameters[5]) Value(rP6);
-    new (&parameters[6]) Value(rP7);
-    new (&parameters[7]) Value(rP8);
+    return asyncRequest(resourceId, REQUEST_SUBSCRIBE, rOptions,
+        static_cast<typename Api::ParameterType<P1>::type>(rP1),
+        static_cast<typename Api::ParameterType<P2>::type>(rP2),
+        static_cast<typename Api::ParameterType<P3>::type>(rP3),
+        static_cast<typename Api::ParameterType<P4>::type>(rP4),
+        static_cast<typename Api::ParameterType<P5>::type>(rP5),
+        static_cast<typename Api::ParameterType<P6>::type>(rP6),
+        static_cast<typename Api::ParameterType<P7>::type>(rP7),
+        static_cast<typename Api::ParameterType<P8>::type>(rP8));
+}
 
-    return asyncRequestInternal(
-        resourceId,
-        rOptions,
-        REQUEST_UNSUBSCRIBE,
-        parameters);
+WB_FORCE_INLINE
+template <typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
+WB_FORCE_INLINE_ATTRIBUTE Result ResourceClient::asyncUnsubscribe(
+    ResourceId resourceId,
+    const ResourceClient::AsyncRequestOptions& rOptions,
+    const P1& rP1,
+    const P2& rP2,
+    const P3& rP3,
+    const P4& rP4,
+    const P5& rP5,
+    const P6& rP6,
+    const P7& rP7,
+    const P8& rP8)
+{
+    return asyncRequest(resourceId, REQUEST_UNSUBSCRIBE, rOptions,
+        static_cast<typename Api::ParameterType<P1>::type>(rP1),
+        static_cast<typename Api::ParameterType<P2>::type>(rP2),
+        static_cast<typename Api::ParameterType<P3>::type>(rP3),
+        static_cast<typename Api::ParameterType<P4>::type>(rP4),
+        static_cast<typename Api::ParameterType<P5>::type>(rP5),
+        static_cast<typename Api::ParameterType<P6>::type>(rP6),
+        static_cast<typename Api::ParameterType<P7>::type>(rP7),
+        static_cast<typename Api::ParameterType<P8>::type>(rP8));
 }
 
 } // namespace whiteboard

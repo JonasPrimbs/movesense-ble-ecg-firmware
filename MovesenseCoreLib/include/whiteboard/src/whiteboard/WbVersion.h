@@ -1,8 +1,5 @@
 #pragma once
-/******************************************************************************
-    Copyright (c) Suunto Oy 2016.
-    All rights reserved.
-******************************************************************************/
+// Copyright (c) Suunto Oy 2017. All rights reserved.
 
 #include "whiteboard/integration/port.h"
 
@@ -10,7 +7,7 @@
 #define BUILD_VCS_NUMBER "00000000"
 #endif
 
-#define WB_VERSION "3.2.1-" BUILD_VCS_NUMBER
+#define WB_VERSION "3.3.0-" BUILD_VCS_NUMBER
 
 /** Minimum supported whiteboard communication protocol version */
 #ifndef WB_COMM_PROTO_MIN_VERSION

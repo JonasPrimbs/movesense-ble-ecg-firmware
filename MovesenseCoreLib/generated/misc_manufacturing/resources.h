@@ -6,6 +6,8 @@
 
 #include "whiteboard/Identifiers.h"
 #include "whiteboard/ParameterList.h"
+#include "whiteboard/Result.h"
+#include "whiteboard/ResourceClient.h"
 
 #include "whiteboard/builtinTypes/Array.h"
 #include "whiteboard/builtinTypes/ByteStream.h"
@@ -176,16 +178,25 @@ struct MISC_MANUFACTURING_CALIBRATIONDATA
 
 	struct GET
 	{
-		typedef CalibrationData Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const CalibrationData&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct POST
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_CREATED> HTTP_CODE_CREATED;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
+
 		struct Parameters
 		{
 			struct DATA
@@ -195,6 +206,8 @@ struct MISC_MANUFACTURING_CALIBRATIONDATA
 				typedef CalibrationData Type;
 				typedef const Type& ConstReferenceType;
 			};
+
+			typedef DATA Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -235,14 +248,29 @@ struct MISC_MANUFACTURING_CALIBRATIONDATA
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::DATA::ConstReferenceType)
+		{
+		}
 	};
 
 	struct DELETE
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_CONFLICT> HTTP_CODE_CONFLICT;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
+
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
@@ -254,16 +282,25 @@ struct MISC_MANUFACTURING_PRODUCTDATA
 
 	struct GET
 	{
-		typedef ProductData Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const ProductData&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct POST
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_CREATED> HTTP_CODE_CREATED;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
+
 		struct Parameters
 		{
 			struct DATA
@@ -273,6 +310,8 @@ struct MISC_MANUFACTURING_PRODUCTDATA
 				typedef ProductData Type;
 				typedef const Type& ConstReferenceType;
 			};
+
+			typedef DATA Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -313,6 +352,12 @@ struct MISC_MANUFACTURING_PRODUCTDATA
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::DATA::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -324,16 +369,26 @@ struct MISC_MANUFACTURING_STEP
 
 	struct GET
 	{
-		typedef StepsDone Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const StepsDone&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct POST
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_CONFLICT> HTTP_CODE_CONFLICT;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
+
 		struct Parameters
 		{
 			struct STEP
@@ -343,6 +398,8 @@ struct MISC_MANUFACTURING_STEP
 				typedef uint8 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef STEP Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -383,10 +440,20 @@ struct MISC_MANUFACTURING_STEP
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::STEP::ConstReferenceType)
+		{
+		}
 	};
 
 	struct DELETE
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_CONFLICT> HTTP_CODE_CONFLICT;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
+
 		struct Parameters
 		{
 			struct STEP
@@ -396,6 +463,8 @@ struct MISC_MANUFACTURING_STEP
 				typedef uint8 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef STEP Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -436,6 +505,12 @@ struct MISC_MANUFACTURING_STEP
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::STEP::ConstReferenceType)
+		{
+		}
 	};
 };
 

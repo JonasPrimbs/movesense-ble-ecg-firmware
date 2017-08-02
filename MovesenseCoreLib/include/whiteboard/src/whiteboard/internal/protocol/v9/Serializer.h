@@ -173,9 +173,15 @@ void Serializer::serializeClientId(ClientId clientId)
     WB_STATIC_VERIFY(sizeof(clientId.localClientId) == 2, ClientIdIsNotWhatExpected_1);
     WB_STATIC_VERIFY(WB_MAX_EXECUTION_CONTEXTS == 15, ClientIdIsNotWhatExpected_2);
 
-    ClientIdSerializationBuffer binaryValue = { static_cast<uint8>(clientId.executionContextId | static_cast<uint8>(clientId.isNonCriticalSubscription << 7)),
-                                               static_cast<uint8>(clientId.localClientId >> 8),
-                                               static_cast<uint8>(clientId.localClientId & 0xff)};
+    ClientIdSerializationBuffer binaryValue = 
+    { 
+        static_cast<uint8>(
+            static_cast<uint8>(clientId.executionContextId) | 
+            static_cast<uint8>(clientId.nonCriticalSubscription << 7u) | 
+            static_cast<uint8>(clientId.typeChecked << 6u)),
+        static_cast<uint8>(clientId.localClientId >> 8u),
+        static_cast<uint8>(clientId.localClientId & 0xff)
+    };
 
     WB_ASSERT(mPosition + sizeof(binaryValue) <= mpBuffer->header.messageLength);
     memcpy(&mpBuffer->data[mPosition], binaryValue, sizeof(binaryValue));

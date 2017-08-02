@@ -6,6 +6,8 @@
 
 #include "whiteboard/Identifiers.h"
 #include "whiteboard/ParameterList.h"
+#include "whiteboard/Result.h"
+#include "whiteboard/ResourceClient.h"
 
 #include "whiteboard/builtinTypes/Array.h"
 #include "whiteboard/builtinTypes/ByteStream.h"
@@ -104,7 +106,7 @@ struct DEVICE_SYSTEMEVENT
 
 	struct GET
 	{
-		typedef SystemEventLogEntryArray Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const SystemEventLogEntryArray&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
@@ -115,6 +117,8 @@ struct DEVICE_SYSTEMEVENT
 				typedef uint32 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef SEQUENCENUMBER Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -169,6 +173,12 @@ struct DEVICE_SYSTEMEVENT
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			const whiteboard::Api::OptionalParameter<Parameters::SEQUENCENUMBER::ConstReferenceType>& = whiteboard::NoType::NoValue)
+		{
+		}
 	};
 };
 

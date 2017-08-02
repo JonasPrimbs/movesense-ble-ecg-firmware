@@ -82,6 +82,14 @@ void HelloWorldService::onGetRequest(const whiteboard::Request& request,
 
 void HelloWorldService::onTimer(whiteboard::TimerId timerId)
 {
+    if (isResourceSubscribed(WB_RES::LOCAL::SAMPLE_HELLOWORLD::ID) != wb::HTTP_CODE_OK)
+    {
+        DEBUGLOG("Stop timer.");
+        stopTimer(mTimer);
+        mTimer = whiteboard::ID_INVALID_TIMER;
+        return;
+    }
+
     if (timerId != mTimer)
     {
         return;
@@ -96,7 +104,7 @@ void HelloWorldService::onTimer(whiteboard::TimerId timerId)
     hello.greeting = buf;
 
     // and update the resources/resources
-    updateResource(WB_RES::LOCAL::SAMPLE_HELLOWORLD::ID,
+    updateResource(WB_RES::LOCAL::SAMPLE_HELLOWORLD(),
                    ResponseOptions::Empty, hello);
 }
 
@@ -128,12 +136,6 @@ void HelloWorldService::onUnsubscribe(const whiteboard::Request& request,
     switch (request.getResourceConstId())
     {
     case WB_RES::LOCAL::SAMPLE_HELLOWORLD::ID:
-
-        if (mTimer != whiteboard::ID_INVALID_TIMER)
-        {
-            stopTimer(mTimer);
-            mTimer == whiteboard::ID_INVALID_TIMER;
-        }
         returnResult(request, wb::HTTP_CODE_OK, ResponseOptions::Empty);
         break;
 

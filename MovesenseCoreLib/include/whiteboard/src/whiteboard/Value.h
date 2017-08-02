@@ -1,8 +1,5 @@
 #pragma once
-/******************************************************************************
-    Copyright (c) Suunto Oy 2014.
-    All rights reserved.
-******************************************************************************/
+// Copyright (c) Suunto Oy 2014. All rights reserved.
 
 #include "whiteboard/integration/port.h"
 #include "whiteboard/builtinTypes/Structures.h"
@@ -430,10 +427,10 @@ template <> struct Value::NativeValueType<UnknownStructure>
 };
 
 // Enumerations
-template <typename Definition, typename DefitionType, typename BaseType>
-struct Value::NativeValueType<TypedEnum<Definition, DefitionType, BaseType> >
+template <typename Definition, typename DefitionType, typename ScalarBaseType>
+struct Value::NativeValueType<TypedEnum<Definition, DefitionType, ScalarBaseType> >
 {
-    static const ValueType value = NativeValueType<BaseType>::value;
+    static const ValueType value = NativeValueType<ScalarBaseType>::value;
 };
 
 // Default to structure
@@ -509,10 +506,10 @@ template <> struct Value::ResultType<UnknownStructure>
 };
 
 // Enumerations
-template <typename Definition, typename DefitionType, typename BaseType>
-struct Value::ResultType<TypedEnum<Definition, DefitionType, BaseType> >
+template <typename Definition, typename DefitionType, typename ScalarBaseType>
+struct Value::ResultType<TypedEnum<Definition, DefitionType, ScalarBaseType> >
 {
-    typedef TypedEnum<Definition, DefitionType, BaseType> type;
+    typedef TypedEnum<Definition, DefitionType, ScalarBaseType> type;
 };
 
 // Default to structure and others that are passed by reference

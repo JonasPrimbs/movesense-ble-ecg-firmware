@@ -51,7 +51,7 @@ public:
 
 private:
     /** Called when SimulatorPnPNotifier finds that top level window has been created or destroyed */
-    void onWindowNotification(HWND hwnd, const WindowEvent event);
+    void onWindowNotification(const WindowEvent event);
 
     /** Thread loop of the update thread */
     void updateThreadLoop();

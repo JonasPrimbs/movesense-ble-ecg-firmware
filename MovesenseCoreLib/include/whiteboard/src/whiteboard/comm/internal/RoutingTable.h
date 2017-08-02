@@ -232,7 +232,7 @@ public:
     *   @param rRouteState On output contains state of the route
     *   @return Result of the operation.
     */
-    Result getState(WhiteboardId remoteWhiteboardId, WB_RES::RouteState& rRouteState);
+    bool getState(WhiteboardId remoteWhiteboardId, WB_RES::RouteState& rRouteState);
 
     /**
     *   Gets adapter specific next hop address in human readable form of requested remote whiteboard.

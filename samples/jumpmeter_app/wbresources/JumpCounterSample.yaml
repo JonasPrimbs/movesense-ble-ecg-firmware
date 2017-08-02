@@ -5,35 +5,19 @@ swagger: '2.0'
 # Document metadata
 info:
   version: "0.0.0"
-  title: Movesense Accelerometer sample app API 
+  title: Movesense Jump meter sample app API
   description: |
-    This file defines API for Movesense Accelerometer Sample service
+    This file defines API for Movesense Jump meter Sample service
 
     See http://movesense.com for more information.
   termsOfService: http://suunto.com/wbapi/terms/
   contact:
     name: Suunto team
     url: http://developer.suunto.com
-  
-
-# Security definitions
-security:
-  - suuntoAccessCode:
-    - public
-    
-securityDefinitions:
-  suuntoAccessCode:
-    type: oauth2
-    scopes:
-      public: Grants read/write access to public resources.
-    flow: accessCode
-    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
-    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
 
 # Paths
 paths:
   /Sample/JumpCounter/JumpCount:
-    x-executionContext: meas
     get:
       description: |
         Get a Data value.
@@ -46,12 +30,8 @@ paths:
 
         204:
           description: Measurement source is unavailable
-      security:
-        - suuntoAccessCode:
-          - public
 
   /Sample/JumpCounter/JumpCount/Subscription:
-    x-executionContext: meas
     post:
       description: |
         Subscribe to periodic Data values.
@@ -69,10 +49,6 @@ paths:
               description: Detected jump count
               type: integer
               format: uint16
-            
-      security:
-        - suuntoAccessCode:
-          - public
     delete:
       description: |
         Unsubscribe from jump count updates
@@ -81,12 +57,8 @@ paths:
           description: Operation completed successfully
         x-std-errors:
           description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
-      security:
-        - suuntoAccessCode:
-          - public
 
   /Sample/JumpCounter/LastJumpHeight:
-    x-executionContext: meas
     get:
       description: |
         Get a Data value.
@@ -99,12 +71,8 @@ paths:
               x-unit: m
         204:
           description: Measurement source is unavailable
-      security:
-        - suuntoAccessCode:
-          - public
 
   /Sample/JumpCounter/LastJumpHeight/Subscription:
-    x-executionContext: meas
     post:
       description: |
         Subscribe to periodic Data values.
@@ -123,10 +91,6 @@ paths:
               type: number
               format: float
               x-unit: m
-            
-      security:
-        - suuntoAccessCode:
-          - public
     delete:
       description: |
         Unsubscribe from jump height updates.
@@ -135,9 +99,6 @@ paths:
           description: Operation completed successfully
         x-std-errors:
           description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
-      security:
-        - suuntoAccessCode:
-          - public
 
 
 definitions:

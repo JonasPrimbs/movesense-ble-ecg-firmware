@@ -6,6 +6,8 @@
 
 #include "whiteboard/Identifiers.h"
 #include "whiteboard/ParameterList.h"
+#include "whiteboard/Result.h"
+#include "whiteboard/ResourceClient.h"
 
 #include "whiteboard/builtinTypes/Array.h"
 #include "whiteboard/builtinTypes/ByteStream.h"
@@ -120,16 +122,24 @@ struct MEAS_GYRO_CONFIG
 
 	struct GET
 	{
-		typedef GyroConfig Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const GyroConfig&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_SERVICE_UNAVAILABLE> HTTP_CODE_SERVICE_UNAVAILABLE;
+
 		struct Parameters
 		{
 			struct CONFIG
@@ -139,6 +149,8 @@ struct MEAS_GYRO_CONFIG
 				typedef GyroConfig Type;
 				typedef const Type& ConstReferenceType;
 			};
+
+			typedef CONFIG Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -179,6 +191,12 @@ struct MEAS_GYRO_CONFIG
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::CONFIG::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -190,12 +208,17 @@ struct MEAS_GYRO_INFO
 
 	struct GET
 	{
-		typedef GyroInfo Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const GyroInfo&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
@@ -207,6 +230,9 @@ struct MEAS_GYRO_SAMPLERATE
 
 	struct SUBSCRIBE
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_IMPLEMENTED> HTTP_CODE_NOT_IMPLEMENTED;
+
 		struct Parameters
 		{
 			struct SAMPLERATE
@@ -216,6 +242,8 @@ struct MEAS_GYRO_SAMPLERATE
 				typedef int32 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef SAMPLERATE Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -256,15 +284,19 @@ struct MEAS_GYRO_SAMPLERATE
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::SAMPLERATE::ConstReferenceType)
+		{
+		}
 	};
 
 	struct EVENT
 	{
 		typedef GyroData NotificationType;
-	};
+		typedef const NotificationType& ConstReferenceNotificationType;
 
-	struct UNSUBSCRIBE
-	{
 		struct Parameters
 		{
 			struct SAMPLERATE
@@ -274,6 +306,86 @@ struct MEAS_GYRO_SAMPLERATE
 				typedef int32 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef SAMPLERATE Parameter1;
+
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
+		};
+
+		/** Reference wrapper for strongly typed parameter list for /Meas/Gyro/{SampleRate} */
+		class ParameterListRef
+		{
+		private:
+			/** Prevent use of default constructor */
+			ParameterListRef() DELETED;
+
+			/** Prevent use of copy constructor */
+			ParameterListRef(const ParameterListRef&) DELETED;
+
+			/** Prevent use of assignment operator */
+			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
+
+		public:
+			/** Constructor that initializes this class from existing parameter list
+			*
+			* @param rParameterList Reference to parameter list that contains untyped parameters
+			*/
+			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
+				: mrParameterList(rParameterList)
+			{
+			}
+
+			/** Checks whether optional parameter SAMPLERATE has a value
+			*
+			* @return A value indicating whether the parameter has a value
+			*/
+			inline bool hasSampleRate() const
+			{
+				if (mrParameterList.getNumberOfParameters() <= Parameters::SAMPLERATE::Index)
+				{
+					return false;
+				}
+
+				return mrParameterList[Parameters::SAMPLERATE::Index].getType() != whiteboard::WB_TYPE_NONE;
+			}
+
+			/** Gets SAMPLERATE parameter value
+			*
+			* @return Current parameter value
+			*/
+			inline Parameters::SAMPLERATE::ConstReferenceType getSampleRate() const
+			{
+				return mrParameterList[Parameters::SAMPLERATE::Index].convertTo<Parameters::SAMPLERATE::ConstReferenceType>();
+			}
+
+		private:
+			/** Reference to actual parameter list */
+			const whiteboard::ParameterList& mrParameterList;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			const whiteboard::Api::OptionalParameter<ConstReferenceNotificationType>&,
+			const whiteboard::Api::OptionalParameter<Parameters::SAMPLERATE::ConstReferenceType>& = whiteboard::NoType::NoValue)
+		{
+		}
+	};
+
+	struct UNSUBSCRIBE
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			struct SAMPLERATE
+			{
+				static const whiteboard::ParameterIndex Index = 0;
+
+				typedef int32 Type;
+				typedef Type ConstReferenceType;
+			};
+
+			typedef SAMPLERATE Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -314,6 +426,12 @@ struct MEAS_GYRO_SAMPLERATE
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::SAMPLERATE::ConstReferenceType)
+		{
+		}
 	};
 };
 

@@ -42,8 +42,9 @@ definitions:
     type: integer
     format: uint16
     minimum: 0
-    maximum: 1
+    maximum: 2
     x-enumNames:
       - NO_VISUAL_INDICATIONS
       - CONTINUOUS_VISUAL_INDICATION
+      - SHORT_VISUAL_INDICATION
       

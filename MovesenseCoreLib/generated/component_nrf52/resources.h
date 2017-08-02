@@ -6,6 +6,8 @@
 
 #include "whiteboard/Identifiers.h"
 #include "whiteboard/ParameterList.h"
+#include "whiteboard/Result.h"
+#include "whiteboard/ResourceClient.h"
 
 #include "whiteboard/builtinTypes/Array.h"
 #include "whiteboard/builtinTypes/ByteStream.h"
@@ -110,17 +112,23 @@ struct COMPONENT_NRF52_TEST_MODE
 
 	struct GET
 	{
-		typedef TestMode Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const TestMode&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct PUT
 	{
-		typedef uint8 Response_HTTP_CODE_BAD_REQUEST_Type;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<uint8, whiteboard::HTTP_CODE_BAD_REQUEST> HTTP_CODE_BAD_REQUEST;
 
 		struct Parameters
 		{
@@ -131,6 +139,8 @@ struct COMPONENT_NRF52_TEST_MODE
 				typedef TestMode Type;
 				typedef const Type& ConstReferenceType;
 			};
+
+			typedef MODE Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -171,6 +181,12 @@ struct COMPONENT_NRF52_TEST_MODE
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::MODE::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -182,7 +198,8 @@ struct COMPONENT_NRF52_TEST_TXPOW
 
 	struct PUT
 	{
-		typedef uint8 Response_HTTP_CODE_BAD_REQUEST_Type;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<uint8, whiteboard::HTTP_CODE_BAD_REQUEST> HTTP_CODE_BAD_REQUEST;
 
 		struct Parameters
 		{
@@ -193,6 +210,8 @@ struct COMPONENT_NRF52_TEST_TXPOW
 				typedef TxPow Type;
 				typedef const Type& ConstReferenceType;
 			};
+
+			typedef LEVEL Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -233,6 +252,12 @@ struct COMPONENT_NRF52_TEST_TXPOW
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::LEVEL::ConstReferenceType)
+		{
+		}
 	};
 };
 

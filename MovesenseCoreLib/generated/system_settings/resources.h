@@ -6,6 +6,8 @@
 
 #include "whiteboard/Identifiers.h"
 #include "whiteboard/ParameterList.h"
+#include "whiteboard/Result.h"
+#include "whiteboard/ResourceClient.h"
 
 #include "whiteboard/builtinTypes/Array.h"
 #include "whiteboard/builtinTypes/ByteStream.h"
@@ -61,6 +63,8 @@ struct SYSTEM_SETTINGS_POWEROFFAFTERRESET
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
 		struct Parameters
 		{
 			struct STATE
@@ -70,6 +74,8 @@ struct SYSTEM_SETTINGS_POWEROFFAFTERRESET
 				typedef bool Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef STATE Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -110,6 +116,12 @@ struct SYSTEM_SETTINGS_POWEROFFAFTERRESET
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::STATE::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -121,14 +133,23 @@ struct SYSTEM_SETTINGS_UARTON
 
 	struct GET
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
 		struct Parameters
 		{
 			struct STATE
@@ -138,6 +159,8 @@ struct SYSTEM_SETTINGS_UARTON
 				typedef bool Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef STATE Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -178,6 +201,12 @@ struct SYSTEM_SETTINGS_UARTON
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::STATE::ConstReferenceType)
+		{
+		}
 	};
 };
 

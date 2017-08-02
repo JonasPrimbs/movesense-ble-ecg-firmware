@@ -95,6 +95,20 @@ public:
     /** Desctructor */
     virtual ~TestProviderBase();
 
+    /** registerProviderResource */
+    Result callRegisterProviderResource(const LocalResourceId localResourceId)
+    {
+        return DpcFunctor::syncQueueOnce<Result, ResourceProvider, LocalResourceId>(
+            getExecutionContextId(), getWhiteboard(), this, &ResourceProvider::registerProviderResource, localResourceId);
+    }
+
+    /** unregisterProviderResource */
+    Result callUnregisterProviderResource(const LocalResourceId localResourceId)
+    {
+        return DpcFunctor::syncQueueOnce<Result, ResourceProvider, LocalResourceId>(
+            getExecutionContextId(), getWhiteboard(), this, &ResourceProvider::unregisterProviderResource, localResourceId);
+    }
+
 protected:
     /** Gets the associated whiteboard instance
     *
@@ -103,6 +117,58 @@ protected:
     virtual Whiteboard& getWhiteboard() OVERRIDE FINAL
     {
         return mrWhiteboard;
+    }
+
+    /**
+    *	GET request handler.
+    *
+    *	@param rRequest Request information
+    *	@param rParameters List of parameters for the request
+    *	@return Result of the operation
+    */
+    virtual void onGetRequest(
+        const Request& rRequest, const ParameterList& /*rParameters*/) OVERRIDE
+    {
+        return returnResult(rRequest, HTTP_CODE_OK);
+    }
+
+    /**
+    *	PUT request handler.
+    *
+    *	@param rRequest Request information
+    *	@param rParameters List of parameters for the request
+    *	@return Result of the operation
+    */
+    virtual void onPutRequest(
+        const Request& rRequest, const ParameterList& /*rParameters*/) OVERRIDE
+    {
+        return returnResult(rRequest, HTTP_CODE_OK);
+    }
+
+    /**
+    *	POST request handler.
+    *
+    *	@param rRequest Request information
+    *	@param rParameters List of parameters for the request
+    *	@return Result of the operation
+    */
+    virtual void onPostRequest(
+        const Request& rRequest, const ParameterList& /*rParameters*/) OVERRIDE
+    {
+        return returnResult(rRequest, HTTP_CODE_OK);
+    }
+
+    /**
+    *	DELETE request handler.
+    *
+    *	@param rRequest Request information
+    *	@param rParameters List of parameters for the request
+    *	@return Result of the operation
+    */
+    virtual void onDeleteRequest(
+        const Request& rRequest, const ParameterList& /*rParameters*/) OVERRIDE
+    {
+        return returnResult(rRequest, HTTP_CODE_OK);
     }
 
 private:
@@ -267,20 +333,6 @@ public:
         WbSemaphoreTryWait(status.mComplete, 500);
     }
 
-    /** registerProviderResource */
-    Result callRegisterProviderResource(const LocalResourceId localResourceId)
-    {
-        return DpcFunctor::syncQueueOnce<Result, ResourceProvider, LocalResourceId>(
-            getExecutionContextId(), getWhiteboard(), this, &ResourceProvider::registerProviderResource, localResourceId);
-    }
-
-    /** unregisterProviderResource */
-    Result callUnregisterProviderResource(const LocalResourceId localResourceId)
-    {
-        return DpcFunctor::syncQueueOnce<Result, ResourceProvider, LocalResourceId>(
-            getExecutionContextId(), getWhiteboard(), this, &ResourceProvider::unregisterProviderResource, localResourceId);
-    }
-
     /**
     *	GET request handler.
     *
@@ -307,32 +359,6 @@ public:
         const Request& rRequest, const ParameterList& rParameters) OVERRIDE
     {
         this->mValue = rParameters[0].convertTo<T>();
-        return returnResult(rRequest, HTTP_CODE_OK);
-    }
-
-    /**
-    *	POST request handler.
-    *
-    *	@param rRequest Request information
-    *	@param rParameters List of parameters for the request
-    *	@return Result of the operation
-    */
-    virtual void onPostRequest(
-        const Request& rRequest, const ParameterList& /*rParameters*/) OVERRIDE
-    {
-        return returnResult(rRequest, HTTP_CODE_OK);
-    }
-
-    /**
-    *	DELETE request handler.
-    *
-    *	@param rRequest Request information
-    *	@param rParameters List of parameters for the request
-    *	@return Result of the operation
-    */
-    virtual void onDeleteRequest(
-        const Request& rRequest, const ParameterList& /*rParameters*/) OVERRIDE
-    {
         return returnResult(rRequest, HTTP_CODE_OK);
     }
 
@@ -363,7 +389,7 @@ protected:
 
     static void notifyDpcHandler(NotifyStatus* status)
     {
-        status->mProvider.updateResource(status->mResourceId, ResourceProvider::ResponseOptions::Empty, status->mrValue);
+        status->mProvider.updateResource(status->mResourceId.localResourceId, ResourceProvider::ResponseOptions::Empty, status->mrValue);
         WbSemaphoreRelease(status->mComplete);
     }
 };

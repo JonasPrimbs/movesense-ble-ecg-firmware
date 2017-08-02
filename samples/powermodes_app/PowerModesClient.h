@@ -1,4 +1,3 @@
-// Copyright (c) Suunto Oy 2016. All rights reserved.
 #pragma once
 
 #include "app-resources/resources.h"

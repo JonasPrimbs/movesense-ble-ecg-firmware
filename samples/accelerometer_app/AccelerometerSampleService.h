@@ -1,4 +1,3 @@
-// Copyright (c) Suunto Oy 2016. All rights reserved.
 #pragma once
 
 #include <whiteboard/LaunchableModule.h>
@@ -51,6 +50,29 @@ private:
                                const whiteboard::ParameterList& parameters) OVERRIDE;
 
     /**
+    *  Whiteboard disconnect notification handler.
+    *
+    *  This can be used for example to cleanup possible subscription related information of clients from
+    *  the remote whiteboard.
+    *
+    *  @param whiteboardId ID of the whiteboard that has been disconnected.
+    *
+    *  @see whiteboard::ResourceProvider::onSubscribe
+    *  @see whiteboard::ResourceProvider::onUnsubscribe
+    */
+    virtual void onRemoteWhiteboardDisconnected(whiteboard::WhiteboardId whiteboardId) OVERRIDE;
+
+    /**
+    * Local client 'disconnect' notification handler.
+    *
+    *  This can be used for example to cleanup possible subscription related information of the client.
+    *
+    *  @see whiteboard::ResourceProvider::onSubscribe
+    *  @see whiteboard::ResourceProvider::onUnsubscribe
+    */
+    virtual void onClientUnavailable(whiteboard::ClientId clientId) OVERRIDE;
+
+    /**
     *	Callback for resource notifications.
     *   Note that this function will not be called for notifications that are
     *   of types WB_RESOURCE_NOTIFICATION_TYPE_INSERT or WB_RESOURCE_NOTIFICATION_TYPE_DELETE,
@@ -93,6 +115,7 @@ private:
 
     whiteboard::RequestMap<2, void> mOngoingRequests; // For storing relations of incoming & outgoing requests
 
+    bool isRunning;
     size_t mSamplesIncluded;
     float mMaxAccelerationSq;
 };

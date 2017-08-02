@@ -2,6 +2,7 @@
 // Copyright (c) Suunto Oy 2016. All rights reserved.
 
 #include "whiteboard/integration/port.h"
+#include "whiteboard/builtinTypes/NoType.h"
 
 namespace whiteboard
 {
@@ -109,7 +110,72 @@ inline bool RETURN_OKN(const Result result)
     return result == wb::HTTP_CODE_OK || result == wb::HTTP_CODE_ACCEPTED || result == wb::HTTP_CODE_NO_CONTENT;
 }
 
+/** StronglyTypedResult class acts as wrapper class for type safe returnResult calls
+ *
+ * @tparam ValueType Type of the value
+ * @tparam DEFAULT_RESULT_CODE Default result code to use in default constructor.
+ *                             Needed for easier syntax of compile time instantiated WBRES generated results.
+ */
+template <typename ValueType = const NoType&, Result DEFAULT_RESULT_CODE = HTTP_CODE_INVALID>
+class StronglyTypedResult FINAL
+{
+public:
+    /** Type of the value */
+    typedef ValueType Type;
+
+    /** Constructor
+     *
+     * @param resultCode Result code of the StronglyTypedResult
+     */
+    inline StronglyTypedResult(Result resultCode = DEFAULT_RESULT_CODE)
+        : mResultCode(resultCode)
+    {
+    }
+
+    /** Copy constructor
+     *
+     * @tparam WHATEVER_DEFAULT Helper that allows assignment of a similar StronglyTypedResult but with different 
+     *         default result code
+     * @param rOther Another StronglyTypedResult instance to copy
+     */
+    template <Result WHATEVER_DEFAULT>
+    inline StronglyTypedResult(const StronglyTypedResult<ValueType, WHATEVER_DEFAULT>& rOther)
+        : mResultCode(static_cast<Result>(rOther))
+    {
+    }
+
+    /** Assignment operator
+    *
+    * @tparam WHATEVER_DEFAULT Helper that allows assignment of a similar response but with different
+    *         default result code
+    * @param rOther Another response to copy
+    * @return Reference to this StronglyTypedResult instance
+    */
+    template <Result WHATEVER_DEFAULT>
+    inline const StronglyTypedResult& operator=(const StronglyTypedResult<ValueType, WHATEVER_DEFAULT>& rOther)
+    {
+        mResultCode = static_cast<Result>(rOther);
+        return *this;
+    }
+
+    /** Cast operator to get the contained Result value
+    *
+    * @return Underlying result code
+    */
+    EXPLICIT inline operator Result() const
+    {
+        return mResultCode;
+    }
+
+    /** Helper function for doing compile time type checking of returnResult calls */
+    static inline void typeCheck(ValueType)
+    {
+    }
+
+private:
+    /** Associated result code */
+    Result mResultCode;
+};
+
 } // namespace whiteboard
 
-/// Namespace alias wb = whiteboard for convenience use
-namespace wb = whiteboard;

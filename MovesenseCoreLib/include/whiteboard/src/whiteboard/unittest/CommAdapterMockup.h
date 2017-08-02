@@ -42,6 +42,9 @@ public:
 
         /** Counter value */
         size_t counter;
+
+        /** Timestamp of last change */
+        WbTimestamp timeStamp;
     };
 
     /** Constructor

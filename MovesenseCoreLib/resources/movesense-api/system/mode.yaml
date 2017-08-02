@@ -88,6 +88,12 @@ definitions:
       - name: 'BleTestMode'
         description: Mode for testing the BLE (Softdevice is disabled, using DTM)
         value: 11
+      - name: 'FwUpdateMode'
+        description: Mode for setting the device into FW update mode
+        value: 12
+      - name: 'BatteryTestMode'
+        description: Mode with the battery load connected
+        value: 13
 
   SystemModeStatus:
     required:

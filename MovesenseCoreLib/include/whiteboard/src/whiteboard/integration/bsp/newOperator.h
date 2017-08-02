@@ -163,12 +163,11 @@ static inline TRIVIALLY_DESTRUCTIBLE_TYPE* NewArray(size_t itemCount)
 /** Matching custom delete operator implementation that redirects memory allocation
 * to WbMemFree functions.
 *
-* @tparam T Type of object to allocate
-* @param itemCount Number of items to allocate
+* @tparam T Type of object to deallocate
 * @param pointer Pointer to allocated object
 */
 template <typename T>
-static inline void DeleteArray(T* pointer, size_t itemCount, TRIVIALLY_DESTRUCTIBLE_TYPE* = 0)
+static inline void DeleteArray(T* pointer, TRIVIALLY_DESTRUCTIBLE_TYPE* = 0)
 {
     if (pointer)
     {
@@ -252,11 +251,11 @@ static inline TRIVIALLY_DESTRUCTIBLE_TYPE* NewAlignedArray(size_t itemCount)
 * to WbMemFree functions.
 *
 * @tparam T Type of object to allocate
-* @param itemCount Number of items to allocate
+* @param itemCount Number of items to deallocate
 * @param pointer Pointer to allocated object
 */
 template <typename T>
-static inline void DeleteAlignedArray(T* pointer, size_t itemCount, TRIVIALLY_DESTRUCTIBLE_TYPE* = 0)
+static inline void DeleteAlignedArray(T* pointer, TRIVIALLY_DESTRUCTIBLE_TYPE* = 0)
 {
     if (pointer)
     {

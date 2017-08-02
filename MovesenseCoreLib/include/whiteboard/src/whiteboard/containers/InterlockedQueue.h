@@ -104,7 +104,7 @@ InterlockedQueue<ItemType>::InterlockedQueue(uint32 size)
 template <typename ItemType>
 InterlockedQueue<ItemType>::~InterlockedQueue()
 {
-    DeleteArray<ItemType>(mpItems, mAllocatedItems);
+    DeleteArray<ItemType>(mpItems);
 }
 
 template <typename ItemType>

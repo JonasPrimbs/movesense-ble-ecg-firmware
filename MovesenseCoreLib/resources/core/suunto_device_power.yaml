@@ -61,8 +61,6 @@ paths:
             type: integer
             format: uint8
             x-unit: percent
-        x-std-errors:
-          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
         x-notification:
           description: New value
           schema:
@@ -78,8 +76,6 @@ paths:
       responses:
         200:
           description: Operation completed successfully
-        x-std-errors:
-          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
       security:
         - suuntoAccessCode:
           - public
@@ -106,8 +102,6 @@ paths:
       responses:
         200:
           description: Operation completed successfully
-        x-std-errors:
-          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
         x-notification:
           description: New value
           schema:
@@ -121,8 +115,6 @@ paths:
       responses:
         200:
           description: Operation completed successfully
-        x-std-errors:
-          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
       security:
         - suuntoAccessCode:
           - public
@@ -170,6 +162,22 @@ paths:
           description: Operation completed successfully
         x-std-errors:
           description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Device/Power/BatteryVoltage:
+    x-executionContext: meas
+    get:
+      description: |
+        Get measured battery voltage level.
+      responses:
+        200:
+          description: Battery voltage level (unfiltered)
+          schema:
+            type: integer
+            format: uint16
+            x-unit: millivolt
       security:
         - suuntoAccessCode:
           - public

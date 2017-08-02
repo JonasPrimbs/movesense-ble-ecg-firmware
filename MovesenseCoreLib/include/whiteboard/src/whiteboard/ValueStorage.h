@@ -177,7 +177,6 @@ private:
     template <typename T>
     T convertToNative() const;
 
-
     friend class whiteboard::Value;
 
     /// @see whiteboard::ValueType

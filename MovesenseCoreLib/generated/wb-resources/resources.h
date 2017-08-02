@@ -6,6 +6,8 @@
 
 #include "whiteboard/Identifiers.h"
 #include "whiteboard/ParameterList.h"
+#include "whiteboard/Result.h"
+#include "whiteboard/ResourceClient.h"
 
 #include "whiteboard/builtinTypes/Array.h"
 #include "whiteboard/builtinTypes/ByteStream.h"
@@ -136,7 +138,8 @@ struct OperationTypeValues
 		PUT = 1U,
 		POST = 2U,
 		DELETE = 3U,
-		EVENT = 4U
+		SUBSCRIBE = 4U,
+		UNSUBSCRIBE = 5U
 	};
 };
 typedef whiteboard::TypedEnum<OperationTypeValues, OperationTypeValues::Type, uint8> OperationType;
@@ -830,7 +833,8 @@ struct META_DATATYPE
 
 	struct GET
 	{
-		typedef DataTypeMetadata Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const DataTypeMetadata&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_FOUND> HTTP_CODE_NOT_FOUND;
 
 		struct Parameters
 		{
@@ -841,6 +845,8 @@ struct META_DATATYPE
 				typedef uint16 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef TYPEID Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -881,6 +887,12 @@ struct META_DATATYPE
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::TYPEID::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -892,7 +904,8 @@ struct META_EXECUTIONCONTEXT
 
 	struct GET
 	{
-		typedef ExecutionContextMetadata Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const ExecutionContextMetadata&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_FOUND> HTTP_CODE_NOT_FOUND;
 
 		struct Parameters
 		{
@@ -903,6 +916,8 @@ struct META_EXECUTIONCONTEXT
 				typedef uint8 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef EXECUTIONCONTEXTID Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -943,6 +958,12 @@ struct META_EXECUTIONCONTEXT
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::EXECUTIONCONTEXTID::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -954,12 +975,17 @@ struct META_HASH
 
 	struct GET
 	{
-		typedef const char* Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const char*, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
@@ -971,8 +997,9 @@ struct META_METADATASTREAM
 
 	struct GET
 	{
-		typedef whiteboard::ByteStream Response_HTTP_CODE_CONTINUE_Type;
-		typedef whiteboard::ByteStream Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::ByteStream&, whiteboard::HTTP_CODE_CONTINUE> HTTP_CODE_CONTINUE;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::ByteStream&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_LOCKED> HTTP_CODE_LOCKED;
 
 		struct Parameters
 		{
@@ -983,6 +1010,8 @@ struct META_METADATASTREAM
 				typedef uint16 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef ORIGINALREQUESTID Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -1037,6 +1066,12 @@ struct META_METADATASTREAM
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			const whiteboard::Api::OptionalParameter<Parameters::ORIGINALREQUESTID::ConstReferenceType>& = whiteboard::NoType::NoValue)
+		{
+		}
 	};
 };
 
@@ -1048,7 +1083,8 @@ struct META_OPERATION
 
 	struct GET
 	{
-		typedef OperationMetadata Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const OperationMetadata&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_FOUND> HTTP_CODE_NOT_FOUND;
 
 		struct Parameters
 		{
@@ -1059,6 +1095,8 @@ struct META_OPERATION
 				typedef uint16 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef OPERATIONID Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -1099,6 +1137,12 @@ struct META_OPERATION
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::OPERATIONID::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -1110,7 +1154,8 @@ struct META_OPERATION_PARAMETER
 
 	struct GET
 	{
-		typedef ParameterMetadata Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const ParameterMetadata&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_FOUND> HTTP_CODE_NOT_FOUND;
 
 		struct Parameters
 		{
@@ -1122,6 +1167,8 @@ struct META_OPERATION_PARAMETER
 				typedef Type ConstReferenceType;
 			};
 
+			typedef OPERATIONID Parameter1;
+
 			struct PARAMETERINDEX
 			{
 				static const whiteboard::ParameterIndex Index = 1;
@@ -1129,6 +1176,8 @@ struct META_OPERATION_PARAMETER
 				typedef uint8 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef PARAMETERINDEX Parameter2;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 2;
 		};
@@ -1178,6 +1227,13 @@ struct META_OPERATION_PARAMETER
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::OPERATIONID::ConstReferenceType,
+			Parameters::PARAMETERINDEX::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -1189,7 +1245,8 @@ struct META_PARAMETER
 
 	struct GET
 	{
-		typedef ParameterMetadata Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const ParameterMetadata&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_FOUND> HTTP_CODE_NOT_FOUND;
 
 		struct Parameters
 		{
@@ -1200,6 +1257,8 @@ struct META_PARAMETER
 				typedef uint16 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef PARAMETERID Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -1240,6 +1299,12 @@ struct META_PARAMETER
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::PARAMETERID::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -1251,7 +1316,8 @@ struct META_RESOURCE
 
 	struct GET
 	{
-		typedef ResourceMetadata Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const ResourceMetadata&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_FOUND> HTTP_CODE_NOT_FOUND;
 
 		struct Parameters
 		{
@@ -1262,6 +1328,8 @@ struct META_RESOURCE
 				typedef uint16 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef RESOURCEID Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -1302,6 +1370,12 @@ struct META_RESOURCE
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::RESOURCEID::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -1313,7 +1387,8 @@ struct META_RESOURCE_OPERATION
 
 	struct GET
 	{
-		typedef OperationMetadata Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const OperationMetadata&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_FOUND> HTTP_CODE_NOT_FOUND;
 
 		struct Parameters
 		{
@@ -1325,6 +1400,8 @@ struct META_RESOURCE_OPERATION
 				typedef Type ConstReferenceType;
 			};
 
+			typedef RESOURCEID Parameter1;
+
 			struct OPERATIONTYPE
 			{
 				static const whiteboard::ParameterIndex Index = 1;
@@ -1332,6 +1409,8 @@ struct META_RESOURCE_OPERATION
 				typedef OperationType Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef OPERATIONTYPE Parameter2;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 2;
 		};
@@ -1381,6 +1460,13 @@ struct META_RESOURCE_OPERATION
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::RESOURCEID::ConstReferenceType,
+			Parameters::OPERATIONTYPE::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -1392,7 +1478,8 @@ struct META_RESOURCE_RESPONSE
 
 	struct GET
 	{
-		typedef ResponseMetadata Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const ResponseMetadata&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_FOUND> HTTP_CODE_NOT_FOUND;
 
 		struct Parameters
 		{
@@ -1404,6 +1491,8 @@ struct META_RESOURCE_RESPONSE
 				typedef Type ConstReferenceType;
 			};
 
+			typedef RESOURCEID Parameter1;
+
 			struct OPERATIONTYPE
 			{
 				static const whiteboard::ParameterIndex Index = 1;
@@ -1412,6 +1501,8 @@ struct META_RESOURCE_RESPONSE
 				typedef Type ConstReferenceType;
 			};
 
+			typedef OPERATIONTYPE Parameter2;
+
 			struct RESPONSEINDEX
 			{
 				static const whiteboard::ParameterIndex Index = 2;
@@ -1419,6 +1510,8 @@ struct META_RESOURCE_RESPONSE
 				typedef uint8 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef RESPONSEINDEX Parameter3;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 3;
 		};
@@ -1477,6 +1570,14 @@ struct META_RESOURCE_RESPONSE
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::RESOURCEID::ConstReferenceType,
+			Parameters::OPERATIONTYPE::ConstReferenceType,
+			Parameters::RESPONSEINDEX::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -1488,7 +1589,8 @@ struct META_RESOURCEID
 
 	struct GET
 	{
-		typedef uint16 Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<uint16, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_FOUND> HTTP_CODE_NOT_FOUND;
 
 		struct Parameters
 		{
@@ -1499,6 +1601,8 @@ struct META_RESOURCEID
 				typedef const char* Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef RESOURCEURI Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -1539,6 +1643,12 @@ struct META_RESOURCEID
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::RESOURCEURI::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -1550,7 +1660,8 @@ struct META_RESPONSE
 
 	struct GET
 	{
-		typedef ResponseMetadata Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const ResponseMetadata&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_FOUND> HTTP_CODE_NOT_FOUND;
 
 		struct Parameters
 		{
@@ -1561,6 +1672,8 @@ struct META_RESPONSE
 				typedef uint16 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef RESPONSEID Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -1601,6 +1714,12 @@ struct META_RESPONSE
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::RESPONSEID::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -1612,7 +1731,8 @@ struct META_SECURITYTAG
 
 	struct GET
 	{
-		typedef SecurityTagMetadata Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const SecurityTagMetadata&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_FOUND> HTTP_CODE_NOT_FOUND;
 
 		struct Parameters
 		{
@@ -1623,6 +1743,8 @@ struct META_SECURITYTAG
 				typedef uint8 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef SECURITYTAGID Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -1663,6 +1785,12 @@ struct META_SECURITYTAG
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::SECURITYTAGID::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -1674,7 +1802,8 @@ struct META_STRING
 
 	struct GET
 	{
-		typedef StringMetadata Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const StringMetadata&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_FOUND> HTTP_CODE_NOT_FOUND;
 
 		struct Parameters
 		{
@@ -1685,6 +1814,8 @@ struct META_STRING
 				typedef uint16 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef STRINGID Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -1725,6 +1856,12 @@ struct META_STRING
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::STRINGID::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -1736,8 +1873,8 @@ struct NET
 
 	struct GET
 	{
-		typedef RoutingTable Response_HTTP_CODE_CONTINUE_Type;
-		typedef RoutingTable Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const RoutingTable&, whiteboard::HTTP_CODE_CONTINUE> HTTP_CODE_CONTINUE;
+		typedef whiteboard::StronglyTypedResult<const RoutingTable&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
@@ -1748,6 +1885,8 @@ struct NET
 				typedef uint32 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef CONTINUATIONINDEX Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -1802,27 +1941,127 @@ struct NET
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			const whiteboard::Api::OptionalParameter<Parameters::CONTINUATIONINDEX::ConstReferenceType>& = whiteboard::NoType::NoValue)
+		{
+		}
 	};
 
 	struct SUBSCRIBE
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct EVENT
 	{
 		typedef const char* NotificationType;
+		typedef NotificationType ConstReferenceNotificationType;
+
+		struct Parameters
+		{
+			struct NOTIFICATIONTYPE
+			{
+				static const whiteboard::ParameterIndex Index = 0;
+
+				typedef RoutingTableNotificationType Type;
+				typedef Type ConstReferenceType;
+			};
+
+			typedef NOTIFICATIONTYPE Parameter1;
+
+			struct REMOTEWHITEBOARDIDINLOCALSCOPE
+			{
+				static const whiteboard::ParameterIndex Index = 1;
+
+				typedef uint8 Type;
+				typedef Type ConstReferenceType;
+			};
+
+			typedef REMOTEWHITEBOARDIDINLOCALSCOPE Parameter2;
+
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 2;
+		};
+
+		/** Reference wrapper for strongly typed parameter list for /Net */
+		class ParameterListRef
+		{
+		private:
+			/** Prevent use of default constructor */
+			ParameterListRef() DELETED;
+
+			/** Prevent use of copy constructor */
+			ParameterListRef(const ParameterListRef&) DELETED;
+
+			/** Prevent use of assignment operator */
+			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
+
+		public:
+			/** Constructor that initializes this class from existing parameter list
+			*
+			* @param rParameterList Reference to parameter list that contains untyped parameters
+			*/
+			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
+				: mrParameterList(rParameterList)
+			{
+			}
+
+			/** Gets NOTIFICATIONTYPE parameter value
+			*
+			* @return Current parameter value
+			*/
+			inline Parameters::NOTIFICATIONTYPE::ConstReferenceType getNotificationType() const
+			{
+				return mrParameterList[Parameters::NOTIFICATIONTYPE::Index].convertTo<Parameters::NOTIFICATIONTYPE::ConstReferenceType>();
+			}
+
+			/** Gets REMOTEWHITEBOARDIDINLOCALSCOPE parameter value
+			*
+			* @return Current parameter value
+			*/
+			inline Parameters::REMOTEWHITEBOARDIDINLOCALSCOPE::ConstReferenceType getRemoteWhiteboardIdInLocalScope() const
+			{
+				return mrParameterList[Parameters::REMOTEWHITEBOARDIDINLOCALSCOPE::Index].convertTo<Parameters::REMOTEWHITEBOARDIDINLOCALSCOPE::ConstReferenceType>();
+			}
+
+		private:
+			/** Reference to actual parameter list */
+			const whiteboard::ParameterList& mrParameterList;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			const whiteboard::Api::OptionalParameter<ConstReferenceNotificationType>&,
+			Parameters::NOTIFICATIONTYPE::ConstReferenceType,
+			Parameters::REMOTEWHITEBOARDIDINLOCALSCOPE::ConstReferenceType)
+		{
+		}
 	};
 
 	struct UNSUBSCRIBE
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
@@ -1838,7 +2077,8 @@ struct NET_ADAPTER_INDEX_NAME
 
 	struct GET
 	{
-		typedef const char* Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const char*, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_RANGE_NOT_SATISFIABLE> HTTP_CODE_RANGE_NOT_SATISFIABLE;
 
 		struct Parameters
 		{
@@ -1849,6 +2089,8 @@ struct NET_ADAPTER_INDEX_NAME
 				typedef int32 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef INDEX Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -1889,6 +2131,12 @@ struct NET_ADAPTER_INDEX_NAME
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::INDEX::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -1900,7 +2148,8 @@ struct NET_ADAPTER_INDEX_STATE
 
 	struct GET
 	{
-		typedef AdapterState Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<AdapterState, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_RANGE_NOT_SATISFIABLE> HTTP_CODE_RANGE_NOT_SATISFIABLE;
 
 		struct Parameters
 		{
@@ -1911,6 +2160,8 @@ struct NET_ADAPTER_INDEX_STATE
 				typedef int32 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef INDEX Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -1951,6 +2202,12 @@ struct NET_ADAPTER_INDEX_STATE
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::INDEX::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -1962,7 +2219,9 @@ struct NET_INFO
 
 	struct GET
 	{
-		typedef RoutingTableEntry Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const RoutingTableEntry&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NO_CONTENT> HTTP_CODE_NO_CONTENT;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_RANGE_NOT_SATISFIABLE> HTTP_CODE_RANGE_NOT_SATISFIABLE;
 
 		struct Parameters
 		{
@@ -1973,6 +2232,8 @@ struct NET_INFO
 				typedef uint8 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef REMOTEWHITEBOARDIDINLOCALSCOPE Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -2013,6 +2274,12 @@ struct NET_INFO
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::REMOTEWHITEBOARDIDINLOCALSCOPE::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -2026,7 +2293,10 @@ struct NET_INFO_REMOTEWHITEBOARDIDINLOCALSCOPE_ADDRESS
 
 	struct GET
 	{
-		typedef const char* Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const char*, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NO_CONTENT> HTTP_CODE_NO_CONTENT;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_GONE> HTTP_CODE_GONE;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_RANGE_NOT_SATISFIABLE> HTTP_CODE_RANGE_NOT_SATISFIABLE;
 
 		struct Parameters
 		{
@@ -2037,6 +2307,8 @@ struct NET_INFO_REMOTEWHITEBOARDIDINLOCALSCOPE_ADDRESS
 				typedef int32 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef REMOTEWHITEBOARDIDINLOCALSCOPE Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -2077,6 +2349,12 @@ struct NET_INFO_REMOTEWHITEBOARDIDINLOCALSCOPE_ADDRESS
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::REMOTEWHITEBOARDIDINLOCALSCOPE::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -2088,7 +2366,9 @@ struct NET_INFO_REMOTEWHITEBOARDIDINLOCALSCOPE_SERIALNUMBER
 
 	struct GET
 	{
-		typedef const char* Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const char*, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NO_CONTENT> HTTP_CODE_NO_CONTENT;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_RANGE_NOT_SATISFIABLE> HTTP_CODE_RANGE_NOT_SATISFIABLE;
 
 		struct Parameters
 		{
@@ -2099,6 +2379,8 @@ struct NET_INFO_REMOTEWHITEBOARDIDINLOCALSCOPE_SERIALNUMBER
 				typedef int32 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef REMOTEWHITEBOARDIDINLOCALSCOPE Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -2139,6 +2421,12 @@ struct NET_INFO_REMOTEWHITEBOARDIDINLOCALSCOPE_SERIALNUMBER
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::REMOTEWHITEBOARDIDINLOCALSCOPE::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -2150,7 +2438,8 @@ struct NET_INFO_REMOTEWHITEBOARDIDINLOCALSCOPE_STATE
 
 	struct GET
 	{
-		typedef RouteState Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<RouteState, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_RANGE_NOT_SATISFIABLE> HTTP_CODE_RANGE_NOT_SATISFIABLE;
 
 		struct Parameters
 		{
@@ -2161,6 +2450,8 @@ struct NET_INFO_REMOTEWHITEBOARDIDINLOCALSCOPE_STATE
 				typedef int32 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef REMOTEWHITEBOARDIDINLOCALSCOPE Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -2201,6 +2492,12 @@ struct NET_INFO_REMOTEWHITEBOARDIDINLOCALSCOPE_STATE
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::REMOTEWHITEBOARDIDINLOCALSCOPE::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -2214,12 +2511,17 @@ struct WHITEBOARD_INFO
 
 	struct GET
 	{
-		typedef WbInfo Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const WbInfo&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
@@ -2231,8 +2533,12 @@ struct WHITEBOARD_INFO_SUBSCRIPTIONS
 
 	struct GET
 	{
-		typedef SubscriptionList Response_HTTP_CODE_CONTINUE_Type;
-		typedef SubscriptionList Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const SubscriptionList&, whiteboard::HTTP_CODE_CONTINUE> HTTP_CODE_CONTINUE;
+		typedef whiteboard::StronglyTypedResult<const SubscriptionList&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NO_CONTENT> HTTP_CODE_NO_CONTENT;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_FOUND> HTTP_CODE_NOT_FOUND;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_ACCEPTABLE> HTTP_CODE_NOT_ACCEPTABLE;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_LOCKED> HTTP_CODE_LOCKED;
 
 		struct Parameters
 		{
@@ -2244,6 +2550,8 @@ struct WHITEBOARD_INFO_SUBSCRIPTIONS
 				typedef Type ConstReferenceType;
 			};
 
+			typedef RESOURCEPATH Parameter1;
+
 			struct STARTINDEX
 			{
 				static const whiteboard::ParameterIndex Index = 1;
@@ -2251,6 +2559,8 @@ struct WHITEBOARD_INFO_SUBSCRIPTIONS
 				typedef uint32 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef STARTINDEX Parameter2;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 2;
 		};
@@ -2314,6 +2624,13 @@ struct WHITEBOARD_INFO_SUBSCRIPTIONS
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::RESOURCEPATH::ConstReferenceType,
+			const whiteboard::Api::OptionalParameter<Parameters::STARTINDEX::ConstReferenceType>& = whiteboard::NoType::NoValue)
+		{
+		}
 	};
 };
 
@@ -2327,7 +2644,7 @@ struct WHITEBOARD_METRICS_EVENTS
 
 	struct GET
 	{
-		typedef EventQueueInfoList Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const EventQueueInfoList&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
@@ -2348,6 +2665,8 @@ struct WHITEBOARD_METRICS_EVENTS
 				typedef whiteboard::TypedEnum<TypeValues, TypeValues::Type, uint8> Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef TYPE Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -2402,6 +2721,12 @@ struct WHITEBOARD_METRICS_EVENTS
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			const whiteboard::Api::OptionalParameter<Parameters::TYPE::ConstReferenceType>& = whiteboard::NoType::NoValue)
+		{
+		}
 	};
 };
 
@@ -2413,8 +2738,9 @@ struct WHITEBOARD_METRICS_POOLS
 
 	struct GET
 	{
-		typedef PoolStatsList Response_HTTP_CODE_CONTINUE_Type;
-		typedef PoolStatsList Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const PoolStatsList&, whiteboard::HTTP_CODE_CONTINUE> HTTP_CODE_CONTINUE;
+		typedef whiteboard::StronglyTypedResult<const PoolStatsList&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_RANGE_NOT_SATISFIABLE> HTTP_CODE_RANGE_NOT_SATISFIABLE;
 
 		struct Parameters
 		{
@@ -2425,6 +2751,8 @@ struct WHITEBOARD_METRICS_POOLS
 				typedef uint32 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef STARTINDEX Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -2479,6 +2807,12 @@ struct WHITEBOARD_METRICS_POOLS
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			const whiteboard::Api::OptionalParameter<Parameters::STARTINDEX::ConstReferenceType>& = whiteboard::NoType::NoValue)
+		{
+		}
 	};
 };
 
@@ -2492,8 +2826,9 @@ struct WHITEBOARD_SYSTEM_LAUNCHER
 
 	struct GET
 	{
-		typedef LaunchableList Response_HTTP_CODE_CONTINUE_Type;
-		typedef LaunchableList Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const LaunchableList&, whiteboard::HTTP_CODE_CONTINUE> HTTP_CODE_CONTINUE;
+		typedef whiteboard::StronglyTypedResult<const LaunchableList&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_RANGE_NOT_SATISFIABLE> HTTP_CODE_RANGE_NOT_SATISFIABLE;
 
 		struct Parameters
 		{
@@ -2504,6 +2839,8 @@ struct WHITEBOARD_SYSTEM_LAUNCHER
 				typedef uint16 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef MODULESTARTINDEX Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -2558,10 +2895,22 @@ struct WHITEBOARD_SYSTEM_LAUNCHER
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			const whiteboard::Api::OptionalParameter<Parameters::MODULESTARTINDEX::ConstReferenceType>& = whiteboard::NoType::NoValue)
+		{
+		}
 	};
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_BAD_REQUEST> HTTP_CODE_BAD_REQUEST;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_FOUND> HTTP_CODE_NOT_FOUND;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_BAD_METHOD> HTTP_CODE_BAD_METHOD;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
+
 		struct Parameters
 		{
 			struct NAME
@@ -2572,6 +2921,8 @@ struct WHITEBOARD_SYSTEM_LAUNCHER
 				typedef Type ConstReferenceType;
 			};
 
+			typedef NAME Parameter1;
+
 			struct COMMAND
 			{
 				static const whiteboard::ParameterIndex Index = 1;
@@ -2579,6 +2930,8 @@ struct WHITEBOARD_SYSTEM_LAUNCHER
 				typedef ModuleCommand Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef COMMAND Parameter2;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 2;
 		};
@@ -2628,6 +2981,13 @@ struct WHITEBOARD_SYSTEM_LAUNCHER
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::NAME::ConstReferenceType,
+			Parameters::COMMAND::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -2641,7 +3001,9 @@ struct WHITEBOARD_TEST_BYPASS
 
 	struct GET
 	{
-		typedef const char* Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const char*, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_BAD_REQUEST> HTTP_CODE_BAD_REQUEST;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_RANGE_NOT_SATISFIABLE> HTTP_CODE_RANGE_NOT_SATISFIABLE;
 
 		struct Parameters
 		{
@@ -2652,6 +3014,8 @@ struct WHITEBOARD_TEST_BYPASS
 				typedef uint16 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef INDEX Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -2692,11 +3056,22 @@ struct WHITEBOARD_TEST_BYPASS
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::INDEX::ConstReferenceType)
+		{
+		}
 	};
 
 	struct PUT
 	{
-		typedef const char* Response_HTTP_CODE_ACCEPTED_Type;
+		typedef whiteboard::StronglyTypedResult<const char*, whiteboard::HTTP_CODE_ACCEPTED> HTTP_CODE_ACCEPTED;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_BAD_REQUEST> HTTP_CODE_BAD_REQUEST;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_FOUND> HTTP_CODE_NOT_FOUND;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_PRECOND_FAILED> HTTP_CODE_PRECOND_FAILED;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_IMPLEMENTED> HTTP_CODE_NOT_IMPLEMENTED;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INSUFFICIENT_STORAGE> HTTP_CODE_INSUFFICIENT_STORAGE;
 
 		struct Parameters
 		{
@@ -2708,6 +3083,8 @@ struct WHITEBOARD_TEST_BYPASS
 				typedef Type ConstReferenceType;
 			};
 
+			typedef PATHTOBYPASS Parameter1;
+
 			struct REMOTEPATH
 			{
 				static const whiteboard::ParameterIndex Index = 1;
@@ -2715,6 +3092,8 @@ struct WHITEBOARD_TEST_BYPASS
 				typedef const char* Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef REMOTEPATH Parameter2;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 2;
 		};
@@ -2778,6 +3157,13 @@ struct WHITEBOARD_TEST_BYPASS
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::PATHTOBYPASS::ConstReferenceType,
+			const whiteboard::Api::OptionalParameter<Parameters::REMOTEPATH::ConstReferenceType>& = whiteboard::NoType::NoValue)
+		{
+		}
 	};
 };
 
@@ -2789,7 +3175,7 @@ struct WHITEBOARD_TEST_ECHO
 
 	struct GET
 	{
-		typedef ListOfBytes Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const ListOfBytes&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
@@ -2800,6 +3186,8 @@ struct WHITEBOARD_TEST_ECHO
 				typedef ListOfBytes Type;
 				typedef const Type& ConstReferenceType;
 			};
+
+			typedef DATA Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -2840,6 +3228,12 @@ struct WHITEBOARD_TEST_ECHO
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::DATA::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -2851,6 +3245,8 @@ struct WHITEBOARD_TEST_NULL
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
 		struct Parameters
 		{
 			struct VALUE
@@ -2860,6 +3256,8 @@ struct WHITEBOARD_TEST_NULL
 				typedef ListOfBytes Type;
 				typedef const Type& ConstReferenceType;
 			};
+
+			typedef VALUE Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -2900,6 +3298,12 @@ struct WHITEBOARD_TEST_NULL
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::VALUE::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -2911,12 +3315,17 @@ struct WHITEBOARD_TEST_PING
 
 	struct GET
 	{
-		typedef int64 Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<int64, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
@@ -2928,12 +3337,17 @@ struct WHITEBOARD_TEST_ZERO
 
 	struct GET
 	{
-		typedef ListOfBytes Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const ListOfBytes&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 

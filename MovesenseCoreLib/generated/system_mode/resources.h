@@ -6,6 +6,8 @@
 
 #include "whiteboard/Identifiers.h"
 #include "whiteboard/ParameterList.h"
+#include "whiteboard/Result.h"
+#include "whiteboard/ResourceClient.h"
 
 #include "whiteboard/builtinTypes/Array.h"
 #include "whiteboard/builtinTypes/ByteStream.h"
@@ -55,7 +57,9 @@ struct SystemModeValues
 		WAITFORCHARGE = 4U,
 		APPLICATION = 5U,
 		FACTORYCALIBRATION = 10U,
-		BLETESTMODE = 11U
+		BLETESTMODE = 11U,
+		FWUPDATEMODE = 12U,
+		BATTERYTESTMODE = 13U
 	};
 };
 typedef whiteboard::TypedEnum<SystemModeValues, SystemModeValues::Type, uint8> SystemMode;
@@ -98,16 +102,25 @@ struct SYSTEM_MODE
 
 	struct GET
 	{
-		typedef SystemModeStatus Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const SystemModeStatus&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_ACCEPTED> HTTP_CODE_ACCEPTED;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_BAD_REQUEST> HTTP_CODE_BAD_REQUEST;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_CONFLICT> HTTP_CODE_CONFLICT;
+
 		struct Parameters
 		{
 			struct NEWSTATE
@@ -117,6 +130,8 @@ struct SYSTEM_MODE
 				typedef SystemMode Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef NEWSTATE Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -157,6 +172,12 @@ struct SYSTEM_MODE
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::NEWSTATE::ConstReferenceType)
+		{
+		}
 	};
 };
 

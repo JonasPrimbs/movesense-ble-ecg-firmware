@@ -6,6 +6,8 @@
 
 #include "whiteboard/Identifiers.h"
 #include "whiteboard/ParameterList.h"
+#include "whiteboard/Result.h"
+#include "whiteboard/ResourceClient.h"
 
 #include "whiteboard/builtinTypes/Array.h"
 #include "whiteboard/builtinTypes/ByteStream.h"
@@ -94,16 +96,25 @@ struct COMPONENT_LSM6DS3_AUTOPASSIVEENABLED
 
 	struct GET
 	{
-		typedef bool Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<bool, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NO_CONTENT> HTTP_CODE_NO_CONTENT;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NO_CONTENT> HTTP_CODE_NO_CONTENT;
+
 		struct Parameters
 		{
 			struct VALUE
@@ -113,6 +124,8 @@ struct COMPONENT_LSM6DS3_AUTOPASSIVEENABLED
 				typedef bool Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef VALUE Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -153,6 +166,12 @@ struct COMPONENT_LSM6DS3_AUTOPASSIVEENABLED
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::VALUE::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -164,35 +183,64 @@ struct COMPONENT_LSM6DS3_MODE
 
 	struct GET
 	{
-		typedef LSM6DS3OperationMode Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<LSM6DS3OperationMode, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct SUBSCRIBE
 	{
-		typedef LSM6DS3OperationMode Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<LSM6DS3OperationMode, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct EVENT
 	{
 		typedef LSM6DS3OperationMode NotificationType;
-	};
+		typedef NotificationType ConstReferenceNotificationType;
 
-	struct UNSUBSCRIBE
-	{
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			const whiteboard::Api::OptionalParameter<ConstReferenceNotificationType>&)
+		{
+		}
+	};
+
+	struct UNSUBSCRIBE
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
@@ -204,16 +252,23 @@ struct COMPONENT_LSM6DS3_RAWENABLED
 
 	struct GET
 	{
-		typedef bool Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<bool, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
 		struct Parameters
 		{
 			struct VALUE
@@ -223,6 +278,8 @@ struct COMPONENT_LSM6DS3_RAWENABLED
 				typedef bool Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef VALUE Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -263,6 +320,12 @@ struct COMPONENT_LSM6DS3_RAWENABLED
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::VALUE::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -274,16 +337,23 @@ struct COMPONENT_LSM6DS3_TILTCOMPENSATIONENABLED
 
 	struct GET
 	{
-		typedef bool Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<bool, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
 		struct Parameters
 		{
 			struct VALUE
@@ -293,6 +363,8 @@ struct COMPONENT_LSM6DS3_TILTCOMPENSATIONENABLED
 				typedef bool Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef VALUE Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -333,6 +405,12 @@ struct COMPONENT_LSM6DS3_TILTCOMPENSATIONENABLED
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::VALUE::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -344,17 +422,23 @@ struct COMPONENT_LSM6DS3_WAKEUP
 
 	struct GET
 	{
-		typedef WakeUpState Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const WakeUpState&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct PUT
 	{
-		typedef WakeUpState Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const WakeUpState&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_BAD_REQUEST> HTTP_CODE_BAD_REQUEST;
 
 		struct Parameters
 		{
@@ -365,6 +449,8 @@ struct COMPONENT_LSM6DS3_WAKEUP
 				typedef WakeUpState Type;
 				typedef const Type& ConstReferenceType;
 			};
+
+			typedef NEWSTATE Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -405,6 +491,12 @@ struct COMPONENT_LSM6DS3_WAKEUP
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::NEWSTATE::ConstReferenceType)
+		{
+		}
 	};
 };
 

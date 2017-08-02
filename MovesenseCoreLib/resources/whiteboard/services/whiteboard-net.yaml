@@ -81,10 +81,12 @@ paths:
           headers:
             notificationType:
               description: Type of update of the returned route.
-              type: integer
-              format: uint8
+              required: true
+              schema:
+                $ref: '#/definitions/RoutingTableNotificationType'
             remoteWhiteboardIdInLocalScope:
               description: Id of the whiteboard.
+              required: true
               type: integer
               format: uint8
           schema:

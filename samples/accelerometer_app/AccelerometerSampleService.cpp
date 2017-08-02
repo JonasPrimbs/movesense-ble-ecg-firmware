@@ -22,7 +22,8 @@ static const whiteboard::LocalResourceId sProviderResources[] = {
 AccelerometerSampleService::AccelerometerSampleService()
     : ResourceClient(WBDEBUG_NAME(__FUNCTION__), sExecutionContextId),
       ResourceProvider(WBDEBUG_NAME(__FUNCTION__), sExecutionContextId),
-      LaunchableModule(LAUNCHABLE_NAME, sExecutionContextId)
+      LaunchableModule(LAUNCHABLE_NAME, sExecutionContextId),
+      isRunning(false)
 {
 }
 
@@ -81,6 +82,11 @@ void AccelerometerSampleService::onSubscribeResult(whiteboard::RequestId request
 
 whiteboard::Result AccelerometerSampleService::startRunning(whiteboard::RequestId& remoteRequestId)
 {
+    if (isRunning)
+    {
+        return whiteboard::HTTP_CODE_OK;
+    }
+
     DEBUGLOG("AccelerometerSampleService::startRunning()");
 
     // Reset max acceleration members
@@ -94,12 +100,24 @@ whiteboard::Result AccelerometerSampleService::startRunning(whiteboard::RequestI
         DEBUGLOG("asyncSubscribe threw error: %u", result);
         return whiteboard::HTTP_CODE_BAD_REQUEST;
     }
+    isRunning = true;
 
     return whiteboard::HTTP_CODE_OK;
 }
 
 whiteboard::Result AccelerometerSampleService::stopRunning()
 {
+    if (!isRunning)
+    {
+        return whiteboard::HTTP_CODE_OK;
+    }
+
+    if (isResourceSubscribed(WB_RES::LOCAL::SAMPLE_ACCELEROMETER_DATA::ID) == wb::HTTP_CODE_OK)
+    {
+        DEBUGLOG("AccelerometerSampleService::stopRunning() skipping. Subscribers still exist.");
+        return whiteboard::HTTP_CODE_OK;
+    }
+
     DEBUGLOG("AccelerometerSampleService::stopRunning()");
 
     // Unsubscribe the LinearAcceleration resource, when unsubscribe is done, we get callback
@@ -108,7 +126,7 @@ whiteboard::Result AccelerometerSampleService::stopRunning()
     {
         DEBUGLOG("asyncUnsubscribe threw error: %u", result);
     }
-
+    isRunning = false;
     return whiteboard::HTTP_CODE_OK;
 }
 
@@ -162,7 +180,7 @@ void AccelerometerSampleService::onNotify(whiteboard::ResourceId resourceId, con
             mMaxAccelerationSq = FLT_MIN;
 
             // and update our WB resource. This causes notification to be fired to our subscribers
-            updateResource(WB_RES::LOCAL::SAMPLE_ACCELEROMETER_DATA::ID,
+            updateResource(WB_RES::LOCAL::SAMPLE_ACCELEROMETER_DATA(),
                            ResponseOptions::Empty, sampleDataValue);
         }
     }
@@ -181,11 +199,15 @@ void AccelerometerSampleService::onSubscribe(const whiteboard::Request& request,
         whiteboard::RequestId remoteRequestId;
         whiteboard::Result result = startRunning(remoteRequestId);
 
+        if (isRunning)
+        {
+            return returnResult(request, whiteboard::HTTP_CODE_OK);
+        }
+
         if (!whiteboard::RETURN_OK(result))
         {
             return returnResult(request, result);
         }
-
         bool queueResult = mOngoingRequests.put(remoteRequestId, request);
         WB_ASSERT(queueResult);
         break;
@@ -209,4 +231,16 @@ void AccelerometerSampleService::onUnsubscribe(const whiteboard::Request& reques
         returnResult(request, wb::HTTP_CODE_BAD_REQUEST);
         ASSERT(0); // Should not happen
     }
+}
+
+void AccelerometerSampleService::onRemoteWhiteboardDisconnected(whiteboard::WhiteboardId whiteboardId)
+{
+    DEBUGLOG("AccelerometerSampleService::onRemoteWhiteboardDisconnected()");
+    stopRunning();
+}
+
+void AccelerometerSampleService::onClientUnavailable(whiteboard::ClientId clientId)
+{
+    DEBUGLOG("AccelerometerSampleService::onClientUnavailable()");
+    stopRunning();
 }

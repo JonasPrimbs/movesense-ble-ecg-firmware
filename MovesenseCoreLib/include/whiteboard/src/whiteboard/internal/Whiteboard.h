@@ -245,7 +245,7 @@ public:
     *	Sends resource changed notification for all subscribed clients
     *
     *	@param providerId ID of the resource provider
-    *	@param resourceId ID of the associated resource
+    *	@param localResourceId ID of the associated resource
     *   @param rResponseOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions
     *	@param rValue Current value of the resource
     *	@param rParameters, where the notificationType Type is the first parameter (update, insert, delete)
@@ -253,7 +253,7 @@ public:
     */
     Result updateResource(
         ProviderId providerId,
-        ResourceId resourceId,
+        LocalResourceId localResourceId,
         const ResourceProvider_ResponseOptions& rResponseOptions,
         const Value& rValue,
         const ParameterList& rParameters);
@@ -848,7 +848,7 @@ private:
     *   Gets the resource object of the givenId, performs context check and provider resource registration check first.
     *
     * @param resourceProviderId ID of the resource provider that is doing the checking
-    * @param resourceId ID of the resource that is checked
+    * @param localResourceId ID of the resource that is checked
     * @param rMetadata On output contains resource metadata
     * @param rSubscriptionData On output contains resource's subscription information
     *
@@ -859,7 +859,7 @@ private:
     */
     Result getResourceCheckProviderRegAndContext(
         ProviderId resourceProviderId,
-        ResourceId resourceId,
+        LocalResourceId localResourceId,
         ResourceMetadata& rMetadata,
         ResourceSubscriptionData& rSubscriptionData) const;
 

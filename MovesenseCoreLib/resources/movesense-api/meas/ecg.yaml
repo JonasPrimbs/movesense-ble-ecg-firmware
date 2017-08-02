@@ -1,0 +1,68 @@
+swagger: '2.0'
+
+info:
+  version: NA
+  title: Electrocardiography - Movesense-API
+  description: |
+    This file defines API for the electrocardiography measurement.
+  x-api-type: public
+
+paths:
+
+  /Meas/ECG/Info:
+    get:
+      description: |
+        Get the ECG measurement settings 
+      responses:
+        200:
+          description: Operation successfull
+          schema:
+            $ref: '#/definitions/ECGInfo'
+
+  /Meas/ECG/Subscription:
+    post:
+      description: |
+        Subscription to ECG data.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-notification:
+          description: |
+            Notifications comprise array of ECG data.
+            Array size between subscriptions is the same.
+          schema:
+            $ref: '#/definitions/ECGData'
+
+    delete:
+      description: |
+        Unsubscribe ECG data stream
+      responses:
+        200:
+          description: Operation completed successfully
+
+definitions:
+  ECGInfo:
+    required:
+      - SampleRate
+      - ArraySize
+    properties:
+      SampleRate:
+        description: Sample Per Second for the ECG data
+        example: 512
+        type: integer
+        format: uint16
+        x-unit: Hz
+      ArraySize:
+        description: Array size per one notification
+        example: 16
+        type: integer
+        format: uint16
+  ECGData:
+    required:
+      - Samples
+    properties:
+      Samples:
+        type: array
+        items:
+          type: integer
+          format: int32

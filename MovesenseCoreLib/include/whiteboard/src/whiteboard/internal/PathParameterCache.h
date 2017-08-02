@@ -38,12 +38,6 @@ public:
     /** Constructor */
     PathParameterCacheEntry() : mClientId(), mResourceId() { reset(); }
 
-    /** Gets resource ID of the actual resource 
-     *
-     * @return Resource ID of the actual resource
-     */
-    inline ResourceId getResourceOwnerId() const { return ResourceId(mResourceId.getConstId()); }
-
     /** Clears this entry as it was after construction*/
     void reset()
     {
@@ -146,10 +140,10 @@ public:
     * Checks if this client is found in the cache for given resource
     *
     * @param clientId [in] Id if the client
-    * @param rResourceId [in] Id of the resource, the instanceId is compared too
+    * @param localResourceId [in] Id of the resource, the instanceId is compared too
     * @return true, if the client has subscribed this path parameter resource
     */
-    bool isClientInCache(ClientId clientId, const ResourceId resourceId) const;
+    bool isClientInCache(ClientId clientId, const LocalResourceId localResourceId) const;
 
     /// @returns new entry that has just been allocated from the linked list, null if list full
     PathParameterCacheEntry* addEntry();
@@ -186,8 +180,8 @@ public:
     /// @returns entry with duplicate client & resourceId, otherwise NULL.
     PathParameterCacheEntry* getDuplicate(const PathParameterCacheEntry& rEntry);
 
-    /// Finds first resource with matching resourceId and returns the number of path parameter parameters, else returns -1
-    uint8 getPathParameterCount(const ResourceId resourceId) const;
+    /// Finds first resource with matching localResourceId and returns the number of path parameter parameters, else returns -1
+    uint8 getPathParameterCount(const LocalResourceId localResourceId) const;
 
     /// Enum for subscriptionRefCount method to decide whether to substract or add to reference count.
     enum SubscriptionOpType { ADD, SUBST };

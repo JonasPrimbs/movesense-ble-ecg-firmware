@@ -18,7 +18,7 @@ public:
 
     /** Constructor */
     BlockingFreeListPoolAllocator()
-        : mSemaphoreHandle(WB_INVALID_SEMAPHORE), mpFreeNodes(NULL), mFirstFree(Pool::INVALID_ID)
+        : mSemaphoreHandle(WB_INVALID_SEMAPHORE), mpFreeNodes(NULL), mFirstFreeWithUniquefier(Pool::INVALID_ID)
     {
     }
 
@@ -48,12 +48,17 @@ public:
         }
 
         // Atomically pop free node from linked list
+        uint32 originalFirstFreeWithUniquefier;
         KeyType originalFirstFree;
+        uint32 nextUniquefier;
         do
         {
-            originalFirstFree = static_cast<KeyType>(mFirstFree);
+            originalFirstFreeWithUniquefier = mFirstFreeWithUniquefier;
+            originalFirstFree = static_cast<KeyType>(originalFirstFreeWithUniquefier);
+            nextUniquefier = (originalFirstFreeWithUniquefier & UNIQUEFIER_MASK) + UNIQUEFIER_INCREMENT;
             WB_ASSERT(originalFirstFree != Pool::INVALID_ID);
-        } while (!WbInterlockedCompareAndExchange32(&mFirstFree, mpFreeNodes[originalFirstFree], originalFirstFree));
+        } while (!WbInterlockedCompareAndExchange32(
+            &mFirstFreeWithUniquefier, mpFreeNodes[originalFirstFree] | nextUniquefier, originalFirstFreeWithUniquefier));
 
 #ifndef NDEBUG
         // Clear allocated to make debugging easier
@@ -72,12 +77,17 @@ public:
         WB_DEBUG_ASSERT(mpFreeNodes[id] == Pool::INVALID_ID);
 
         // Atomically push free node to linked list
+        uint32 originalFirstFreeWithUniquefier;
         KeyType originalFirstFree;
+        uint32 nextUniquefier;
         do
         {
-            originalFirstFree = static_cast<KeyType>(mFirstFree);
+            originalFirstFreeWithUniquefier = mFirstFreeWithUniquefier;
+            originalFirstFree = static_cast<KeyType>(originalFirstFreeWithUniquefier);
+            nextUniquefier = (originalFirstFreeWithUniquefier & UNIQUEFIER_MASK) + UNIQUEFIER_INCREMENT;
             mpFreeNodes[id] = originalFirstFree;
-        } while (!WbInterlockedCompareAndExchange32(&mFirstFree, id, originalFirstFree));
+        } while (!WbInterlockedCompareAndExchange32(
+            &mFirstFreeWithUniquefier, id | nextUniquefier, originalFirstFreeWithUniquefier));
 
         // Notify that a new buffer is available
         WbSemaphoreRelease(mSemaphoreHandle);
@@ -92,7 +102,8 @@ public:
     bool isAllocated(const Pool&, KeyType id) const OVERRIDE
     {
         // This is slow, but should be used only in debug builds so we don't care.
-        KeyType current = static_cast<KeyType>(mFirstFree);
+        // It isn't synchronized so it may return unexpected results at times.
+        KeyType current = static_cast<KeyType>(mFirstFreeWithUniquefier);
         while (current != Pool::INVALID_ID)
         {
             if (current == id)
@@ -136,8 +147,8 @@ public:
 
         while (currentSize < newSize)
         {
-            mpFreeNodes[currentSize] = static_cast<KeyType>(mFirstFree);
-            mFirstFree = currentSize++;
+            mpFreeNodes[currentSize] = static_cast<KeyType>(mFirstFreeWithUniquefier);
+            mFirstFreeWithUniquefier = currentSize++;
         }
 
         return true;
@@ -150,9 +161,16 @@ private:
     /** Free list array */
     KeyType* mpFreeNodes;
 
-    /** Index of first free node. We could use KeyType(uint16), but we would need
-     * another set of interlocked operations. */
-    volatile int32 mFirstFree;
+    /** Index of first free item with current uniquefier. This is
+    * the item that we modify with WbInterlockedCompareAndExchange32
+    * operations. */
+    volatile uint32 mFirstFreeWithUniquefier;
+
+    /** Helper constant for uniquefier increment */
+    static const uint32 UNIQUEFIER_INCREMENT = 1ul << (8ul * sizeof(KeyType));
+
+    /** Helper constant for getting uniquefier value from mFirstFreeWithUniquefier */
+    static const uint32 UNIQUEFIER_MASK = ~(UNIQUEFIER_INCREMENT - 1ul);
 };
 
 } // namespace whiteboard

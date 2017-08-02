@@ -6,6 +6,8 @@
 
 #include "whiteboard/Identifiers.h"
 #include "whiteboard/ParameterList.h"
+#include "whiteboard/Result.h"
+#include "whiteboard/ResourceClient.h"
 
 #include "whiteboard/builtinTypes/Array.h"
 #include "whiteboard/builtinTypes/ByteStream.h"
@@ -61,23 +63,49 @@ struct COMPONENT_MAX3000X_HEARTRATEDATA
 
 	struct SUBSCRIBE
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct EVENT
 	{
 		typedef HRData NotificationType;
-	};
+		typedef const NotificationType& ConstReferenceNotificationType;
 
-	struct UNSUBSCRIBE
-	{
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			const whiteboard::Api::OptionalParameter<ConstReferenceNotificationType>&)
+		{
+		}
+	};
+
+	struct UNSUBSCRIBE
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
@@ -89,7 +117,8 @@ struct COMPONENT_MAX3000X_REGISTER
 
 	struct GET
 	{
-		typedef uint32 Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<uint32, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
 
 		struct Parameters
 		{
@@ -100,6 +129,8 @@ struct COMPONENT_MAX3000X_REGISTER
 				typedef uint8 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef ADDR Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -140,10 +171,19 @@ struct COMPONENT_MAX3000X_REGISTER
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::ADDR::ConstReferenceType)
+		{
+		}
 	};
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
+
 		struct Parameters
 		{
 			struct ADDR
@@ -154,6 +194,8 @@ struct COMPONENT_MAX3000X_REGISTER
 				typedef Type ConstReferenceType;
 			};
 
+			typedef ADDR Parameter1;
+
 			struct VALUE
 			{
 				static const whiteboard::ParameterIndex Index = 1;
@@ -161,6 +203,8 @@ struct COMPONENT_MAX3000X_REGISTER
 				typedef uint32 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef VALUE Parameter2;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 2;
 		};
@@ -210,6 +254,13 @@ struct COMPONENT_MAX3000X_REGISTER
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::ADDR::ConstReferenceType,
+			Parameters::VALUE::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -221,12 +272,18 @@ struct COMPONENT_MAX3000X_VERSION
 
 	struct GET
 	{
-		typedef VersionInfoArray Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const VersionInfoArray&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
@@ -238,16 +295,24 @@ struct COMPONENT_MAX3000X_WAKEUP
 
 	struct GET
 	{
-		typedef uint8 Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<uint8, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_BAD_REQUEST> HTTP_CODE_BAD_REQUEST;
+
 		struct Parameters
 		{
 			struct NEWSTATE
@@ -257,6 +322,8 @@ struct COMPONENT_MAX3000X_WAKEUP
 				typedef uint8 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef NEWSTATE Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -297,6 +364,12 @@ struct COMPONENT_MAX3000X_WAKEUP
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::NEWSTATE::ConstReferenceType)
+		{
+		}
 	};
 };
 

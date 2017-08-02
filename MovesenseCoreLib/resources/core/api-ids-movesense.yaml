@@ -43,7 +43,7 @@ apis:
   max3000x.*:
     apiId: 11
     defaultExecutionContext: meas
-  suunto.device.component.DS24L65.*:
+  ds24l65.*:
     apiId: 12
     defaultExecutionContext: PrimaryServices
   info.*:
@@ -103,3 +103,6 @@ apis:
   ind.*:
     apiId: 66
     defaultExecutionContext: PrimaryServices
+  ecg.*:
+    apiId: 67
+    defaultExecutionContext: meas

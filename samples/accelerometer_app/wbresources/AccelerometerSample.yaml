@@ -17,11 +17,7 @@ info:
 
 # Paths
 paths:
-  /Sample/Accelerometer/Data:
-    x-executionContext: meas
-
   /Sample/Accelerometer/Data/Subscription:
-    x-executionContext: meas
     post:
       description: |
         Subscribe to periodic Data values.

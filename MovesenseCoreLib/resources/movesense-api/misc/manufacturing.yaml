@@ -150,12 +150,12 @@ definitions:
       productName:
         description: Product name from PLM/Plasma
         type: string
-        maxLength: 64
+        maxLength: 19
         example: Movesense Sensor
       variant:
         description: NG SW variant name
         type: string
-        maxLength: 16
+        maxLength: 9
         example: Avocado
       design:
         description: Product design from PLM/Plasma
@@ -167,7 +167,7 @@ definitions:
           This ID together with the variant name is used to check/fetch the latest FW.
           Different PCBAs which can run the same Firmware version have the same HwCompatibilityId.
         type: string
-        maxLength: 8
+        maxLength: 2
         example: A5
       serial:
         description: Globally unique serial number
@@ -177,12 +177,13 @@ definitions:
         example: 155110123456
       pcbaSerial:
         type: string
-        maxLength: 64
-        example: 01234112345678901234567894444N2YYWW
+        maxLength: 34
+        example: 01234112345678901234567894444N2YYW
       hw:
         description: Identifier for the HW configuration. Everytime there are changes in componets/PCB, this ID is updated.
           In Suunto case, the format is varying number of <letter, number> pairs.
         type: string
+        maxLength: 16
         example: "1740G1"
       addressInfo:
         description: Array of structs containing pairs of address type identifier and address.

@@ -74,6 +74,68 @@ paths:
         - suuntoAccessCode:
           - public
 
+  /Notification/Filter/ImportanceLevel/Subscription:
+    x-executionContext: application
+    post:
+      description: |
+        Subscribes the client to get importance level changes.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        x-notification:
+          description: |
+           Event notification.
+          schema:
+            $ref: '#/definitions/NotificationImportance'
+      security:
+        - suuntoAccessCode:
+          - public
+
+    delete:
+      description: |
+        Unsubscribes the client to get importance level changes.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Notification/Filter/ImportanceLevel/Subscription:
+    x-executionContext: application
+    post:
+      description: |
+        Subscribes the client to get importance level changes.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        x-notification:
+          description: |
+           Event notification.
+          schema:
+            $ref: '#/definitions/NotificationImportance'
+      security:
+        - suuntoAccessCode:
+          - public
+
+    delete:
+      description: |
+        Unsubscribes the client to get importance level changes.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
+
   /Notification/Trigger:
     x-executionContext: application
 

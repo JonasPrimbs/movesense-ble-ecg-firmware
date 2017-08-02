@@ -284,7 +284,7 @@ private:
         * @param pArray Array that is target for placement new
         * @param numberOfItems Number of items in the array
         */
-        void placementNewArray(Pool::UntypedData* pArray, KeyType numberOfItems) const OVERRIDE
+        void placementNewArray(Pool::UntypedData* /*pArray*/, KeyType /*numberOfItems*/) const OVERRIDE
         {
         }
 
@@ -293,7 +293,7 @@ private:
         * @param pArray Array that is target for placement destruct
         * @param numberOfItems Number of items in the array
         */
-        void placementDestructArray(Pool::UntypedData* pArray, KeyType numberOfItems) const OVERRIDE
+        void placementDestructArray(Pool::UntypedData* /*pArray*/, KeyType /*numberOfItems*/) const OVERRIDE
         {
         }
 

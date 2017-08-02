@@ -6,6 +6,8 @@
 
 #include "whiteboard/Identifiers.h"
 #include "whiteboard/ParameterList.h"
+#include "whiteboard/Result.h"
+#include "whiteboard/ResourceClient.h"
 
 #include "whiteboard/builtinTypes/Array.h"
 #include "whiteboard/builtinTypes/ByteStream.h"
@@ -80,6 +82,9 @@ struct MISC_CALIBRATION_MODE
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
+
 		struct Parameters
 		{
 			struct MODE
@@ -89,6 +94,8 @@ struct MISC_CALIBRATION_MODE
 				typedef uint8 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef MODE Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -129,6 +136,12 @@ struct MISC_CALIBRATION_MODE
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::MODE::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -140,6 +153,9 @@ struct MISC_CALIBRATION_REFERENCES
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
+
 		struct Parameters
 		{
 			struct GRAVITY
@@ -150,6 +166,8 @@ struct MISC_CALIBRATION_REFERENCES
 				typedef Type ConstReferenceType;
 			};
 
+			typedef GRAVITY Parameter1;
+
 			struct MAGNETICFIELD
 			{
 				static const whiteboard::ParameterIndex Index = 1;
@@ -157,6 +175,8 @@ struct MISC_CALIBRATION_REFERENCES
 				typedef float Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef MAGNETICFIELD Parameter2;
 
 			struct AVESAMPLESACCELERATION
 			{
@@ -166,6 +186,8 @@ struct MISC_CALIBRATION_REFERENCES
 				typedef Type ConstReferenceType;
 			};
 
+			typedef AVESAMPLESACCELERATION Parameter3;
+
 			struct AVESAMPLESMAGNETICFIELD
 			{
 				static const whiteboard::ParameterIndex Index = 3;
@@ -173,6 +195,8 @@ struct MISC_CALIBRATION_REFERENCES
 				typedef uint8 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef AVESAMPLESMAGNETICFIELD Parameter4;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 4;
 		};
@@ -240,6 +264,15 @@ struct MISC_CALIBRATION_REFERENCES
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::GRAVITY::ConstReferenceType,
+			Parameters::MAGNETICFIELD::ConstReferenceType,
+			Parameters::AVESAMPLESACCELERATION::ConstReferenceType,
+			Parameters::AVESAMPLESMAGNETICFIELD::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -251,6 +284,9 @@ struct MISC_CALIBRATION_SEQUENCE
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
+
 		struct Parameters
 		{
 			struct SEQUENCE
@@ -260,6 +296,8 @@ struct MISC_CALIBRATION_SEQUENCE
 				typedef CalibrationSequence Type;
 				typedef const Type& ConstReferenceType;
 			};
+
+			typedef SEQUENCE Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -300,6 +338,12 @@ struct MISC_CALIBRATION_SEQUENCE
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::SEQUENCE::ConstReferenceType)
+		{
+		}
 	};
 };
 
@@ -311,16 +355,25 @@ struct MISC_CALIBRATION_STATE
 
 	struct GET
 	{
-		typedef uint8 Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<uint8, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
+
 		struct Parameters
 		{
 			struct STATE
@@ -330,6 +383,8 @@ struct MISC_CALIBRATION_STATE
 				typedef uint8 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef STATE Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -370,6 +425,12 @@ struct MISC_CALIBRATION_STATE
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::STATE::ConstReferenceType)
+		{
+		}
 	};
 };
 
