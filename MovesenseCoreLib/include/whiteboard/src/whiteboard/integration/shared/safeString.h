@@ -8,9 +8,11 @@
 // Secure string operations are defined in C11 Annex K which support is optional
 // Visual C++ compiler doesn't define standard identification macros eventhough safe string 
 // operation are supported.
+#ifndef __IAR_SYSTEMS_ICC__
 #if (defined(__STDC_LIB_EXT1__) && (__STDC_LIB_EXT1__ >= 201112L)) || defined(_MSC_VER)
     #define WB_HAVE_STDC_LIB_EXT1 1
     #define __STDC_WANT_LIB_EXT1__ 1 /* Want the ext1 functions */
+#endif
 #endif
 
 #include <string.h>

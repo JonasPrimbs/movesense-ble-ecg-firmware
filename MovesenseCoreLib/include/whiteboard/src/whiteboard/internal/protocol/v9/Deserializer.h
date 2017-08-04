@@ -233,7 +233,11 @@ bool Deserializer::deserializeClientId(ClientId& rClientId, WhiteboardId whitebo
             whiteboardId,
             localClientId);
 
-        rClientId.isNonCriticalSubscription = static_cast<uint8>((binaryValue[0] & 0x80) >> 7);
+        rClientId.nonCriticalSubscription = binaryValue[0] >> 7;
+        if (whiteboardId == LOCAL_WHITEBOARD_ID)
+        {
+            rClientId.typeChecked = binaryValue[0] >> 6;
+        }
     }
 
     return true;

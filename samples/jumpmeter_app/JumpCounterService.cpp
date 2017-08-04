@@ -24,11 +24,11 @@ static const whiteboard::LocalResourceId sProviderResources[] = {
 JumpCounterService::JumpCounterService()
     : ResourceClient(WBDEBUG_NAME(__FUNCTION__), sExecutionContextId),
       ResourceProvider(WBDEBUG_NAME(__FUNCTION__), sExecutionContextId),
-      LaunchableModule(LAUNCHABLE_NAME, sExecutionContextId)
+      LaunchableModule(LAUNCHABLE_NAME, sExecutionContextId),
+      isRunning(false)
 {
     mJumpCounter = 0;
     mLastJumpHeight = 0.0f;
-    mSubscriptionCount = 0;
 }
 
 JumpCounterService::~JumpCounterService()
@@ -131,13 +131,23 @@ whiteboard::Result JumpCounterService::startRunning(whiteboard::RequestId& remot
         DEBUGLOG("asyncSubscribe threw error: %u", result);
         return whiteboard::HTTP_CODE_BAD_REQUEST;
     }
+    isRunning = true;
 
     return whiteboard::HTTP_CODE_OK;
 }
 
 whiteboard::Result JumpCounterService::stopRunning()
 {
+    if (!isRunning) {
+        return whiteboard::HTTP_CODE_OK;
+    }
+
     DEBUGLOG("JumpCounterService::stopRunning()");
+    if (isResourceSubscribed(WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_JUMPCOUNT::ID) == wb::HTTP_CODE_OK ||
+        isResourceSubscribed(WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_LASTJUMPHEIGHT::ID) == wb::HTTP_CODE_OK) {
+            DEBUGLOG("JumpCounterService::stopRunning() skipping. Subscribers still exist.");
+            return whiteboard::HTTP_CODE_OK;
+    }
 
     // Unsubscribe the LinearAcceleration resource, when unsubscribe is done, we get callback
     wb::Result result = asyncUnsubscribe(WB_RES::LOCAL::MEAS_ACC_SAMPLERATE::ID, NULL, ACC_SAMPLERATE);
@@ -145,6 +155,7 @@ whiteboard::Result JumpCounterService::stopRunning()
     {
         DEBUGLOG("asyncUnsubscribe threw error: %u", result);
     }
+    isRunning = false;
 
     return whiteboard::HTTP_CODE_OK;
 }
@@ -167,11 +178,11 @@ void JumpCounterService::jumpFound(size_t nJumpSamples)
     mLastJumpHeight = jumpHeight;
 
     // update jump count
-    updateResource(WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_JUMPCOUNT::ID,
+    updateResource(WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_JUMPCOUNT(),
                    ResponseOptions::Empty, mJumpCounter);
 
     // update jump height
-    updateResource(WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_LASTJUMPHEIGHT::ID,
+    updateResource(WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_LASTJUMPHEIGHT(),
                    ResponseOptions::Empty, mLastJumpHeight);
 }
 
@@ -235,15 +246,16 @@ void JumpCounterService::onNotify(whiteboard::ResourceId resourceId, const white
 void JumpCounterService::onSubscribe(const whiteboard::Request& request,
                                      const whiteboard::ParameterList& parameters)
 {
+    DEBUGLOG("JumpCounterService::onSubscribe()");
+
     switch (request.getResourceConstId())
     {
     case WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_JUMPCOUNT::ID:
     case WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_LASTJUMPHEIGHT::ID:
     {
         // Someone subscribed to our service. If no subscribers before, start running
-        if (mSubscriptionCount == 0)
+        if (!isRunning)
         {
-            mSubscriptionCount++;
             whiteboard::RequestId remoteRequestId;
             whiteboard::Result result = startRunning(remoteRequestId);
 
@@ -254,6 +266,9 @@ void JumpCounterService::onSubscribe(const whiteboard::Request& request,
 
             bool queueResult = mOngoingRequests.put(remoteRequestId, request);
             WB_ASSERT(queueResult);
+        }
+        else{
+            return returnResult(request, whiteboard::HTTP_CODE_OK);
         }
 
         break;
@@ -266,17 +281,29 @@ void JumpCounterService::onSubscribe(const whiteboard::Request& request,
 void JumpCounterService::onUnsubscribe(const whiteboard::Request& request,
                                        const whiteboard::ParameterList& parameters)
 {
+    DEBUGLOG("JumpCounterService::onUnsubscribe()");
+
     switch (request.getResourceConstId())
     {
     case WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_JUMPCOUNT::ID:
     case WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_LASTJUMPHEIGHT::ID:
-        stopRunning();
-        mSubscriptionCount--;
-        returnResult(request, wb::HTTP_CODE_OK);
+        returnResult(request, stopRunning());
         break;
 
     default:
         returnResult(request, wb::HTTP_CODE_BAD_REQUEST);
         break;
     }
+}
+
+void JumpCounterService::onRemoteWhiteboardDisconnected(whiteboard::WhiteboardId whiteboardId)
+{
+    DEBUGLOG("JumpCounterService::onRemoteWhiteboardDisconnected()");
+    stopRunning();
+}
+
+void JumpCounterService::onClientUnavailable(whiteboard::ClientId clientId)
+{
+    DEBUGLOG("JumpCounterService::onClientUnavailable()");
+    stopRunning();
 }

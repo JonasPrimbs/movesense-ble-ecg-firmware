@@ -6,6 +6,8 @@
 
 #include "whiteboard/Identifiers.h"
 #include "whiteboard/ParameterList.h"
+#include "whiteboard/Result.h"
+#include "whiteboard/ResourceClient.h"
 
 #include "whiteboard/builtinTypes/Array.h"
 #include "whiteboard/builtinTypes/ByteStream.h"

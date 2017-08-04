@@ -329,7 +329,8 @@ public:
     typedef int Structure;
 
     // Fixed ID of the data type (must be defined in the header or it is not treated as constant)
-    static const LocalDataTypeId DATA_TYPE_ID = IsSame<T, int32>::value ? 30 : IsSame<T, float>::value ? 31 : -1;
+    static const LocalDataTypeId DATA_TYPE_ID = static_cast<LocalDataTypeId>(
+        IsSame<T, int32>::value ? 30 : IsSame<T, float>::value ? 31 : -1);
 
     // Structure serializer and cleaner instances
     static const StructureValueSerializer<Vector3D<T> > serializer;

@@ -46,41 +46,28 @@ public:
     enum class UpdateType
     {
         INIT,
-        CONNECT,
-        DISCONNECT
+        CONNECT
     };
 
     /** Updates list of devices */
     void updateDevices(const UpdateType updateType);
 
+    /** Removes a device
+     *
+     * @param pDevice Device that should be removed
+     */
+    void removeDevice(IDevice* pDevice);
+
 private:
     /** Register for PnP notifications */
     void startListeningDeviceChanges();
 
-    /** Information about enumerated device */
-    struct DeviceInfo
-    {
-        /// The device serial number (USB or simulator serial)
-        SuuntoSerial mSerial;
-
-        /// The device description (from USB description or simulator)
-        std::string mDescription;
-
-        /// The device name. For example "COM6" on Windows or "/dev/cu.usbmodem1411" on OS X.
-        std::string mDevice;
-
-        /// Pointer to OS device instance
-        IOUSBDeviceInterface** mDeviceInterface;
-
-        /// 'Device removed' notification handle
-        io_object_t mNotification;
-    };
-
-    /** Enumerates devices
+    /** Checks and constructs new IDevice object from given USB device handle
     *
-    * @return List of enumerated devices
+    * @param usbDevice OS handle to the USB device
+    * @return IDevice instance for the new device or nullptr if device is not supported
     */
-    std::vector<DeviceInfo> doEnumerate();
+    IDevice* checkNewDevice(io_service_t usbDevice);
 
 private:
     const std::vector<UsbDeviceId> mSupportedDevices;

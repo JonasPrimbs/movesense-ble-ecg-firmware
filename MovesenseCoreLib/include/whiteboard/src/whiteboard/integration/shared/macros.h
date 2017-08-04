@@ -185,6 +185,22 @@ http://www.exploringbinary.com/ten-ways-to-check-if-an-integer-is-a-power-of-two
 /** Helper for passing comma in macro parameters without causing number of arguments error */
 #define WB_COMMA ,
 
+/** Macro for forcing inline expansion of a following function. Use together with WB_FORCE_INLINE_ATTRIBUTE. */
+#if defined(__IAR_SYSTEMS_ICC__) && defined(NDEBUG)
+#define WB_FORCE_INLINE _Pragma("inline=forced")
+#else
+#define WB_FORCE_INLINE
+#endif
+
+/** Macro for forcing inline expansion of a function. Use together with WB_FORCE_INLINE. */
+#ifdef _MSC_VER
+#define WB_FORCE_INLINE_ATTRIBUTE __forceinline
+#elif defined(__GNUC__) || defined(__clang__)
+#define WB_FORCE_INLINE_ATTRIBUTE __attribute__((always_inline))
+#else
+#define WB_FORCE_INLINE_ATTRIBUTE inline
+#endif
+
 #if (__cplusplus >= 201103L) || _MSC_VER >= 1900
   #define WB_HAVE_CPLUSPLUS_11
 #endif

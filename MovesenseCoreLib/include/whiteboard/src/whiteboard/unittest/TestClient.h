@@ -684,7 +684,7 @@ private:
             wrapper.mrParam1, ResourceClient::AsyncRequestOptions(&mRequestId, mTimeoutMs));
     }
 
-    Result asyncReleaseResourceDpcHandler(OpWrapper<NoType, NoType, NoType>& wrapper)
+    Result asyncReleaseResourceDpcHandler(OpWrapper<NoType, NoType, NoType>& /*wrapper*/)
     {
         return asyncReleaseResource(
             mResourceId, ResourceClient::AsyncRequestOptions(&mRequestId, mTimeoutMs));

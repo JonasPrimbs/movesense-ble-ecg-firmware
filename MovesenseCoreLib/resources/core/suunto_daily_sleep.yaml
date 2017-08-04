@@ -1,0 +1,445 @@
+# This file defines Suunto Whiteboard API
+#
+# Copyright Suunto Oy 2015
+# All rights reserved.
+#
+# Swagger editor is located at http://vaas1410:81/#/
+#
+# NOTE! Editor remembers last file you have edited, but it is
+# not necessarily the version located in your local or shared repository. 
+# ALWAYS USE COPY + PASTE TO UPDATE THE EDITOR BEFORE DOING ANY EDITING!!!
+#
+swagger: '2.0'
+
+# Document metadata
+info:
+  version: "0.0.0"
+  title: Suunto Whiteboard API for Performance 2016 product. /Suunto/Dev subtree.
+  description: |
+    This file defines API for Whiteboard server that runs on NextGen Performance 2016 device.
+
+    See http://developer.suunto.com for more information.
+  termsOfService: http://suunto.com/wbapi/terms/
+  contact:
+    name: Suunto team
+    url: http://developer.suunto.com
+  
+# Security definitions
+security:
+  - suuntoAccessCode:
+    - public
+    - read:user
+    - write:user
+    - read:contacts
+    - write:contacts
+    - test
+
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+      read:user: Grants read access to user profile info.
+      write:user: Grants write access to user profile info.
+      read:contacts: Grants read access to user's contants and memberships.
+      write:contacts: Grants write access to user's contants and memberships.
+      test: Grants read/write access to QA / test resources.
+    flow: accessCode
+    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
+    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
+    
+# Paths
+paths:
+
+  /Daily/Sleep/State:
+    x-executionContext: meas
+    get:
+      description: |
+        Get current sleep state.
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            $ref: '#/definitions/SleepState'
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Daily/Sleep/State/Subscription:
+    x-executionContext: meas
+    post:
+      description: |
+        Subscribes the client to get notifications of sleep state changes.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
+        x-notification:
+          description: |
+           Event notification.
+          schema:
+            $ref: '#/definitions/SleepState'
+      security:
+        - suuntoAccessCode:
+          - public
+
+    delete:
+      description: |
+        Unsubscribes the client to get notifications of sleep state changes.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-std-errors:
+          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Daily/Sleep/Debug/AccSumOverMinute:
+    x-executionContext: meas
+    get:
+      description: |
+        Get value of acceleration sum over one minute. NOTE: Only for debug purposes!!!
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: number
+            format: float
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Daily/Sleep/Current/Duration:
+    x-executionContext: application
+    get:
+      description: |
+        Get the latest sleep duration in seconds.
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: number
+            format: float
+            x-type: s
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Daily/Sleep/Current/Duration/Subscription:
+    x-executionContext: application
+    post:
+      description: Subscribe the latest sleep duration in seconds.
+      responses:
+        200:
+          description: Successful operation
+          schema:
+            type: number
+            format: float
+            x-unit: s
+        x-notification:
+          description: The sleep current changed.
+          required: true
+          schema:
+            type: number
+            format: float
+            x-unit: s
+        400:
+          description: Bad request
+      security:
+        - suuntoAccessCode:
+          - public
+
+    delete:
+      description: |
+        Unsubscribes the latest sleep duration in seconds.
+      responses:
+        200:
+          description: Operation completed successfully
+      security:
+        - suuntoAccessCode:
+          - public
+          
+  /Daily/Sleep/{DayIndex}/Duration:
+    x-executionContext: application
+    get:
+      description: |
+        Daily sleep duration.
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: number
+            format: float
+            x-unit: s
+        416:
+          description: Bad request. DayIndex not in range.
+      security:
+        - suuntoAccessCode:
+          - public
+    parameters:
+      -
+        $ref: '#/parameters/DayIndex'
+
+  /Daily/Sleep/{DayIndex}/Duration/TargetDelta:
+    x-executionContext: application
+    get:
+      description: |
+        The delta of the sleep and target sleep.
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: number
+            format: float
+            x-unit: s
+        416:
+          description: Bad request. DayIndex not in range.
+      security:
+        - suuntoAccessCode:
+          - public
+    parameters:
+      -
+        $ref: '#/parameters/DayIndex'
+       
+  /Daily/Sleep/{DayIndex}/Duration/TargetDelta/Type:
+    x-executionContext: application
+    get:
+      description: |
+        The duration difference type. If type = 0 (NOT Available), type = 1 (more), type = 2 (less)
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            $ref: '#/definitions/DeltaType'
+      security:
+        - suuntoAccessCode:
+          - public
+    parameters:
+      -
+        $ref: '#/parameters/DayIndex'
+
+  /Daily/Sleep/Duration/{Days}/Average:
+    x-executionContext: application
+    get:
+      description: |
+        Average sleep duration for last number days (max 7) starting from today.
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: number
+            format: float
+            x-unit: s
+        416:
+          description: Bad request. Days not in range.
+      security:
+        - suuntoAccessCode:
+          - public
+    parameters:
+      -
+        $ref: '#/parameters/Days'
+
+  /Daily/Sleep/Invoke/Summary:
+    x-executionContext: application
+    put:
+      description: |
+        Invoke summary view.
+      responses:
+        200:
+          description: Operation completed successfully
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Daily/Sleep/Duration/Average/ProgressType:
+    x-executionContext: application
+    get:
+      description: |
+        The progress of the avg duration. If type = 0 (None), type = 1 (bigger), type = 2 (smaller)
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            $ref: '#/definitions/DeltaType'
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Daily/Sleep/Last/StartTime:
+    x-executionContext: application
+    get:
+      description: |
+        Last sleep start time in UTC.
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: integer
+            format: uint32
+        416:
+          description: No data available.
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Daily/Sleep/Last/EndTime:
+    x-executionContext: application
+    get:
+      description: |
+        Last sleep end time in UTC.
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: integer
+            format: uint32
+        416:
+          description: No data available.
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Daily/Sleep/Last/{DurationType}:
+    x-executionContext: application
+    get:
+      description: |
+        Last sleep wakeup time.
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: number
+            format: float
+            x-unit: s
+        416:
+          description: No data available.
+      security:
+        - suuntoAccessCode:
+          - public
+    parameters:
+      -
+        $ref: '#/parameters/DurationType'
+        
+  /Daily/Sleep/Last/{DurationType}/Type:
+    x-executionContext: application
+    get:
+      description: |
+        The duration difference type. If type = 0 (NOT Available), type = 1 (more), type = 2 (less)
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            $ref: '#/definitions/DeltaType'
+        416:
+          description: No data available.
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Daily/Sleep/PurgeAll:
+    x-executionContext: application
+    put:
+      description: |
+        clear all sleep data
+      responses:
+        200:
+          description: Operation completed successfully
+        416:
+          description: No data available.
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Daily/Sleep/Stop:
+    x-executionContext: meas
+    put:
+      description: |
+        Stop sleep session immediately
+      responses:
+        200:
+          description: Operation completed successfully
+      security:
+        - suuntoAccessCode:
+          - public
+
+definitions:
+  SleepMeasurementState:
+    description: States identified by sleep measurement algorithm.
+    type: integer
+    format: uint8
+    enum:
+      - name: 'Start'
+        value: 0
+      - name: 'Stop'
+        value: 1
+      - name: 'DeepSleep'
+        value: 2
+      - name: 'LightSleep'
+        value: 3
+      - name: 'WaitingToWakeup'
+        value: 4
+      - name: 'Inactive'
+        value: 5
+      - name: 'Active'
+        value: 6
+
+  SleepState:
+    required:
+      - state
+      - timestamp
+    properties:
+      state:
+        $ref: '#/definitions/SleepMeasurementState'
+      timestamp:
+        description: Timestamp in local64 format with timezone.
+        type: integer
+        format: uint64
+
+  DeltaType:
+    description: The type of the delta value.
+    type: integer
+    format: uint8
+    enum:
+      - name: 'Indifferent'
+        value: 0
+      - name: 'More'
+        value: 1
+      - name: 'Less'
+        value: 2
+
+parameters:
+  DayIndex:
+    name: DayIndex
+    in: path
+    required: true
+    type: integer
+    format: int32
+    minimum: -6
+    maximum: 0
+    
+  Days:
+    name: Days
+    in: path
+    required: true
+    type: integer
+    format: int32
+    minimum: 1
+    maximum: 7
+
+  DurationType:
+    name: DurationType
+    type: integer
+    format: int32
+    in: path
+    required: true
+    enum:
+      - name: 'Duration'
+        value: 0
+      - name: 'WakeUpDuration'
+        value: 1
+      - name: 'DeepSleepDuration'
+        value: 2
+      - name: 'DeltaDuration'
+        value: 3

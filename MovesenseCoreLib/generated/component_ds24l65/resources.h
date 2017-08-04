@@ -6,6 +6,8 @@
 
 #include "whiteboard/Identifiers.h"
 #include "whiteboard/ParameterList.h"
+#include "whiteboard/Result.h"
+#include "whiteboard/ResourceClient.h"
 
 #include "whiteboard/builtinTypes/Array.h"
 #include "whiteboard/builtinTypes/ByteStream.h"
@@ -86,13 +88,11 @@ namespace LOCAL
 
 struct ROOT;
 
-struct DEVICE;
+struct COMPONENT;
 
-struct DEVICE_COMPONENT;
+struct COMPONENT_DS24L65;
 
-struct DEVICE_COMPONENT_DS24L65;
-
-struct DEVICE_COMPONENT_DS24L65_ACTIVE
+struct COMPONENT_DS24L65_ACTIVE
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3072, EXECUTION_CONTEXT);
@@ -100,16 +100,25 @@ struct DEVICE_COMPONENT_DS24L65_ACTIVE
 
 	struct GET
 	{
-		typedef bool Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<bool, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
+
 		struct Parameters
 		{
 			struct ISACTIVE
@@ -120,10 +129,12 @@ struct DEVICE_COMPONENT_DS24L65_ACTIVE
 				typedef Type ConstReferenceType;
 			};
 
+			typedef ISACTIVE Parameter1;
+
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
 
-		/** Reference wrapper for strongly typed parameter list for /Device/Component/DS24L65/Active */
+		/** Reference wrapper for strongly typed parameter list for /Component/DS24L65/Active */
 		class ParameterListRef
 		{
 		private:
@@ -159,10 +170,16 @@ struct DEVICE_COMPONENT_DS24L65_ACTIVE
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::ISACTIVE::ConstReferenceType)
+		{
+		}
 	};
 };
 
-struct DEVICE_COMPONENT_DS24L65_COMMAND
+struct COMPONENT_DS24L65_COMMAND
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3073, EXECUTION_CONTEXT);
@@ -170,6 +187,9 @@ struct DEVICE_COMPONENT_DS24L65_COMMAND
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
+
 		struct Parameters
 		{
 			struct BODY
@@ -180,10 +200,12 @@ struct DEVICE_COMPONENT_DS24L65_COMMAND
 				typedef const Type& ConstReferenceType;
 			};
 
+			typedef BODY Parameter1;
+
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
 
-		/** Reference wrapper for strongly typed parameter list for /Device/Component/DS24L65/Command */
+		/** Reference wrapper for strongly typed parameter list for /Component/DS24L65/Command */
 		class ParameterListRef
 		{
 		private:
@@ -219,10 +241,16 @@ struct DEVICE_COMPONENT_DS24L65_COMMAND
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::BODY::ConstReferenceType)
+		{
+		}
 	};
 };
 
-struct DEVICE_COMPONENT_DS24L65_READROM
+struct COMPONENT_DS24L65_READROM
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3074, EXECUTION_CONTEXT);
@@ -230,16 +258,22 @@ struct DEVICE_COMPONENT_DS24L65_READROM
 
 	struct GET
 	{
-		typedef uint64 Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<uint64, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
-struct DEVICE_COMPONENT_DS24L65_REGISTER
+struct COMPONENT_DS24L65_REGISTER
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3075, EXECUTION_CONTEXT);
@@ -247,7 +281,8 @@ struct DEVICE_COMPONENT_DS24L65_REGISTER
 
 	struct GET
 	{
-		typedef uint8 Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<uint8, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
 
 		struct Parameters
 		{
@@ -259,10 +294,12 @@ struct DEVICE_COMPONENT_DS24L65_REGISTER
 				typedef Type ConstReferenceType;
 			};
 
+			typedef ADDRESS Parameter1;
+
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
 
-		/** Reference wrapper for strongly typed parameter list for /Device/Component/DS24L65/Register */
+		/** Reference wrapper for strongly typed parameter list for /Component/DS24L65/Register */
 		class ParameterListRef
 		{
 		private:
@@ -298,10 +335,19 @@ struct DEVICE_COMPONENT_DS24L65_REGISTER
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::ADDRESS::ConstReferenceType)
+		{
+		}
 	};
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
+
 		struct Parameters
 		{
 			struct ADDRESS
@@ -312,6 +358,8 @@ struct DEVICE_COMPONENT_DS24L65_REGISTER
 				typedef Type ConstReferenceType;
 			};
 
+			typedef ADDRESS Parameter1;
+
 			struct VALUE
 			{
 				static const whiteboard::ParameterIndex Index = 1;
@@ -320,10 +368,12 @@ struct DEVICE_COMPONENT_DS24L65_REGISTER
 				typedef Type ConstReferenceType;
 			};
 
+			typedef VALUE Parameter2;
+
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 2;
 		};
 
-		/** Reference wrapper for strongly typed parameter list for /Device/Component/DS24L65/Register */
+		/** Reference wrapper for strongly typed parameter list for /Component/DS24L65/Register */
 		class ParameterListRef
 		{
 		private:
@@ -368,10 +418,17 @@ struct DEVICE_COMPONENT_DS24L65_REGISTER
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::ADDRESS::ConstReferenceType,
+			Parameters::VALUE::ConstReferenceType)
+		{
+		}
 	};
 };
 
-struct DEVICE_COMPONENT_DS24L65_SCAN
+struct COMPONENT_DS24L65_SCAN
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3076, EXECUTION_CONTEXT);
@@ -379,16 +436,22 @@ struct DEVICE_COMPONENT_DS24L65_SCAN
 
 	struct GET
 	{
-		typedef uint8 Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<uint8, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 
-struct DEVICE_COMPONENT_DS24L65_USERMEMORY
+struct COMPONENT_DS24L65_USERMEMORY
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3077, EXECUTION_CONTEXT);
@@ -396,16 +459,25 @@ struct DEVICE_COMPONENT_DS24L65_USERMEMORY
 
 	struct GET
 	{
-		typedef EEprom64ByteArray Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<const EEprom64ByteArray&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
+
 		struct Parameters
 		{
 			struct BODY
@@ -416,10 +488,12 @@ struct DEVICE_COMPONENT_DS24L65_USERMEMORY
 				typedef const Type& ConstReferenceType;
 			};
 
+			typedef BODY Parameter1;
+
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
 
-		/** Reference wrapper for strongly typed parameter list for /Device/Component/DS24L65/UserMemory */
+		/** Reference wrapper for strongly typed parameter list for /Component/DS24L65/UserMemory */
 		class ParameterListRef
 		{
 		private:
@@ -455,6 +529,12 @@ struct DEVICE_COMPONENT_DS24L65_USERMEMORY
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::BODY::ConstReferenceType)
+		{
+		}
 	};
 };
 

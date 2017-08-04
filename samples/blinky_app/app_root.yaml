@@ -32,11 +32,3 @@ executionContexts:
     numberOfResponses: 1
     stackSize: 128
     priority: low
-    
-apis:
-  AccelerometerSample.*:
-    apiId: 100
-    defaultExecutionContext: PrimaryServices
-  HelloWorld.*:
-    apiId: 101
-    defaultExecutionContext: PrimaryServices

@@ -842,6 +842,7 @@ definitions:
         type: integer
         format: uint8
       satelliteData:
+        description: List of satellites in view. Sorted according to descending snr (highest first)
         type: array
         maxItems: 12
         items:

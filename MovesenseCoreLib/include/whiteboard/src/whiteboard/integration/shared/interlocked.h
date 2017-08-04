@@ -335,3 +335,57 @@ bool WbInterlockedCompareAndExchangePointer(void* volatile* ppTarget, void* pExc
 #error Interlocked functions have not beed defined for current compiler
 
 #endif
+
+/** Increments 32-bit integer in atomic fashion
+*
+* @param pAddend A pointer to the variable to be incremented.
+* @return The resulting incremented value
+*/
+inline uint32 WbInterlockedIncrement32(volatile uint32* pAddend)
+{
+    return WbInterlockedIncrement32(reinterpret_cast<volatile int32*>(pAddend));
+}
+
+/** Decrements 32-bit integer in atomic fashion
+*
+* @param pAddend A pointer to the variable to be decremented.
+* @return The resulting decremented value
+*/
+inline uint32 WbInterlockedDecrement32(volatile uint32* pAddend)
+{
+    return WbInterlockedDecrement32(reinterpret_cast<volatile int32*>(pAddend));
+}
+
+/** Adds two 32-bit integers in atomic fashion
+*
+* @param pAddend A pointer to the variable to be incremented.
+* @param value Incrementation value
+* @return The resulting incremented value
+*/
+inline uint32 WbInterlockedAdd32(volatile uint32* pAddend, uint32 value)
+{
+    return WbInterlockedAdd32(reinterpret_cast<volatile int32*>(pAddend), value) + value;
+}
+
+/** Exchanges 32-bit integer in atomic fashion
+*
+* @param pTarget A pointer to the variable to be exchanged.
+* @param value The value to be exchanged with the value pointed to by Target.
+* @return The initial value pointed by pTarget pointer
+*/
+inline uint32 WbInterlockedExchange32(volatile uint32* pTarget, uint32 value)
+{
+    return WbInterlockedExchange32(reinterpret_cast<volatile int32*>(pTarget), value);
+}
+
+/** Compares and exchanges 32-bit integer in atomic fashion
+*
+* @param pTarget Pointer to the target value.
+* @param exchange Exchange value
+* @param comparand Value to compare to target. Value pointed by pTarget pointer is changed only if it equals compare value.
+* @return A value indicating wether the value was exchanged
+*/
+inline bool WbInterlockedCompareAndExchange32(volatile uint32* pTarget, uint32 exchange, uint32 comparand)
+{
+    return WbInterlockedCompareAndExchange32(reinterpret_cast<volatile int32*>(pTarget), exchange, comparand);
+}

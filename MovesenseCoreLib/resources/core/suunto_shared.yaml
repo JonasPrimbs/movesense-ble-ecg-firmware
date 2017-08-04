@@ -124,21 +124,26 @@ definitions:
         description: The procedure has terminated unsuccessfully.
         value: 3
 
-  FloatVector3DArray:
-    required:
-      - data
-    properties:
-      data:
-        type: array
-        items:
-          $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/FloatVector3D'
+  SleepTrackingMode:
+    type: integer
+    format: uint8
+    enum:
+      - name: 'Off'
+        value: 0
+      - name: 'Automatic'
+        value: 1
+      - name: 'Manual'
+        value: 2
 
-  AddressInfo:
-    required:
-      - name
-      - address
-    properties:
-      name:
-        type: string
-      address:
-        type: string
+  DoNotDisturbMode:
+    type: integer
+    format: uint8
+    enum:
+      - name: 'Off'
+        value: 0
+      - name: 'Daily'
+        value: 1
+      - name: 'Weekdays'
+        value: 2
+      - name: 'Weekends'
+        value: 3

@@ -1,10 +1,5 @@
 #pragma once
-/******************************************************************************
-
-    Copyright (c) Suunto Oy 2016.
-    All rights reserved.
-
-******************************************************************************/
+// Copyright (c) Suunto Oy 2016. All rights reserved.
 
 #include "whiteboard/integration/port.h"
 

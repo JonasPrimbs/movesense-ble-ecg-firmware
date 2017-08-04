@@ -6,6 +6,8 @@
 
 #include "whiteboard/Identifiers.h"
 #include "whiteboard/ParameterList.h"
+#include "whiteboard/Result.h"
+#include "whiteboard/ResourceClient.h"
 
 #include "whiteboard/builtinTypes/Array.h"
 #include "whiteboard/builtinTypes/ByteStream.h"
@@ -57,16 +59,23 @@ struct TIME
 
 	struct GET
 	{
-		typedef int64 Response_HTTP_CODE_OK_Type;
+		typedef whiteboard::StronglyTypedResult<int64, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct PUT
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
 		struct Parameters
 		{
 			struct VALUE
@@ -76,6 +85,8 @@ struct TIME
 				typedef int64 Type;
 				typedef Type ConstReferenceType;
 			};
+
+			typedef VALUE Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
@@ -116,27 +127,59 @@ struct TIME
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::VALUE::ConstReferenceType)
+		{
+		}
 	};
 
 	struct SUBSCRIBE
 	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 
 	struct EVENT
 	{
 		typedef int64 NotificationType;
-	};
+		typedef NotificationType ConstReferenceNotificationType;
 
-	struct UNSUBSCRIBE
-	{
 		struct Parameters
 		{
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
 		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			const whiteboard::Api::OptionalParameter<ConstReferenceNotificationType>&)
+		{
+		}
+	};
+
+	struct UNSUBSCRIBE
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
 	};
 };
 

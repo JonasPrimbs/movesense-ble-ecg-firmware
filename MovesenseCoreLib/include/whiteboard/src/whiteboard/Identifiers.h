@@ -259,11 +259,14 @@ struct WB_API ClientId
 #endif
         struct
         {
-             /** Does client consider subscription notifications not critical, i.e is it allowed to drop data on congestion */
-            uint8 isNonCriticalSubscription : 1;
+            /** Does client consider subscription notifications not critical, i.e is it allowed to drop data on congestion */
+            uint8 nonCriticalSubscription : 1;
+
+            /** Is the request type checked at client's end. */
+            uint8 typeChecked : 1;
 
             /** Reserved for future use */
-            uint8 reserved : 2;
+            uint8 reserved : 1;
 
             /** PathParameterCache uses one bit of this internally as subscription ref - counting for the same path variable,
             that implementation needs to be changed if bits here are taken into use */
@@ -299,7 +302,13 @@ struct WB_API ClientId
     inline ClientId(const ExecutionContextId _executionContextId,
                     const WhiteboardId _whiteboardId,
                     const LocalClientId _localClientId)
-        : isNonCriticalSubscription(0), reserved(0), pathVariableRefCount(0), executionContextId(_executionContextId), whiteboardId(_whiteboardId), localClientId(_localClientId)
+        : nonCriticalSubscription(0),
+          typeChecked(0),
+          reserved(0),
+          pathVariableRefCount(0),
+          executionContextId(_executionContextId),
+          whiteboardId(_whiteboardId),
+          localClientId(_localClientId)
     {
     }
 
@@ -332,8 +341,11 @@ struct WB_API ProviderId
 #endif
         struct
         {
+            /** Is the response type checked at provider's end. */
+            uint8 typeChecked : 1;
+
             /** Reserved for future use */
-            uint8 reserved : 4;
+            uint8 reserved : 3;
 
             /** ID of the execution context */
             ExecutionContextId executionContextId : 4;
@@ -365,7 +377,11 @@ struct WB_API ProviderId
     inline ProviderId(const ExecutionContextId _executionContextId,
                       const WhiteboardId _whiteboardId,
                       const LocalProviderId _localProviderId)
-        : reserved(0), executionContextId(_executionContextId), whiteboardId(_whiteboardId), localProviderId(_localProviderId)
+        : typeChecked(0), 
+          reserved(0),
+          executionContextId(_executionContextId),
+          whiteboardId(_whiteboardId),
+          localProviderId(_localProviderId)
     {
     }
 

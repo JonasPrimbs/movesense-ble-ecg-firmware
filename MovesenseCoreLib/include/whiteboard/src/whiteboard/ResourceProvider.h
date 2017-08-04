@@ -1,9 +1,7 @@
 #pragma once
-/******************************************************************************
-    Copyright (c) Suunto Oy 2014.
-    All rights reserved.
-******************************************************************************/
+// Copyright (c) Suunto Oy 2014. All rights reserved.
 
+#include "whiteboard/ApiHelpers.h"
 #include "whiteboard/Identifiers.h"
 #include "whiteboard/Functor.h"
 #include "whiteboard/ParameterList.h"
@@ -17,6 +15,7 @@
 #endif
 
 WB_HEADER_CHECK_DEFINE(WB_HAVE_DEBUG_NAMES);
+WB_HEADER_CHECK_DEFINE(WB_UNITTEST_BUILD);
 
 namespace whiteboard
 {
@@ -193,19 +192,52 @@ public:
     *
     *	@param rRequest Request information
     *	@param resultCode Result code of the request
-    *	@param responseOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions
+    *	@param rOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions
     *	@param rResult Result data of the request
     */
+    WB_FORCE_INLINE
     template <typename V = NoType>
-    inline void returnResult(
+    WB_FORCE_INLINE_ATTRIBUTE void returnResult(
         const Request& rRequest,
         Result resultCode,
-        ResponseOptions responseOptions = ResponseOptions::Empty,
+        const ResponseOptions& rOptions = ResponseOptions::Empty,
         const V& result = NoType::NoValue)
     {
         WB_STATIC_VERIFY((IsSame<V, Value>::value == 0), Raw_value_must_be_given_not_Value_wrapper);
-        return returnResultInternal(
-            rRequest, resultCode, responseOptions, (IsSame<V, NoType>::value == 1) ? Value::Empty : Value(result));
+        return returnResultImpl(
+            rRequest,
+            resultCode,
+            rOptions,
+            static_cast<typename Api::ParameterType<V>::type>(result));
+    }
+
+    /**
+    *	Returns result for a request
+    *
+    *	@tparam V Native type for the result to be returned
+    *
+    *	@param rRequest Request information
+    *	@param resultCode Result code of the request
+    *	@param rOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions
+    *	@param rResult Result data of the request
+    */
+    WB_FORCE_INLINE
+    template <
+        typename RESPONSE, typename V = NoType,
+        typename EnableIf<!IsSame<RESPONSE, Result>::value, int>::type = 0>
+    WB_FORCE_INLINE_ATTRIBUTE void returnResult(
+        const Request& rRequest,
+        const RESPONSE& rResponse,
+        const ResponseOptions& rOptions = ResponseOptions::Empty,
+        const V& result = NoType::NoValue)
+    {
+        RESPONSE::typeCheck(result);
+        return returnResultImpl(
+            rRequest,
+            static_cast<Result>(rResponse) | TYPE_CHECKED,
+            rOptions,
+            static_cast<typename Api::OptionalParameterType<
+                V, typename Api::ParameterType<typename RESPONSE::Type>::type>::type>(result));
     }
 
     /**
@@ -215,15 +247,15 @@ public:
     *	@tparam P1 .. P8 Optional. Native type for the update resource parameters.
     *
     *	@param resourceId ID of the associated resource
-    *	@param responseOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions
+    *	@param rOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions
     *	@param rValue Current value of the resource
     *	@param rP1 .. rP8 If path variables are used, add the path variables as a parameter. Path variable closest to the
     *   root shall be given first
     */
     template <typename V, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
     inline Result updateResource(
-        ResourceId resourceId,
-        const ResponseOptions& responseOptions,
+        LocalResourceId localResourceId,
+        const ResponseOptions& rOptions,
         const V& rValue,
         const P1& rP1,
         const P2& rP2,
@@ -339,31 +371,40 @@ public:
     bool stopTimer(TimerId timerId);
 
     /**
-    *   This unsafe method is for internal use only - or for porting Whiteboard to specific environment!
+    *   This unsafe method is only for adapting other interfaces on top of Whiteboard!
     *
     *	Returns result for a request
     *
     *	@param rRequest Request information
     *	@param resultCode Result code of the request
-    *   @param rResponseOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions
+    *   @param rOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions
     *	@param rResult Result data of the request
     */
-    void returnResultInternal(
-        const Request& rRequest, Result resultCode, const ResponseOptions& rResponseOptions, const Value& result);
+    WB_FORCE_INLINE
+    WB_FORCE_INLINE_ATTRIBUTE void returnResultVariant(
+        const Request& rRequest, Result resultCode, const ResponseOptions& rOptions, const Value& rResult)
+    {
+        return returnResultInternal(rRequest, resultCode, rOptions, rResult);
+    }
 
     /**
-    *   This unsafe method is for internal use only - or for porting Whiteboard to specific environment!
+    *   This unsafe method is only for adapting other interfaces on top of Whiteboard!
     *
     *	Sends resource changed notification for all subscribed clients
     *
-    *	@param resourceId ID of the associated resource
-    *   @param responseOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions
+    *	@param localResourceId ID of the associated resource
+    *   @param rOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions
     *	@param rValue Current value of the resource
     *	@param rParameterList If path variables are used, add the path variables to the parameter list. Path variable closest to
     *   the root is first in the list.
     *	@return Result of the operation
     */
-    Result updateResourceInternal(ResourceId resourceId, ResponseOptions responseOptions, const Value& value, const ParameterList& rParameterList);
+    WB_FORCE_INLINE
+    Result WB_FORCE_INLINE_ATTRIBUTE updateResourceVariant(
+        LocalResourceId localResourceId, const ResponseOptions& rOptions, const Value& rValue, const ParameterList& rParameterList)
+    {
+        return updateResourceInternal(localResourceId, rOptions, rValue, rParameterList);
+    }
 
 protected:
     /** These functions are called only by Whiteboard */
@@ -489,6 +530,54 @@ protected:
 private:
 
     /**
+    *	Returns result for a request
+    *
+    *	@tparam V Native type for the result to be returned
+    *
+    *	@param rRequest Request information
+    *	@param resultCode Result code of the request piggy backed with type check info
+    *	@param rOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions
+    *	@param rResult Result data of the request
+    */
+    template <typename V = NoType>
+    inline void returnResultImpl(
+        const Request& rRequest,
+        uint32 resultCode,
+        const ResponseOptions& rOptions = ResponseOptions::Empty,
+        const V& result = NoType::NoValue)
+    {
+        return returnResultInternal(
+            rRequest,
+            resultCode,
+            rOptions,
+            (IsSame<V, NoType>::value == 1) ? Value::Empty : Value(result));
+    }
+
+    /**
+    *	Returns result for a request
+    *
+    *	@param rRequest Request information
+    *	@param resultCode Result code of the request piggy backed with type check info
+    *   @param rOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions
+    *	@param rResult Result data of the request
+    */
+    void returnResultInternal(
+        const Request& rRequest, uint32 resultCode, const ResponseOptions& rOptions, const Value& result);
+
+    /**
+    *	Sends resource changed notification for all subscribed clients
+    *
+    *	@param localResourceId ID of the associated resource piggy backed with type check info
+    *   @param rOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions
+    *	@param rValue Current value of the resource
+    *	@param rParameterList If path variables are used, add the path variables to the parameter list. Path variable closest to
+    *   the root is first in the list.
+    *	@return Result of the operation
+    */
+    Result updateResourceInternal(
+        uint32 localResourceId, const ResponseOptions& rOptions, const Value& value, const ParameterList& rParameterList);
+
+    /**
     *   System part of PUT handler. Depending on data will call onPutRequest or onPutStream
     *
     *	@param rRequest Request information
@@ -526,6 +615,10 @@ private:
     */
     LocalProviderId mId;
 
+    /** Helper constant that allows us to piggyback type check info on result code and local resource ID
+    * parameter which generates more optimal code. */
+    static const uint32 TYPE_CHECKED = 65536;
+
 private:
 
     // disallow C++ default constructor and copy constructor usage
@@ -535,8 +628,8 @@ private:
 
 template <typename V, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
 inline Result ResourceProvider::updateResource(
-    ResourceId resourceId,
-    const ResourceProvider::ResponseOptions& responseOptions,
+    LocalResourceId localResourceId,
+    const ResourceProvider::ResponseOptions& rOptions,
     const V& rValue,
     const P1& rP1,
     const P2& rP2,
@@ -547,25 +640,18 @@ inline Result ResourceProvider::updateResource(
     const P7& rP7,
     const P8& rP8)
 {
-    WB_STATIC_VERIFY((IsSame<V, Value>::value == 0), Raw_value_must_be_given_NOT_the_Value_wrapper);
-    WB_STATIC_VERIFY((IsSame<V, ResponseOptions>::value == 0), Parameters_in_wrong_order);
-    WB_STATIC_VERIFY(WB_MAX_NUMBER_OF_PARAMETERS == 8, This_method_must_be_adapted_if_WB_MAX_NUMBER_OF_PARAMETERS_is_changed);
-
-    ParameterListInstance<8> parameters;
-    new (&parameters[0]) Value(rP1);
-    new (&parameters[1]) Value(rP2);
-    new (&parameters[2]) Value(rP3);
-    new (&parameters[3]) Value(rP4);
-    new (&parameters[4]) Value(rP5);
-    new (&parameters[5]) Value(rP6);
-    new (&parameters[6]) Value(rP7);
-    new (&parameters[7]) Value(rP8);
-
-    return updateResourceInternal(
-        resourceId,
-        responseOptions,
-        Value(rValue),
-        parameters);
+    return updateResourceImpl(
+        localResourceId,
+        rOptions,
+        static_cast<typename Api::ParameterType<V>::type>(rValue),
+        static_cast<typename Api::ParameterType<P1>::type>(rP1),
+        static_cast<typename Api::ParameterType<P2>::type>(rP2),
+        static_cast<typename Api::ParameterType<P3>::type>(rP3),
+        static_cast<typename Api::ParameterType<P4>::type>(rP4),
+        static_cast<typename Api::ParameterType<P5>::type>(rP5),
+        static_cast<typename Api::ParameterType<P6>::type>(rP6),
+        static_cast<typename Api::ParameterType<P7>::type>(rP7),
+        static_cast<typename Api::ParameterType<P8>::type>(rP8));
 }
 
 } // namespace whiteboard
