@@ -8,7 +8,7 @@ All rights reserved.
 * @file Utf8.hpp
 *
 * Functions for decoding utf8 encoded strings
-* 
+*
 * @note
 * - supports 2003 standard (max 21 bits encoded to max 4 byte long sequence)
 * - utf-8 decoding example:
@@ -69,13 +69,13 @@ inline uint32_t utf8_chrdecode(const utf8* const pStr)
 /*
  * decodes utf8 character into 32bit unicode and advances input pointer
  */
-template <typename T>
-inline uint32_t utf8_chrdecode_and_advance(T*& pStr)
+template <typename T> inline uint32_t utf8_chrdecode_and_advance(T*& pStr)
 {
     // handle the most common directly
     DEBUG_ASSERT(pStr);
     const uint32_t firstByte = *reinterpret_cast<const uint8_t*>(pStr);
-    if (firstByte < 0x80) {
+    if (firstByte < 0x80)
+    {
         pStr = reinterpret_cast<const T*>(reinterpret_cast<uintptr_t>(pStr) + 1);
         return firstByte;
     }

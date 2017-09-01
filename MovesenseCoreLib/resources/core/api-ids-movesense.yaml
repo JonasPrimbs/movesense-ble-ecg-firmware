@@ -5,7 +5,6 @@ wbres:
 
 # Forward declared
 executionContexts:
-  PrimaryServices:
   application:
   meas:
 
@@ -15,43 +14,43 @@ executionContexts:
 apis:
   types.*:
     apiId: 2
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.system.debug.*:
     apiId: 3
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.power.*:
     apiId: 4
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   device.measurement.angularvelocity.*:
     apiId: 5
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.systemevent.*:
     apiId: 6
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   time.*:
     apiId: 7
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.dev.system.*:
     apiId: 8
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   mode.*:
     apiId: 9
     defaultExecutionContext: meas
   suunto.device.system.shutdown.*:
     apiId: 10
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   max3000x.*:
     apiId: 11
     defaultExecutionContext: meas
   ds24l65.*:
     apiId: 12
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: meas
   info.*:
     apiId: 13
     defaultExecutionContext: meas
   manufacturing.*:
     apiId: 14
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   energy.*:
     apiId: 50
     defaultExecutionContext: meas
@@ -60,19 +59,19 @@ apis:
     defaultExecutionContext: meas
   logbook.*:
     apiId: 52
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   settings.*:
     apiId: 53
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   calibration.*:
     apiId: 54
     defaultExecutionContext: application
   ble.*:
     apiId: 55
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   nrf52.*:
     apiId: 56
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   lsm6ds3.*:
     apiId: 57
     defaultExecutionContext: meas
@@ -99,10 +98,13 @@ apis:
     defaultExecutionContext: meas
   gear.*:
     apiId: 65
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: meas
   ind.*:
     apiId: 66
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   ecg.*:
     apiId: 67
     defaultExecutionContext: meas
+  eeprom.*:
+    apiId: 68
+    defaultExecutionContext: application

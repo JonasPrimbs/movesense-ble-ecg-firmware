@@ -18,15 +18,11 @@ public:
     void wbUnregister();
 
 private:
-    void onGetRequest(const wb::Request& request,
-        const wb::ParameterList& parameters) OVERRIDE;
-    void onPutRequest(const wb::Request& request,
-        const wb::ParameterList& parameters) OVERRIDE;
+    void onGetRequest(const wb::Request& request, const wb::ParameterList& parameters) OVERRIDE;
+    void onPutRequest(const wb::Request& request, const wb::ParameterList& parameters) OVERRIDE;
 
-    void onSubscribe(const wb::Request& request,
-        const wb::ParameterList& parameters) OVERRIDE;
-    void onUnsubscribe(const wb::Request& request,
-        const wb::ParameterList& parameters) OVERRIDE;
+    void onSubscribe(const wb::Request& request, const wb::ParameterList& parameters) OVERRIDE;
+    void onUnsubscribe(const wb::Request& request, const wb::ParameterList& parameters) OVERRIDE;
 
     void sendUpdate();
 

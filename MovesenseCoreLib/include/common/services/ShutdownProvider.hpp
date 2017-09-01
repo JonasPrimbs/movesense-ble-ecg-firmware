@@ -10,8 +10,7 @@ namespace nea
 /**
  * Provide a controlled and safe shutdown service to the system.
  */
-class ShutdownProvider FINAL : private whiteboard::ResourceProvider,
-                               protected whiteboard::ResourceClient
+class ShutdownProvider FINAL : private whiteboard::ResourceProvider, protected whiteboard::ResourceClient
 {
 public:
     ShutdownProvider();
@@ -40,8 +39,7 @@ private:
      *  @param parameters List of parameters for the request
      *  @return Result of the operation
      */
-    void onGetRequest(const whiteboard::Request& request,
-                      const whiteboard::ParameterList& parameters) OVERRIDE FINAL;
+    void onGetRequest(const whiteboard::Request& request, const whiteboard::ParameterList& parameters) OVERRIDE FINAL;
 
     /**
      *  PUT request handler.
@@ -52,8 +50,7 @@ private:
      *  @param parameters List of parameters for the request
      *  @return Result of the operation
      */
-    void onPutRequest(const whiteboard::Request& request,
-                      const whiteboard::ParameterList& parameters) OVERRIDE;
+    void onPutRequest(const whiteboard::Request& request, const whiteboard::ParameterList& parameters) OVERRIDE;
 
     /**
      *  Subscribe notification callback.
@@ -72,14 +69,12 @@ private:
      *  @param resourceId ID of the associated resource
      *  @return Result of the operation
      */
-    virtual void onUnsubscribe(const whiteboard::Request& request,
-                               const whiteboard::ParameterList& parameters) OVERRIDE FINAL;
+    virtual void onUnsubscribe(const whiteboard::Request& request, const whiteboard::ParameterList& parameters) OVERRIDE FINAL;
 
-
-    /** 
-     * Performs shutdown procedure (required hw deinit); Should be called when all shutdown 
+    /**
+     * Performs shutdown procedure (required hw deinit); Should be called when all shutdown
      * subscribers have unregistered.
-     * 
+     *
      * Depending on next requested system mode, either performs power off or reset.
      */
     void systemShutdown();

@@ -40,24 +40,23 @@ public:
      * Queues new DPC in meas context to notify clients about changed time.
      * @param pUserData TimeProvider instance.
      * @param seconds   Current unix time */
-    static void secondTickHandler(void *pUserData, const uint32_t seconds);
+    static void secondTickHandler(void* pUserData, const uint32_t seconds);
 
 private:
     friend class TimeProviderTest;
 
-    void onGetRequest(const whiteboard::Request& request,
-                      const whiteboard::ParameterList& parameters) OVERRIDE;
+    void onGetRequest(const whiteboard::Request& request, const whiteboard::ParameterList& parameters) OVERRIDE;
 
     /// You can PUT new time with WB_RES_DEV_TIME (int64)
-    void onPutRequest(const whiteboard::Request& request,
-                      const whiteboard::ParameterList& parameters) OVERRIDE;
+    void onPutRequest(const whiteboard::Request& request, const whiteboard::ParameterList& parameters) OVERRIDE;
 
     void updateTimeResource();
 
 #if !defined(APP_BOOTLOADER) && !defined(APP_SS2_APPLICATION)
     /** @see whiteboard::ResourceClient::onNotify */
-    void onNotify(whiteboard::ResourceId resourceId, const whiteboard::Value& value,
-        const whiteboard::ParameterList& parameters) OVERRIDE;
+    void onNotify(whiteboard::ResourceId resourceId,
+                  const whiteboard::Value& value,
+                  const whiteboard::ParameterList& parameters) OVERRIDE;
 
     // it calculates how much seconds to midnight and start the timer accordingly
     void checkHourAndMidnight(int64 currentTimestamp);

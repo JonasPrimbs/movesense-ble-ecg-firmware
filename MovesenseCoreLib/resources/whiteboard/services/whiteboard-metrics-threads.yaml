@@ -33,7 +33,6 @@ securityDefinitions:
 # Paths
 paths:
   /Whiteboard/Metrics/Threads:
-    x-executionContext: PrimaryServices
     get:
       description: |
         Returns information about threads and their run time statistics.
@@ -47,7 +46,6 @@ paths:
           - public
 
   /Whiteboard/Metrics/Threads/Count:
-    x-executionContext: PrimaryServices
     get:
       description: |
         Get number of threads
@@ -62,7 +60,6 @@ paths:
             - public
 
   /Whiteboard/Metrics/Threads/{index}/Name:
-    x-executionContext: PrimaryServices
     get:
       description: |
         User can query name of thread with given index.
@@ -86,7 +83,6 @@ paths:
           - public
 
   /Whiteboard/Metrics/Threads/{index}/ProgramCounter:
-    x-executionContext: PrimaryServices
     get:
       description: |
         User can query value of program counter register of thread with given index.
@@ -111,7 +107,6 @@ paths:
           - public
 
   /Whiteboard/Metrics/Threads/{index}/ReturnAddress:
-    x-executionContext: PrimaryServices
     get:
       description: |
         User can query value of return address register of thread with given index.

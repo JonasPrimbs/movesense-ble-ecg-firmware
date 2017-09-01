@@ -26,7 +26,7 @@ uint32_t kernelGetTickrate(void);
 
 /**
  * Convert kernel ticks to milliseconds
- * 
+ *
  * @param ticks		kernel ticks
  * @return milliseconds
  */
@@ -34,7 +34,7 @@ uint32_t kernelConvertTicksToMs(uint32_t ticks);
 
 /**
  * Convert milliseconds to kernel ticks
- * 
+ *
  * @param milliSeconds		milliseconds
  * @return kernel ticks
  */
@@ -67,7 +67,7 @@ bool kernelHasMemoryAllocationError(void);
 * @param interruptNumber Number of the simulated interrupt
 * @param interruptHandler Interrupt handler function
 */
-void kernelSetSimulatedInterruptHandler(uint32_t interruptNumber, uint32_t(*interruptHandler)(void));
+void kernelSetSimulatedInterruptHandler(uint32_t interruptNumber, uint32_t (*interruptHandler)(void));
 
 /*
 * Raise a simulated interrupt
@@ -81,4 +81,3 @@ void kernelGenerateSimulatedInterrupt(uint32_t interruptNumber);
 #if defined(__cplusplus)
 }
 #endif /* __cplusplus */
-

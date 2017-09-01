@@ -4,9 +4,6 @@
 // Copyright (c) Suunto Oy 2014 - 2017. All rights reserved.
 
 
-static const unsigned short ROOT_LID = 0;
-static const unsigned short MISC_LID = 18446744073709551615;
-static const unsigned short MISC_CALIBRATION_LID = 18446744073709551615;
 static const unsigned short MISC_CALIBRATION_MODE_LID = 13824;
 static const unsigned short MISC_CALIBRATION_REFERENCES_LID = 13825;
 static const unsigned short MISC_CALIBRATION_SEQUENCE_LID = 13826;

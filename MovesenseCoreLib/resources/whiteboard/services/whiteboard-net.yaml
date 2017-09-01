@@ -33,7 +33,6 @@ securityDefinitions:
 # Paths
 paths:
   /Net:
-    x-executionContext: PrimaryServices
     get:
       description: |
         User can query information about the remote whiteboards known by the local whiteboard.
@@ -64,7 +63,6 @@ paths:
           - public
 
   /Net/Subscription:
-    x-executionContext: PrimaryServices
     post:
       tags:
         - Suunto API
@@ -168,3 +166,20 @@ definitions:
       - description: Route has gone to error state.
         name: 'ROUTE_NOTIFICATION_ERROR'
         value: 2
+
+  CompactWbVersion:
+    description: Version information, e.g. 1.0.0
+    required:
+    - majorVersion
+    - minorVersion
+    - patchVersion
+    properties:
+      majorVersion:
+        type: integer
+        format: uint8
+      minorVersion:
+        type: integer
+        format: uint8
+      patchVersion:
+        type: integer
+        format: uint8

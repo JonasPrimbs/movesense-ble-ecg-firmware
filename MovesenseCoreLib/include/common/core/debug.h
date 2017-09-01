@@ -32,13 +32,15 @@ void debugOut(bool appendLineFeed, const char* format, ...);
 void debugOutRaw(uint8_t paramCount, bool firstParamIsString, const char* message, ...);
 
 #ifdef DISABLE_DEBUGLOG
-#define DEBUGLOG(...)                                                                              \
-    do {                                                                                           \
+#define DEBUGLOG(...)                                                                                                            \
+    do                                                                                                                           \
+    {                                                                                                                            \
     } while (0)
-#define DEBUGLOGNOENDL(...)                                                                        \
-    do {                                                                                           \
+#define DEBUGLOGNOENDL(...)                                                                                                      \
+    do                                                                                                                           \
+    {                                                                                                                            \
     } while (0)
-#elif defined(__IAR_SYSTEMS_ICC__)  || defined(__GNUC__)
+#elif defined(__IAR_SYSTEMS_ICC__) || defined(__GNUC__)
 #define DEBUGLOG(...) debugOut(true, __VA_ARGS__)
 #define DEBUGLOGNOENDL(...) debugOut(false, __VA_ARGS__)
 #define DEBUGLOGRAW(...) debugOutRaw(ARGCOUNT(__VA_ARGS__) - 1, false, __VA_ARGS__)

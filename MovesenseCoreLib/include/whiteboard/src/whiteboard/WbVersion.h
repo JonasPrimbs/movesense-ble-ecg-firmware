@@ -7,7 +7,11 @@
 #define BUILD_VCS_NUMBER "00000000"
 #endif
 
-#define WB_VERSION "3.3.0-" BUILD_VCS_NUMBER
+#define WB_VERSION_MAJOR 3
+#define WB_VERSION_MINOR 4
+#define WB_VERSION_PATCH 1
+
+#define WB_VERSION WB_STRINGIFY(WB_VERSION_MAJOR) "." WB_STRINGIFY(WB_VERSION_MINOR) "." WB_STRINGIFY(WB_VERSION_PATCH) "-" BUILD_VCS_NUMBER
 
 /** Minimum supported whiteboard communication protocol version */
 #ifndef WB_COMM_PROTO_MIN_VERSION

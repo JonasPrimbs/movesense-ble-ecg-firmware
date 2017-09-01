@@ -1,7 +1,7 @@
 #pragma once
 // Copyright (c) Suunto Oy 2015. All rights reserved.
 
-#include "whiteboard/builtinTypes/IDataTypeMetadataContainer.h"
+#include "whiteboard/metadata/IDataTypeMetadataContainer.h"
 
 namespace whiteboard
 {

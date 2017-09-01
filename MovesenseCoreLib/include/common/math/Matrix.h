@@ -330,10 +330,7 @@ public:
 
        @return bool	True if same size
      */
-    inline bool isSameSize(const Matrix& M) const
-    {
-        return ((mWidth == M.mWidth) && (mHeight == M.mHeight));
-    }
+    inline bool isSameSize(const Matrix& M) const { return ((mWidth == M.mWidth) && (mHeight == M.mHeight)); }
 
     /**
        Get matrix data

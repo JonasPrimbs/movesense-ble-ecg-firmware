@@ -21,7 +21,8 @@ public:
     void wbUnregister();
 
     /// The version number. For example 1.0.1. Defined in VERSION.txt
-    static const char *DeviceFirmwareVersion;
+    static const char* DeviceFirmwareVersion;
+
 private:
     /**
     *	GET request handler is used to query the information.
@@ -31,8 +32,7 @@ private:
     *	@param resourceId ID of the associated resource
     *	@param parameters empty List of parameters
     */
-    virtual void onGetRequest(const whiteboard::Request& request,
-                              const whiteboard::ParameterList& parameters) OVERRIDE;
+    virtual void onGetRequest(const whiteboard::Request& request, const whiteboard::ParameterList& parameters) OVERRIDE;
 };
 
 } // namespace Nea

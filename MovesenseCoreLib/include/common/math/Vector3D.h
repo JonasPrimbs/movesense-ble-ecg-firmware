@@ -61,10 +61,7 @@ public:
      *
      * @param rVector, sori Aimo, taa on valiaikainen valppa.
      */
-    Vector3D(const Vector3DInt32& rVector)
-        : mX((float)rVector.x), mY((float)rVector.y), mZ((float)rVector.z)
-    {
-    }
+    Vector3D(const Vector3DInt32& rVector) : mX((float)rVector.x), mY((float)rVector.y), mZ((float)rVector.z) {}
 
     /**
        Destructor
@@ -264,8 +261,7 @@ public:
        @param n			Number of points
        @param rRotate	Rotate matrix
      */
-    static void matrixRotate(Vector3D* pTrg, const Vector3D* pSrc, int n,
-                             const RotateMatrix& rRotate);
+    static void matrixRotate(Vector3D* pTrg, const Vector3D* pSrc, int n, const RotateMatrix& rRotate);
 
     /**
        Rotate and move points
@@ -276,8 +272,8 @@ public:
        @param rLocation	Current location
        @param rRotate	Rotate matrix
      */
-    static void matrixMoveAndRotate(Vector3D* pTrg, const Vector3D* pSrc, int n,
-                                    const Vector3D& rLocation, const RotateMatrix& rRotate);
+    static void
+    matrixMoveAndRotate(Vector3D* pTrg, const Vector3D* pSrc, int n, const Vector3D& rLocation, const RotateMatrix& rRotate);
 
     /**
        Axis rotate
@@ -322,7 +318,12 @@ public:
 class Vector3D::RotateMatrix
 {
 public:
-    enum { X_AXIS, Y_AXIS, Z_AXIS };
+    enum
+    {
+        X_AXIS,
+        Y_AXIS,
+        Z_AXIS
+    };
 
 public:
     /**

@@ -36,6 +36,7 @@ struct DescriptorGroup_t {
 
 struct SbemResID2GrpIdMapping {
     const whiteboard::LocalResourceId wbResId;
+    const size_t sbemBytes;
     const DescriptorGroup_t &sbemGrp;
 };
 
@@ -44,7 +45,7 @@ struct SbemResID2ItemIdMapping {
     const DescriptorItem_t &sbemItem;
 };
 
-uint16_t getSbemDescriptorIdFromResource(whiteboard::LocalResourceId localResourceId);
+uint16_t getSbemDescriptorIdFromResource(whiteboard::LocalResourceId localResourceId, size_t dataLength);
 
 size_t getSbemLength(whiteboard::LocalResourceId localResId, const whiteboard::Value &data);
 int16_t getSbemLengthConst(whiteboard::LocalResourceId localResId);

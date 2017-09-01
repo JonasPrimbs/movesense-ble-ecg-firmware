@@ -15,7 +15,7 @@ time_t mktimep(struct tm* tm);
 
 /**
 * This method shall be used instead of localtime(). Standard implementation is
-* not reentrant and is not safe to call from FreeRTOS, because it is taking 
+* not reentrant and is not safe to call from FreeRTOS, because it is taking
 * host OS level locks.
 */
 void localtimep(const time_t* time, struct tm* tm);
@@ -29,4 +29,4 @@ void gmtimep(const time_t* time, struct tm* tm);
 /**
 * Convert tm to time_t as UTC time.
 */
-time_t timegm(struct tm * tm);
+time_t timegm(struct tm* tm);

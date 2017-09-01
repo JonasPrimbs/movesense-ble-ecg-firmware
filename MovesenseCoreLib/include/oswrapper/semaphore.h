@@ -35,11 +35,9 @@ bool semaphoreGiveISR(SemaphoreHandle semaHandle);
 
 #elif defined(CMAKE_NEA_HAVE_HEAP_TRACE)
 
-#define semaphoreCreate(maxCount, initialCount) \
-    semaphoreCreate(maxCount, initialCount, HEAP_TRACE_ENTER("semaphoreCreate"))
+#define semaphoreCreate(maxCount, initialCount) semaphoreCreate(maxCount, initialCount, HEAP_TRACE_ENTER("semaphoreCreate"))
 
-#define semaphoreCreateBinary() \
-    semaphoreCreateBinary(HEAP_TRACE_ENTER("semaphoreCreateBinary"))
+#define semaphoreCreateBinary() semaphoreCreateBinary(HEAP_TRACE_ENTER("semaphoreCreateBinary"))
 
 #endif
 

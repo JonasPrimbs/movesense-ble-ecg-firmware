@@ -14,4 +14,3 @@
 #ifdef __GNUC__
 using std::isnan;
 #endif
-

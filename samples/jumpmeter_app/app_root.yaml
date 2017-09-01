@@ -5,12 +5,6 @@ wbres:
 
 # Execution context definitions
 executionContexts:
-  PrimaryServices: # only for metadata (and filesystem providers), has to be first for WB comm compatibility!
-    numberOfDpcs: 4
-    numberOfRequests: 3
-    numberOfResponses: 5
-    stackSize: 900
-    priority: low
   application:
     numberOfDpcs: 8
     numberOfRequests: 20
@@ -24,14 +18,6 @@ executionContexts:
     numberOfResponses: 10
     stackSize: 768
     priority: normal
-
-# DUMMY ui-context until WBRES.exe gets fixed.
-  ui:
-    numberOfDpcs: 1
-    numberOfRequests: 1
-    numberOfResponses: 1
-    stackSize: 128
-    priority: low
 
 apis:
   JumpCounterSample.*:

@@ -40,7 +40,7 @@
 #define LOWMEM _Pragma("location=\".lowmem\"")
 #else
 // TODO: Test this
-#define LOWMEM __attribute__ ((section (".lowmem")))
+#define LOWMEM __attribute__((section(".lowmem")))
 #endif
 #else
 // on targets that don't have lower memory region, we won't do anything

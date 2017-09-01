@@ -33,7 +33,6 @@ securityDefinitions:
 # Paths
 paths:
   /Whiteboard/Info:
-    x-executionContext: PrimaryServices
     get:
       description: |
         User can query whiteboard version information of the system.

@@ -58,6 +58,26 @@ public:
         asyncCall(id, rWhiteboard, functor);
     }
 
+    /** Queues new functor DPC that is executed only once in the target execution context.
+    *
+    * @note This function uses dynamic memory, which use should be avoided in ESW production code
+    */
+    static void queueOnce(const whiteboard::ExecutionContextId id, IDpcFunctor& rFunctor)
+    {
+        MemberFunctor0<IDpcFunctor, void> functor(&rFunctor, &IDpcFunctor::operator());
+        asyncCall(id, functor);
+    }
+
+    /** Queues new functor DPC that is executed only once in the target execution context.
+    *
+    * @note This function uses dynamic memory, which use should be avoided in ESW production code
+    */
+    static void queueOnce(const whiteboard::ExecutionContextId id, Whiteboard& rWhiteboard, IDpcFunctor& rFunctor)
+    {
+        MemberFunctor0<IDpcFunctor, void> functor(&rFunctor, &IDpcFunctor::operator());
+        asyncCall(id, rWhiteboard, functor);
+    }
+    
     /** Queues new DPC member function that is executed only once in the target execution context. */
     template <class Ty>
     static void syncQueueOnce(const whiteboard::ExecutionContextId id, Ty* pInstance, void (Ty::*pFnMemberFunction)())
@@ -172,6 +192,18 @@ public:
         VoidFunctionCallWithReturn1<Tr, Tp> functionCall(functor, param);
         SyncDpcFunctionCallWrapper call(id, rWhiteboard, functionCall);
         return functionCall.getReturnValue();
+    }
+
+    /** Queues new DPC function that is executed only once in the target execution context. */
+    static void syncQueueOnce(const whiteboard::ExecutionContextId id, IDpcFunctor& rFunctor)
+    {
+        SyncDpcFunctionCallWrapper call(id, rFunctor);
+    }
+
+    /** Queues new DPC function that is executed only once in the target execution context. */
+    static void syncQueueOnce(const whiteboard::ExecutionContextId id, Whiteboard& rWhiteboard, IDpcFunctor& rFunctor)
+    {
+        SyncDpcFunctionCallWrapper call(id, rWhiteboard, rFunctor);
     }
 
 public:

@@ -33,7 +33,6 @@ securityDefinitions:
 # Paths
 paths:
   /Whiteboard/Status/Flags:
-    x-executionContext: PrimaryServices
     get:
       description: |
         Query Whiteboard internal status.

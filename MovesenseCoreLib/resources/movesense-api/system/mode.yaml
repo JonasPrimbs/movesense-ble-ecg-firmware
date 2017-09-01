@@ -91,9 +91,6 @@ definitions:
       - name: 'FwUpdateMode'
         description: Mode for setting the device into FW update mode
         value: 12
-      - name: 'BatteryTestMode'
-        description: Mode with the battery load connected
-        value: 13
 
   SystemModeStatus:
     required:
@@ -103,4 +100,3 @@ definitions:
         $ref: '#/definitions/SystemMode'
       next:
         $ref: '#/definitions/SystemMode'
-        

@@ -70,7 +70,6 @@ struct WB_PACKED WhiteboardVersion
         }
         return *this;
     }
-
 };
 
 /** @return current version information of this whiteboard build, set at compile time. 

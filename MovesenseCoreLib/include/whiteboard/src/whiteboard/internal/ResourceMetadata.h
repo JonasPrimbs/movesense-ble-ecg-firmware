@@ -117,7 +117,7 @@ public:
     * @param id ID of the object
     * @return Object or NULL if invalid id is given
     */
-    const metadata::EnumerationItemList* getEnumerationItemListById(
+    const metadata::EnumerationItemList getEnumerationItemListById(
         metadata::EnumerationItemListId id) const;
 
     /** Returns a parameter by ID

@@ -59,7 +59,13 @@
 
 uint16 negativeExponent(uint16 exponent);
 
-enum { NEG_EXP_INPUT_DECIMALS_BITS = 12 };
-enum { NEG_EXP_OUTPUT_DECIMALS_BITS = 16 };
+enum
+{
+    NEG_EXP_INPUT_DECIMALS_BITS = 12
+};
+enum
+{
+    NEG_EXP_OUTPUT_DECIMALS_BITS = 16
+};
 
 #endif // Preventing multiple include of header

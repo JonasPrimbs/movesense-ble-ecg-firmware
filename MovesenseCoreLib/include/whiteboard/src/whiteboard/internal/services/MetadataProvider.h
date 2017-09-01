@@ -68,7 +68,7 @@ protected:
     Result fillGetOperationMetadata(LocalResourceId resourceId,
                                     WB_RES::OperationType operationType,
                                     WB_RES::LocalParameterId parameterIdList[WB_MAX_NUMBER_OF_PARAMETERS],
-                                    WB_RES::LocalResponseId responseIdList[MetadataHelpers::MAX_NUMBER_OF_RESPONSES],
+                                    WB_RES::LocalResponseId responseIdList[WB_MAX_NUMBER_OF_RESPONSES],
                                     WB_RES::OperationMetadata& rOperationMetadata) const;
 
     Result fillGetResponseMetadata(LocalResourceId resourceId,
@@ -80,7 +80,7 @@ protected:
         const MetadataMap& rMetadata,
         WB_RES::LocalOperationId operationId,
         WB_RES::LocalParameterId parameterIdList[WB_MAX_NUMBER_OF_PARAMETERS],
-        WB_RES::LocalResponseId responseIdList[MetadataHelpers::MAX_NUMBER_OF_RESPONSES],
+        WB_RES::LocalResponseId responseIdList[WB_MAX_NUMBER_OF_RESPONSES],
         WB_RES::OperationMetadata& rOperationMetadata) const;
 
     Result fillGetParameterMetadata(
@@ -197,7 +197,7 @@ protected:
 
         inline void tryMoveToNextState(State currentState, size_t totalItemCount)
         {
-            if (mIndex < totalItemCount - 1)
+            if (mIndex < totalItemCount)
             {
                 return;
             }

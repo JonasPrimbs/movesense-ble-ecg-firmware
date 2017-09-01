@@ -10,9 +10,10 @@ Movesense sensor is a programmable multi-purpose device comprising accelerometer
 Resource | Description|Implemented
 ---------|------------|--------------
 /Comm/Ble|API for managing BLE | YES
+/Component/Eeprom|API for writing and reading the EEPROM memory/ies. | YES
 /Info|API for accessing generic device information.| YES
 /Meas/Acc|API enabling subscribing linear acceleration data (based on accelerometer).| YES
-**/Meas/ECG**|API for the electrocardiography measurement.| YES
+/Meas/ECG|API for the electrocardiography measurement.| YES
 /Meas/Gyro|API enabling subscribing angular velocity data (based on gyroscope).| YES
 /Meas/HR|API enabling subscribing heart rate data.| YES
 /Meas/Magn|API enabling subscribing magnetic field data (based on magnetometer).| YES
@@ -53,6 +54,8 @@ or
 > cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/accelerometer_app
 or
 > cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/blinky_app
+or release version
+> cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake -DCMAKE_BUILD_TYPE=Release ../samples/hello_world_app
 
 > ninja
 ```

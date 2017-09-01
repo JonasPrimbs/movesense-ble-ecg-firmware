@@ -113,6 +113,15 @@ struct Config
 
     /** Default timeout for client requests in milliseconds */
     Size defaultRequestTimeoutMs;
+
+    /** Whiteboard comm-threads stack size, use as 400, 512 needed in unittests */
+    Size wbCommProtoStackDepth;
+
+    /** IP receiver stack depth */
+    Size ipReceiverStackDepth;
+
+    /** Serial receiver stack depth */
+    Size serialReceiverStackDepth;
 };
 
 /** Initializes whiteboard library

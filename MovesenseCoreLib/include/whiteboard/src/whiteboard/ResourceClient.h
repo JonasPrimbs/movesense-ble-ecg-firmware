@@ -353,6 +353,90 @@ public:
     #include "ResourceClient_AsyncRequestOverloads.h"
 
     /**
+    *   Subscribes array of local Whiteboard resources
+    *
+    *   @note This function asserts if asynchronous dispatch fails or
+    *         if any synchronous (same event thread) subscriptions fail.
+    *
+    *   @param numberOfResources Number of resources to subscribe
+    *   @param pResourceIds Array of resources to subscribe
+    *   @param isCriticalSubscription A value indicating whether subscriptions are critical
+    */
+    void asyncSubscribeLocalResources(
+        size_t numberOfResources, const LocalResourceId* const pResourceIds, bool isCriticalSubscription = true);
+
+    /**
+    *   Subscribes array of local Whiteboard resources
+    *
+    *   @note This function asserts if asynchronous dispatch fails or
+    *         if any synchronous (same event thread) subscriptions fail.
+    *
+    *   @param rResourceIds Array of resources to subscribe
+    *   @param isCriticalSubscription A value indicating whether subscriptions are critical
+    */
+    template <size_t NUMBER_OF_RESOURCES>
+    inline void asyncSubscribeLocalResources(
+        const LocalResourceId(&rResourceIds)[NUMBER_OF_RESOURCES], bool isCriticalSubscription = true)
+    {
+        asyncSubscribeLocalResources(NUMBER_OF_RESOURCES, &rResourceIds[0], isCriticalSubscription);
+    }
+
+    /**
+    *   Subscribes single local Whiteboard resources
+    *
+    *   @note This function asserts if asynchronous dispatch fails or
+    *         if any synchronous (same event thread) subscriptions fail.
+    *
+    *   @param localResourceId Resources to subscribe
+    *   @param isCriticalSubscription A value indicating whether subscriptions are critical
+    */
+    inline void asyncSubscribeLocalResource(const LocalResourceId localResourceId, bool isCriticalSubscription = true)
+    {
+        asyncSubscribeLocalResources(1, &localResourceId, isCriticalSubscription);
+    }
+
+    /**
+    *   Unubscribes array of local Whiteboard resources
+    *
+    *   @note This function asserts if asynchronous dispatch fails or
+    *         if any synchronous (same event thread) unsubscriptions fail
+    *         except for missing subscriptions.
+    *
+    *   @param numberOfResources Number of resources to unsubscribe
+    *   @param pResourceIds Array of resources to unsubscribe
+    */
+    void asyncUnsubscribeLocalResources(size_t numberOfResources, const LocalResourceId* const pResourceIds);
+
+    /**
+    *   Unsubscribes array of local Whiteboard resources
+    *
+    *   @note This function asserts if asynchronous dispatch fails or
+    *         if any synchronous (same event thread) unsubscriptions fail
+    *         except for missing subscriptions.
+    *
+    *   @param rResourceIds Array of resources to unsubscribe
+    */
+    template <size_t NUMBER_OF_RESOURCES>
+    inline void asyncUnsubscribeLocalResources(const LocalResourceId(&rResourceIds)[NUMBER_OF_RESOURCES])
+    {
+        asyncUnsubscribeLocalResources(NUMBER_OF_RESOURCES, &rResourceIds[0]);
+    }
+
+    /**
+    *   Unsubscribes single local Whiteboard resources
+    *
+    *   @note This function asserts if asynchronous dispatch fails or
+    *         if any synchronous (same event thread) unsubscriptions fail
+    *         except for missing subscriptions.
+    *
+    *   @param localResourceId Resources to unsubscribe
+    */
+    inline void asyncUnsubscribeLocalResource(const LocalResourceId localResourceId)
+    {
+        asyncUnsubscribeLocalResources(1, &localResourceId);
+    }
+
+    /**
     *	Starts a continuous timer with given period. Override whiteboard::ResourceClient::onTimer to handle timer notifications.
     *
     *   Note: If previous timer message has not been processed, for example due to execution context blocking on long operation -

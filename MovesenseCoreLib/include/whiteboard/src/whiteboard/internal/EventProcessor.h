@@ -5,10 +5,6 @@
 #include "whiteboard/internal/Whiteboard.h"
 #include "whiteboard/internal/BuildConfig.h"
 
-// Check that we are using same build configuration
-WB_HEADER_CHECK_DEFINE(WB_HAVE_EVT_STATISTICS)
-WB_HEADER_CHECK_DEFINE(WB_HAVE_EVT_TRACE)
-
 namespace WB_RES
 {
     struct EventQueueInfo;
@@ -247,14 +243,18 @@ private:
     WbSemaphoreHandle mSlotsAvailable[DISPATCH_TYPE_COUNT];
 
 #ifdef WB_HAVE_EVT_STATISTICS
+
+#ifndef WB_HAVE_EVT_TRACE
+#define WB_HAVE_EVT_TRACE
+#endif
+
 public:
     /** Copies all metrics data to the given target info array.
     * @param infoArray Pointer to the target array for the data.
-    * @param maxCount Max amount of elements in the target array.
     * @param infoType Requested info type (requests, responses, timer events)
     * @return Amount of elements copied into the array-
     */
-    static size_t copyEventQueueInfos(WB_RES::EventQueueInfo* infoArray, size_t maxCount, uint8 infoType);
+    static size_t copyEventQueueInfos(WB_RES::EventQueueInfo infoArray[WB_MAX_EXECUTION_CONTEXTS], uint8 infoType);
 
 private:
     class StatsMembers;
@@ -262,11 +262,9 @@ private:
 #endif
 
 #ifdef WB_HAVE_EVT_TRACE
-private:
+public:
     /** Writes current state of each event processor using system events */
     static void emitStatesAsSystemEvents();
-
-public:
 
     /** Trace data structure */
     struct TraceData
@@ -310,3 +308,7 @@ public:
 };
 
 } //namespace whiteboard
+
+  // Check that we are using same build configuration
+WB_HEADER_CHECK_DEFINE(WB_HAVE_EVT_STATISTICS)
+WB_HEADER_CHECK_DEFINE(WB_HAVE_EVT_TRACE)

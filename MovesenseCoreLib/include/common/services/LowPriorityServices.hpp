@@ -41,7 +41,7 @@ private:
     virtual void deinitModule() OVERRIDE;
     /// @see whiteboard::ILaunchableModule::startModule
     virtual bool startModule() OVERRIDE;
-    /// @see whiteboard::ILaunchableModule::stopModule 
+    /// @see whiteboard::ILaunchableModule::stopModule
     virtual void stopModule() OVERRIDE;
 
 private:
@@ -56,5 +56,4 @@ private:
 #endif
 };
 
-}   // namespace nea
-
+} // namespace nea

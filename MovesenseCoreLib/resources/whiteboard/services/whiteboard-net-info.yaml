@@ -33,7 +33,6 @@ securityDefinitions:
 # Paths
 paths:
   /Net/Info:
-    x-executionContext: PrimaryServices
     get:
       description: |
         User can query information about the remote whiteboards known by the local whiteboard.
@@ -59,7 +58,6 @@ paths:
           - public
 
   /Net/Info/{remoteWhiteboardIdInLocalScope}/SerialNumber:
-    x-executionContext: PrimaryServices
     get:
       description: |
         User can query serial number of Whiteboard with given ID.
@@ -85,7 +83,6 @@ paths:
           - public
 
   /Net/Info/{remoteWhiteboardIdInLocalScope}/State:
-    x-executionContext: PrimaryServices
     get:
       description: |
         User can query state of route to Whiteboard with given ID.
@@ -109,7 +106,6 @@ paths:
           - public
 
   /Net/Info/{remoteWhiteboardIdInLocalScope}/Address:
-    x-executionContext: PrimaryServices
     get:
       description: |
         User can query adapter specific address of route to Whiteboard with given ID.
@@ -137,7 +133,6 @@ paths:
           - public
 
   /Net/Adapter/{index}/Name:
-    x-executionContext: PrimaryServices
     get:
       description: |
         User can query name of communication adapter with given index.
@@ -161,7 +156,6 @@ paths:
           - public
 
   /Net/Adapter/{index}/State:
-    x-executionContext: PrimaryServices
     get:
       description: |
         User can query state of communication adapter with given index.
@@ -237,30 +231,13 @@ definitions:
         format: uint8
       wbVersion:
         description: Whiteboard version of the remote whiteboard.
-        $ref: '#/definitions/CompactWbVersion'
+        $ref: 'http://localhost:9000/services/whiteboard-net.yaml#/definitions/CompactWbVersion'
       remoteWhiteboardIdInLocalScope:
         description: ID of remote whiteboard in local scope.
         type: integer
         format: uint8
       localWhiteboardIdInRemoteScope:
         description: ID of local whiteboard in remote scope.
-        type: integer
-        format: uint8
-
-  CompactWbVersion:
-    description: Version information, e.g. 1.0.0
-    required:
-    - majorVersion
-    - minorVersion
-    - patchVersion
-    properties:
-      majorVersion:
-        type: integer
-        format: uint8
-      minorVersion:
-        type: integer
-        format: uint8
-      patchVersion:
         type: integer
         format: uint8
 

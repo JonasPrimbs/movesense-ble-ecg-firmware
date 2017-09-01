@@ -73,6 +73,17 @@ namespace sbem
     */
     int writeDescriptorChunk(uint16 chunkId, const char* pStr, uint8* outputBuffer);
 
+    /**
+    *   Write a chunk header to buffer.
+    *
+    *   @param chunkId A chunk id.
+    *   @param dataSize Size of the chunk data.
+    *   @param outputBuffer Buffer where the chunk header is writter.
+    *
+    *   @return Length of created chunk header
+    */
+    uint32_t writeChunkHeader(uint16_t chunkId, uint32_t sz, uint8_t* outputBuffer);
+
     int writeId(uint16 id, uint8* outputBuffer);
     int writeSize(uint32 sz, uint8* outputBuffer);
     int writeSizeFull(uint32 sz, uint8* outputBuffer);

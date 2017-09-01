@@ -6,7 +6,7 @@ extern "C" {
 
 #include <common/compiler/genDef.h>
 #include <stdbool.h> // bool
-#include <stddef.h> // size_t
+#include <stddef.h>  // size_t
 
 void systemAbort(void);
 
@@ -22,7 +22,7 @@ bool verifyFailed(const char* file, const size_t lineNumber);
 /* Build environment might have passed a short version of the file, so use that
    if it's present, and if not defined, use the cpp/toolchain provided one */
 #ifndef TRACE_FILENAME
-  #define TRACE_FILENAME __FILE__
+#define TRACE_FILENAME __FILE__
 #endif
 
 // Undefine ASSERT here, e.g. nRF SDK defines ASSERT macro which is not what we want
@@ -37,31 +37,43 @@ bool verifyFailed(const char* file, const size_t lineNumber);
 
 // No-op ASSERTs, but ones that "use" the result, to avoid extra compiler
 // complaints about unused variables
-#define ASSERT(cond) do { (void)(cond); } while (0)
-#define ASSERT_NO_SYSTEMEVENT(cond) do { (void)(cond); } while (0)
+#define ASSERT(cond)                                                                                                             \
+    do                                                                                                                           \
+    {                                                                                                                            \
+        (void)(cond);                                                                                                            \
+    } while (0)
+#define ASSERT_NO_SYSTEMEVENT(cond)                                                                                              \
+    do                                                                                                                           \
+    {                                                                                                                            \
+        (void)(cond);                                                                                                            \
+    } while (0)
 
 #else // no NDEBUG
 
-#define ASSERT(cond)                                                                        \
-    do {                                                                                    \
-        if (!(cond)) {                                                                      \
-            assertFailed(TRACE_FILENAME, __LINE__, true);                                   \
-        }                                                                                   \
+#define ASSERT(cond)                                                                                                             \
+    do                                                                                                                           \
+    {                                                                                                                            \
+        if (!(cond))                                                                                                             \
+        {                                                                                                                        \
+            assertFailed(TRACE_FILENAME, __LINE__, true);                                                                        \
+        }                                                                                                                        \
     } while (0)
 
-#define ASSERT_NO_SYSTEMEVENT(cond)                                                         \
-    do {                                                                                    \
-        if (!(cond)) {                                                                      \
-            assertFailed(TRACE_FILENAME, __LINE__, false);                                  \
-        }                                                                                   \
+#define ASSERT_NO_SYSTEMEVENT(cond)                                                                                              \
+    do                                                                                                                           \
+    {                                                                                                                            \
+        if (!(cond))                                                                                                             \
+        {                                                                                                                        \
+            assertFailed(TRACE_FILENAME, __LINE__, false);                                                                       \
+        }                                                                                                                        \
     } while (0)
 
 #endif // no NDEBUG
 
 #ifdef BUILD_WITH_DEBUG
-  #define DEBUG_ASSERT(cond) ASSERT(cond)
+#define DEBUG_ASSERT(cond) ASSERT(cond)
 #else
-  #define DEBUG_ASSERT(cond)
+#define DEBUG_ASSERT(cond)
 #endif
 
 #define SYSTEM_VERIFY(cond) ((cond) ? true : (verifyFailed(TRACE_FILENAME, __LINE__), false))

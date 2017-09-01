@@ -33,7 +33,6 @@ securityDefinitions:
 # Paths
 paths:
   /Whiteboard/Metrics/Pools:
-    x-executionContext: PrimaryServices
     get:
       description: |
         Returns information about Whiteboard pools and their usage.

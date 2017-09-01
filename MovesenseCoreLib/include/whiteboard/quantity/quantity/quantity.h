@@ -88,15 +88,41 @@ const Value Micro = Value(1e-6);
 */
 struct Info
 {
+    /** Constructs Info structure from given quantity and unit IDs 
+     *
+     * @param _qId Quantity ID
+     * @param _uId Unit ID
+     * @return Info structure instance
+     */
     static Info to_info(quantity::Id _qId, unit::Id _uId)
     {
         Info i = {_qId, _uId};
         return i;
     }
+
+    /** Constructs Info structure from given numeric value that represents quantity and unit IDs
+    *
+    * @param value Numeric value that represents quantity and unit IDs
+    * @return Info structure instance
+    */
+    static Info to_info(uint16_t value)
+    {
+        Info i = { static_cast<quantity::Id>(value >> 8), static_cast<unit::Id>(value) };
+        return i;
+    }
+
+    /** Converts the info structure to single numeric value
+     *
+     * @return Single numberic value representing the quantity unit info
+     */
+    inline operator uint16_t() const
+    {
+        return (static_cast<uint16_t>(qId) << 8) | uId;
+    }
+
     quantity::Id qId;
     unit::Id uId;
-
-}; // Info
+};
 
 bool operator==(const Info&, const Info&);
 bool operator!=(const Info&, const Info&);

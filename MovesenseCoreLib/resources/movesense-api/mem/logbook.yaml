@@ -52,7 +52,7 @@ paths:
         Is log open
       responses:
         200:
-          description: 
+          description:
           schema:
             type: boolean
 
@@ -106,44 +106,10 @@ paths:
         200:
           description: Operation completed successfully
 
-  /Mem/Logbook/UnsynchronisedLogs:
-    get:
-      description: |
-        Returns number of unsynchronised logs
-      responses:
-        200:
-          description: Amount of unsynchronized logs
-          schema:
-            type: integer
-            format: uint16
-
-  /Mem/Logbook/UnsynchronisedLogs/Subscription:
-    post:
-      description: |
-        number of unsynchronised log
-      responses:
-        200:
-          description: Operation completed successfully
-          schema:
-            type: integer
-            format: uint16
-        x-notification:
-          description: |
-           Event notification.
-          schema:
-            type: integer
-            format: uint16
-    delete:
-      description: |
-        Unsubscribes
-      responses:
-        200:
-          description: Operation completed successfully
-
   /Mem/Logbook/Entries:
     get:
       description: |
-        List Log contents. 
+        List Log contents.
       parameters:
         - name: StartAfterId
           in: query
@@ -221,45 +187,6 @@ paths:
 
     parameters:
        - $ref: '#/parameters/LogId'
-        
-  /Mem/Logbook/Log/{LogIndex}/Flags:
-    get:
-      description: |
-        Read Logbook entry bit flags for an exercise:
-        SUMMARY_ALL_SYNCED = 0x01
-        VALUES_ALL_SYNCED  = 0x02
-        SYNC_CONTENT_ERROR = 0x04
-        IMPORTANT_LOG      = 0x08
-        RECOVERED          = 0x10
-      responses:
-        200:
-          description: Operation completed successfully
-          schema:
-            type: integer
-            format: uint16
-        416:
-          description: Bad request. LogIndex not in range.
-    put:
-      description: |
-        set Logbook entry bit flags for an exercise:
-        SUMMARY_ALL_SYNCED = 0x01
-        VALUES_ALL_SYNCED  = 0x02
-        SYNC_CONTENT_ERROR = 0x04
-        IMPORTANT_LOG      = 0x08
-      parameters:
-        - name: flags
-          in: query
-          description: The logbook entry flags for an exercise.
-          required: true
-          type: integer
-          format: uint16
-      responses:
-        200:
-          description: Operation completed successfully
-        416:
-          description: Bad request. LogIndex not in range.
-    parameters:
-      - $ref: '#/parameters/LogIndex'
 
   /Mem/Logbook/Log/{LogIndex}/Remove:
     put:

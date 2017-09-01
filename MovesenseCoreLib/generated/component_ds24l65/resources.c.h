@@ -4,9 +4,6 @@
 // Copyright (c) Suunto Oy 2014 - 2017. All rights reserved.
 
 
-static const unsigned short ROOT_LID = 0;
-static const unsigned short COMPONENT_LID = 18446744073709551615;
-static const unsigned short COMPONENT_DS24L65_LID = 18446744073709551615;
 static const unsigned short COMPONENT_DS24L65_ACTIVE_LID = 3072;
 static const unsigned short COMPONENT_DS24L65_COMMAND_LID = 3073;
 static const unsigned short COMPONENT_DS24L65_READROM_LID = 3074;

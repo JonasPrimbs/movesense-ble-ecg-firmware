@@ -38,14 +38,13 @@ public:
     void wbUnregister();
 
 private:
-    void onGetRequest(const whiteboard::Request& request,
-        const whiteboard::ParameterList& parameters) OVERRIDE;
-    void onPutRequest(const whiteboard::Request& request,
-        const whiteboard::ParameterList& parameters) OVERRIDE;
+    void onGetRequest(const whiteboard::Request& request, const whiteboard::ParameterList& parameters) OVERRIDE;
+    void onPutRequest(const whiteboard::Request& request, const whiteboard::ParameterList& parameters) OVERRIDE;
 
     bool startFirmwareUpdate(const whiteboard::ClientId clientId,
-        const whiteboard::ResourceId resourceId,
-        const whiteboard::ParameterList& parameters);
+                             const whiteboard::ResourceId resourceId,
+                             const whiteboard::ParameterList& parameters);
+
 private:
     uint8_t m_updateProgress;
     /* SystemProvider::HEAP_CHECK_NOT_DONE_YET: not determined yet,

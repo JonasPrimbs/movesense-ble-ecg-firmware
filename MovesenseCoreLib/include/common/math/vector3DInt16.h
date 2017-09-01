@@ -19,7 +19,8 @@
 /**
         3D Vector item
 */
-typedef struct Vector3DInt16 {
+typedef struct Vector3DInt16
+{
     int16 x;
     int16 y;
     int16 z;

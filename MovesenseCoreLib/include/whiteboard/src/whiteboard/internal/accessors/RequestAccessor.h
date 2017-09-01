@@ -49,6 +49,12 @@ public:
     * @param isUpdate New update type of this request
     */
     inline static void setUpdate(const Request& rRequest, bool isUpdate);
+
+    /** Clears internally used piggy back flags from client ID
+    *
+    * @param rRequest The request to access
+    */
+    inline static void clearPiggyBackFlags(const Request& rRequest);
 };
 
 inline Request RequestAccessor::makeRequest(RequestType requestType, RequestId requestId, ClientId clientId, ResourceId resourceId)
@@ -94,6 +100,13 @@ inline void RequestAccessor::setResourceId(const Request& rRequest, ResourceId r
 inline void RequestAccessor::setUpdate(const Request& rRequest, bool isUpdate)
 {
     const_cast<Request&>(rRequest).mIsUpdate = isUpdate ? 1 : 0;
+}
+
+inline void RequestAccessor::clearPiggyBackFlags(const Request& rRequest)
+{
+    Request& rNonConstRequest = const_cast<Request&>(rRequest);
+    rNonConstRequest.mClientId.nonCriticalSubscription = 0;
+    rNonConstRequest.mClientId.typeChecked = 0;
 }
 
 } // namespace whiteboard

@@ -71,3 +71,8 @@ definitions:
           type: integer
           format: uint16
 
+  TimestampFromStartup:
+    description: Milliseconds since the startup (e.g. like reset or so).
+    type: integer
+    format: uint64
+    x-unit: millisecond

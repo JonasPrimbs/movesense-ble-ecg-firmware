@@ -1,11 +1,8 @@
 #pragma once
-/******************************************************************************
-    Copyright (c) Suunto Oy 2015.
-    All rights reserved.
-******************************************************************************/
+// Copyright (c) Suunto Oy 2015. All rights reserved.
 
 #include "wb-resources/resources.h"
-#include "whiteboard/builtinTypes/IDataTypeMetadataContainer.h"
+#include "whiteboard/metadata/IDataTypeMetadataContainer.h"
 
 namespace whiteboard
 {
@@ -15,22 +12,6 @@ class MetadataMap;
 
 namespace protocol_v9
 {
-
-/** Gets name of the enumeration value that matches given value
-*
-* @param value Enumeration value
-* @param rDataType Enumeration data type meta data
-* @return Name ID of the enumeration value or ID_INVALID_STRING if value is not valid enumeration value
-*/
-WB_RES::StringId getEnumerationValue(int32 value, const WB_RES::DataTypeMetadata& rDataType);
-
-/** Gets name of the enumeration value that matches given value
-*
-* @param value Enumeration value
-* @param rItemList Enumeration item list to search
-* @return Name ID of the enumeration value or ID_INVALID_STRING if value is not valid enumeration value
-*/
-metadata::StringId getEnumerationValue(int32 value, const metadata::EnumerationItemList& rItemList);
 
 /** Calculates data type size and alignment
 *

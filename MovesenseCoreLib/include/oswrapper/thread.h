@@ -8,34 +8,33 @@ extern "C" {
 
 enum ThreadPriority
 {
-    FW_THREAD_PRIORITY_IDLE,		// Reserved to the FreeRTOS
-    FW_THREAD_PRIORITY_LOW,		// No usage limits
-    FW_THREAD_PRIORITY_NORMAL,	// Maximum time usage < 100 ms
+    FW_THREAD_PRIORITY_IDLE,   // Reserved to the FreeRTOS
+    FW_THREAD_PRIORITY_LOW,    // No usage limits
+    FW_THREAD_PRIORITY_NORMAL, // Maximum time usage < 100 ms
     FW_THREAD_PRIORITY_DEFAULT = FW_THREAD_PRIORITY_NORMAL,
-    FW_THREAD_PRIORITY_HIGH,		// Maximum time usage < 5 ms
-    FW_THREAD_PRIORITY_CRITICAL	// Maximum time usage < 1 ms (FreeRTOS timer)
+    FW_THREAD_PRIORITY_HIGH,    // Maximum time usage < 5 ms
+    FW_THREAD_PRIORITY_CRITICAL // Maximum time usage < 1 ms (FreeRTOS timer)
 };
 
 typedef void* ThreadHandle;
 typedef void (*ThreadFunction)(void* pUserData);
 
-/*thread creation and deletion; ATTENTION: If you call threadCreate in multiple threads, the following methods should not be called:
+/*thread creation and deletion; ATTENTION: If you call threadCreate in multiple threads, the following methods should not be
+called:
 - threadGetCount
 - threadGetMaxStackDepth
 - threadGetAllThreadHandles
 As the data returned there is not protected by mutex and the data is updated in threadCreate and threadDelete
 */
-ThreadHandle threadCreate(
-    ThreadFunction threadFunction,
-    const char* pThreadName,
-    uint16_t stackDepth,
-    void* pUserData,
-    enum ThreadPriority priority
-    HEAP_TRACE_PARAMS_DECL);
+ThreadHandle threadCreate(ThreadFunction threadFunction,
+                          const char* pThreadName,
+                          uint16_t stackDepth,
+                          void* pUserData,
+                          enum ThreadPriority priority HEAP_TRACE_PARAMS_DECL);
 
 void threadDelete(ThreadHandle threadHandle);
 
-//controlling functions
+// controlling functions
 void threadSuspend(ThreadHandle threadHandle);
 void threadResume(ThreadHandle threadHandle);
 void threadResumeISR(ThreadHandle threadHandle);
@@ -59,33 +58,33 @@ ThreadHandle threadGetCurrentThreadHandleSafe(void);
 enum ThreadPriority threadGetPriority(ThreadHandle threadHandle);
 void threadSetPriority(ThreadHandle threadHandle, enum ThreadPriority priority);
 
-//query functions
-const char * threadGetName(ThreadHandle threadHandle);
+// query functions
+const char* threadGetName(ThreadHandle threadHandle);
 uint32_t threadGetStackHighWaterMark(ThreadHandle threadHandle);
 // Extra query functions, see note in createThread!
 uint8_t threadGetCount(void);
 uint16_t threadGetMaxStackDepth(ThreadHandle threadHandle);
-const ThreadHandle* threadGetAllThreadHandles(uint8_t* numThreads); // This excludes OS internal threads, such as possible timer-thread.
+const ThreadHandle*
+threadGetAllThreadHandles(uint8_t* numThreads); // This excludes OS internal threads, such as possible timer-thread.
 
-//critical sections
+// critical sections
 void threadEnterCritical(void);
 void threadExitCritical(void);
 
-//delay
+// delay
 void threadDelay(uint32_t millis);
-void threadDelayExact(uint32_t* previousWakeTimeMillis,uint32_t absWakeTimeMillis);
+void threadDelayExact(uint32_t* previousWakeTimeMillis, uint32_t absWakeTimeMillis);
 
-//misc
+// misc
 void threadYield(void);
 
 // Thread local storage
 void* threadGetLocalStoragePointer(ThreadHandle threadHandle, int index);
 void threadSetLocalStoragePointer(ThreadHandle threadHandle, int index, void* pValue);
 
-
 #ifdef CMAKE_NEA_HAVE_HEAP_TRACE
 
-#define threadCreate(threadFunction, pThreadName, stackDepth, pUserData, priority) \
+#define threadCreate(threadFunction, pThreadName, stackDepth, pUserData, priority)                                               \
     threadCreate(threadFunction, pThreadName, stackDepth, pUserData, priority, HEAP_TRACE_ENTER("threadCreate"))
 
 #endif

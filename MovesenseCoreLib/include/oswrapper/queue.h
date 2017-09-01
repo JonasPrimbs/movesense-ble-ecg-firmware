@@ -42,11 +42,10 @@ inline QueueHandle trace_queueCreate(const char* name, uint32_t numItems, uint32
     return queueCreate(name, numItems, itemSize HEAP_TRACE_PARAMS);
 }
 
-#define queueCreate(name, numItems, itemSize) \
-    queueCreate(name, numItems, itemSize, HEAP_TRACE_ENTER("queueCreate"))
+#define queueCreate(name, numItems, itemSize) queueCreate(name, numItems, itemSize, HEAP_TRACE_ENTER("queueCreate"))
 
 #endif
-    
+
 #ifdef __cplusplus
 } // extern "C" {
 #endif

@@ -22,7 +22,6 @@
 #include "whiteboard/builtinTypes/Vector3D.h"
 #include "whiteboard/builtinTypes/WrapperFor32BitPointer.h"
 
-#define WB_EXECUTION_CONTEXT_INSTANTION_REF(id) static_cast<whiteboard::ExecutionContextId>(id)
 #define WB_RESOURCE_VALUE(whiteboardId, localResourceId, executionContextId) \
     static_cast<whiteboard::ResourceId::Value>( \
         (static_cast<uint32>(localResourceId) << 16) | \
@@ -36,9 +35,8 @@
 #include "../wb-resources/resources.h"
 #include "../movesense_types/resources.h"
 
-#define WB_EXEC_CTX_PRIMARYSERVICES              WB_EXECUTION_CONTEXT_INSTANTION_REF(0)
-#define WB_EXEC_CTX_APPLICATION                  WB_EXECUTION_CONTEXT_INSTANTION_REF(1)
-#define WB_EXEC_CTX_MEAS                         WB_EXECUTION_CONTEXT_INSTANTION_REF(2)
+#define WB_EXEC_CTX_APPLICATION                  static_cast<whiteboard::ExecutionContextId>(0)
+#define WB_EXEC_CTX_MEAS                         static_cast<whiteboard::ExecutionContextId>(1)
 
 namespace WB_RES {
 
@@ -98,7 +96,7 @@ struct MEM_LOGBOOK;
 
 struct MEM_LOGBOOK_ENTRIES
 {
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 13312, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 13312;
 
@@ -199,7 +197,7 @@ struct MEM_LOGBOOK_ENTRIES
 
 struct MEM_LOGBOOK_ISFULL
 {
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 13313, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 13313;
 
@@ -268,7 +266,7 @@ struct MEM_LOGBOOK_ISFULL
 
 struct MEM_LOGBOOK_ISOPEN
 {
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 13314, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 13314;
 
@@ -339,166 +337,11 @@ struct MEM_LOGBOOK_LOG;
 
 struct MEM_LOGBOOK_LOG_LOGINDEX;
 
-struct MEM_LOGBOOK_LOG_LOGINDEX_FLAGS
-{
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 13315, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 13315;
-
-	struct GET
-	{
-		typedef whiteboard::StronglyTypedResult<uint16, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_RANGE_NOT_SATISFIABLE> HTTP_CODE_RANGE_NOT_SATISFIABLE;
-
-		struct Parameters
-		{
-			struct LOGINDEX
-			{
-				static const whiteboard::ParameterIndex Index = 0;
-
-				typedef int32 Type;
-				typedef Type ConstReferenceType;
-			};
-
-			typedef LOGINDEX Parameter1;
-
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
-		};
-
-		/** Reference wrapper for strongly typed parameter list for /Mem/Logbook/Log/{LogIndex}/Flags */
-		class ParameterListRef
-		{
-		private:
-			/** Prevent use of default constructor */
-			ParameterListRef() DELETED;
-
-			/** Prevent use of copy constructor */
-			ParameterListRef(const ParameterListRef&) DELETED;
-
-			/** Prevent use of assignment operator */
-			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
-
-		public:
-			/** Constructor that initializes this class from existing parameter list
-			*
-			* @param rParameterList Reference to parameter list that contains untyped parameters
-			*/
-			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
-				: mrParameterList(rParameterList)
-			{
-			}
-
-			/** Gets LOGINDEX parameter value
-			*
-			* @return Current parameter value
-			*/
-			inline Parameters::LOGINDEX::ConstReferenceType getLogIndex() const
-			{
-				return mrParameterList[Parameters::LOGINDEX::Index].convertTo<Parameters::LOGINDEX::ConstReferenceType>();
-			}
-
-		private:
-			/** Reference to actual parameter list */
-			const whiteboard::ParameterList& mrParameterList;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck(
-			Parameters::LOGINDEX::ConstReferenceType)
-		{
-		}
-	};
-
-	struct PUT
-	{
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_RANGE_NOT_SATISFIABLE> HTTP_CODE_RANGE_NOT_SATISFIABLE;
-
-		struct Parameters
-		{
-			struct LOGINDEX
-			{
-				static const whiteboard::ParameterIndex Index = 0;
-
-				typedef int32 Type;
-				typedef Type ConstReferenceType;
-			};
-
-			typedef LOGINDEX Parameter1;
-
-			struct FLAGS
-			{
-				static const whiteboard::ParameterIndex Index = 1;
-
-				typedef uint16 Type;
-				typedef Type ConstReferenceType;
-			};
-
-			typedef FLAGS Parameter2;
-
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 2;
-		};
-
-		/** Reference wrapper for strongly typed parameter list for /Mem/Logbook/Log/{LogIndex}/Flags */
-		class ParameterListRef
-		{
-		private:
-			/** Prevent use of default constructor */
-			ParameterListRef() DELETED;
-
-			/** Prevent use of copy constructor */
-			ParameterListRef(const ParameterListRef&) DELETED;
-
-			/** Prevent use of assignment operator */
-			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
-
-		public:
-			/** Constructor that initializes this class from existing parameter list
-			*
-			* @param rParameterList Reference to parameter list that contains untyped parameters
-			*/
-			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
-				: mrParameterList(rParameterList)
-			{
-			}
-
-			/** Gets LOGINDEX parameter value
-			*
-			* @return Current parameter value
-			*/
-			inline Parameters::LOGINDEX::ConstReferenceType getLogIndex() const
-			{
-				return mrParameterList[Parameters::LOGINDEX::Index].convertTo<Parameters::LOGINDEX::ConstReferenceType>();
-			}
-
-			/** Gets FLAGS parameter value
-			*
-			* @return Current parameter value
-			*/
-			inline Parameters::FLAGS::ConstReferenceType getFlags() const
-			{
-				return mrParameterList[Parameters::FLAGS::Index].convertTo<Parameters::FLAGS::ConstReferenceType>();
-			}
-
-		private:
-			/** Reference to actual parameter list */
-			const whiteboard::ParameterList& mrParameterList;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck(
-			Parameters::LOGINDEX::ConstReferenceType,
-			Parameters::FLAGS::ConstReferenceType)
-		{
-		}
-	};
-};
-
 struct MEM_LOGBOOK_LOG_LOGINDEX_REMOVE
 {
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 13316, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 13316;
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 13315, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 13315;
 
 	struct PUT
 	{
@@ -567,9 +410,9 @@ struct MEM_LOGBOOK_LOG_LOGINDEX_REMOVE
 
 struct MEM_LOGBOOK_LOGGING
 {
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 13317, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 13317;
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 13316, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 13316;
 
 	struct GET
 	{
@@ -637,84 +480,15 @@ struct MEM_LOGBOOK_LOGGING
 	};
 };
 
-struct MEM_LOGBOOK_UNSYNCHRONISEDLOGS
-{
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 13318, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 13318;
-
-	struct GET
-	{
-		typedef whiteboard::StronglyTypedResult<uint16, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
-
-		struct Parameters
-		{
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck()
-		{
-		}
-	};
-
-	struct SUBSCRIBE
-	{
-		typedef whiteboard::StronglyTypedResult<uint16, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
-
-		struct Parameters
-		{
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck()
-		{
-		}
-	};
-
-	struct EVENT
-	{
-		typedef uint16 NotificationType;
-		typedef NotificationType ConstReferenceNotificationType;
-
-		struct Parameters
-		{
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck(
-			const whiteboard::Api::OptionalParameter<ConstReferenceNotificationType>&)
-		{
-		}
-	};
-
-	struct UNSUBSCRIBE
-	{
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
-
-		struct Parameters
-		{
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck()
-		{
-		}
-	};
-};
-
 struct MEM_LOGBOOK_BYID;
 
 struct MEM_LOGBOOK_BYID_LOGID;
 
 struct MEM_LOGBOOK_BYID_LOGID_DATA
 {
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 13319, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 13319;
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 13317, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 13317;
 
 	struct GET
 	{
@@ -784,9 +558,9 @@ struct MEM_LOGBOOK_BYID_LOGID_DATA
 
 struct MEM_LOGBOOK_BYID_LOGID_DESCRIPTORS
 {
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 13320, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 13320;
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 13318, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 13318;
 
 	struct GET
 	{

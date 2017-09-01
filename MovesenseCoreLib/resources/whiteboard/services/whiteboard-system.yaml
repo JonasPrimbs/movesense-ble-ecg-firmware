@@ -34,7 +34,6 @@ securityDefinitions:
 paths:
 
   /Whiteboard/System/Launcher:
-    x-executionContext: application
     get:
       description: |
         Query of Launchable Module names and status.
