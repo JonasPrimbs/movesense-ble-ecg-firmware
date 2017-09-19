@@ -76,9 +76,6 @@
 /** Length of maximum length (approx 512-byte) buffers */
 #define WB_MAXLEN_MESSAGE_SEND_BUFFER_SIZE WB_COMM_MESSAGE_BUFFER_LENGTH
 
-/** Maximum stack depth of whiteboard communication protocol. */
-#define WB_COMM_PROTO_STACK_DEPTH 512
-
 //////////////////////////////////////////////////
 // WHITEBOARD IP ADAPTER
 //////////////////////////////////////////////////
@@ -89,9 +86,6 @@
 /** Number of extra header bytes to allocate for IP buffers (Berkeley socket API needs no extra space.) */
 #define WB_IP_BUFFER_HEADER_SPACE 0
 
-/** Stack size of IP receiver thread */
-#define WB_IP_RECEIVER_STACK_DEPTH 384
-
 //////////////////////////////////////////////////
 // WHITEBOARD SERIAL ADAPTER
 //////////////////////////////////////////////////
@@ -99,13 +93,3 @@
 /** Number of extra header bytes to allocate for SERIAL buffers (one byte required for message start identification from the
  * bytestream) */
 #define WB_SERIAL_BUFFER_HEADER_SPACE WB_MAX(1, WB_MESSAGE_ALIGNMENT)
-
-/** Stack size of serial receiver thread */
-#define WB_SERIAL_RECEIVER_STACK_DEPTH 384
-
-//////////////////////////////////////////////////
-// WHITEBOARD BLE ADAPTER
-//////////////////////////////////////////////////
-
-/** Stack size of BLE receiver thread */
-#define WB_BLE_RECEIVER_STACK_DEPTH (256 + 62)

@@ -4,9 +4,6 @@
 // Copyright (c) Suunto Oy 2014 - 2017. All rights reserved.
 
 
-static const unsigned short ROOT_LID = 0;
-static const unsigned short MEAS_LID = 18446744073709551615;
-static const unsigned short MEAS_ACC_LID = 18446744073709551615;
 static const unsigned short MEAS_ACC_CONFIG_LID = 15104;
 static const unsigned short MEAS_ACC_INFO_LID = 15105;
 static const unsigned short MEAS_ACC_SAMPLERATE_LID = 15106;

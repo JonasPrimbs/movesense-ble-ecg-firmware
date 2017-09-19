@@ -55,8 +55,7 @@ inline uint8_t getNthByte(uint16_t value, size_t index)
     @param byteCount    Number of bytes to advance
     @return             Advanced pointer value
 */
-template <typename T>
-inline T* advancePointer(T* ptr, size_t byteCount)
+template <typename T> inline T* advancePointer(T* ptr, size_t byteCount)
 {
     return reinterpret_cast<T*>(reinterpret_cast<uintptr_t>(ptr) + byteCount);
 }

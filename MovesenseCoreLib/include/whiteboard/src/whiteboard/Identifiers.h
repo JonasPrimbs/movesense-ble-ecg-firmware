@@ -251,6 +251,9 @@ WB_STATIC_VERIFY(sizeof(ResourceId) == sizeof(uint32), SizeOfResourceIdNotFourBy
 /** Type that is used to identify clients in whiteboard network. */
 struct WB_API ClientId
 {
+    /** Value of client ID packed to a single unsigned 32-bit integer. */
+    typedef uint32 Value;
+
     union
     {
 #if _MSC_VER
@@ -266,11 +269,7 @@ struct WB_API ClientId
             uint8 typeChecked : 1;
 
             /** Reserved for future use */
-            uint8 reserved : 1;
-
-            /** PathParameterCache uses one bit of this internally as subscription ref - counting for the same path variable,
-            that implementation needs to be changed if bits here are taken into use */
-            uint8 pathVariableRefCount : 1;
+            uint8 reserved : 2;
 
             /** ID of the execution context */
             ExecutionContextId executionContextId : 4;
@@ -286,7 +285,7 @@ struct WB_API ClientId
 #endif
 
         /** 32-bit storage value for the above */
-        uint32 value;
+        Value value;
     };
 
     /** Default constructor
@@ -305,7 +304,6 @@ struct WB_API ClientId
         : nonCriticalSubscription(0),
           typeChecked(0),
           reserved(0),
-          pathVariableRefCount(0),
           executionContextId(_executionContextId),
           whiteboardId(_whiteboardId),
           localClientId(_localClientId)
@@ -316,7 +314,7 @@ struct WB_API ClientId
     *
     * @param data Structure data as 32-bit unsigned integer
     */
-    inline EXPLICIT ClientId(const uint32 data)
+    inline ClientId(const Value data)
         : value(data)
     {
     }
@@ -325,7 +323,22 @@ struct WB_API ClientId
     *
     * @return Data structure converted to machine endian 32-bit unsigned integer
     */
-    inline EXPLICIT operator uint32() const { return value; }
+    inline EXPLICIT operator Value() const { return value; }
+
+    /** Explicit comparison operator to uint32
+    *
+    * @return A value indicating whether this client ID equals to specified id value
+    */
+    inline bool operator==(const ClientId::Value other) const
+    {
+        return other == value;
+    }
+
+    /** Explicit comparison operator to uint32
+    *
+    * @return A value indicating whether this client ID is inequal with specified id value
+    */
+    inline bool operator!=(const ClientId::Value other) const { return !(*this == other); }
 };
 
 WB_STATIC_VERIFY(sizeof(ClientId) == sizeof(uint32), SizeOfClientIdNotFourBytes);
@@ -333,6 +346,9 @@ WB_STATIC_VERIFY(sizeof(ClientId) == sizeof(uint32), SizeOfClientIdNotFourBytes)
 /** Type that is used to identify providers in whiteboard network. */
 struct WB_API ProviderId
 {
+    /** Value of client ID packed to a single unsigned 32-bit integer. */
+    typedef uint32 Value;
+
     union
     {
 #if _MSC_VER
@@ -350,8 +366,8 @@ struct WB_API ProviderId
             /** ID of the execution context */
             ExecutionContextId executionContextId : 4;
 
-            /** ID of the whiteboard instance */
-            WhiteboardId whiteboardId;
+            /** Reserved for future use */
+            uint8 reserved2;
 
             /** Provider ID of the resource in that whiteboard instance */
             LocalProviderId localProviderId;
@@ -361,7 +377,7 @@ struct WB_API ProviderId
 #endif
 
         /** 32-bit storage value for the above */
-        uint32 value;
+        Value value;
     };
 
     /** Default constructor
@@ -371,16 +387,14 @@ struct WB_API ProviderId
     /** Initializes a new instance of ProviderId class
     *
     * @param executionContextId ID of the execution context
-    * @param whiteboardId ID of the whiteboard instance
     * @param localProviderId Provider ID of the provider in that whiteboard instance
     */
     inline ProviderId(const ExecutionContextId _executionContextId,
-                      const WhiteboardId _whiteboardId,
                       const LocalProviderId _localProviderId)
         : typeChecked(0), 
           reserved(0),
           executionContextId(_executionContextId),
-          whiteboardId(_whiteboardId),
+          reserved2(0),
           localProviderId(_localProviderId)
     {
     }
@@ -389,7 +403,7 @@ struct WB_API ProviderId
     *
     * @param data Structure data as 32-bit unsigned integer
     */
-    inline EXPLICIT ProviderId(const uint32 data)
+    inline ProviderId(const Value data)
         : value(data)
     {
     }
@@ -398,7 +412,22 @@ struct WB_API ProviderId
     *
     * @return Data structure converted to machine endian 32-bit unsigned integer
     */
-    inline EXPLICIT operator uint32() const { return *reinterpret_cast<const uint32*>(this); }
+    inline EXPLICIT operator Value() const { return value; }
+
+    /** Explicit comparison operator to uint32
+    *
+    * @return A value indicating whether this client ID equals to specified id value
+    */
+    inline bool operator==(const ProviderId::Value other) const
+    {
+        return other == value;
+    }
+
+    /** Explicit comparison operator to uint32
+    *
+    * @return A value indicating whether this client ID is inequal with specified id value
+    */
+    inline bool operator!=(const ProviderId::Value other) const { return !(*this == other); }
 };
 
 WB_STATIC_VERIFY(sizeof(ProviderId) == sizeof(uint32), SizeOfProviderIdNotFourBytes);
@@ -410,22 +439,22 @@ static const LocalResourceId ID_INVALID_LOCAL_RESOURCE = 0xffff;
 static const LocalResourceId ID_LOCAL_ROOT_RESOURCE = 0;
 
 /** Resource ID that is used to indicate root resource. */
-WB_API extern const ResourceId ID_ROOT_RESOURCE;
+WB_API extern const ResourceId::Value ID_ROOT_RESOURCE;
 
 /** Resource ID that is used to indicate invalid resource. */
-WB_API extern const ResourceId ID_INVALID_RESOURCE;
+WB_API extern const ResourceId::Value ID_INVALID_RESOURCE;
 
 /** Local client ID that is used to indicate invalid client. */
 static const LocalClientId ID_INVALID_LOCAL_CLIENT = 0xffff;
 
 /** Client ID that is used to indicate invalid client. */
-WB_API extern const ClientId ID_INVALID_CLIENT;
+WB_API extern const ClientId::Value ID_INVALID_CLIENT;
 
 /** Local provider ID that is used to indicate invalid provider. */
 static const LocalProviderId ID_INVALID_LOCAL_PROVIDER = 0xffff;
 
 /** Provider ID that is used to indicate invalid provider. */
-WB_API extern const ProviderId ID_INVALID_PROVIDER;
+WB_API extern const ProviderId::Value ID_INVALID_PROVIDER;
 
 /** Local subscription ID that is used to indicate invalid subscription. */
 static const LocalSubscriptionId ID_INVALID_LOCAL_SUBSCRIPTION = 0xffff;

@@ -19,14 +19,14 @@ typedef uint32_t EventFlagMask;
 
 EventGroupHandle eventGroupCreate(WAITOBJECT_DEBUGNAME_PARAM_DECL_VOID);
 void eventGroupDelete(EventGroupHandle group);
-EventFlagMask eventGroupWaitFlags(EventGroupHandle group, EventFlagMask flags,
-                                        bool clearOnExit, bool waitForAllFlags, size_t timeoutMs);
+EventFlagMask
+eventGroupWaitFlags(EventGroupHandle group, EventFlagMask flags, bool clearOnExit, bool waitForAllFlags, size_t timeoutMs);
 EventFlagMask eventGroupClearFlags(EventGroupHandle eventGroup, EventFlagMask flagsToClear);
 bool eventGroupClearFlagsFromISR(EventGroupHandle eventGroup, EventFlagMask flagsToClear);
 EventFlagMask eventGroupSetFlags(EventGroupHandle eventGroup, EventFlagMask flagsToSet);
 bool eventGroupSetFlagsFromISR(EventGroupHandle eventGroup, EventFlagMask flagsToSet);
-EventFlagMask eventGroupSync(EventGroupHandle eventGroup, EventFlagMask flagsToSet,
-                                   EventFlagMask flagsToWaitFor, size_t timeoutMs);
+EventFlagMask
+eventGroupSync(EventGroupHandle eventGroup, EventFlagMask flagsToSet, EventFlagMask flagsToWaitFor, size_t timeoutMs);
 EventFlagMask eventGroupGetFlags(EventGroupHandle eventGroup);
 EventFlagMask eventGroupGetFlagsFromISR(EventGroupHandle eventGroup);
 

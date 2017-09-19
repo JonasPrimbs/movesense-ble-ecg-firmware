@@ -16,7 +16,7 @@ struct WhiteboardAddress_t
     /// Construct a new instance of Whiteboard device id.
     /// Caller is responsible for providing a valid id.
     /// @param _id Parameter length is checked against min and max length
-    explicit WhiteboardAddress_t(const char *_id)
+    explicit WhiteboardAddress_t(const char* _id)
     {
         ASSERT(strlen(_id) <= WB_DEVICE_ID_MAX_LENGTH);
         ASSERT(strlen(_id) >= WB_DEVICE_ID_MIN_LENGTH);
@@ -29,19 +29,13 @@ struct WhiteboardAddress_t
     }
 
     /// Construct a non-initialized Whiteboard device id.
-    WhiteboardAddress_t()
-    {
-        id[0] = 0;
-    }
+    WhiteboardAddress_t() { id[0] = 0; }
 
     /// Convert whiteboard to null-terminated string
     const char* c_str() const { return id; }
 
     /// Check if Whiteboard id has been set.
-    bool hasId() const {
-        return strlen(id) <= WB_DEVICE_ID_MAX_LENGTH &&
-            strlen(id) >= WB_DEVICE_ID_MIN_LENGTH;
-    }
+    bool hasId() const { return strlen(id) <= WB_DEVICE_ID_MAX_LENGTH && strlen(id) >= WB_DEVICE_ID_MIN_LENGTH; }
 
     char id[WB_DEVICE_ID_MAX_LENGTH + 1];
 };

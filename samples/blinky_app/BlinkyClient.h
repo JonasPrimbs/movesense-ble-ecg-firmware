@@ -1,6 +1,5 @@
 #pragma once
 
-#include "app-resources/resources.h"
 #include <whiteboard/LaunchableModule.h>
 #include <whiteboard/ResourceClient.h>
 
@@ -37,5 +36,4 @@ protected:
 
 private:
     whiteboard::TimerId mTimer;
-    uint32_t mCounter;
 };

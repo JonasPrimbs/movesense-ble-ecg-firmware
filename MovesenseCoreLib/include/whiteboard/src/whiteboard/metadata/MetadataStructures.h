@@ -1,8 +1,6 @@
 #pragma once
-/******************************************************************************
-Copyright (c) Suunto Oy 2014.
-All rights reserved.
-******************************************************************************/
+// Copyright (c) Suunto Oy 2014. All rights reserved.
+
 #include "whiteboard/integration/shared/types.h"
 #include "whiteboard/integration/shared/infinite.h"
 #include "whiteboard/integration/shared/templateMetaprogramming.h"
@@ -39,7 +37,7 @@ static const LocalDataTypeId ID_INVALID_LOCAL_DATA_TYPE = 0xffff;
 local application / whiteboard. */
 typedef uint8 ExecutionContextId;
 
-/** Maximum number of execution context. Note packed structures below. */
+/** Maximum number of execution contexts. Note packed structures below. */
 #define WB_MAX_EXECUTION_CONTEXTS 15
 
 /** Execution context ID that is used to indicate invalid execution context.
@@ -212,15 +210,6 @@ struct SecurityTag
     StringId nameId;
 };
 
-/** Execution context priority */
-enum ExecutionContextPriority
-{
-    EXEC_CTX_PRIORITY_NOT_AVAILABLE = 0,
-    EXEC_CTX_PRIORITY_LOW,
-    EXEC_CTX_PRIORITY_NORMAL,
-    EXEC_CTX_PRIORITY_HIGH
-};
-
 /** Structure that stores execution context information */
 struct ExecutionContext
 {
@@ -242,7 +231,7 @@ struct ExecutionContext
 
     /** Execution context priority
     *
-    * @see ExecutionContextPriority enumeration
+    * @see WbThreadPriority enumeration
     */
     uint8 priority : 3;
 
@@ -360,6 +349,13 @@ struct PropertyList
 /** Value type of enumeration */
 typedef int32 EnumerationValue;
 
+/** Structure that stores enumeration item related meta data for sequential enumerations */
+struct SequentialEnumerationItem
+{
+    /** Name of the enumeration item */
+    StringId nameId;
+};
+
 /** Structure that stores enumeration item related meta data */
 struct EnumerationItem
 {
@@ -370,36 +366,102 @@ struct EnumerationItem
     EnumerationValue value;
 };
 
-/** Structure that stores enumeration item list meta data */
-struct EnumerationItemList
+/** Class that stores enumeration item list */
+class EnumerationItemList FINAL
 {
-    /** Enumeration item array. Terminated by { metadata::INVALID_STRING, 0 } */
-    EnumerationItem enumerationItems[1];
+public:
+    /** Default constructor. Creates invalid EnumerationItemList instance
+    */
+    EnumerationItemList()
+        : mSequential(false), mpItems(NULL)
+    {
+    }
+
+    /** Constructor
+     *
+     * @param sequential A value indicating whether enumeration items are sequential
+     * @param pItems Pointer to enumeration items
+     */
+    EnumerationItemList(bool sequential, const void* pItems)
+        : mSequential(sequential), mpItems(pItems)
+    {
+    }
+
+    /** Checks whether the list is valid */
+    inline bool isValid() const 
+    { 
+        return mpItems != NULL;
+    }
+
+    /** Gets enumeration item with specified index 
+     *
+     * @param index Index of the enumeration item to retrieve
+     * @return Enumeration item
+     */
+    EnumerationItem operator[](size_t index) const
+    {
+        if (mSequential)
+        {
+            const SequentialEnumerationItem* pEnumItems = static_cast<const SequentialEnumerationItem*>(mpItems);
+            EnumerationItem result = { pEnumItems[index].nameId, static_cast<EnumerationValue>(index) };
+            return result;
+        }
+        else
+        {
+            const EnumerationItem* pEnumItems = static_cast<const EnumerationItem*>(mpItems);
+            return pEnumItems[index];
+        }
+    }
 
     /** Counts number of enumeration items in the list
     *
     * @return Size of the list
     */
-    inline size_t count() const
+    size_t count() const
     {
+        WB_STATIC_VERIFY(WB_OFFSETOF(SequentialEnumerationItem, nameId) == 0, OffsetOfNameIdNotExpected);
+        WB_STATIC_VERIFY(WB_OFFSETOF(EnumerationItem, nameId) == 0, OffsetOfNameIdNotExpected2);
+
+        const size_t ptrStep = mSequential ? sizeof(SequentialEnumerationItem) : sizeof(EnumerationItem);
+        const StringId* pEnumName = static_cast<const StringId*>(mpItems);
         size_t i = 0;
-        while (enumerationItems[i].nameId != INVALID_STRING)
+        while (*pEnumName != INVALID_STRING)
         {
             ++i;
+            pEnumName = reinterpret_cast<const StringId*>(reinterpret_cast<const uint8*>(pEnumName) + ptrStep);
         }
+
         return i;
     }
 
     /** Converts given null terminated enumeration item array to enumeration item list
     *
     * @param pNullTerminatedEnumerationItemArray Null terminated array of enumeration items
-    * @return Parameter list reference
+    * @return EnumerationItemList instance
     */
-    static const EnumerationItemList&
+    static EnumerationItemList
+        toList(const SequentialEnumerationItem* pNullTerminatedEnumerationItemArray)
+    {
+        return EnumerationItemList(true, pNullTerminatedEnumerationItemArray);
+    }
+
+    /** Converts given null terminated enumeration item array to enumeration item list
+    *
+    * @param pNullTerminatedEnumerationItemArray Null terminated array of enumeration items
+    * @return EnumerationItemList instance
+    */
+    static EnumerationItemList
         toList(const EnumerationItem* pNullTerminatedEnumerationItemArray)
     {
-        return *reinterpret_cast<const EnumerationItemList*>(pNullTerminatedEnumerationItemArray);
+        return EnumerationItemList(false, pNullTerminatedEnumerationItemArray);
     }
+
+private:
+    /** A value indicating whether enumeration items are sequential */
+    bool mSequential;
+    
+    /** Pointer to enumeration items */
+    const void* mpItems;
 };
 
 /** Structure that stores enumeration data type related meta data */
@@ -976,8 +1038,11 @@ struct MetadataBlobHeader
     /** List of property lists */
     MetadataBlobOffset offsetToPropertyLists;
 
-    /** List of enumeration items */
-    MetadataBlobOffset offsetToEnumerationItems;
+    /** List of sequential enumeration items */
+    MetadataBlobOffset offsetToSequentialEnumerationItems;
+
+    /** List of non-sequential enumeration items */
+    MetadataBlobOffset offsetToNonSequentialEnumerationItems;
 
     /** List of data types */
     MetadataBlobOffset offsetToDataTypes;
@@ -1027,8 +1092,11 @@ struct MetadataBlobHeader
     /** Number of entries in property list map */
     MetadataBlobItemCount numberOfPropertyListMapEntries;
 
+    /** Number of sequential enumeration items */
+    MetadataBlobItemCount numberOfSequentialEnumerationItems;
+
     /** Number of enumeration items */
-    MetadataBlobItemCount numberOfEnumerationItems;
+    MetadataBlobItemCount numberOfNonSequentialEnumerationItems;
 
     /** Number of data types */
     MetadataBlobItemCount numberOfDataTypes;
@@ -1071,17 +1139,18 @@ WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(SecurityTag) <= WB_METADATA_MAX_ALIGNMENT, Un
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ExecutionContext) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment2);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(Property) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment3);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(PropertyId) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment4);
-WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(EnumerationItem) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment5);
-WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(DataType) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment6);
-WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(DataTypeId) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment7);
-WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(Parameter) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment8);
-WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ParameterId) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment9);
-WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(Response) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment10);
-WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ResponseId) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment11);
-WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(Operation) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment12);
-WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(OperationId) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment13);
-WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ResourceTreeNode) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment14);
-WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(LocalResourceId) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment15);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(SequentialEnumerationItem) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment5);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(EnumerationItem) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment6);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(DataType) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment7);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(DataTypeId) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment8);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(Parameter) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment9);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ParameterId) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment10);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(Response) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment11);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ResponseId) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment12);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(Operation) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment13);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(OperationId) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment14);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ResourceTreeNode) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment15);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(LocalResourceId) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment16);
 
 } // namespace metadata
 } // namespace whiteboard

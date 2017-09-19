@@ -22,7 +22,6 @@
 #include "whiteboard/builtinTypes/Vector3D.h"
 #include "whiteboard/builtinTypes/WrapperFor32BitPointer.h"
 
-#define WB_EXECUTION_CONTEXT_INSTANTION_REF(id) static_cast<whiteboard::ExecutionContextId>(id)
 #define WB_RESOURCE_VALUE(whiteboardId, localResourceId, executionContextId) \
     static_cast<whiteboard::ResourceId::Value>( \
         (static_cast<uint32>(localResourceId) << 16) | \
@@ -36,9 +35,8 @@
 #include "../wb-resources/resources.h"
 #include "../movesense_types/resources.h"
 
-#define WB_EXEC_CTX_PRIMARYSERVICES              WB_EXECUTION_CONTEXT_INSTANTION_REF(0)
-#define WB_EXEC_CTX_APPLICATION                  WB_EXECUTION_CONTEXT_INSTANTION_REF(1)
-#define WB_EXEC_CTX_MEAS                         WB_EXECUTION_CONTEXT_INSTANTION_REF(2)
+#define WB_EXEC_CTX_APPLICATION                  static_cast<whiteboard::ExecutionContextId>(0)
+#define WB_EXEC_CTX_MEAS                         static_cast<whiteboard::ExecutionContextId>(1)
 
 namespace WB_RES {
 
@@ -94,7 +92,7 @@ struct COMPONENT_DS24L65;
 
 struct COMPONENT_DS24L65_ACTIVE
 {
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3072, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 3072;
 
@@ -181,7 +179,7 @@ struct COMPONENT_DS24L65_ACTIVE
 
 struct COMPONENT_DS24L65_COMMAND
 {
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3073, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 3073;
 
@@ -252,7 +250,7 @@ struct COMPONENT_DS24L65_COMMAND
 
 struct COMPONENT_DS24L65_READROM
 {
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3074, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 3074;
 
@@ -275,7 +273,7 @@ struct COMPONENT_DS24L65_READROM
 
 struct COMPONENT_DS24L65_REGISTER
 {
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3075, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 3075;
 
@@ -430,7 +428,7 @@ struct COMPONENT_DS24L65_REGISTER
 
 struct COMPONENT_DS24L65_SCAN
 {
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3076, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 3076;
 
@@ -453,7 +451,7 @@ struct COMPONENT_DS24L65_SCAN
 
 struct COMPONENT_DS24L65_USERMEMORY
 {
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3077, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 3077;
 

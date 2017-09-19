@@ -22,7 +22,6 @@
 #include "whiteboard/builtinTypes/Vector3D.h"
 #include "whiteboard/builtinTypes/WrapperFor32BitPointer.h"
 
-#define WB_EXECUTION_CONTEXT_INSTANTION_REF(id) static_cast<whiteboard::ExecutionContextId>(id)
 #define WB_RESOURCE_VALUE(whiteboardId, localResourceId, executionContextId) \
     static_cast<whiteboard::ResourceId::Value>( \
         (static_cast<uint32>(localResourceId) << 16) | \
@@ -36,9 +35,8 @@
 #include "../wb-resources/resources.h"
 #include "../movesense_types/resources.h"
 
-#define WB_EXEC_CTX_PRIMARYSERVICES              WB_EXECUTION_CONTEXT_INSTANTION_REF(0)
-#define WB_EXEC_CTX_APPLICATION                  WB_EXECUTION_CONTEXT_INSTANTION_REF(1)
-#define WB_EXEC_CTX_MEAS                         WB_EXECUTION_CONTEXT_INSTANTION_REF(2)
+#define WB_EXEC_CTX_APPLICATION                  static_cast<whiteboard::ExecutionContextId>(0)
+#define WB_EXEC_CTX_MEAS                         static_cast<whiteboard::ExecutionContextId>(1)
 
 namespace WB_RES {
 
@@ -120,7 +118,7 @@ struct COMM_BLE;
 
 struct COMM_BLE_ADDR
 {
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 14080, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 14080;
 
@@ -142,7 +140,7 @@ struct COMM_BLE_ADDR
 
 struct COMM_BLE_ADV
 {
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 14081, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 14081;
 
@@ -257,7 +255,7 @@ struct COMM_BLE_ADV
 
 struct COMM_BLE_ADV_SETTINGS
 {
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_PRIMARYSERVICES;
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 14082, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 14082;
 

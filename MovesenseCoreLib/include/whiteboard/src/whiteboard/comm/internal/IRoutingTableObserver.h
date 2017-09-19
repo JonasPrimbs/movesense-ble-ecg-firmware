@@ -31,9 +31,6 @@ public:
          * a serial, but it might be wrong. */
         ROUTE_NOTIFICATION_INSERT,
 
-        /** Route has completed handshake and route has been moved to established state. Serial has been updated. */
-        ROUTE_NOTIFICATION_HANDSHAKE_UPDATE,
-
         /** Route's state information has changed */
         ROUTE_NOTIFICATION_STATE_CHANGE,
 

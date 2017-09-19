@@ -20,10 +20,10 @@ const uint8 MAX_DPCS = 2;
 
 // Provider execution context settings
 const ExecutionContextInfo providerContextInfo =
-    INIT_EXEC_CTX_INFO("DynProviderTestExecCtx", MAX_DPCS, 12, 8, false, metadata::EXEC_CTX_PRIORITY_HIGH, 1300, providerAccessRights);
+    INIT_EXEC_CTX_INFO("DynProviderTestExecCtx", MAX_DPCS, 12, 8, false, WB_THREAD_PRIORITY_HIGH, 1300, providerAccessRights);
 // Client execution context settings
 const ExecutionContextInfo clientContextInfo =
-    INIT_EXEC_CTX_INFO("DynClientTestExecCtx", 5, 6, 42, false, metadata::EXEC_CTX_PRIORITY_NORMAL, 1024, clientAccessRights);
+    INIT_EXEC_CTX_INFO("DynClientTestExecCtx", 5, 6, 42, false, WB_THREAD_PRIORITY_NORMAL, 1024, clientAccessRights);
 
 /**
 *	Base class to initialize provider and client context.

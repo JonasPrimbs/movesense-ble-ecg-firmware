@@ -27,4 +27,4 @@ else()
 endif()
 
 # helper functions
-include(${CMAKE_SOURCE_DIR}/../_build/functions.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/functions.cmake)

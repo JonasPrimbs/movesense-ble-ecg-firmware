@@ -241,17 +241,20 @@ paths:
       -
         $ref: '#/parameters/Days'
 
-  /Daily/Sleep/Invoke/Summary:
+  /Daily/Sleep/Callback/{CallbackType}:
     x-executionContext: application
     put:
       description: |
-        Invoke summary view.
+        Invoke callback from ui.
       responses:
         200:
           description: Operation completed successfully
       security:
         - suuntoAccessCode:
           - public
+    parameters:
+      -
+        $ref: '#/parameters/CallbackType'
 
   /Daily/Sleep/Duration/Average/ProgressType:
     x-executionContext: application
@@ -300,6 +303,25 @@ paths:
       security:
         - suuntoAccessCode:
           - public
+
+  /Daily/Sleep/Last/HeartRate/{HrAggregate}:
+    x-executionContext: application
+    get:
+      description: |
+        Get the last sleep or merged sleep average heart rate in Hz. Currentkly only Avg-aggregate is supported
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: number
+            format: float
+            x-unit: Hz
+      security:
+        - suuntoAccessCode:
+          - public
+    parameters:
+      -
+        $ref: '#/parameters/HrAggregate'
 
   /Daily/Sleep/Last/{DurationType}:
     x-executionContext: application
@@ -443,3 +465,29 @@ parameters:
         value: 2
       - name: 'DeltaDuration'
         value: 3
+
+  CallbackType:
+    name: CallbackType
+    type: integer
+    format: int32
+    in: path
+    required: true
+    enum:
+      - name: 'ManualDNDOpen'
+        value: 0
+      - name: 'ManualDNDClose'
+        value: 1
+
+  HrAggregate:
+    name: HrAggregate
+    type: integer
+    format: int32
+    in: path
+    required: true
+    enum:
+      - name: 'Avg'
+        value: 0
+      - name: 'Min'
+        value: 1
+      - name: 'Max'
+        value: 2

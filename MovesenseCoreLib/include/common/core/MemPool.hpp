@@ -32,12 +32,10 @@ private:
 #endif
 };
 
-template <unsigned SZ, typename T>
-class ObjPool : private MemPool
+template <unsigned SZ, typename T> class ObjPool : private MemPool
 {
 public:
-    ObjPool()
-        : MemPool(mBuffer, sizeof(uint32) * ((MAX(sizeof(ListNode), sizeof(T)) + 3) >> 2), SZ) {}
+    ObjPool() : MemPool(mBuffer, sizeof(uint32) * ((MAX(sizeof(ListNode), sizeof(T)) + 3) >> 2), SZ) {}
 
     T* reserve()
     {
@@ -48,7 +46,8 @@ public:
 
     void release(T* pObj)
     {
-        if (pObj) {
+        if (pObj)
+        {
             pObj->~T();
             MemPool::release(pObj);
         }

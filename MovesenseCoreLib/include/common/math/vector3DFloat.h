@@ -19,7 +19,8 @@
         3D Vector item
 */
 
-typedef struct Vector3DFloat {
+typedef struct Vector3DFloat
+{
     float x;
     float y;
     float z;

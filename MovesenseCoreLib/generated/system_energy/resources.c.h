@@ -4,8 +4,5 @@
 // Copyright (c) Suunto Oy 2014 - 2017. All rights reserved.
 
 
-static const unsigned short ROOT_LID = 0;
-static const unsigned short SYSTEM_LID = 18446744073709551615;
-static const unsigned short SYSTEM_ENERGY_LID = 18446744073709551615;
 static const unsigned short SYSTEM_ENERGY_LEVEL_LID = 12800;
 

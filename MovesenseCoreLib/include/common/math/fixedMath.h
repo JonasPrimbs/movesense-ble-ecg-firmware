@@ -22,7 +22,8 @@
    Fixed point value with exponent
    Conversion to floating point is = value * 2^pow
  */
-typedef struct FixedMathValue {
+typedef struct FixedMathValue
+{
     int16 value;
     int16 pow;
 } FixedMathValue;
@@ -30,8 +31,8 @@ typedef struct FixedMathValue {
 /**
    Method to set int16 value to object
  */
-#define fixedMathSetInt16(OBJ, VALUE, DECIMALS)                                                    \
-    (OBJ).value = VALUE;                                                                           \
+#define fixedMathSetInt16(OBJ, VALUE, DECIMALS)                                                                                  \
+    (OBJ).value = VALUE;                                                                                                         \
     (OBJ).pow = DECIMALS
 
 /**

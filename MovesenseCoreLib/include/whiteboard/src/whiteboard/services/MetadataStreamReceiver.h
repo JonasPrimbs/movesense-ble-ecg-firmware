@@ -37,8 +37,13 @@ public:
 class WB_API MetadataStreamParser
 {
 public:
-    /** Constructor */
-    MetadataStreamParser();
+    /** Constructor
+     *
+     * @param whiteboardVersion Whiteboard version of sender. Optional. If not specified
+     *        it is assumed that sender is at least version 3.4.x and app does not require
+     *        hacks for backwards compatibility.
+     */
+    MetadataStreamParser(const WB_RES::CompactWbVersion* pWhiteboardVersion = NULL);
 
     /** Destructor */
     ~MetadataStreamParser();
@@ -47,6 +52,9 @@ private:
 
     /** Moves stream receiver to next state */
     void moveToNextState();
+
+    /** Whiteboard version of sender. */
+    const WB_RES::CompactWbVersion* mpWhiteboardVersion;
 
     /** Stream receive states */
     enum StreamReceiveState

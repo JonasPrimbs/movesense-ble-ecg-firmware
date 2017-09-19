@@ -33,7 +33,6 @@ securityDefinitions:
 # Paths
 paths:
   /Whiteboard/Info/Subscriptions:
-    x-executionContext: PrimaryServices
     get:
       description: |
         Returns information about subscribers for a resource.

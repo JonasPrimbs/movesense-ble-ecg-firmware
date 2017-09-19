@@ -275,6 +275,37 @@ public:
         const ResourceProvider_ResponseOptions& rResponseOptions,
         const Value& rResultData);
 
+    /**
+    *	Check if resource has any subscriptions.
+    *
+    *   @param resourceProviderId ID of the resource provider that is doing the checking
+    *	@param resourceId ID of the resource that is checked
+    *
+    *	@return
+    *		HTTP_CODE_OK if resource has been subscribed,
+    *		HTTP_CODE_NO_CONTENT if resource is not subscribed,
+    *		HTTP_CODE_NOT_FOUND indicating an error (provider has not registered the resource)
+    */
+    Result isResourceSubscribed(ProviderId resourceProviderId, ResourceId resourceId) const;
+
+    /**
+    *   Enumerate all the subscribers of the given resource. Calls the given functor for each
+    *   subscription. This method is synchronous, so the caller can trust that all callbacks have been called
+    *   when this call returns.
+    *
+    *   @see whiteboard::ResourceProvider::enumerateSubscriptions
+    *
+    *   @param providerId ID of the provider that made the enumerate request
+    *   @param resourceId ID of the resource that is to be enumrated
+    *   @param rFunctor Functor to call for each subscription @see whiteboard::ResourceProvider::IEnumerateSubscriptionsFunctor
+    *
+    *   @return
+    *     HTTP_CODE_OK if resource has been subscribed, and enumerated
+    *     HTTP_CODE_NO_CONTENT if resource is not subscribed, enumerating skipped
+    *     HTTP_CODE_NOT_FOUND indicating an error (provider has not registered the resource)
+    */
+    Result enumerateSubscriptions(ProviderId providerId, ResourceId resourceId, ResourceProvider::IEnumerateSubscriptionsFunctor& rFunctor) const;
+
     /*********************
     * For Client interface
     *********************/
@@ -375,35 +406,34 @@ public:
         const ResourceClient_AsyncRequestOptions& rOptions);
 
     /**
-    *	Check if resource has any subscriptions.
+    *   Subscribes array of local Whiteboard resources
     *
-    *   @param resourceProviderId ID of the resource provider that is doing the checking
-    *	@param resourceId ID of the resource that is checked
+    *   @note This function asserts if asynchronous dispatch fails or
+    *         if any synchronous (same event thread) subscriptions fail.
     *
-    *	@return
-    *		HTTP_CODE_OK if resource has been subscribed,
-    *		HTTP_CODE_NO_CONTENT if resource is not subscribed,
-    *		HTTP_CODE_NOT_FOUND indicating an error (provider has not registered the resource)
+    *   @param numberOfResources Number of resources to subscribe
+    *   @param pResourceIds Array of resources to subscribe
+    *   @param isCriticalSubscription A value indicating whether subscriptions are critical
+    *   @param clientId ID of the subscribing client.
     */
-    Result isResourceSubscribed(ProviderId resourceProviderId, ResourceId resourceId) const;
+    void asyncSubscribeLocalResources(size_t numberOfResources, const LocalResourceId* const pResourceIds, bool isCriticalSubscription, ClientId clientId);
 
     /**
-    *   Enumerate all the subscribers of the given resource. Calls the given functor for each
-    *   subscription. This method is synchronous, so the caller can trust that all callbacks have been called
-    *   when this call returns. 
+    *   Unubscribes array of local Whiteboard resources
     *
-    *   @see whiteboard::ResourceProvider::enumerateSubscriptions
+    *   @note This function asserts if asynchronous dispatch fails or
+    *         if any synchronous (same event thread) unsubscriptions fail
+    *         except for missing subscriptions.
     *
-    *   @param providerId ID of the provider that made the enumerate request
-    *   @param resourceId ID of the resource that is to be enumrated
-    *   @param rFunctor Functor to call for each subscription @see whiteboard::ResourceProvider::IEnumerateSubscriptionsFunctor
-    *
-    *   @return
-    *     HTTP_CODE_OK if resource has been subscribed, and enumerated
-    *     HTTP_CODE_NO_CONTENT if resource is not subscribed, enumerating skipped
-    *     HTTP_CODE_NOT_FOUND indicating an error (provider has not registered the resource)
+    *   @param numberOfResources Number of resources to unsubscribe
+    *   @param pResourceIds Array of resources to unsubscribe
+    *   @param clientId ID of the subscribing client.
     */
-    Result enumerateSubscriptions(ProviderId providerId, ResourceId resourceId, ResourceProvider::IEnumerateSubscriptionsFunctor& rFunctor) const;
+    void asyncUnsubscribeLocalResources(size_t numberOfResources, const LocalResourceId* const pResourceIds, ClientId clientId);
+
+    /*********************
+    * Internals
+    *********************/
 
     /**
     * Searches the execution context maps for a context with the given ID.
@@ -518,6 +548,20 @@ WB_PUBLIC_IN_UNITTESTS(private):
         const Value& rResult,
         bool forceAsync);
 
+#ifdef WB_UNITTEST_BUILD
+    /** Checks whether client subscription is critical
+     *
+     * @param resourceId Id of the resource that client has subscribed
+     * @param clientId Id of the client
+     *
+     *	@return
+     *		HTTP_CODE_OK if resource subscription is critical,
+     *		HTTP_CODE_NO_CONTENT if resource subscription is not critical,
+     *		HTTP_CODE_NOT_FOUND indicating an error (client has not subscribed the resource)
+     */
+    Result isClientSubscriptionCritical(ResourceId resourceId, ClientId clientId);
+#endif
+
     /*********************
     * For Client interface
     *********************/
@@ -562,6 +606,21 @@ WB_PUBLIC_IN_UNITTESTS(private):
         const Request& rRequest,
         const ParameterList& rParameters,
         const ResourceClient_AsyncRequestOptions& rOptions);
+
+    /** Helper function implementing array versions for local resource subscription and unsubscription 
+     *
+     *   @param numberOfResources Number of resources to unsubscribe
+     *   @param pResourceIds Array of resources to unsubscribe
+     *   @param rOptions Request options.
+     *   @param clientId ID of the subscribing client.
+     *   @param requestType Type of the request
+     */
+    void asyncSubscribeUnsubscribeLocalResources(
+        size_t numberOfResources,
+        const LocalResourceId* const pResourceIds,
+        const ResourceClient_AsyncRequestOptions& rOptions,
+        ClientId clientId,
+        RequestType requestType);
 
     /***************************
     * For RoutingTableObserver
@@ -792,7 +851,6 @@ private:
     * @param providerId ID of the provider
     * @return Local resource provider or NULL if provider with given ID is not registered
     */
-    ResourceProvider* getLocalProviderById(ProviderId providerId) const;
     ResourceProvider* getLocalProviderById(LocalProviderId providerId) const;
 
     /**

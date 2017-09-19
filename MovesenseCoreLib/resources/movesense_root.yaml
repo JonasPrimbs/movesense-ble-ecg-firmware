@@ -5,12 +5,6 @@ wbres:
 
 # Execution context definitions
 executionContexts:
-  PrimaryServices: # only for metadata (and filesystem providers), has to be first for WB comm compatibility!
-#    numberOfDpcs: 4
-#    numberOfRequests: 3
-#    numberOfResponses: 5
-#    stackSize: 768
-#    priority: low
   application:
 #    numberOfDpcs: 8
 #    numberOfRequests: 20

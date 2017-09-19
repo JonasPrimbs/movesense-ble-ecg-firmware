@@ -30,7 +30,7 @@ public:
     struct DispatchOptions
     {
     public:
-        /// If true returns immediately with error, if the queue is full, else blocks and waits untill space in the queue.
+        /// If true returns immediately with error, if the queue is full, else blocks and waits until space in the queue.
         bool dontBlockIfQueueFull;
         
         /// If true failure to deliver notifications for a subscriotion are considered fatal and dispatch will assert

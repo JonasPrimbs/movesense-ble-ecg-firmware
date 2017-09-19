@@ -1,3 +1,29 @@
+##Version 0.9.0.602 ##
+
+###Whats new:###
+- Samples sens_output_test_app, hr_wakeup_app
+- Cmake files for samples
+- Release variant of the movesense library
+- Whiteboard 3.4.1
+- Blinky_app sample uses Ind API
+- Power and memory optimalizations
+- New HW support
+- Eeprom provider: /Component/Eeprom
+- Fix: Wakeup for max3000x
+- Fix: Uart settings problem
+- Fix: BLE Adv. too short
+- Fix: Battery level adv. is not working
+- Fix: Magnetometer's not working correctly
+
+###Known Bugs:###
+- Magnetometer value needs scaling and unit
+- Detecting of the gear id is not working if is subscribed
+- Power performance needs additional work
+
+###Notes:###
+- REQUIRED: Use **GNU Toolchain for ARM v. 5.4 2016q3**
+- To create DFU package for OTA update, compile application with "ninja dfupkg"
+
 ##Version 0.6.0.426 ##
 
 ###Whats new:###

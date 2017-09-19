@@ -38,8 +38,7 @@ int8 daylightsavingGetDSTCorrection(int16 year, int8 month, int8 day, int8 rule)
  * depending on whether daylight saving is off or on for given UTC date and time.
  * Argument utcOffset must be standard offset without DST correction and in minutes.
  */
-int8 daylightsavingGetDSTCorrection2(const Date* utcDate, const TimeHM* utcTime, int16 utcOffset,
-                                     int8 rule);
+int8 daylightsavingGetDSTCorrection2(const Date* utcDate, const TimeHM* utcTime, int16 utcOffset, int8 rule);
 
 /**
  * Returns DST correction value in minutes for given rule.
@@ -82,7 +81,6 @@ void daylightsavingGetDSTTimes(int16 utcOffset, int8 rule, TimeHM times[2]);
  * Third is to where clock is moved backwards.
  * Fourth is when clock is moved backwards.
  */
-void daylightsavingsGetDSTLocalDateTimes(int16 year, int16 offset, int8 rule, Date dates[4],
-                                         TimeHM times[4]);
+void daylightsavingsGetDSTLocalDateTimes(int16 year, int16 offset, int8 rule, Date dates[4], TimeHM times[4]);
 
 } // namespace nea

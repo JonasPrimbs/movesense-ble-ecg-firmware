@@ -4,7 +4,8 @@
 /**
    A structure for holding a date information.
 */
-struct Date {
+struct Date
+{
     /**
        Year of a date. E.g. 2003.
     */

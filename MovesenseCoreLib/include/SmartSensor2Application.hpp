@@ -5,6 +5,7 @@
 //#include <inetgw/inetgwlp/InetGwLPProvider.h> TODO: Uncomment when we enable inetgw support
 #include <whiteboard/services/WhiteboardServices.h>
 #include <whiteboard/services/CommServices.h>
+#include <whiteboard/services/MetricsServices.h>
 
 #include "common/services/SystemServices.hpp"
 #include "common/services/StandardServices.hpp"
@@ -15,13 +16,9 @@
 
 #include "HardwareServices.hpp"
 
-#include "DataLogger.hpp"
-#include "Logbook.hpp"
-#include "BleService.hpp"
-#include "LedService.hpp"
+#include "LogbookDb.hpp"
 #include "SettingsService.hpp"
 #include "ManufacturingService.hpp"
-#include "IndicationService.hpp"
 
 
 class SmartSensor2Application : public whiteboard::ResourceClient
@@ -39,6 +36,8 @@ private:
     void runStartupClients();
     void stopHWServices();
 
+    void startOptionalCoreModules();
+
     whiteboard::services::WhiteboardServicesInstance mWbServices;
     //nea::inetgateway::InetGwLPProvider mInetGw; TODO: Uncomment when we enable inetgw support
     whiteboard::services::CommServices mCommServices;
@@ -53,17 +52,12 @@ private:
     MeasStorage          mMeasStorage;
 
     LogbookDb       mLogbookDb;
-    DataLogger      mDataLogger;
-    Logbook         mLogbook;
-    LedService      mLedService;
-    BleService      mBleService;
     SettingsService mSettingsService;
     ManufacturingService mManufacturingService;
-    IndicationService mIndicationService;
 
     // Shutdown timer
     bool                mAppModulesStarted;
     whiteboard::TimerId mShutdownTimerId;
 
-
+    whiteboard::services::MetricsServices mWbMetricsServices;
 };

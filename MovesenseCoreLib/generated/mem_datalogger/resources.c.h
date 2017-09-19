@@ -4,9 +4,6 @@
 // Copyright (c) Suunto Oy 2014 - 2017. All rights reserved.
 
 
-static const unsigned short ROOT_LID = 0;
-static const unsigned short MEM_LID = 18446744073709551615;
-static const unsigned short MEM_DATALOGGER_LID = 18446744073709551615;
 static const unsigned short MEM_DATALOGGER_CONFIG_LID = 13056;
 static const unsigned short MEM_DATALOGGER_STATE_LID = 13057;
 

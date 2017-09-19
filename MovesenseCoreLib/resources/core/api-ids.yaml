@@ -5,7 +5,6 @@ wbres:
 
 # Forward declared
 executionContexts:
-  PrimaryServices:
   application:
   meas:
   ui:
@@ -15,209 +14,211 @@ executionContexts:
 apis:
   suunto.inetgw.*:
     apiId: 2
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.activities.*:
     apiId: 3
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.activity.interval.*:
     apiId: 4
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.activity.timeline.*:
     apiId: 5
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.activity.zones.*:
     apiId: 6
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.app.builtin.alarmclock.*:
     apiId: 7
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.app.builtin.stopwatch.*:
     apiId: 8
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.component.AK09912.*:
     apiId: 9
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.component.CSRG0530.*:
     apiId: 10
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.component.DRV2605.*:
     apiId: 11
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.component.DRV8838.*:
     apiId: 12
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.component.LSM6DS3.*:
     apiId: 13
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.component.MAX14690.*:
     apiId: 14
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.component.MAX17050.*:
     apiId: 15
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.component.MS5837.*:
     apiId: 16
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.component.PT4110.*:
     apiId: 17
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.connectivity.ble.*:
     apiId: 18
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.measurement.linearacceleration.*:
     apiId: 19
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.measurement.magneticfield.*:
     apiId: 20
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.measurement.pressure.*:
     apiId: 21
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.measurement.temperature.*:
     apiId: 22
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.power.*:
     apiId: 23
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.systemevent.*:
     apiId: 24
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.system.connectall.*:
     apiId: 25
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.system.debug.*:
     apiId: 26
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.system.mode.*:
     apiId: 27
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.system.peripheralupdater.*:
     apiId: 28
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.system.shutdown.*:
     apiId: 29
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.test.display.*:
     apiId: 30
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.test.memory.*:
     apiId: 31
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.userinteraction.button.*:
     apiId: 32
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.userinteraction.indication.*:
     apiId: 33
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.device.userinteraction.touch.*:
     apiId: 34
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.dev.filesystem.*:
     apiId: 35
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.logbook.*:
     apiId: 36
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.dev.logger.*:
     apiId: 37
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.dev.system.*:
     apiId: 38
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.dev.time.*:
     apiId: 39
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.fusion.altitude.*:
     apiId: 40
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.fusion.compass.*:
     apiId: 41
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.fusion.heading.*:
     apiId: 42
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.fusion.heartrate.*:
     apiId: 43
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.fusion.location.*:
     apiId: 44
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.fusion.slope.*:
     apiId: 45
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.fusion.tilt.*:
     apiId: 46
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.info.*:
     apiId: 47
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.log.upload.*:
     apiId: 48
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.navigation.*:
     apiId: 49
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.services.traininglab.*:
     apiId: 50
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.settings.activity.*:
     apiId: 51
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.settings.device.*:
     apiId: 52
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.settings.general.*:
     apiId: 53
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.settings.navigation.*:
     apiId: 54
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.settings.sync.*:
     apiId: 55
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.settings.ui.*:
     apiId: 56
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.settings.unit.*:
     apiId: 57
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.settings.user.*:
     apiId: 58
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.settings.whitelistedbledevices.*:
     apiId: 59
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.shared.*:
     apiId: 60
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.ui.*:
     apiId: 61
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.settings.cmdisplay.*:
     apiId: 62
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.planned.moves.*:
     apiId: 63
-    defaultExecutionContext: PrimaryServices
-  suunto.device.gnss.*:
+    defaultExecutionContext: application
+  suunto.device.GNSS.*:
     apiId: 64
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.augmented.heartrate.*:
     apiId: 65
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.outdoor.*:
     apiId: 66
-    defaultExecutionContext: PrimaryServices
-
-  device.measurement.angularvelocity.*:
+    defaultExecutionContext: application
+  suunto.activity.daily.*:
     apiId: 67
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.notifications.*:
     apiId: 68
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.simulator.*:
     apiId: 69
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
   suunto.daily.sleep.*:
     apiId: 70
-    defaultExecutionContext: PrimaryServices
+    defaultExecutionContext: application
+  suunto.activity.vertical.*:
+    apiId: 71
+    defaultExecutionContext: application

@@ -195,6 +195,21 @@ paths:
         - suuntoAccessCode:
           - public
 
+  /Logbook/FreeSpace:
+    x-executionContext: application
+    get:
+      description: |
+        Gets amount of free space for logging in bytes.
+      responses:
+        200:
+          description: 
+          schema:
+            type: integer
+            format: uint32
+      security:
+        - suuntoAccessCode:
+          - public
+
   /Logbook/UnsynchronisedLogs:
     x-executionContext: application
     get:

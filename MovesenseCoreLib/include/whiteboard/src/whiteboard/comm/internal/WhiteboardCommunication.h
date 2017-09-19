@@ -437,11 +437,24 @@ private:
     /** Handles HELLO and HELLO ACK messages in communication thread
     *
     * @param isAcknowledgement A value indicating whether this is acknowledgement message
+    * @param rOrigin Message origin. Updated to contain valid handle, if invalid handle is given.
+    * @param rOriginSerial Serial number of the origin if known
+    * @param pInterface Interface used with sender when message is not routed
+    * @param rAddress Address or the sender when message is not routed
+    * @param rSender Sender (or last router) of the message
+    * @param numberOfHops Number of to the origin
     * @param rMessage Buffer that contains the message
-    * @param rSource Routing table entry associated with the communication source
     * @return Result of the operation
     */
-    Result handleHelloMessage(bool isAcknowledgement, const Hello& rMessage, RoutingTableEntryHandle& rSource);
+    Result handleHelloMessage(
+        bool isAcknowledgement,
+        RoutingTableEntryHandle& rOrigin,
+        const SuuntoSerial& rOriginSerial,
+        CommAdapter* pInterface,
+        const Address& rAddress,
+        const RoutingTableEntryHandle& rSender,
+        HopCount numberOfHops,
+        const Hello& rMessage);
 
 private:
     /** Handles a message from the communication adapter
@@ -518,8 +531,10 @@ private:
     * @param rEntry Routing table entry of the route
     * @param errorCode Error code to log
     * @param message Textual error message to log
+    * @return A value indicating whether route error was handled completely and that
+    *         the route entry is still valid
     */
-    void handleRouteError(RoutingTableEntry& rEntry, Result errorCode, const char* message);
+    bool handleRouteError(RoutingTableEntry& rEntry, Result errorCode, const char* message);
 
 private:
     // Forward declarations

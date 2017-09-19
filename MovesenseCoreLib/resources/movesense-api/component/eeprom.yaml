@@ -1,0 +1,117 @@
+swagger: '2.0'
+
+info:
+  version: NA
+  title: EEPROM - Movesense-API
+  description: |
+    This file defines API for writing and reading the EEPROM memory/ies.
+  x-api-type: private
+
+paths:
+  /Component/Eeprom/{EepromIndex}:
+    parameters:
+     - $ref: '#/parameters/EepromIndex'
+    get:
+      description: |
+        Read data from the given EEPROM memory location
+      parameters:
+        - name: Addr
+          in: query
+          description: Byte aligned address
+          required: true
+          type: integer
+          format: uint32
+        - name: Len
+          in: query
+          description: Number of bytes to be requested
+          required: true
+          type: integer
+          format: uint8
+          minimum: 1
+          maximum: 128
+      responses:
+        200:
+          description: Stored data
+          schema:
+            $ref: '#/definitions/EepromData'
+        400:
+          description: Illegal address or requested data count
+        501:
+          description: Chip with the given EepromIndex does not exist.
+    put:
+      description: |
+        Means to write to the selected EEPROM.
+      parameters:
+        - name: Addr
+          in: query
+          description: Byte aligned start address
+          required: true
+          type: integer
+          format: uint32
+        - name: Data
+          in: query
+          description: Data array to be stored in the memory
+          required: true
+          schema:
+            $ref: '#/definitions/EepromData'
+      responses:
+        200:
+          description: Operation completed successfully
+        400:
+          description: Illegal address or data
+        501:
+          description: Chip with the given EepromIndex does not exist.
+
+  /Component/Eeprom/{EepromIndex}/Info:
+    parameters:
+     - $ref: '#/parameters/EepromIndex'
+    get:
+      description: |
+        Read the selected EEPROM chip information. EepromIndex is the # of the chip starting from 0.
+      responses:
+        200:
+          description: EEPROM chip information
+          schema:
+            $ref: '#/definitions/EepromInfo'
+        501:
+          description: Chip with the given EepromIndex does not exist.
+
+parameters:
+
+  EepromIndex:
+    name: EepromIndex
+    in: path
+    required: true
+    type: integer
+    format: int32
+
+definitions:
+
+
+  EepromData:
+    required:
+      - bytes
+    properties:
+      bytes:
+        description: Byte array of data
+        type: array
+        items:
+          type: integer
+          format: uint8
+
+  EepromInfo:
+    description: |
+      EEPROM chip information
+    type: object
+    required:
+      - Model
+      - Size
+    properties:
+      Model:
+        description: Model
+        type: string
+        maxLength: 32
+      Size:
+        description: Size in bytes
+        type: integer
+        format: uint32

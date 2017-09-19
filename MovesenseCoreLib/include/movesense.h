@@ -70,8 +70,12 @@ extern const bool g_enableBLEComm;
 
 #define MOVESENSE_FEATURES_BEGIN()
 
-#define SERIAL_COMMUNICATION(enable) const bool g_enableSerialComm = (enable);
+// Movesense optional core services types
+#define OPTIONAL_CORE_MODULE(moduleName, enable) bool __initOptinalCoreModule_ ## moduleName() {return (enable);}
 
+
+// Movesense Communication types (must be defined in App.cpp)
+#define SERIAL_COMMUNICATION(enable) const bool g_enableSerialComm = (enable);
 #define BLE_COMMUNICATION(enable) const bool g_enableBLEComm = (enable);
 
 #define MOVESENSE_FEATURES_END()

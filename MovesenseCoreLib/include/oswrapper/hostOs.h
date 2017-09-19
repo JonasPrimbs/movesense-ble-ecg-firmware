@@ -47,20 +47,20 @@ private:
 };
 
 #define _HOST_OS_API_TOKENPASTE(x, y) _HOST_OS_API_TOKENPASTE2(x, y)
-#define _HOST_OS_API_TOKENPASTE2(x, y) x ## y
+#define _HOST_OS_API_TOKENPASTE2(x, y) x##y
 
-#define HOST_OS_API_CALL(call)      (HostOsApiScope(), call)
-#define HOST_OS_API_SCOPE()         HostOsApiScope _HOST_OS_API_TOKENPASTE(hostOsScope, __LINE__)
+#define HOST_OS_API_CALL(call) (HostOsApiScope(), call)
+#define HOST_OS_API_SCOPE() HostOsApiScope _HOST_OS_API_TOKENPASTE(hostOsScope, __LINE__)
 
 #endif
 
 #else
 
 // When there is no host OS, we don't need any extra locking
-#define HOST_OS_API_ENTER()     (void)0
-#define HOST_OS_API_EXIT()      (void)0
-#define HOST_OS_API_CALL(call)  (call)
-#define HOST_OS_API_SCOPE()     (void)0
+#define HOST_OS_API_ENTER() (void)0
+#define HOST_OS_API_EXIT() (void)0
+#define HOST_OS_API_CALL(call) (call)
+#define HOST_OS_API_SCOPE() (void)0
 
 #endif
 
@@ -93,14 +93,14 @@ bool isRunningInContinuousIntegration();
 //
 // Because we have also 3rd party code that may be using sprintf, best
 // option would be to patch the CRT library. But because patching existing
-// runtime library on Windows / Visual C++ is quite impossible, here is 
+// runtime library on Windows / Visual C++ is quite impossible, here is
 // macro workaround for code that we compile our selves.
 //
 // For patching I have tried following:
 //   - Use mingw objcopy -> Does not understand MSVC libraries
-//   - Search & replace symbols in the library -> Libary was corrupted 
+//   - Search & replace symbols in the library -> Libary was corrupted
 //     (there's checksum or something like that)
-//   - Use module definition file to create a new import library, from 
+//   - Use module definition file to create a new import library, from
 //     static crt lib -> Some functions like memset that are replaced
 //     with compiler intrinsics cannot be exported anymore
 //
@@ -114,7 +114,7 @@ bool isRunningInContinuousIntegration();
 // isn't very feasible since it is 64kB code file.
 //
 // Another solution that I haven't tried would be to compile the ucrt
-// library from sources. All sources of ucrt can be found from 
+// library from sources. All sources of ucrt can be found from
 // C:\Program Files (x86)\Windows Kits\10 and VCruntime code from
 // C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\crt\src
 //
@@ -123,8 +123,8 @@ bool isRunningInContinuousIntegration();
 // code should not need modification (except includes & linking options).
 
 // Undefine existing sprintf macro definitions. MSVC_SDL.cmake contains
-// definitions that could be used to detect code that is not using 
-// properly workaround code of this file.  
+// definitions that could be used to detect code that is not using
+// properly workaround code of this file.
 #undef vsprintf
 #undef vsprintf_s
 #undef vsnprintf
@@ -139,21 +139,19 @@ bool isRunningInContinuousIntegration();
 
 #ifdef __cplusplus
 
-inline int hostOsApiWrapped_vsprintf(
-    char* const buffer, char const* const format, va_list argList)
+inline int hostOsApiWrapped_vsprintf(char* const buffer, char const* const format, va_list argList)
 {
     int result;
     HOST_OS_API_ENTER();
 #pragma warning(push)
-#pragma warning(disable: 4996)
+#pragma warning(disable : 4996)
     result = vsprintf(buffer, format, argList);
 #pragma warning(pop)
     HOST_OS_API_EXIT();
     return result;
 }
 
-inline int hostOsApiWrapped_vsprintf_s(
-    char* const buffer, size_t const bufferCount, char const* const format, va_list argList)
+inline int hostOsApiWrapped_vsprintf_s(char* const buffer, size_t const bufferCount, char const* const format, va_list argList)
 {
     int result;
     HOST_OS_API_ENTER();
@@ -162,8 +160,7 @@ inline int hostOsApiWrapped_vsprintf_s(
     return result;
 }
 
-inline int hostOsApiWrapped_vsnprintf(
-    char* const buffer, size_t const bufferCount, char const* const format, va_list argList)
+inline int hostOsApiWrapped_vsnprintf(char* const buffer, size_t const bufferCount, char const* const format, va_list argList)
 {
     int result;
     HOST_OS_API_ENTER();
@@ -182,15 +179,14 @@ inline int hostOsApiWrapped_vsnprintf_s(
     return result;
 }
 
-inline int hostOsApiWrapped_sprintf(
-    char* const buffer, char const* const format, ...)
+inline int hostOsApiWrapped_sprintf(char* const buffer, char const* const format, ...)
 {
     int result;
     HOST_OS_API_ENTER();
     va_list argList;
     va_start(argList, format);
 #pragma warning(push)
-#pragma warning(disable: 4996)
+#pragma warning(disable : 4996)
     result = vsprintf(buffer, format, argList);
 #pragma warning(pop)
     va_end(argList);
@@ -198,8 +194,7 @@ inline int hostOsApiWrapped_sprintf(
     return result;
 }
 
-inline int hostOsApiWrapped_sprintf_s(
-    char* const buffer, size_t const bufferCount, char const* const format, ...)
+inline int hostOsApiWrapped_sprintf_s(char* const buffer, size_t const bufferCount, char const* const format, ...)
 {
     int result;
     HOST_OS_API_ENTER();
@@ -211,10 +206,7 @@ inline int hostOsApiWrapped_sprintf_s(
     return result;
 }
 
-extern "C++"
-template <size_t SIZE>
-inline int hostOsApiWrapped_sprintf_s(
-    char(&buffer)[SIZE], char const* const format, ...)
+extern "C++" template <size_t SIZE> inline int hostOsApiWrapped_sprintf_s(char (&buffer)[SIZE], char const* const format, ...)
 {
     int result;
     HOST_OS_API_ENTER();
@@ -226,8 +218,7 @@ inline int hostOsApiWrapped_sprintf_s(
     return result;
 }
 
-inline int hostOsApiWrapped_snprintf(
-    char* const buffer, size_t const bufferCount, char const* const format, ...)
+inline int hostOsApiWrapped_snprintf(char* const buffer, size_t const bufferCount, char const* const format, ...)
 {
     int result;
     HOST_OS_API_ENTER();
@@ -239,8 +230,8 @@ inline int hostOsApiWrapped_snprintf(
     return result;
 }
 
-inline int hostOsApiWrapped_snprintf_s(
-    char* const buffer, size_t const bufferCount, size_t const maxCount, char const* const format, ...)
+inline int
+hostOsApiWrapped_snprintf_s(char* const buffer, size_t const bufferCount, size_t const maxCount, char const* const format, ...)
 {
     int result;
     HOST_OS_API_ENTER();

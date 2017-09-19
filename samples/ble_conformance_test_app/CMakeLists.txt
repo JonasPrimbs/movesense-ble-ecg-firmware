@@ -1,10 +1,22 @@
 cmake_minimum_required(VERSION 3.4)
 enable_language(C CXX ASM)
 
+# Set the proper type of build and pull the necessary files 
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    set(CMAKE_BUILD_TYPE Release)
+    message(STATUS "The build type was set to release")
+    file( COPY ${CMAKE_BINARY_DIR}/${MOVESENSE_CORE_LIBRARY}/release/ DESTINATION  ${CMAKE_BINARY_DIR}/${MOVESENSE_CORE_LIBRARY})
+else()
+    set(CMAKE_BUILD_TYPE Debug)
+    message(STATUS "The build type was set to debug")
+    file( COPY ${CMAKE_BINARY_DIR}/${MOVESENSE_CORE_LIBRARY}/debug/ DESTINATION ${CMAKE_BINARY_DIR}/${MOVESENSE_CORE_LIBRARY})
+endif()
+
 include_directories(BEFORE .)
 
 set(APPLICATION "MovesenseApplication")
 add_definitions(-DAPP_SS2_APPLICATION=1)
+set(BUILD_CONFIG_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../_build)
 
 if(CMAKE_BUILD_TYPE STREQUAL "")
     set(CMAKE_BUILD_TYPE Debug)
@@ -31,12 +43,12 @@ if(NOT IS_ABSOLUTE ${MOVESENSE_CORE_LIBRARY})
 endif()
 
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/../_build/toolchain-setup.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/../_build/prolog.cmake)
+include(${BUILD_CONFIG_PATH}/toolchain-setup.cmake)
+include(${BUILD_CONFIG_PATH}/prolog.cmake)
 
 # XXXX TODO: Since BSP is built as part of core-lib, the settings related to that should be published from the core lib if they really are needed...
-include(${CMAKE_CURRENT_SOURCE_DIR}/../_build/platform/${BSP}.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/../_build/compiler/${COMPILER}.cmake)
+include(${BUILD_CONFIG_PATH}/platform/${BSP}.cmake)
+include(${BUILD_CONFIG_PATH}/compiler/${COMPILER}.cmake)
 
 include(${MOVESENSE_CORE_LIBRARY}/MovesenseFromStaticLib.cmake REQUIRED)
 
@@ -49,7 +61,7 @@ include_directories(${MOVESENSE_CORE_LIBRARY}/include/whiteboard)
 include_directories(${MOVESENSE_CORE_LIBRARY}/include/movesense_core)
 include_directories(${MOVESENSE_CORE_LIBRARY}/generated)
 include_directories(${MOVESENSE_CORE_LIBRARY}/generated/wb-resources)
-include_directories(${PATH_GENERATED_ROOT}) 
+include_directories(${PATH_GENERATED_ROOT})
 
 include_directories(${CMAKE_BINARY_DIR})
 
@@ -78,15 +90,20 @@ generate_wb_resources(
     SOURCE_GROUP app_execution_contexts  ${CMAKE_CURRENT_SOURCE_DIR}/*_root.yaml
     GENERATE C CPP LIB
     CPP_DEPENDS wb-resources)
- 
-# Generate our own resources
-generate_wb_resources(
-    app-resources APP_RESOURCE_SOURCES
-    INCLUDE_DIRECTORIES ${WB_DIRECTORY}/include/whiteboard/builtinTypes
-    SOURCE_GROUP app ${CMAKE_CURRENT_SOURCE_DIR}/wbresources/*.yaml ${CMAKE_CURRENT_SOURCE_DIR}/*_root.yaml
-    GENERATE CPP LIB
-    CPP_DEPENDS wb-resources)
 
+# find all yaml files
+file(GLOB MOVESENSE_CORE_YAML_FILES  ${CMAKE_CURRENT_SOURCE_DIR}/wbresources/*.yaml)
+
+# Generate our own resources
+if (MOVESENSE_CORE_YAML_FILES)
+    set(APP_RESOURCES ${CMAKE_BINARY_DIR}/app-resources.wbo)
+    generate_wb_resources(
+        app-resources APP_RESOURCE_SOURCES
+        INCLUDE_DIRECTORIES ${WB_DIRECTORY}/include/whiteboard/builtinTypes
+        SOURCE_GROUP app ${CMAKE_CURRENT_SOURCE_DIR}/wbresources/*.yaml ${CMAKE_CURRENT_SOURCE_DIR}/*_root.yaml
+        GENERATE CPP LIB
+        CPP_DEPENDS wb-resources)
+endif()
 
 # find all wbo's in movesense-core
 file(GLOB MOVESENSE_CORE_WBO_FILES  ${MOVESENSE_CORE_LIBRARY}/resources/*.wbo)
@@ -94,13 +111,12 @@ file(GLOB MOVESENSE_CORE_WBO_FILES  ${MOVESENSE_CORE_LIBRARY}/resources/*.wbo)
 # Combine libraries
 generate_wb_resources(
     app-metadata APP_METADATA_SOURCES
-    SOURCE_GROUP none GENERATED ${MOVESENSE_CORE_WBO_FILES} ${CMAKE_BINARY_DIR}/app-resources.wbo ${CMAKE_BINARY_DIR}/app_execution_contexts.wbo
+    SOURCE_GROUP none GENERATED ${MOVESENSE_CORE_WBO_FILES} ${APP_RESOURCES} ${CMAKE_BINARY_DIR}/app_execution_contexts.wbo
     GENERATE METADATA)
 
-    
 # Automatic SBEM code generation for whiteboard resources. Will add files to SOURCES
-include(${CMAKE_CURRENT_SOURCE_DIR}/../_build/sbem.cmake)
-    
+include(${BUILD_CONFIG_PATH}/sbem.cmake)
+
 # Application sources in current folder (ss2_app)
 aux_source_directory(. APP_SOURCES)
 set(APP_SOURCES ${APP_SOURCES} ${SOURCES})
@@ -134,4 +150,4 @@ elseif(${COMPILER} STREQUAL "GCCARM")
 endif()
 
 # include code for command line flashing of SS2
-include(${CMAKE_CURRENT_SOURCE_DIR}/../_build/flashing.cmake)
+include(${BUILD_CONFIG_PATH}/flashing.cmake)

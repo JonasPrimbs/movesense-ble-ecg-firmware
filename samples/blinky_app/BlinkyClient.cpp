@@ -3,14 +3,10 @@
 #include "BlinkyClient.h"
 #include "common/core/debug.h"
 
-#include "app-resources/resources.h"
-#include "component_led/resources.h"
-#include "whiteboard/builtinTypes/UnknownStructure.h"
+#include "ui_ind/resources.h"
 
-#include <float.h>
-#include <math.h>
 
-const size_t BLINK_TIME_MS = 400;
+const size_t BLINK_PERIOD_MS = 800;
 
 const char* const BlinkyClient::LAUNCHABLE_NAME = "Blinky";
 
@@ -18,7 +14,6 @@ BlinkyClient::BlinkyClient()
     : ResourceClient(WBDEBUG_NAME(__FUNCTION__), WB_EXEC_CTX_APPLICATION),
       LaunchableModule(LAUNCHABLE_NAME, WB_EXEC_CTX_APPLICATION)
 {
-    mCounter = 0;
     mTimer = whiteboard::ID_INVALID_TIMER;
 }
 
@@ -43,7 +38,7 @@ bool BlinkyClient::startModule()
     mModuleState = WB_RES::ModuleStateValues::STARTED;
 
     // Start LED timer. true = trigger repeatedly
-    mTimer = startTimer(BLINK_TIME_MS, true);
+    mTimer = startTimer(BLINK_PERIOD_MS, true);
 
     return true;
 }
@@ -63,10 +58,8 @@ void BlinkyClient::onTimer(whiteboard::TimerId timerId)
         return;
     }
 
-    // increment counter and switch led on/off based on odd / evenness of it
-    mCounter++;
+    uint16_t indicationType = 2; // SHORT_VISUAL_INDICATION, defined in ui/ind.yaml
 
-    bool bLedOn = (mCounter & 0x1) != 0;
-    // Make PUT request to switch on/off led. bool is converted automatically to whiteboard::Value.
-    asyncPut(WB_RES::LOCAL::COMPONENT_LED::ID, AsyncRequestOptions::Empty, bLedOn);
+    // Make PUT request to trigger led blink
+    asyncPut(WB_RES::LOCAL::UI_IND_VISUAL::ID, AsyncRequestOptions::Empty, indicationType);
 }

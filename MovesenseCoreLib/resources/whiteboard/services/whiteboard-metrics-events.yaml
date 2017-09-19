@@ -33,7 +33,6 @@ securityDefinitions:
 # Paths
 paths:
   /Whiteboard/Metrics/Events:
-    x-executionContext: PrimaryServices
     get:
       description: |
         Returns information about Whiteboard execution contexts' event queues and their usage.

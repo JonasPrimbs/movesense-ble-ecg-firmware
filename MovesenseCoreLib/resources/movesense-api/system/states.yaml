@@ -1,0 +1,99 @@
+swagger: '2.0'
+
+info:
+  version: NA
+  title: System states - Movesense-API
+  description: |
+    System state is described with following terms
+    1. It has two or more states and generates events from state changes (and
+       nothing else is needed).
+    2. It typically is needed across all the watches / devices.
+    3. Making a separate API for this seems overkill.
+    4. Many instances are interested about it.
+
+    IMPORTANT! System states -API is designed intentionally to be very
+    simplistic. In resource wise it is not good idea to create separate API for
+    simple things. When adding a new system event to this API, think above
+    characteristics for event before adding it as a system event and creating a
+    pull request (PR) for it. Also think twice before extending the API to be
+    more complex.
+  x-api-type: public
+
+paths:
+  /System/States/{StateId}:
+    parameters:
+      - $ref: '#/parameters/StateId'
+    get:
+      description: Get the current state of specific system state.
+      responses:
+        200:
+          description: Temperature value with optional timestamp
+          schema:
+            $ref: '#/definitions/State'
+        501:
+          description: This specific 'StateId' is not implemented.
+
+  /System/States/{StateId}/Subscription:
+    parameters:
+      - $ref: '#/parameters/StateId'
+    post:
+      description: |
+        Subscribe listening specific state changes. If 'StateId' is given as
+        parameter, then only that specific state changes are listened. If no
+        parameter is given, then all the system states and their
+        changes are listened. NOTE! Device might not implement all the system
+        states. Hence if given 'StateId' is not implemented by the device, 501
+        is returned.
+      responses:
+        200:
+          description: Operation completed successfully
+        501:
+          description: Not implemented
+        x-notification:
+          description: State change of specific state.
+          schema:
+            $ref: '#/definitions/StateChange'
+    delete:
+      description: Unsubscribe listening system state(s).
+      responses:
+        200:
+          description: Operation completed successfully
+
+parameters:
+  StateId:
+    name: StateId
+    in: path
+    required: true
+    type: integer
+    format: int32
+
+definitions:
+  StateId:
+    type: integer
+    format: int32
+    # Available system states
+    # Remember to document in description the available states
+    enum:
+      - name: 'Movement'
+        description: |
+          These are the movement states
+          0 = Not Moving
+          1 = Moving
+        value: 0
+
+  State:
+    type: integer
+    format: uint32
+
+  StateChange:
+    required:
+      - Timestamp
+      - StateId
+      - NewState
+    properties:
+      Timestamp: # milliseconds since startup
+        $ref: 'types.yaml#/definitions/TimestampFromStartup'
+      StateId:
+        $ref: '#/definitions/StateId'
+      NewState:
+        $ref: '#/definitions/State'

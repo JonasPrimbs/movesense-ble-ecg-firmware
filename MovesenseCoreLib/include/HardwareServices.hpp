@@ -10,7 +10,7 @@
 #include "hal/userinput/ButtonProvider.hpp"
 #endif // def BUILD_HAL_WANT_BUTTONS
 
-#include "hal/sensor/accelerometer/lsm6ds3/AccelerometerProvider.hpp"
+#include "hal/sensor/accelerometer/AccelerometerProvider.hpp"
 #include "hal/sensor/AFE/MAX30001/RrProvider.hpp"
 
 #ifdef HAL_WANT_MAGNETOMETER

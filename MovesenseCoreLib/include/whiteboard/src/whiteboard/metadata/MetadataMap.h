@@ -32,107 +32,113 @@ public:
         return *reinterpret_cast<const metadata::MetadataBlobHeader*>(mpMetadataBlob);
     }
 
-    /// @return number of response lists in the const metadata map
-    inline size_t getStringMapLength() const
+    /// @return number of response lists in the metadata map
+    inline metadata::MetadataBlobItemCount getStringMapLength() const
     {
         return getMetadataHeader().stringMapLength;
     }
 
     /// @return Number of execution contexts
-    inline size_t getNumberOfExecutionContexts() const
+    inline metadata::MetadataBlobItemCount getNumberOfExecutionContexts() const
     {
         return getMetadataHeader().numberOfExecutionContexts;
     }
 
     /// @return Number of security tags in the resource tree
-    inline size_t getNumberOfMountPoints() const
+    inline metadata::MetadataBlobItemCount getNumberOfMountPoints() const
     {
         return getMetadataHeader().numberOfMountPoints;
     }
 
-    /// @return number of strings in the const metadata map
-    size_t countNumberOfStrings() const;
+    /// @return number of strings in the metadata map
+    metadata::MetadataBlobItemCount countNumberOfStrings() const;
 
-    /// @return number of properties in the const metadata map
-    inline size_t getNumberOfProperties() const
+    /// @return number of properties in the metadata map
+    inline metadata::MetadataBlobItemCount getNumberOfProperties() const
     {
         return getMetadataHeader().numberOfProperties;
     }
 
-    /// @return number of property lists in the const metadata map
-    inline size_t getNumberOfPropertyLists() const
+    /// @return number of property lists in the metadata map
+    inline metadata::MetadataBlobItemCount getNumberOfPropertyLists() const
     {
         return getMetadataHeader().numberOfPropertyListMapEntries;
     }
 
-    /// @return number of enumeration items in the const metadata map
-    inline size_t getNumberOfEnumerationItems() const
+    /// @return number of sequential enumeration items in the metadata map
+    inline metadata::MetadataBlobItemCount getNumberOfSequentialEnumerationItems() const
     {
-        return getMetadataHeader().numberOfEnumerationItems;
+        return getMetadataHeader().numberOfSequentialEnumerationItems;
     }
 
-    /// @return number of data types in the const metadata map
-    inline size_t getNumberOfDataTypes() const
+    /// @return number of enumeration items in the metadata map
+    inline metadata::MetadataBlobItemCount getNumberOfNonSequentialEnumerationItems() const
+    {
+        return getMetadataHeader().numberOfNonSequentialEnumerationItems;
+    }
+
+    /// @return number of data types in the metadata map
+    inline metadata::MetadataBlobItemCount getNumberOfDataTypes() const
     {
         return getMetadataHeader().numberOfDataTypes;
     }
 
     /// @return Number of sparse map entries in the data type map
-    inline size_t getNumberOfDataTypeSparseMapEntries() const
+    inline metadata::MetadataBlobItemCount getNumberOfDataTypeSparseMapEntries() const
     {
         return getMetadataHeader().numberOfDataTypeSparseMapEntries;
     }
 
-    /// @return number of parameters in the const metadata map
-    inline size_t getNumberOfParameters() const
+    /// @return number of parameters in the metadata map
+    inline metadata::MetadataBlobItemCount getNumberOfParameters() const
     {
         return getMetadataHeader().numberOfParameters;
     }
 
-    /// @return number of parameter lists in the const metadata map
-    inline size_t getNumberOfParameterLists() const
+    /// @return number of parameter lists in the metadata map
+    inline metadata::MetadataBlobItemCount getNumberOfParameterLists() const
     {
         return getMetadataHeader().numberOfParameterListMapEntries;
     }
 
-    /// @return number of responses in the const metadata map
-    inline size_t getNumberOfResponses() const
+    /// @return number of responses in the metadata map
+    inline metadata::MetadataBlobItemCount getNumberOfResponses() const
     {
         return getMetadataHeader().numberOfResponses;
     }
 
-    /// @return number of response lists in the const metadata map
-    inline size_t getNumberOfResponseLists() const
+    /// @return number of response lists in the metadata map
+    inline metadata::MetadataBlobItemCount getNumberOfResponseLists() const
     {
         return getMetadataHeader().numberOfResponseListMapEntries;
     }
 
-    /// @return number of operations in the const metadata map
-    inline size_t getNumberOfOperations() const
+    /// @return number of operations in the metadata map
+    inline metadata::MetadataBlobItemCount getNumberOfOperations() const
     {
         return getMetadataHeader().numberOfOperations;
     }
 
-    /// @return number of operation lists in the const metadata map
-    inline size_t getNumberOfOperationLists() const
+    /// @return number of operation lists in the metadata map
+    inline metadata::MetadataBlobItemCount getNumberOfOperationLists() const
     {
         return getMetadataHeader().numberOfOperationLists;
     }
 
-    /// @return number of security tags in the const metadata map
-    inline size_t getNumberOfSecurityTags() const
+    /// @return number of security tags in the metadata map
+    inline metadata::MetadataBlobItemCount getNumberOfSecurityTags() const
     {
         return getMetadataHeader().numberOfSecurityTags;
     }
 
     /// @return Number of resource tree nodes
-    inline size_t getNumberOfResourceTreeNodes() const
+    inline metadata::MetadataBlobItemCount getNumberOfResourceTreeNodes() const
     {
         return getMetadataHeader().numberOfResourceTreeNodes;
     }
 
     /// @return Number of sparse map entries in the resource tree
-    inline size_t getNumberOfResourceTreeSparseMapEntries() const
+    inline metadata::MetadataBlobItemCount getNumberOfResourceTreeSparseMapEntries() const
     {
         return getMetadataHeader().numberOfResourceTreeSparseMapEntries;
     }
@@ -165,11 +171,18 @@ public:
             mpMetadataBlob + getMetadataHeader().offsetToPropertyLists);
     }
 
+    /** @return array of sequential enumeration items */
+    inline const metadata::SequentialEnumerationItem* getSequentialEnumerationItems() const
+    {
+        return reinterpret_cast<const metadata::SequentialEnumerationItem*>(
+            mpMetadataBlob + getMetadataHeader().offsetToSequentialEnumerationItems);
+    }
+
     /** @return array of enumeration items */
-    inline const metadata::EnumerationItem* getEnumerationItems() const
+    inline const metadata::EnumerationItem* getNonSequentialEnumerationItems() const
     {
         return reinterpret_cast<const metadata::EnumerationItem*>(
-            mpMetadataBlob + getMetadataHeader().offsetToEnumerationItems);
+            mpMetadataBlob + getMetadataHeader().offsetToNonSequentialEnumerationItems);
     }
 
     /** @return array of data types */
@@ -290,7 +303,7 @@ public:
     * @param id ID of the object
     * @return Object or NULL if invalid id is given
     */
-    const metadata::EnumerationItemList* getEnumerationItemListById(metadata::EnumerationItemListId id) const;
+    const metadata::EnumerationItemList getEnumerationItemListById(metadata::EnumerationItemListId id) const;
 
     /** Returns a parameter by ID
     *

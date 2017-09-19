@@ -1,6 +1,6 @@
 set(GCCARM_USE_LTO False CACHE BOOL "Enable link-time optimization in GCC build")
 
-set(LINKER_SCRIPTS_PATH ${CMAKE_SOURCE_DIR}/../_build/platform/${BSP}/linker/gcc )
+set(LINKER_SCRIPTS_PATH ${CMAKE_CURRENT_LIST_DIR}/../platform/${BSP}/linker/gcc )
 
 # Check that the relevant linker file exists
 if(NOT EXISTS ${LINKER_SCRIPTS_PATH}/${BSP_KINETIS_LINKTO}.ld)

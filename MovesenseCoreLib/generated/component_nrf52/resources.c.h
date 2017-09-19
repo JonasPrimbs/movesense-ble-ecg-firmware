@@ -4,10 +4,6 @@
 // Copyright (c) Suunto Oy 2014 - 2017. All rights reserved.
 
 
-static const unsigned short ROOT_LID = 0;
-static const unsigned short COMPONENT_LID = 18446744073709551615;
-static const unsigned short COMPONENT_NRF52_LID = 18446744073709551615;
-static const unsigned short COMPONENT_NRF52_TEST_LID = 18446744073709551615;
 static const unsigned short COMPONENT_NRF52_TEST_MODE_LID = 14336;
 static const unsigned short COMPONENT_NRF52_TEST_TXPOW_LID = 14337;
 

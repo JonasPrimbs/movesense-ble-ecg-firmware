@@ -7,7 +7,10 @@
 #endif
 #include <cstring>
 
-namespace settings { class InputArchive; }
+namespace settings
+{
+class InputArchive;
+}
 
 namespace nea
 {
@@ -167,6 +170,34 @@ public:
             0 characters).
     */
     void clear();
+
+    /**
+            Compares a value with the BText.
+            @param rhs A text.
+            @return A value indicating wether the two texts are bitwise equal.
+    */
+    bool operator==(const BText& rhs) { return compare(rhs.c_str()) == 0; }
+
+    /**
+            Compares a value with the string.
+            @param rhs A text.
+            @return A value indicating wether the two texts are bitwise equal.
+    */
+    bool operator==(const char* rhs) { return compare(rhs) == 0; }
+
+    /**
+            Compares a value with the BText.
+            @param rhs A text.
+            @return A value indicating wether the two texts are bitwise inequal.
+    */
+    bool operator!=(const BText& rhs) { return !(*this == rhs); }
+
+    /**
+            Compares a value with the string.
+            @param rhs A text.
+            @return A value indicating wether the two texts are bitwise inequal.
+    */
+    bool operator!=(const char* rhs) { return !(*this == rhs); }
 
     /**
             Assigns a new value to the BText, replacing its current contents.

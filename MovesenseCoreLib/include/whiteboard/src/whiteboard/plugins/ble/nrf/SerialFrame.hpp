@@ -74,6 +74,9 @@ public:
     void reset();
     bool process(const void* pBuffer, uint32 size);
 
+    void setBuffer(uint8* pBuffer, const uint32 bufferSize);
+    uint16_t getBufferSize() const {return mBufferSize;}
+    
 private:
     struct EncState_t
     {
@@ -89,7 +92,7 @@ private:
     bool bufferSend(EncState_t& es);
 
     uint8* mpBuffer;
-    const uint32 mBufferSize;
+    uint32 mBufferSize;
 };
 
 template <uint32 SZ> class SerialRecv : public SerialFrameReceiver
@@ -101,11 +104,3 @@ private:
     uint8 mBuffer[SZ];
 };
 
-template <uint32 SZ> class SerialSend : public SerialFrameSender
-{
-public:
-    SerialSend() : SerialFrameSender(mBuffer, SZ) {}
-
-private:
-    uint8 mBuffer[SZ];
-};
