@@ -1,4 +1,17 @@
+##Version 0.9.1.616 ##
+
+###Whats new:###
+- Fix: 15mA leak for the C version
+
+###Known Bugs:###
+- No changes from 0.9.0
+
+###Notes:###
+- REQUIRED: Use **GNU Toolchain for ARM v. 5.4 2016q3**
+- To create DFU package for OTA update, compile application with "ninja dfupkg"
+
 ##Version 0.9.0.602 ##
+DO NOT USE THIS ON THE C VERSION!!!
 
 ###Whats new:###
 - Samples sens_output_test_app, hr_wakeup_app
