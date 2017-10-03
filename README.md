@@ -36,6 +36,7 @@ Resource | Description|Implemented
  * [nrfutil package & python 2.7 (for OTA firmware update package creation)](https://github.com/NordicSemiconductor/pc-nrfutil)
       * Windows: Nordic provides precompiled Windows executable
       * OS X: First install pip for managing Python packages: `sudo easy_install pip` and then nrfutil: `sudo pip install nrfutil`
+      * OS X Note: if installation fails, you can try `sudo pip install nrfutil --ignore-installed six`. 
  * Windows: [Visual Studio Redistributable 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
  
 Optionally: 
@@ -43,11 +44,12 @@ Optionally:
  * For flashing using JIG:
       * Nordic Semiconductor's [nRF5x-Command-Line-Tools-XXX](https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF52-DK) for Win32 or OSX
       * OS X: you also need [Segger J-Link Software and Documentation pack for MacOSX](https://www.segger.com/downloads/jlink/)
+ * In case you encounter `ImportError: No module named yaml`, try to install package `pyyaml` by pip
  
 Path configuration:
 
  * Remember to add ninja to path
- * OS X: remember to add also GNU Toolchain for ARM, nrfjprog and mergehex (provided with nrfjprog) to path
+ * OS X: remember to add also CMake, GNU Toolchain for ARM, nrfjprog and mergehex (provided with nrfjprog) to path
  
 
 ## Example App Build Flow ##
