@@ -30,15 +30,27 @@ Resource | Description|Implemented
 
 ## Prerequisite ##
 
- * [GNU Toolchain for ARM Embedded 5-2016-q3](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
- * [Ninja build tool](https://ninja-build.org/) - remember to add to path
+ * [GNU Toolchain for ARM Embedded 6-2017-q2](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads) 
+ * [Ninja build tool](https://ninja-build.org/)
  * [cmake >=3.6](https://cmake.org/download/)
- * [Visual Studio Redistributable 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
  * [nrfutil package & python 2.7 (for OTA firmware update package creation)](https://github.com/NordicSemiconductor/pc-nrfutil)
+      * Windows: Nordic provides precompiled Windows executable
+      * OS X: First install pip for managing Python packages: `sudo easy_install pip` and then nrfutil: `sudo pip install nrfutil`
+      * OS X Note: if installation fails, you can try `sudo pip install nrfutil --ignore-installed six`. 
+ * Windows: [Visual Studio Redistributable 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
  
 Optionally: 
 
- * Nordic Semiconductor's [nRF5x-Command-Line-Tools-Win32](https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF52-DK) - needed for flashing using JIG
+ * For flashing using JIG:
+      * Nordic Semiconductor's [nRF5x-Command-Line-Tools-XXX](https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF52-DK) for Win32 or OSX
+      * OS X: you also need [Segger J-Link Software and Documentation pack for MacOSX](https://www.segger.com/downloads/jlink/)
+ * In case you encounter `ImportError: No module named yaml`, try to install package `pyyaml` by pip
+ 
+Path configuration:
+
+ * Remember to add ninja to path
+ * OS X: remember to add also CMake, GNU Toolchain for ARM, nrfjprog and mergehex (provided with nrfjprog) to path
+ 
 
 ## Example App Build Flow ##
 
