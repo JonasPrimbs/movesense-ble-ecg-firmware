@@ -89,7 +89,7 @@
     ```APPINFO_VERSION("1.0.0");```  
     ```APPINFO_COMPANY("Movesense");```  
 
-    - Check application info reading the path */Appinfo*  
+    - Check application info by reading the path */Appinfo*  
     - There is also possibility to check if optional modules are enabled.  
 	Response example:  
 
