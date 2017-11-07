@@ -82,15 +82,15 @@
 		  ```} }```  
 
 	
-- You can add your own application info using APPINFO (Name, Version, Company)  
+- Own application info can be added by using APPINFO (Name, Version, Company)  
   Code example in App.cpp:
 
     ```APPINFO_NAME("Sample HelloWorld");```  
     ```APPINFO_VERSION("1.0.0");```  
     ```APPINFO_COMPANY("Movesense");```  
 
-    - You can easily check application info reading the path */Appinfo*  
-    - You can also check if optional modules are enabled.  
+    - Check application info reading the path */Appinfo*  
+    - There is also possibility to check if optional modules are enabled.  
 	Response example:  
 
 
