@@ -6,6 +6,7 @@
 #pragma once
 
 #include "whiteboard/LaunchableModule.h"
+#include "common/compiler/genDef.h"
 
 #if __cplusplus
 extern "C" {
@@ -34,6 +35,7 @@ extern "C" {
 // Declaration of callback that gets called just before launchable modules are started
 typedef void (*PreLaunchCallback)(void);  
 extern PreLaunchCallback __preLaunchCallback;
+extern void WEAK __initAppInfoFields();
 
 // Array to hold app's own module names
 extern const char * const*__MOVESENSE_APP_SPECIFIC_MODULES;
@@ -50,7 +52,8 @@ public:\
     static whiteboard::LaunchableModule* __moduleObjs[NumModules+1];\
     static const char * __moduleNames[NumModules+1];\
     __MovesenseAppModuleHolder() {for (int i=0;i<NumModules+1;i++) {__moduleNames[i]=NULL;__moduleObjs[i]=NULL;} __preLaunchCallback = __MovesenseAppModuleHolder::preLaunchHappened;}\
-    static void preLaunchHappened() {int __index = 0;
+    static void preLaunchHappened() {int __index = 0;\
+        if (__initAppInfoFields) __initAppInfoFields();
 
 
 #define MOVESENSE_PROVIDER_DEF(ProviderClass) {\
@@ -68,14 +71,26 @@ const char *const *__MOVESENSE_APP_SPECIFIC_MODULES = __MovesenseAppModuleHolder
 extern const bool g_enableSerialComm;
 extern const bool g_enableBLEComm;
 
+extern const char* g_appInfo_name;
+extern const char* g_appInfo_version;
+extern const char* g_appInfo_company;
+
+#define MAX_OPTIONAL_CORE_MODULES 6
+
 #define MOVESENSE_FEATURES_BEGIN()
 
 // Movesense optional core services types
-#define OPTIONAL_CORE_MODULE(moduleName, enable) bool __initOptinalCoreModule_ ## moduleName() {return (enable);}
+#define OPTIONAL_CORE_MODULE(moduleName, enable) bool __initOptionalCoreModule_ ## moduleName() {return (enable);}
 
 
 // Movesense Communication types (must be defined in App.cpp)
 #define SERIAL_COMMUNICATION(enable) const bool g_enableSerialComm = (enable);
 #define BLE_COMMUNICATION(enable) const bool g_enableBLEComm = (enable);
+
+// Movesense application info
+#define APPINFO_NAME(name) void __initAppInfoFields() {\
+g_appInfo_name = name;
+#define APPINFO_VERSION(version) g_appInfo_version = version;
+#define APPINFO_COMPANY(company) g_appInfo_company = company;}
 
 #define MOVESENSE_FEATURES_END()

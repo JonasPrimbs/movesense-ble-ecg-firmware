@@ -6,33 +6,37 @@ info:
   description: |
     This file defines API for the electrocardiography measurement.
   x-api-type: public
+  x-api-required: false
 
 paths:
 
   /Meas/ECG/Info:
     get:
       description: |
-        Get the ECG measurement settings 
+        Get the ECG measurement settings
       responses:
         200:
           description: Operation successfull
           schema:
             $ref: '#/definitions/ECGInfo'
 
-  /Meas/ECG/Subscription:
+  /Meas/ECG/{RequiredSampleRate}/Subscription:
+    parameters:
+      - $ref: '#/parameters/RequiredSampleRate'
     post:
       description: |
         Subscription to ECG data.
       responses:
         200:
           description: Operation completed successfully
+        501:
+          description: Required sample rate is not supported
         x-notification:
           description: |
             Notifications comprise array of ECG data.
             Array size between subscriptions is the same.
           schema:
             $ref: '#/definitions/ECGData'
-
     delete:
       description: |
         Unsubscribe ECG data stream
@@ -40,18 +44,34 @@ paths:
         200:
           description: Operation completed successfully
 
+parameters:
+  RequiredSampleRate:
+    name: RequiredSampleRate
+    in: path
+    required: true
+    type: integer
+    format: int32
+
 definitions:
   ECGInfo:
     required:
-      - SampleRate
+      - CurrentSampleRate
+      - AvailableSampleRates
       - ArraySize
     properties:
-      SampleRate:
+      CurrentSampleRate:
         description: Sample Per Second for the ECG data
         example: 512
         type: integer
         format: uint16
         x-unit: Hz
+      AvailableSampleRates:
+        description: Available sample rates for ECG data subscription
+        type: array
+        items:
+          type: integer
+          format: uint16
+          x-unit: Hz
       ArraySize:
         description: Array size per one notification
         example: 16

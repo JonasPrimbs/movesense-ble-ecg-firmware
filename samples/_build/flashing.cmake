@@ -32,17 +32,39 @@ add_custom_command(
         COMMAND ${NRFJPROG_CMD} --family NRF52 --program ${MOVESENSE_CORE_LIBRARY}/softdevice/${MOVESENSE_INTENDED_SOFTDEVICE_HEX_FILE} --chiperase --verify
         COMMAND ${NRFJPROG_CMD} --family NRF52 --program ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}_w_settings.hex --verify
         COMMAND ${NRFJPROG_CMD} --family NRF52 --program ${MOVESENSE_CORE_LIBRARY}/bootloader/bootloader.hex --verify
-        COMMENT "Flashing Softdevice, app & bootloader to device"
+        COMMENT "Erasing and flashing Softdevice, app & bootloader to device"
 )
 add_custom_command(
-        OUTPUT flash.3
+        OUTPUT reset.flash
         DEPENDS flash.2
         COMMAND ${NRFJPROG_CMD} --family NRF52 --reset
         COMMAND ${PING_CMD} 127.0.0.1
         COMMAND ${NRFJPROG_CMD} --family NRF52 --reset
         COMMENT "Reset device"
 )
+add_custom_command(
+        OUTPUT flash.softdevice
+        DEPENDS flash.1
+        COMMAND ${NRFJPROG_CMD} --family NRF52 --program ${MOVESENSE_CORE_LIBRARY}/softdevice/${MOVESENSE_INTENDED_SOFTDEVICE_HEX_FILE} --sectorerase --verify
+        COMMAND ${NRFJPROG_CMD} --family NRF52 --program ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}_w_settings.hex --sectorerase --verify
+        COMMAND ${NRFJPROG_CMD} --family NRF52 --program ${MOVESENSE_CORE_LIBRARY}/bootloader/bootloader.hex --sectorerase --verify
+        COMMENT "Flashing Softdevice, app & bootloader to device"
+)
+add_custom_command(
+        OUTPUT reset.flash_without_erasing
+        DEPENDS flash.softdevice
+        COMMAND ${NRFJPROG_CMD} --family NRF52 --reset
+        COMMAND ${PING_CMD} 127.0.0.1
+        COMMAND ${NRFJPROG_CMD} --family NRF52 --reset
+        COMMENT "Reset device"
+)
+add_custom_command(
+        OUTPUT backup.manufacturing_data
+        COMMAND ${NRFJPROG_CMD} --family NRF52 --memrd 0x74000 --n 4096 >> ${MOVESENSE_CORE_LIBRARY}/manufacturing_data.txt
+        COMMENT "Gathering the manufacturing data backup in the file: ${MOVESENSE_CORE_LIBRARY}/manufacturing_data.txt"
+)
 
-
-add_custom_target(flash DEPENDS flash.3 flash.2 flash.1 create_dfu_pkg)
+add_custom_target(flash_all DEPENDS reset.flash flash.2 flash.1 create_dfu_pkg)
 add_custom_target(dfupkg DEPENDS create_dfu_pkg)
+add_custom_target(flash DEPENDS reset.flash_without_erasing flash.softdevice flash.1 create_dfu_pkg)
+add_custom_target(backup_manufacturing_data DEPENDS backup.manufacturing_data)

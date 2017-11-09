@@ -18,6 +18,7 @@ info:
     pull request (PR) for it. Also think twice before extending the API to be
     more complex.
   x-api-type: public
+  x-api-required: true
 
 paths:
   /System/States/{StateId}:

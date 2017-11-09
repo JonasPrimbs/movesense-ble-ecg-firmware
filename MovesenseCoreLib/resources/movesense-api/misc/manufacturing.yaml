@@ -7,6 +7,7 @@ info:
     This file defines API for writing manufacturing time data into the device
     non-volatile memory as well as reading it during normal operation.
   x-api-type: private
+  x-api-required: false
 
 paths:
 
@@ -24,6 +25,8 @@ paths:
       responses:
         201:
           description: Data created successfully
+        400:
+          description: Data malformed - one or more product data has wrong format or size.
         500:
           description: Not allowed - data already exists
     get:
@@ -40,7 +43,12 @@ paths:
   /Misc/Manufacturing/CalibrationData:
     post:
       description: |
-        Writing manufacturing time calculated calibration data. Note: this can be done in one or multiple steps (e.g. for each sensor). POST used because PATCH not yet supported.
+        Writing manufacturing time calculated calibration data. Note: this can be done in one or multiple steps 
+        (e.g. for each sensor). POST used because PATCH not yet supported.
+        
+        This is used in both cases:
+        1. Individual calibration (device measures & calculates & writes the data itself - see /Misc/Calibration )
+        2. Patch calibration data (ready made data is written by the external calibrator)
       parameters:
         - name: data
           in: body
@@ -64,7 +72,44 @@ paths:
           description: Data does not exist
     delete:
       description: |
-        Delete the existing calibration data. 
+        Delete the existing calibration data.
+        Note: this can only be done in Factory Calibration Mode
+      responses:
+        200:
+          description: Calibration data deleted successfully
+        409:
+          description: No calibration data
+        500:
+          description: Failed. This operation is permitted only in Factory Calibration Mode.
+
+  /Misc/Manufacturing/BatteryCorrection:
+    post:
+      description: |
+        Compensation data for the battery effect of the magnetometer. 
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CalibrationMatrix'
+      responses:
+        201:
+          description: Data written successfully
+        500:
+          description: Not allowed - data already exists (can only be programmed once)
+    get:
+      description: |
+        Read battery effect correction data.
+      responses:
+        200:
+          description: Data read successfully
+          schema:
+            $ref: '#/definitions/CalibrationMatrix'
+        500:
+          description: Data does not exist
+    delete:
+      description: |
+        Delete the existing battery effect correction data. 
         Note: this can only be done in Factory Calibration Mode
       responses:
         200:

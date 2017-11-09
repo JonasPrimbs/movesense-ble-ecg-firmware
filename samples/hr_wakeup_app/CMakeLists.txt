@@ -1,17 +1,6 @@
 cmake_minimum_required(VERSION 3.4)
 enable_language(C CXX ASM)
 
-# Set the proper type of build and pull the necessary files 
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    set(CMAKE_BUILD_TYPE Release)
-    message(STATUS "The build type was set to release")
-    file( COPY ${CMAKE_BINARY_DIR}/${MOVESENSE_CORE_LIBRARY}/release/ DESTINATION  ${CMAKE_BINARY_DIR}/${MOVESENSE_CORE_LIBRARY})
-else()
-    set(CMAKE_BUILD_TYPE Debug)
-    message(STATUS "The build type was set to debug")
-    file( COPY ${CMAKE_BINARY_DIR}/${MOVESENSE_CORE_LIBRARY}/debug/ DESTINATION ${CMAKE_BINARY_DIR}/${MOVESENSE_CORE_LIBRARY})
-endif()
-
 include_directories(BEFORE .)
 
 set(APPLICATION "MovesenseApplication")
@@ -107,6 +96,18 @@ endif()
 
 # find all wbo's in movesense-core
 file(GLOB MOVESENSE_CORE_WBO_FILES  ${MOVESENSE_CORE_LIBRARY}/resources/*.wbo)
+list(FILTER MOVESENSE_CORE_WBO_FILES EXCLUDE REGEX ".+\\.[dr]\\.wbo$")
+
+# add variant wbo
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    add_definitions(/DRELEASE)
+    file(GLOB MOVESENSE_CORE_VARIANT_WBO_FILES  ${MOVESENSE_CORE_LIBRARY}/resources/*.r.wbo)
+else()
+    add_definitions(/DDEBUG)
+    file(GLOB MOVESENSE_CORE_VARIANT_WBO_FILES  ${MOVESENSE_CORE_LIBRARY}/resources/*.d.wbo)
+endif()
+
+list(APPEND MOVESENSE_CORE_WBO_FILES ${MOVESENSE_CORE_VARIANT_WBO_FILES})
 
 # Combine libraries
 generate_wb_resources(

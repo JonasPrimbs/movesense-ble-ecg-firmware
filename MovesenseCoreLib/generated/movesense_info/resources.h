@@ -42,13 +42,75 @@ namespace WB_RES {
 
 WB_STRUCT_PACK_BEGIN()
 
+struct WB_STRUCT_PACKED ModuleStatus;
+struct WB_STRUCT_PACKED ModulesStatusArray;
+struct WB_STRUCT_PACKED AppInfo;
 struct WB_STRUCT_PACKED DeviceInfo;
+
+struct WB_STRUCT_PACKED ModuleStatus
+{
+	// Structure type identification and serialization
+	typedef int Structure;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 3328;
+	static const whiteboard::StructureValueSerializer<ModuleStatus> serializer;
+	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<ModuleStatus> cleaner;)
+
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> name;
+	WB_ALIGN(1) bool enabled;
+
+	inline void visit(whiteboard::IStructureVisitor& rVisitor)
+	{
+		rVisitor
+			.visit(name)
+			.visit(enabled);
+	}
+};
+
+struct WB_STRUCT_PACKED ModulesStatusArray
+{
+	// Structure type identification and serialization
+	typedef int Structure;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 3329;
+	static const whiteboard::StructureValueSerializer<ModulesStatusArray> serializer;
+	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<ModulesStatusArray> cleaner;)
+
+	WB_ALIGN(4) whiteboard::Array< ModuleStatus > data;
+
+	inline void visit(whiteboard::IStructureVisitor& rVisitor)
+	{
+		rVisitor
+			.visit(data);
+	}
+};
+
+struct WB_STRUCT_PACKED AppInfo
+{
+	// Structure type identification and serialization
+	typedef int Structure;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 3330;
+	static const whiteboard::StructureValueSerializer<AppInfo> serializer;
+	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<AppInfo> cleaner;)
+
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> name;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> version;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> company;
+	WB_ALIGN(4) whiteboard::Optional< ModulesStatusArray > modules;
+
+	inline void visit(whiteboard::IStructureVisitor& rVisitor)
+	{
+		rVisitor
+			.visit(name)
+			.visit(version)
+			.visit(company)
+			.visit(modules);
+	}
+};
 
 struct WB_STRUCT_PACKED DeviceInfo
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 3328;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 3331;
 	static const whiteboard::StructureValueSerializer<DeviceInfo> serializer;
 	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<DeviceInfo> cleaner;)
 
@@ -101,6 +163,28 @@ struct INFO
 	struct GET
 	{
 		typedef whiteboard::StronglyTypedResult<const DeviceInfo&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
+	};
+};
+
+struct INFO_APP
+{
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3329, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 3329;
+
+	struct GET
+	{
+		typedef whiteboard::StronglyTypedResult<const AppInfo&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{

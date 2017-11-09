@@ -4,6 +4,6 @@
 // Copyright (c) Suunto Oy 2014 - 2017. All rights reserved.
 
 
-static const unsigned short MEAS_ECG_LID = 17152;
-static const unsigned short MEAS_ECG_INFO_LID = 17153;
+static const unsigned short MEAS_ECG_INFO_LID = 17152;
+static const unsigned short MEAS_ECG_REQUIREDSAMPLERATE_LID = 17153;
 

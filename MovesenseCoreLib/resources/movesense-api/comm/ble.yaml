@@ -6,6 +6,7 @@ info:
   description: |
     API for managing bluetooth.
   x-api-type: public
+  x-api-required: false
 
 paths:
 

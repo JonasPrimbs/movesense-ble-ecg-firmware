@@ -6,7 +6,8 @@ info:
   description: |
     This file defines API for putting the device into calibration mode.
   x-api-type: private
-    
+  x-api-required: false
+
 paths:
 
   /Misc/Calibration/Mode:
@@ -42,7 +43,7 @@ paths:
           default: 9.81
           minimum: 9
           maximum: 10
-          x-unit: m/s^2 
+          x-unit: m/s^2
         - name: magneticField
           in: query
           description: Reference magnetic field during the sequence. Sequence steps are relative to this.
@@ -52,7 +53,7 @@ paths:
           default: 100
           minimum: 0
           maximum: 1000
-          x-unit: uT 
+          x-unit: uT
         - name: aveSamplesAcceleration
           in: query
           description: # of samples for acceleration average estimation
@@ -73,7 +74,7 @@ paths:
           maximum: 1000
       responses:
         200:
-          description: Local references updated succefully. 
+          description: Local references updated succefully.
         500:
           description: Not permitted in this state
 
@@ -139,4 +140,3 @@ definitions:
         items:
           $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/FloatVector3D'
           x-unit: dec
-

@@ -7,10 +7,25 @@
 
 namespace WB_RES {
 
+WB_STATIC_VERIFY(sizeof(ModulesStatusArray) == 8, SizeOfStructure_ModulesStatusArray_IsNotWhatExpected);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ModulesStatusArray) == 4, AlignmentOfStructure_ModulesStatusArray_IsNotWhatExpected);
+
+WB_STATIC_VERIFY(sizeof(ModuleStatus) == 8, SizeOfStructure_ModuleStatus_IsNotWhatExpected);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ModuleStatus) == 4, AlignmentOfStructure_ModuleStatus_IsNotWhatExpected);
+
+WB_STATIC_VERIFY(sizeof(AppInfo) == 24, SizeOfStructure_AppInfo_IsNotWhatExpected);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(AppInfo) == 4, AlignmentOfStructure_AppInfo_IsNotWhatExpected);
+
 WB_STATIC_VERIFY(sizeof(DeviceInfo) == 76, SizeOfStructure_DeviceInfo_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(DeviceInfo) == 4, AlignmentOfStructure_DeviceInfo_IsNotWhatExpected);
 
 
+const whiteboard::StructureValueSerializer<ModulesStatusArray> ModulesStatusArray::serializer;
+WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<ModulesStatusArray> ModulesStatusArray::cleaner;)
+const whiteboard::StructureValueSerializer<ModuleStatus> ModuleStatus::serializer;
+WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<ModuleStatus> ModuleStatus::cleaner;)
+const whiteboard::StructureValueSerializer<AppInfo> AppInfo::serializer;
+WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<AppInfo> AppInfo::cleaner;)
 const whiteboard::StructureValueSerializer<DeviceInfo> DeviceInfo::serializer;
 WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<DeviceInfo> DeviceInfo::cleaner;)
 

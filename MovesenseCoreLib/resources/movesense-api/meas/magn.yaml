@@ -6,6 +6,7 @@ info:
   description: |
     This file defines interface for magnetic field API.
   x-api-type: public
+  x-api-required: true
 
 paths:
 
@@ -120,5 +121,6 @@ definitions:
         x-unit: millisecond
       ArrayMagn:
         type: array
+        x-unit: microtesla
         items:
           $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/FloatVector3D'

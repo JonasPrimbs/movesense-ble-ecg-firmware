@@ -42,6 +42,27 @@ namespace WB_RES {
 
 WB_STRUCT_PACK_BEGIN()
 
+struct WB_STRUCT_PACKED Energy;
+
+struct WB_STRUCT_PACKED Energy
+{
+	// Structure type identification and serialization
+	typedef int Structure;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 12800;
+	static const whiteboard::StructureValueSerializer<Energy> serializer;
+	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<Energy> cleaner;)
+
+	WB_ALIGN(1) uint8 percent;
+	WB_ALIGN(2) whiteboard::Optional< uint16 > milliVoltages;
+
+	inline void visit(whiteboard::IStructureVisitor& rVisitor)
+	{
+		rVisitor
+			.visit(percent)
+			.visit(milliVoltages);
+	}
+};
+
 WB_STRUCT_PACK_END()
 
 namespace LOCAL
@@ -51,13 +72,33 @@ struct ROOT;
 
 struct SYSTEM;
 
-struct SYSTEM_ENERGY;
-
-struct SYSTEM_ENERGY_LEVEL
+struct SYSTEM_ENERGY
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 12800, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 12800;
+
+	struct GET
+	{
+		typedef whiteboard::StronglyTypedResult<const Energy&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
+	};
+};
+
+struct SYSTEM_ENERGY_LEVEL
+{
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 12801, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 12801;
 
 	struct GET
 	{

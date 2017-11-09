@@ -6,6 +6,7 @@ info:
   description: |
     API for getting and subscribing Movesense device internal temperature
   x-api-type: public
+  x-api-required: true
 
 paths:
 
