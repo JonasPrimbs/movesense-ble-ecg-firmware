@@ -65,7 +65,7 @@ Optionally:
 TBD
 
 ### Linux ###
-**Movesense lib is already working on the Linux but the instruction is not ready yet.**
+**Movesense library already works on Linux - detailed installation instructions will be added here shortly.**
 
 ## Example App Build Flow ##
 
