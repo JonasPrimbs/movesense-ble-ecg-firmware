@@ -8,7 +8,7 @@ Currently we support only the "G" variant.
 
 ### What's the difference between PowerOff and FullPowerOff modes (/System/Mode/) with regards to system clock (RTC) handling? ###
 
-Due to a bug in our implementation, currently there's no difference in clock behaviour: neither of these modes maintains the clock. Once a fix to this issue is released, PowerOff mode properly handles system clock count.
+The difference is to keep the RTC running, but we do not support PowerOff mode yet.
 
 ### How to flash, i.e. update the software (firmware) on sensor? ###
 
@@ -31,17 +31,18 @@ Once you have the jig properly set up, attach the sensor to it and run the follo
 > ninja flash_all
 WARNING: This command will wipe all data on sensor, including settings.
 
-### Is UartOn, how it works? ###
+### How to enable serial communication? ###
 
-You can enable/disable the serial communication.
+You can use the [Settings API](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/resources/movesense-api/system/settings.yaml) /System/Settings/UartOn
 
 ### Why does SERIAL_COMMUNICATION(true) not work? ###
 
 The data from SERIAL_COMMUNICATION is saved to settings, but only if you use "flash_all" command.
+WARNING: This command will wipe all data on sensor, including settings.
 
 ### How to setup environment? ###
 
-You can check the Movesense wiki.
+The full instruction is in the [Readme.md](Readme.md) file and on our wiki.
 
 ### Which operating systems are supported? ###
 
@@ -49,9 +50,10 @@ Currently the best support is for Windows, but you can also use Linux and OSX.
 
 ### What is the difference Debug and Release variant? ###
 
-Debug variant contains also RTT logs, but consumes more power.
+Debug variant contains also RTT logs, but consumes more power and resurces.
 
 ### How to use see logs? ###
+
 If you use Segger J-Link, you can download special application to read logs.
 
 ### How does the configuration of RTT Viewer look? ###
@@ -87,4 +89,5 @@ Subscription
    - Immediately release AFE pins to enter DFU mode (less than 1 second period)
 
 ### Some Movesense sample apps enable optional modules, what are they? ###
+
 You can disable some parts of the Movesense to reduce memory consumption.
