@@ -4,7 +4,7 @@
 - Fix: SBEM generator sometimes fails
 - Fix: Full battery indicated as 60% in /System/Energy/Level
 - Fix: Device doesn't start after firmware update (DFU)
-- Fix: Gear ID is not working
+- Fix: Gear ID does not work
 - Fix: Magnetometer calibration and scaling (wrong units used)
 - Fix: Gyroscope scaling (wrong units used)
 - Fix: BLE advertising sometimes fails
