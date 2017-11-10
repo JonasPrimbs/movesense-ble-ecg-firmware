@@ -62,10 +62,10 @@ Optionally:
  * In case you encounter `ImportError: No module named yaml`, try to install package `pyyaml` by pip
 
 ### OSX ###
-TBD
+**Movesense development is supported on OSX - detailed installation instructions will be added here shortly.**
 
 ### Linux ###
-**Movesense library already works on Linux - detailed installation instructions will be added here shortly.**
+**ovesense development is supported on Linux - detailed installation instructions will be added here shortly.**
 
 ## Example App Build Flow ##
 
