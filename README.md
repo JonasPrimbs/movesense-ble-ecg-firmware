@@ -45,10 +45,10 @@ Install tools:
 
 * [GNU Toolchain for ARM Embedded 6-2017-q2](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
   * Remember to add it to the system path by the checkbox on the last step of installation.
-* [Ninja build tool](https://ninja-build.org/)
-  * Download the file
-    * Put ninja.exe file to C:/bin
-    * Add C:/bin to the system env. PATH variable
+* [Ninja build tool](https://ninja-build.org/) 
+  * Download the file 
+  * Put ninja.exe file to C:/bin
+  * Add C:/bin to the system env. PATH variable
 * [cmake >=3.6](https://cmake.org/download/)
   * Download cmake-3.8.2-win64-x64.zip
   * Extract the file
