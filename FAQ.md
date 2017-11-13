@@ -70,9 +70,9 @@ Whiteboard is a special library created for the communication between devices.
 
 ### Why should I calculate on Movesense? ###
 
+You should perform computations on Movesense because this allows to reduce amount of data transferred via Bluetooth, which is energy-consuming.
 Here you can find a few examples of power consumption with BLE subscription and local one.
 Subscription
-
 |Name |	BT delta* |	Local delta*
 |--|--|--
 |ACC 13|	150uA|	15uA
@@ -90,4 +90,13 @@ Subscription
 
 ### Some Movesense sample apps enable optional modules, what are they? ###
 
-You can disable some parts of the Movesense to reduce memory consumption.
+You can disable some parts of the Movesense to reduce memory and power consumption.
+
+|Module |	Default status |	API
+|--|--|--
+|DataLogger| disabled| Mem/Dataloger.yaml
+|Logbook| disabled| Mem/Logbook.yaml
+|LedService| enabled| Component/led.yaml
+|IndicationService| enabled| Ui/inf.yaml
+|BleService| enabled| Comm/ble.yaml
+|EepromService| disabled| Component/eeprom.yaml
