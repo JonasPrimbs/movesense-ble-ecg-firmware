@@ -24,6 +24,7 @@
 
 ###Known Bugs:###
 - Please, check issues on bitbucket.
+- Second EEPROM cannot write the data on 2 pages at the same time.
 
 ###Notes:###
 - REQUIRED: Use **GNU Toolchain for ARM v. 5.4 2016q3**
