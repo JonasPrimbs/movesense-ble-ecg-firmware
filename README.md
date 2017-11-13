@@ -11,6 +11,7 @@ You can order the Movesense sensor and Movesense Developer Kit on our [shop](htt
 
 Check also the mobile (Android and iOS) part for the mobile applications development.
 [Movesense mobile lib](https://bitbucket.org/suunto/movesense-mobile-lib)
+Note: If you do not have access, please contact us. 
 
 
 ## API ##
@@ -35,7 +36,7 @@ Resource | Description|Implemented
 /Ui/Ind|API for controlling the LED.| YES
 
 ## Documentation ##
-In this document you can find only the most important inforamtions. Please check the [documentation](https://bitbucket.org/suunto/movesense-docs/wiki/Home)
+In this document you can find only the most important informations. Please check the [documentation](https://bitbucket.org/suunto/movesense-docs/wiki/Home)
 
 ## Setup the enviroment ##
 
@@ -65,7 +66,7 @@ Optionally:
 **Movesense development is supported on OSX - detailed installation instructions will be added here shortly.**
 
 ### Linux ###
-**ovesense development is supported on Linux - detailed installation instructions will be added here shortly.**
+**Movesense development is supported on Linux - detailed installation instructions will be added here shortly.**
 
 ## Example App Build Flow ##
 
