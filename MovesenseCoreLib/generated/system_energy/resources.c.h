@@ -4,5 +4,6 @@
 // Copyright (c) Suunto Oy 2014 - 2017. All rights reserved.
 
 
-static const unsigned short SYSTEM_ENERGY_LEVEL_LID = 12800;
+static const unsigned short SYSTEM_ENERGY_LID = 12800;
+static const unsigned short SYSTEM_ENERGY_LEVEL_LID = 12801;
 

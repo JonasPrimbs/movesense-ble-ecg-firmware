@@ -7,8 +7,8 @@
 
 namespace WB_RES {
 
-WB_STATIC_VERIFY(sizeof(ECGInfo) == 4, SizeOfStructure_ECGInfo_IsNotWhatExpected);
-WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ECGInfo) == 2, AlignmentOfStructure_ECGInfo_IsNotWhatExpected);
+WB_STATIC_VERIFY(sizeof(ECGInfo) == 16, SizeOfStructure_ECGInfo_IsNotWhatExpected);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ECGInfo) == 4, AlignmentOfStructure_ECGInfo_IsNotWhatExpected);
 
 WB_STATIC_VERIFY(sizeof(ECGData) == 8, SizeOfStructure_ECGData_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ECGData) == 4, AlignmentOfStructure_ECGData_IsNotWhatExpected);

@@ -80,6 +80,10 @@ private:
     void StepDataDelete(const whiteboard::Request& request,
             const whiteboard::ParameterList& parameters);
 
+    void BatteryCorrectionPost(const whiteboard::Request& request, const whiteboard::ParameterList& parameters);
+    void BatteryCorrectionGet(const whiteboard::Request& request, const whiteboard::ParameterList& parameters);
+    void BatteryCorrectionDelete(const whiteboard::Request& request, const whiteboard::ParameterList& parameters);
+
     virtual void onGetRequest(const whiteboard::Request& request,
                               const whiteboard::ParameterList& parameters) OVERRIDE;
 
@@ -95,6 +99,22 @@ private:
 
     void notData(uint32_t *data, size_t size);
     bool eraseManufacturingFlashPage();
+
+    /**
+    *	Checks if the given S/N is correct by parsing all its required fields and by comparing to their ranges
+    *   All of the range values are taken from the "Suunto Twelve Digit Serial Number" documentation V0.4 09.11.2015
+    *
+    *   @return Boolean status of serial number correctness
+    */
+    bool isSerialNumberCorrect(whiteboard::WrapperFor32BitPointer<const char> serialNumberStringToVerify);
+
+    /**
+    *	Checks if unique ID (which is a substring of S/N) is correct by cheking the range of all of its digits one by one
+    *   All of the range values are taken from the "Suunto Twelve Digit Serial Number" documentation V0.4 09.11.2015
+    *
+    *   @return Boolean status of devices unique ID correctness
+    */
+    bool isUniqueIDCorrect(const char* uniqueIDString);
 
     uint32_t stepStringToEnum(const char *string);
     void stepEnumToString(char* buffer, size_t buffer_size, const uint32_t &value);

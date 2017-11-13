@@ -6,6 +6,7 @@ info:
   description: |
     This API enables configuration of the LSM6DS3 chip.
   x-api-type: private
+  x-api-required: false
 
 paths:
   /Component/LSM6DS3/Mode:
@@ -189,4 +190,3 @@ definitions:
           other = wake-up trigger level (see above)
         type: integer
         format: uint8
-

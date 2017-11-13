@@ -6,6 +6,7 @@ info:
   description: |
     API for creating different types of user indications.
   x-api-type: public
+  x-api-required: true
   
 paths:
 
@@ -47,4 +48,3 @@ definitions:
       - NO_VISUAL_INDICATIONS
       - CONTINUOUS_VISUAL_INDICATION
       - SHORT_VISUAL_INDICATION
-      

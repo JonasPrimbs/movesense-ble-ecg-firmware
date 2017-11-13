@@ -42,6 +42,58 @@ namespace WB_RES {
 
 WB_STRUCT_PACK_BEGIN()
 
+struct LedColorValues
+{
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14848;
+
+	enum Type
+	{
+		RED = 0U,
+		GREEN = 1U,
+		BLUE = 2U
+	};
+};
+typedef whiteboard::TypedEnum<LedColorValues, LedColorValues::Type, uint8> LedColor;
+
+struct WB_STRUCT_PACKED LedState;
+struct WB_STRUCT_PACKED Leds;
+
+struct WB_STRUCT_PACKED LedState
+{
+	// Structure type identification and serialization
+	typedef int Structure;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14849;
+	static const whiteboard::StructureValueSerializer<LedState> serializer;
+	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<LedState> cleaner;)
+
+	WB_ALIGN(1) bool isOn;
+	WB_ALIGN(1) whiteboard::Optional< LedColor > ledColor;
+
+	inline void visit(whiteboard::IStructureVisitor& rVisitor)
+	{
+		rVisitor
+			.visit(isOn)
+			.visit(ledColor);
+	}
+};
+
+struct WB_STRUCT_PACKED Leds
+{
+	// Structure type identification and serialization
+	typedef int Structure;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14850;
+	static const whiteboard::StructureValueSerializer<Leds> serializer;
+	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<Leds> cleaner;)
+
+	WB_ALIGN(4) whiteboard::Array< LedState > ledStates;
+
+	inline void visit(whiteboard::IStructureVisitor& rVisitor)
+	{
+		rVisitor
+			.visit(ledStates);
+	}
+};
+
 WB_STRUCT_PACK_END()
 
 namespace LOCAL
@@ -116,6 +168,182 @@ struct COMPONENT_LED
 		/** Compile time type checking */
 		inline static void typeCheck(
 			Parameters::ISON::ConstReferenceType)
+		{
+		}
+	};
+};
+
+struct COMPONENT_LEDS
+{
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 14849, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 14849;
+
+	struct GET
+	{
+		typedef whiteboard::StronglyTypedResult<const Leds&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
+	};
+};
+
+struct COMPONENT_LEDS_LEDINDEX
+{
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 14850, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 14850;
+
+	struct GET
+	{
+		typedef whiteboard::StronglyTypedResult<const LedState&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			struct LEDINDEX
+			{
+				static const whiteboard::ParameterIndex Index = 0;
+
+				typedef int32 Type;
+				typedef Type ConstReferenceType;
+			};
+
+			typedef LEDINDEX Parameter1;
+
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
+		};
+
+		/** Reference wrapper for strongly typed parameter list for /Component/Leds/{LedIndex} */
+		class ParameterListRef
+		{
+		private:
+			/** Prevent use of default constructor */
+			ParameterListRef() DELETED;
+
+			/** Prevent use of copy constructor */
+			ParameterListRef(const ParameterListRef&) DELETED;
+
+			/** Prevent use of assignment operator */
+			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
+
+		public:
+			/** Constructor that initializes this class from existing parameter list
+			*
+			* @param rParameterList Reference to parameter list that contains untyped parameters
+			*/
+			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
+				: mrParameterList(rParameterList)
+			{
+			}
+
+			/** Gets LEDINDEX parameter value
+			*
+			* @return Current parameter value
+			*/
+			inline Parameters::LEDINDEX::ConstReferenceType getLedIndex() const
+			{
+				return mrParameterList[Parameters::LEDINDEX::Index].convertTo<Parameters::LEDINDEX::ConstReferenceType>();
+			}
+
+		private:
+			/** Reference to actual parameter list */
+			const whiteboard::ParameterList& mrParameterList;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::LEDINDEX::ConstReferenceType)
+		{
+		}
+	};
+
+	struct PUT
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			struct LEDINDEX
+			{
+				static const whiteboard::ParameterIndex Index = 0;
+
+				typedef int32 Type;
+				typedef Type ConstReferenceType;
+			};
+
+			typedef LEDINDEX Parameter1;
+
+			struct LEDSTATE
+			{
+				static const whiteboard::ParameterIndex Index = 1;
+
+				typedef LedState Type;
+				typedef const Type& ConstReferenceType;
+			};
+
+			typedef LEDSTATE Parameter2;
+
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 2;
+		};
+
+		/** Reference wrapper for strongly typed parameter list for /Component/Leds/{LedIndex} */
+		class ParameterListRef
+		{
+		private:
+			/** Prevent use of default constructor */
+			ParameterListRef() DELETED;
+
+			/** Prevent use of copy constructor */
+			ParameterListRef(const ParameterListRef&) DELETED;
+
+			/** Prevent use of assignment operator */
+			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
+
+		public:
+			/** Constructor that initializes this class from existing parameter list
+			*
+			* @param rParameterList Reference to parameter list that contains untyped parameters
+			*/
+			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
+				: mrParameterList(rParameterList)
+			{
+			}
+
+			/** Gets LEDINDEX parameter value
+			*
+			* @return Current parameter value
+			*/
+			inline Parameters::LEDINDEX::ConstReferenceType getLedIndex() const
+			{
+				return mrParameterList[Parameters::LEDINDEX::Index].convertTo<Parameters::LEDINDEX::ConstReferenceType>();
+			}
+
+			/** Gets LEDSTATE parameter value
+			*
+			* @return Current parameter value
+			*/
+			inline Parameters::LEDSTATE::ConstReferenceType getLedState() const
+			{
+				return mrParameterList[Parameters::LEDSTATE::Index].convertTo<Parameters::LEDSTATE::ConstReferenceType>();
+			}
+
+		private:
+			/** Reference to actual parameter list */
+			const whiteboard::ParameterList& mrParameterList;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::LEDINDEX::ConstReferenceType,
+			Parameters::LEDSTATE::ConstReferenceType)
 		{
 		}
 	};

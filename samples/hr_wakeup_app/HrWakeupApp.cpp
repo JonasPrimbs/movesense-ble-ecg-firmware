@@ -20,6 +20,10 @@ const char* const HrWakeupApp::LAUNCHABLE_NAME = "HrWakeupApp";
 // Time between wake-up and going to power-off mode
 #define AVAILABILITY_TIME 60000
 
+// Time between turn on AFE wake circuit to power off
+// (must be LED_BLINKING_PERIOD multiple)
+#define WAKE_PREPARATION_TIME 5000
+
 // LED blinking period in adertsing mode
 #define LED_BLINKING_PERIOD 5000
 
@@ -108,10 +112,6 @@ void HrWakeupApp::setShutdownTimer()
 
     // Reset timeout counter
     counter = 0;
-
-    // Prepare AFE to wake-up mode
-    asyncPut(WB_RES::LOCAL::COMPONENT_MAX3000X_WAKEUP::ID,
-        AsyncRequestOptions(NULL, 0, true), (uint8_t) 1);
 }
 
 
@@ -123,6 +123,14 @@ void HrWakeupApp::onTimer(whiteboard::TimerId timerId)
     {
         asyncPut(WB_RES::LOCAL::UI_IND_VISUAL::ID,
             AsyncRequestOptions::Empty, (uint16_t)2); // SHORT_VISUAL_INDICATION
+        return;
+    }
+
+    if (counter < AVAILABILITY_TIME + WAKE_PREPARATION_TIME)
+    {
+        // Prepare AFE to wake-up mode
+        asyncPut(WB_RES::LOCAL::COMPONENT_MAX3000X_WAKEUP::ID,
+            AsyncRequestOptions(NULL, 0, true), (uint8_t) 1);
         return;
     }
 

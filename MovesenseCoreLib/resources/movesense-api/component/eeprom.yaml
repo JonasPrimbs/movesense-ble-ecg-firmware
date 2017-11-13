@@ -6,6 +6,7 @@ info:
   description: |
     This file defines API for writing and reading the EEPROM memory/ies.
   x-api-type: private
+  x-api-required: false
 
 paths:
   /Component/Eeprom/{EepromIndex}:

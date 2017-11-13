@@ -1,10 +1,18 @@
 ## Announcements ##
 **API CHANGES!** Before you start to write an app check the new API!
 **Known bugs!** Check the [CHANGES.md](CHANGES.md)
+**All tests are done only the G variant of the sensor** Please, check your HW variant.
 
 ## Overview ##
 
-Movesense sensor is a programmable multi-purpose device comprising accelerometer, gyroscope, magnetometer and thermometer together with optional heartrate/IBI and intelligent gear ID APIs. The APIs follow the well known REST principle and can be used both internally by the partner app or externally via the iOS/Android libraries. API specification ([link to folder](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/resources/core/)), is based on Swagger 2.0 syntax.
+Movesense sensor is a programmable multi-purpose device comprising accelerometer, gyroscope, magnetometer and thermometer together with optional heartrate/IBI and intelligent gear ID APIs. The APIs follow the well known REST principle and can be used both internally by the partner app or externally via the iOS/Android libraries. API specification ([link to folder](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/resources/movesense-api/)), is based on Swagger 2.0 syntax.
+
+You can order the Movesense sensor and Movesense Developer Kit on our [shop](https://www.movesense.com/shop/).
+
+Check also the mobile (Android and iOS) part for the mobile applications development.
+[Movesense mobile lib](https://bitbucket.org/suunto/movesense-mobile-lib)
+Note: If you do not have access, please contact us. 
+
 
 ## API ##
 Resource | Description|Implemented
@@ -27,18 +35,38 @@ Resource | Description|Implemented
 /Time|API for accessing different time related services.| YES
 /Ui/Ind|API for controlling the LED.| YES
 
+## Documentation ##
+In this document you can find only the most important informations. Please check the [documentation](https://bitbucket.org/suunto/movesense-docs/wiki/Home)
 
-## Prerequisite ##
+## Setup the enviroment ##
 
- * [GNU Toolchain for ARM Embedded 5-2016-q3](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
- * [Ninja build tool](https://ninja-build.org/) - remember to add to path
- * [cmake >=3.6](https://cmake.org/download/)
- * [Visual Studio Redistributable 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
- * [nrfutil package & python 2.7 (for OTA firmware update package creation)](https://github.com/NordicSemiconductor/pc-nrfutil)
- 
+### Windows ###
+Install tools:
+* [GNU Toolchain for ARM Embedded 6-2017-q2](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
+     * Remember to add it to the system path by the checkbox on the last step of installation.
+* [Ninja build tool](https://ninja-build.org/)
+     * Download the file
+     * Put ninja.exe file to C:/bin
+     * Add C:/bin to the system env. PATH variable
+* [cmake >=3.6](https://cmake.org/download/)
+    * Download cmake-3.8.2-win64-x64.zip
+    * Extract the file
+    * Add bin dir (with cmake) to the system env. PATH variable
+* [nrfutil package & python 2.7 (for OTA firmware update package creation)](https://github.com/NordicSemiconductor/pc-nrfutil)
+     * Nordic provides precompiled Windows executable
+* [Visual Studio Redistributable 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
+
 Optionally: 
 
- * Nordic Semiconductor's [nRF5x-Command-Line-Tools-Win32](https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF52-DK) - needed for flashing using JIG
+ * For flashing using JIG:
+      * Nordic Semiconductor's [nRF5x-Command-Line-Tools-XXX](https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF52-DK)
+ * In case you encounter `ImportError: No module named yaml`, try to install package `pyyaml` by pip
+
+### OSX ###
+**Movesense development is supported on OSX - detailed installation instructions will be added here shortly.**
+
+### Linux ###
+**Movesense development is supported on Linux - detailed installation instructions will be added here shortly.**
 
 ## Example App Build Flow ##
 
@@ -59,7 +87,7 @@ or release version
 
 > ninja
 ```
-*Note: As default, the SERIAL interface is enabled. If flashed/used without the JIG, remember to disable it to avoid excessive power consumption ([link to instructions](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/documentation/PowerOptimization.md?at=master&fileviewer=file-view-default))*
+*Note: As default, the SERIAL interface can be enabled (Check App.cpp file). If flashed/used without the JIG, remember to disable it to avoid excessive power consumption ([link to instructions](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/documentation/PowerOptimization.md?at=master&fileviewer=file-view-default))*
 
 ### Updating sensor "over the air" ###
 
@@ -78,14 +106,20 @@ ninja flash
 ```
 or you can use any other nRF52 compatible programming software such as *nRFGo Studio*.
 
-
+### Remobving manufacturing/settings data from the sensor ###
+This command additionaly erase the whole memory. You should use it only if you want to add own Manufacturing/calibration data.
+Please, contact us first.
+```
+ninja flash_all
+```
 
 ## What's New ##
 For information about releases, see the [CHANGES.md](CHANGES.md) file in repository.
 
-## Frequently Asked Questions ##
 
-For FAQ please check http://stackoverflow.com/search?q=movesense
+## Frequently Asked Questions ##
+Check [FAQ.md](FAQ.md) also some answers you can find on the stackoverflow.
+Please check http://stackoverflow.com/search?q=movesense
 
 If your problem is not addressed there, please [post](http://stackoverflow.com/questions/ask) a new question, and tag it with 'movesense' (i.e. include [tag:movesense] in the question body).
 

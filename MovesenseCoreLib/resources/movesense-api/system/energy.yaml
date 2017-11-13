@@ -6,6 +6,7 @@ info:
   description: |
     This file defines the energy API.
   x-api-type: public
+  x-api-required: true
 
 paths:
 
@@ -40,3 +41,29 @@ paths:
       responses:
         200:
           description: Operation completed successfully
+
+  /System/Energy:
+    get:
+      description: Get energy level.
+      responses:
+        200:
+          description: Get information about energy.
+          schema:
+            $ref: '#/definitions/Energy'
+
+definitions:
+
+  Energy:
+    required:
+      - Percent
+    properties:
+      Percent:
+        description: Available charge level in percent 0...100%
+        type: integer
+        format: uint8
+        x-unit: percent
+      MilliVoltages:
+        description: Battery charge level in millivolts.
+        type: integer
+        format: uint16
+        x-unit: mV

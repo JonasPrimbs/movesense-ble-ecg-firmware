@@ -6,6 +6,7 @@ info:
   description: |
     This file defines API for the Maxim MAX3000x AFE service.
   x-api-type: private
+  x-api-required: false
     
 paths:
 
@@ -57,7 +58,7 @@ paths:
         400:
           description: |
             Not able to set the wake-up trigger
-          
+
   /Component/MAX3000x/Version:
     get:
       description: |
@@ -112,4 +113,3 @@ paths:
           description: Register written successfully
         500:
           description: General error
-

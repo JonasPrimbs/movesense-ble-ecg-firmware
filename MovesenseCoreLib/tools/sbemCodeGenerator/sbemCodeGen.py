@@ -222,8 +222,16 @@ def hasVariableLengthItems(itemsToGenerate):
         elif 'subgroups' in item:
             if hasVariableLengthItems(item['subgroups']):
                 return True
-
     return False
+
+def getVariableLengthItems(itemsToGenerate):
+    size = 0
+    for item in itemsToGenerate:
+        if 'subgroups' in item:
+            size += getVariableLengthItems(item['subgroups'])
+        else:
+            size += sizeExprFromItem(item)
+    return size
 
 def hasUnsupportedItems(itemsToGenerate):
     for item in itemsToGenerate:
@@ -1125,11 +1133,13 @@ with open("sbem_definitions.h", 'wb') as f_h:
         for k,v in sorted(resourcesThatNeedSbemMethods.iteritems()):
             itemsToDo = v['__itemsToGenerate']
 
+            # print(cppNameFromResName(k))
+
             if not hasVariableLengthItems(itemsToDo):
                 getLengthMethodCode += '    case WB_RES::LOCAL::' + cppNameFromResName(k) + '::LID:\n'
-                sizeExpr = str(sizeExprFromItem(item))
+                sizeExpr = str(getVariableLengthItems(itemsToDo))
+                # print(sizeExpr)
                 getLengthMethodCode += '        return ('+sizeExpr+');\n'
-
 
         getLengthMethodCode += '    }\n'
 

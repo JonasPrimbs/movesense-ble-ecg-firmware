@@ -2,7 +2,7 @@
 #include "app-resources/resources.h"
 #include "common/core/debug.h"
 #include "component_nrf52/resources.h"
-#include "suunto_device_system_shutdown/resources.h"
+#include "device_system_shutdown/resources.h"
 #include "whiteboard/builtinTypes/UnknownStructure.h"
 #include "whiteboard/integration/bsp/shared/debug.h"
 

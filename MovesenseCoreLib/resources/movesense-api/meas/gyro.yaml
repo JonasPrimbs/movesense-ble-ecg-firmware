@@ -6,6 +6,7 @@ info:
   description: |
     This file defines interface for the gyroscope API.
   x-api-type: public
+  x-api-required: true
 
 paths:
 

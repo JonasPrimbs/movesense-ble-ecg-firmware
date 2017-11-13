@@ -168,11 +168,115 @@ struct MISC;
 
 struct MISC_MANUFACTURING;
 
-struct MISC_MANUFACTURING_CALIBRATIONDATA
+struct MISC_MANUFACTURING_BATTERYCORRECTION
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3584, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 3584;
+
+	struct GET
+	{
+		typedef whiteboard::StronglyTypedResult<const CalibrationMatrix&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
+	};
+
+	struct POST
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_CREATED> HTTP_CODE_CREATED;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
+
+		struct Parameters
+		{
+			struct DATA
+			{
+				static const whiteboard::ParameterIndex Index = 0;
+
+				typedef CalibrationMatrix Type;
+				typedef const Type& ConstReferenceType;
+			};
+
+			typedef DATA Parameter1;
+
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
+		};
+
+		/** Reference wrapper for strongly typed parameter list for /Misc/Manufacturing/BatteryCorrection */
+		class ParameterListRef
+		{
+		private:
+			/** Prevent use of default constructor */
+			ParameterListRef() DELETED;
+
+			/** Prevent use of copy constructor */
+			ParameterListRef(const ParameterListRef&) DELETED;
+
+			/** Prevent use of assignment operator */
+			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
+
+		public:
+			/** Constructor that initializes this class from existing parameter list
+			*
+			* @param rParameterList Reference to parameter list that contains untyped parameters
+			*/
+			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
+				: mrParameterList(rParameterList)
+			{
+			}
+
+			/** Gets DATA parameter value
+			*
+			* @return Current parameter value
+			*/
+			inline Parameters::DATA::ConstReferenceType getData() const
+			{
+				return mrParameterList[Parameters::DATA::Index].convertTo<Parameters::DATA::ConstReferenceType>();
+			}
+
+		private:
+			/** Reference to actual parameter list */
+			const whiteboard::ParameterList& mrParameterList;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::DATA::ConstReferenceType)
+		{
+		}
+	};
+
+	struct DELETE
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_CONFLICT> HTTP_CODE_CONFLICT;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
+	};
+};
+
+struct MISC_MANUFACTURING_CALIBRATIONDATA
+{
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3585, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 3585;
 
 	struct GET
 	{
@@ -275,8 +379,8 @@ struct MISC_MANUFACTURING_CALIBRATIONDATA
 struct MISC_MANUFACTURING_PRODUCTDATA
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3585, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 3585;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3586, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 3586;
 
 	struct GET
 	{
@@ -297,6 +401,7 @@ struct MISC_MANUFACTURING_PRODUCTDATA
 	struct POST
 	{
 		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_CREATED> HTTP_CODE_CREATED;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_BAD_REQUEST> HTTP_CODE_BAD_REQUEST;
 		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
 
 		struct Parameters
@@ -362,8 +467,8 @@ struct MISC_MANUFACTURING_PRODUCTDATA
 struct MISC_MANUFACTURING_STEP
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3586, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 3586;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3587, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 3587;
 
 	struct GET
 	{

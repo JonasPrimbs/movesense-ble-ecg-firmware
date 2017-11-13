@@ -5,4 +5,5 @@
 
 
 static const unsigned short INFO_LID = 3328;
+static const unsigned short INFO_APP_LID = 3329;
 

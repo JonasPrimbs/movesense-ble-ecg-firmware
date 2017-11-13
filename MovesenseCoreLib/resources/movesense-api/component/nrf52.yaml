@@ -6,6 +6,7 @@ info:
   description: |
     API for testing low level BLE capabilities such as transmission
   x-api-type: private
+  x-api-required: false
 
 paths:
   /Component/Nrf52/Test/TxPow:

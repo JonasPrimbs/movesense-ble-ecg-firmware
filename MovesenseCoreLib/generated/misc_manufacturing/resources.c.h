@@ -4,7 +4,8 @@
 // Copyright (c) Suunto Oy 2014 - 2017. All rights reserved.
 
 
-static const unsigned short MISC_MANUFACTURING_CALIBRATIONDATA_LID = 3584;
-static const unsigned short MISC_MANUFACTURING_PRODUCTDATA_LID = 3585;
-static const unsigned short MISC_MANUFACTURING_STEP_LID = 3586;
+static const unsigned short MISC_MANUFACTURING_BATTERYCORRECTION_LID = 3584;
+static const unsigned short MISC_MANUFACTURING_CALIBRATIONDATA_LID = 3585;
+static const unsigned short MISC_MANUFACTURING_PRODUCTDATA_LID = 3586;
+static const unsigned short MISC_MANUFACTURING_STEP_LID = 3587;
 

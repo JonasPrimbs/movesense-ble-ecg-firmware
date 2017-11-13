@@ -11,6 +11,7 @@ paths:
 
   /Info:
     get:
+      x-api-required: true
       description:      Query for device information.
       responses:
         200:
@@ -18,7 +19,60 @@ paths:
           schema:
             $ref:       '#/definitions/DeviceInfo'
 
+  /Info/App:
+    get:
+      x-api-required: false
+      description:      Query for app information.
+      responses:
+        200:
+          description:  App information structure
+          schema:
+            $ref:       '#/definitions/AppInfo'
+
 definitions:
+
+  ModulesStatusArray:
+    required:
+      - data
+    properties:
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/ModuleStatus'
+
+  ModuleStatus:
+    required:
+      - name
+      - enabled
+    properties:
+      name:
+        description:  Module name
+        type:         string
+        example:      "Eeprom"
+      enabled:
+        description:  Module status
+        type:         boolean
+
+  AppInfo:
+    required:
+      - name
+      - version
+      - company
+    properties:
+      name:
+        description:  Application name
+        example:      "Running app"
+        type:         string
+      version:
+        description:  Application version
+        type:         string
+        example:      "1.0.0"
+      company:
+        description:  Application provider
+        type:         string
+        example:      "Suunto"
+      modules:
+        $ref:         '#/definitions/ModulesStatusArray'
 
   DeviceInfo:
     required:

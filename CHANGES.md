@@ -1,3 +1,33 @@
+## Version 1.0.0.855.25 ##
+
+###Whats new:###
+- Fix: SBEM generator sometimes fails
+- Fix: Full battery indicated as 60% in /System/Energy/Level
+- Fix: Device doesn't start after firmware update (DFU)
+- Fix: Gear ID does not work
+- Fix: Magnetometer calibration and scaling (wrong units used)
+- Fix: Gyroscope scaling (wrong units used)
+- Fix: BLE advertising sometimes fails
+- Fix: Long delay before /Meas/HR readings become available
+- Power consumption improvements
+- Memory consumption improvements
+- DFU recovery mode (CHECK FAQ)
+- Support for second EEPROM available in Movesense sensor G1 hardware variant
+- API: New /Meas/IMU provider
+- API: New /System/States provider
+- API: New /Info/App path in info.yaml
+- API: /Meas/Ecg contains sample rate (CHECK MIGRATION DOC)
+- Samples: Some updates in build proces debug/release for samples.
+- Samples: New BLE samples
+- Workaround: Logbook/Datalogger break /Component/Eeprom data
+      Disabled by default  (CHECK MIGRATION DOC)
+
+###Known Bugs:###
+- Please, check issues on bitbucket.
+- Second EEPROM cannot write the data on 2 pages at the same time.
+      To avoid the problem you should write data in one page (the page size is 256)
+         addr / 256 == (addr + size) / 256
+
 ##Version 0.9.1.616 ##
 
 ###Whats new:###

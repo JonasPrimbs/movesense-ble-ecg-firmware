@@ -5,4 +5,6 @@
 
 
 static const unsigned short COMPONENT_LED_LID = 14848;
+static const unsigned short COMPONENT_LEDS_LID = 14849;
+static const unsigned short COMPONENT_LEDS_LEDINDEX_LID = 14850;
 

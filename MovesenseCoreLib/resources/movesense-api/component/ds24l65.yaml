@@ -6,7 +6,8 @@ info:
   description: |
     This file defines API for accessing the DS24L65 chip features and connected 1-wire slave devices.
   x-api-type: private
-    
+  x-api-required: false
+
 paths:
   /Component/DS24L65/Active:
     get:

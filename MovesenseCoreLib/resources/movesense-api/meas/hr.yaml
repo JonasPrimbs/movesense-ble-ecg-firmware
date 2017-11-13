@@ -6,6 +6,7 @@ info:
   description: |
     This file defines API for the heartrate measurement.
   x-api-type: public
+  x-api-required: false
 
 paths:
 
@@ -26,6 +27,8 @@ paths:
       responses:
         200:
           description: Operation completed successfully
+          schema:
+            $ref: 'types.yaml#/definitions/HRData'
         x-notification:
           description: |
             Notifications comprise average HR (Hz) with the latest RR (ms) data
@@ -64,4 +67,3 @@ definitions:
         type: number
         format: float
         x-unit: ms
-
