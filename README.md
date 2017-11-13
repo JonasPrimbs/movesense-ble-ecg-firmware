@@ -43,23 +43,23 @@ In this document you can find only the most important informations. Please check
 ### Windows ###
 Install tools:
 * [GNU Toolchain for ARM Embedded 6-2017-q2](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
-   * Remember to add it to the system path by the checkbox on the last step of installation.
+  * Remember to add it to the system path by the checkbox on the last step of installation.
 * [Ninja build tool](https://ninja-build.org/)
-   * Download the file
-      * Put ninja.exe file to C:/bin
-      * Add C:/bin to the system env. PATH variable
+  * Download the file
+    * Put ninja.exe file to C:/bin
+    * Add C:/bin to the system env. PATH variable
 * [cmake >=3.6](https://cmake.org/download/)
-   * Download cmake-3.8.2-win64-x64.zip
-   * Extract the file
-   * Add bin dir (with cmake) to the system env. PATH variable
+  * Download cmake-3.8.2-win64-x64.zip
+  * Extract the file
+  * Add bin dir (with cmake) to the system env. PATH variable
 * [nrfutil package & python 2.7 (for OTA firmware update package creation)](https://github.com/NordicSemiconductor/pc-nrfutil)
-   * Nordic provides precompiled Windows executable
+  * Nordic provides precompiled Windows executable
 * [Visual Studio Redistributable 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
 
 Optionally: 
 
 * For flashing using JIG:
-   * Nordic Semiconductor's [nRF5x-Command-Line-Tools-XXX](https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF52-DK)
+  * Nordic Semiconductor's [nRF5x-Command-Line-Tools-XXX](https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF52-DK)
 * In case you encounter `ImportError: No module named yaml`, try to install package `pyyaml` by pip
 
 ### OSX ###
