@@ -41,7 +41,8 @@ In this document you can find only the most important informations. Please check
 ## Setup the enviroment ##
 
 ### Windows ###
-Install tools:
+Install tools: 
+
 * [GNU Toolchain for ARM Embedded 6-2017-q2](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
   * Remember to add it to the system path by the checkbox on the last step of installation.
 * [Ninja build tool](https://ninja-build.org/)
@@ -58,7 +59,7 @@ Install tools:
 
 Optionally: 
 
-* For flashing using JIG:
+* For flashing using JIG: 
   * Nordic Semiconductor's [nRF5x-Command-Line-Tools-XXX](https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF52-DK)
 * In case you encounter `ImportError: No module named yaml`, try to install package `pyyaml` by pip
 
