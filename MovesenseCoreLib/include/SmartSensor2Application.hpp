@@ -19,6 +19,8 @@
 #include "LogbookDb.hpp"
 #include "SettingsService.hpp"
 #include "ManufacturingService.hpp"
+#include "StatesService.hpp"
+#include "internal/AppInfoProvider.hpp"
 
 
 class SmartSensor2Application : public whiteboard::ResourceClient
@@ -50,10 +52,13 @@ private:
 
     ExtflashChunkStorage mChunkStorage;
     MeasStorage          mMeasStorage;
+    StatesService mStatesService;
 
     LogbookDb       mLogbookDb;
     SettingsService mSettingsService;
     ManufacturingService mManufacturingService;
+
+    AppInfoProvider mAppInfoProvider;
 
     // Shutdown timer
     bool                mAppModulesStarted;

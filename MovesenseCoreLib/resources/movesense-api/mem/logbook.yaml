@@ -6,6 +6,7 @@ info:
   description: |
     This file defines API for logbook.
   x-api-type: public
+  x-api-required: false
 
 paths:
 
@@ -246,4 +247,3 @@ parameters:
     required: true
     type: integer
     format: int32
-

@@ -13,6 +13,19 @@ MOVESENSE_PROVIDER_DEF(BleConformanceTesterService)
 MOVESENSE_PROVIDERS_END(2)
 
 MOVESENSE_FEATURES_BEGIN()
+// Explicitly enable or disable Movesense framework core modules.
+// List of modules and their default state is found in documentation
+OPTIONAL_CORE_MODULE(DataLogger, true)
+OPTIONAL_CORE_MODULE(Logbook, true)
+OPTIONAL_CORE_MODULE(LedService, true)
+OPTIONAL_CORE_MODULE(IndicationService, true)
+OPTIONAL_CORE_MODULE(BleService, true)
+OPTIONAL_CORE_MODULE(EepromService, false)
+
+APPINFO_NAME("Sample BLE Conformance Test");
+APPINFO_VERSION("1.0.0");
+APPINFO_COMPANY("Movesense");
+
 // Serial communication must be disabled so that the battery has enough power for running the tests
 SERIAL_COMMUNICATION(false)
 BLE_COMMUNICATION(true)

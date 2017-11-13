@@ -6,6 +6,7 @@ info:
   description: |
     This file defines the settings API for a Movesense device.
   x-api-type: public
+  x-api-required: true
 
 paths:
   /System/Settings/UartOn:

@@ -1,0 +1,260 @@
+swagger: '2.0'
+
+info:
+  version: NA
+  title: IMU (Inertial Motion Unit) - Movesense-API
+  description: |
+    This file defines interface for the IMU API's.
+  x-api-type: public
+  x-api-required: true
+
+paths:
+
+  /Meas/IMU/Info:
+    get:
+      description: |
+        Get supported sample rates and ranges.
+      responses:
+        200:
+          description: Returns IMU information.
+          schema:
+            $ref: '#/definitions/IMUInfo'
+
+  /Meas/IMU/Config:
+    get:
+      description: |
+        Get current IMU measurement configuration. Note: There is no PUT, individual sensors have their own /Config PUT's (/Meas/Acc/Config, /Meas/Gyro/Config, /Meas/Magn/Config)
+      responses:
+        200:
+          description: Returns IMU configurations.
+          schema:
+            $ref: '#/definitions/IMUConfig'
+
+  /Meas/IMU9/{SampleRate}:
+    parameters:
+       - $ref: '#/parameters/SampleRate'
+
+  /Meas/IMU9/{SampleRate}/Subscription:
+    parameters:
+       - $ref: '#/parameters/SampleRate'
+    post:
+      description: |
+        Subscribe to periodic 9-axis IMU measurements.
+      responses:
+        200:
+          description: Operation completed successfully
+        501:
+          description: Non-supported sample rate
+        x-notification:
+          description: New measurements
+          schema:
+            $ref: '#/definitions/IMU9Data'
+    delete:
+      description: |
+        Unsubscribe from periodic 9-axis IMU values.
+      responses:
+        200:
+          description: Operation completed successfully
+
+  /Meas/IMU6/{SampleRate}:
+    parameters:
+       - $ref: '#/parameters/SampleRate'
+
+  /Meas/IMU6/{SampleRate}/Subscription:
+    parameters:
+       - $ref: '#/parameters/SampleRate'
+    post:
+      description: |
+        Subscribe to periodic 6-axis IMU measurements (Acc + Gyro).
+      responses:
+        200:
+          description: Operation completed successfully
+        501:
+          description: Non-supported sample rate
+        x-notification:
+          description: New measurements
+          schema:
+            $ref: '#/definitions/IMU6Data'
+    delete:
+      description: |
+        Unsubscribe from periodic  6-axis IMU values.
+      responses:
+        200:
+          description: Operation completed successfully
+
+  /Meas/IMU6m/{SampleRate}:
+    parameters:
+       - $ref: '#/parameters/SampleRate'
+
+  /Meas/IMU6m/{SampleRate}/Subscription:
+    parameters:
+       - $ref: '#/parameters/SampleRate'
+    post:
+      description: |
+        Subscribe to periodic  6-axis (with magnetometer) IMU measurements.
+      responses:
+        200:
+          description: Operation completed successfully
+        501:
+          description: Non-supported sample rate
+        x-notification:
+          description: New measurements
+          schema:
+            $ref: '#/definitions/IMU6MData'
+    delete:
+      description: |
+        Unsubscribe from periodic 6-axis (with magnetometer)  values.
+      responses:
+        200:
+          description: Operation completed successfully
+
+parameters:
+  SampleRate:
+    name: SampleRate
+    in: path
+    required: true
+    type: integer
+    format: int32
+
+definitions:
+  IMUInfo:
+    required:
+      - SampleRates
+      - AccRanges
+      - GyroRanges
+      - MagnRanges
+    properties:
+      SampleRates:
+        description: Available sample rates for IMU measurement.
+        type: array
+        items:
+          type: integer
+          format: uint16
+          x-unit: Hz
+      AccRanges:
+        description: |
+          Available ranges for acceleration measurement. For example range
+          value 2 means the range is -2...+2 G.
+        type: array
+        items:
+          type: integer
+          format: uint8
+      GyroRanges:
+        description: |
+          Available ranges for angular range measurement rate. For example range
+          value 500 means the range is -500...+500 dps.
+        type: array
+        items:
+          type: integer
+          format: uint16
+          x-unit: deg/s
+      MagnRanges:
+        description: |
+          Available scales for magnetometer measurement. For example scale
+          value 400 means the range is -400...+400 µT (microtesla).
+        type: array
+        items:
+          type: integer
+          format: uint16
+
+  IMUConfig:
+    required:
+      - AccRange
+      - GyroRange
+      - MagnRange
+    properties:
+      AccRange:
+        description: |
+          Acceleration range. For example if set 2 the range is -2...+2 G.
+        type: integer
+        format: uint8
+      GyroRange:
+        description: |
+          Degree per second range. For example if set 500 the range is
+          -500...+500 dps.
+        type: integer
+        format: uint16
+        x-unit: deg/s
+      MagnRange:
+        description: |
+          Magnetometer scale. For example if set 400 the range is
+          -400...+400 µT (microtesla).
+        type: integer
+        format: uint16
+
+  IMU9Data:
+    required:
+      - Timestamp
+      - ArrayAcc
+      - ArrayGyro
+      - ArrayMagn
+    properties:
+      Timestamp:
+        description: Local timestamp of first measurement.
+        type: integer
+        format: uint32
+        x-unit: millisecond
+      ArrayAcc:
+        description: Measured acceleration values (3D) in array.
+        type: array
+        x-unit: m/s^2
+        items:
+          $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/FloatVector3D'
+      ArrayGyro:
+        description: Measured angular velocity values (3D) in array.
+        type: array
+        x-unit: dps (degree per second)
+        items:
+          $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/FloatVector3D'
+      ArrayMagn:
+        description: Measured magnetic field values (3D) in array.
+        type: array
+        items:
+          $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/FloatVector3D'
+
+  IMU6Data:
+    required:
+      - Timestamp
+      - ArrayAcc
+      - ArrayGyro
+    properties:
+      Timestamp:
+        description: Local timestamp of first measurement.
+        type: integer
+        format: uint32
+        x-unit: millisecond
+      ArrayAcc:
+        description: Measured acceleration values (3D) in array.
+        type: array
+        x-unit: m/s^2
+        items:
+          $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/FloatVector3D'
+      ArrayGyro:
+        description: Measured angular velocity values (3D) in array.
+        type: array
+        x-unit: dps (degree per second)
+        items:
+          $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/FloatVector3D'
+
+  IMU6MData:
+    required:
+      - Timestamp
+      - ArrayAcc
+      - ArrayMagn
+    properties:
+      Timestamp:
+        description: Local timestamp of first measurement.
+        type: integer
+        format: uint32
+        x-unit: millisecond
+      ArrayAcc:
+        description: Measured acceleration values (3D) in array.
+        type: array
+        x-unit: m/s^2
+        items:
+          $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/FloatVector3D'
+      ArrayMagn:
+        description: Measured magnetic field values (3D) in array.
+        type: array
+        items:
+          $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/FloatVector3D'

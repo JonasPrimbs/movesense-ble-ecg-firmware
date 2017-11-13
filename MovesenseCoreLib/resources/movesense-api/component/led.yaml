@@ -6,12 +6,15 @@ info:
   description: |
     This file defines API for controlling the LED(s).
   x-api-type: private
+  x-api-required: false
 
 paths:
   /Component/Led:
     put:
       description: |
         Means to change the state of the LED.
+        TODO: DEPRECATE
+        NOTE: Use /Component/Leds/{index} instead (has also color)
       parameters:
         - name: isOn
           in: query
@@ -21,3 +24,78 @@ paths:
       responses:
         200:
           description: Operation completed successfully
+
+  /Component/Leds:
+    get:
+      description: |
+        Get leds in the system and their state (on/off & possible color).
+      responses:
+        200:
+          description: Array of leds and their state.
+          schema:
+            $ref: '#/definitions/Leds'
+        500:
+          description: General error
+
+  /Component/Leds/{LedIndex}:
+    parameters:
+     - $ref: '#/parameters/LedIndex'
+    get:
+      description: |
+        Get state of the specific led (on/off & possible color).
+      responses:
+        200:
+          description: State of the led.
+          schema:
+            $ref: '#/definitions/LedState'
+    put:
+      description: |
+        Write new state (on/off & color) for specific led.
+      parameters:
+        - name: LedState
+          in: body
+          description: New state for the LED.
+          required: true
+          schema:
+            $ref: '#/definitions/LedState'
+      responses:
+        200:
+          description: Operation completed successfully
+
+parameters:
+  LedIndex:
+    name: LedIndex
+    in: path
+    required: true
+    type: integer
+    format: int32
+
+definitions:
+  LedColor:
+    type: integer
+    format: uint8
+    enum:
+      - name: 'Red'
+        value: 0
+      - name: 'Green'
+        value: 1
+      - name: 'Blue'
+        value: 2
+
+  LedState:
+    required:
+      - IsOn
+    properties:
+      IsOn:
+        type: boolean
+      LedColor:
+        $ref: '#/definitions/LedColor'
+
+  Leds:
+    required:
+      - LedStates
+    properties:
+      LedStates:
+        type: array
+        items:
+          $ref: '#/definitions/LedState'

@@ -6,6 +6,7 @@ info:
   description: |
     This file defines API for reading as well as setting the device's main system state.
   x-api-type: public
+  x-api-required: true
 
 paths:
   /System/Mode:
@@ -41,6 +42,8 @@ paths:
             target.
         400:
           description: Requested mode was not valid. Request was ignored.
+        501:
+          description: Requested mode is not implemented by the device.
         409:
           description: |
             Requested mode conflicts with current mode switch target mode.

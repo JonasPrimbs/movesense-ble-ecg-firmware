@@ -25,7 +25,6 @@ mark_as_advanced(CMAKE_RANLIB)
 # Restrict autosearch on windows, on others allow cmake to do what it's supposed
 # to do.
 if(${CMAKE_HOST_SYSTEM} MATCHES "Windows")
-    set(CMAKE_FIND_ROOT_PATH "C:/Program Files (x86)/GNU Tools ARM Embedded/")
     set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
     set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
     set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE CMAKE_FIND_ROOT_PATH_BOTH)

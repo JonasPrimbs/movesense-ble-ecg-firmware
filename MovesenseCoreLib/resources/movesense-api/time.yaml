@@ -6,6 +6,7 @@ info:
   description: |
     API for setting and reading device EPOCH time.
   x-api-type: public
+  x-api-required: true
 
 paths:
   /Time:
