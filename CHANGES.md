@@ -27,6 +27,8 @@
 - Second EEPROM cannot write the data on 2 pages at the same time.
       To avoid the problem you should write data in one page (the page size is 256)
          addr / 256 == (addr + size) / 256
+- DataLogger does not record */Meas/IMU* -API's
+- GET on */Logbook/byId/{ID}/Data* ASSERT's if the log is empty
 
 ##Version 0.9.1.616 ##
 
