@@ -1,12 +1,12 @@
 ## Announcements ##
-**API CHANGES**
-Movesense API has been updated from earlier versions. Please review the [Movesense API definition](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/resources/movesense-api/) and modify your code accordingly, if needed.
+**API changes**  
+Movesense API has received several updates from earlier versions. Please review the [Movesense API definition](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/resources/movesense-api/) and modify your existing code accordingly, if needed.
 
-**Known issues**
+**Known issues**  
 Please refer to [CHANGES.md](CHANGES.md) for list of known issues.
 
-**Testing coverage**
-Starting from release 1.0.0, Movesense Device Lib will only be tested on latest Movesense sensor hardware version ("G1") -- please refer to the [FAQ section](FAQ.md) to identify which hardware version you have. If you're experiencing issues with any earlier hardware version or would like to upgrade to the newest sensor version available, please contact the Movesense team via [movesense.com](https://movesense.com)
+**Testing coverage**  
+Starting from release 1.0.0, Movesense Device Lib will only be tested on latest Movesense sensor hardware version ("G1") -- please refer to the [FAQ section](FAQ.md) for instructions on to identify which hardware version you have. If you're experiencing issues with any earlier hardware version or would like to upgrade to the newest sensor version available, please contact the Movesense team via [movesense.com](https://movesense.com)
 
 ## Overview ##
 
@@ -16,7 +16,7 @@ You can order the Movesense sensor and Movesense Developer Kit on our [shop](htt
 
 Check also the mobile (Android and iOS) part for the mobile applications development.
 [Movesense mobile lib](https://bitbucket.org/suunto/movesense-mobile-lib)
-Note: If you do not have access, please contact us. 
+Note: If you do not have access, please contact us at [movesense.com](https://movesense.com).
 
 
 ## API ##
@@ -69,10 +69,10 @@ Optionally:
 * In case you encounter `ImportError: No module named yaml`, try to install package `pyyaml` by pip
 
 ### OSX ###
-Movesense development is supported on OSX - detailed installation instructions will be added here shortly.
+Movesense development is supported on OSX - detailed instructions for setting up the development environment on OSX will be added here shortly.
 
 ### Linux ###
-Movesense development is supported on Linux - detailed installation instructions will be added here shortly.
+Movesense development is supported on Linux - detailed iinstructions for setting up the development environment on Linux will be added here shortly.
 
 ## Example App Build Flow ##
 
