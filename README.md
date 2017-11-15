@@ -1,7 +1,12 @@
 ## Announcements ##
-**API CHANGES!** Before you start to write an app check the new API!
-**Known bugs!** Check the [CHANGES.md](CHANGES.md)
-**All tests are done only the G variant of the sensor** Please, check your HW variant.
+**API CHANGES**
+Movesense API has been updated from earlier versions. Please review the [Movesense API definition](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/resources/movesense-api/) and modify your code accordingly, if needed.
+
+**Known issues**
+Please refer to [CHANGES.md](CHANGES.md) for list of known issues.
+
+**Testing coverage**
+Starting from release 1.0.0, Movesense Device Lib will only be tested on latest Movesense sensor hardware version ("G1") -- please refer to the [FAQ section](FAQ.md) to identify which hardware version you have. If you're experiencing issues with any earlier hardware version or would like to upgrade to the newest sensor version available, please contact the Movesense team via [movesense.com](https://movesense.com)
 
 ## Overview ##
 
@@ -107,7 +112,7 @@ ninja flash
 ```
 or you can use any other nRF52 compatible programming software such as *nRFGo Studio*.
 
-### Remobving manufacturing/settings data from the sensor ###
+### Removing manufacturing/settings data from the sensor ###
 This command additionaly erase the whole memory. You should use it only if you want to add own Manufacturing/calibration data.
 Please, contact us first.
 ```
