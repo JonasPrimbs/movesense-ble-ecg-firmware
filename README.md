@@ -6,16 +6,20 @@ Movesense API has received several updates from its earlier versions. Please rev
 Please refer to [CHANGES.md](CHANGES.md) for a list of known issues.
 
 **Testing coverage**  
-Starting from release 1.0.0, Movesense Device Lib will internally be tested only on latest Movesense sensor hardware version ("G1" variant) -- please refer to the [FAQ section](FAQ.md) for instructions on how to identify which hardware version you have. If you're experiencing issues with any earlier hardware version or would like to upgrade to the newest sensor version available, please contact the Movesense team via [movesense.com](https://movesense.com).
+Starting from release 1.0.0, Movesense Device Lib will internally be tested only on latest Movesense sensor hardware version ("G1" variant) -- please refer to the [FAQ section](FAQ.md) for instructions on how to identify which hardware version you have.  
+
+If you're experiencing issues with any earlier hardware version or would like to upgrade to the newest sensor version available, please contact the Movesense team via [movesense.com](https://movesense.com).
 
 ## Overview ##
 
-[Movesense sensor](https://www.movesense.com/developers/technology/#developers) is a programmable multi-purpose device comprising of accelerometer, gyroscope, magnetometer and thermometer together with optional heartrate/IBI (inter-beat interval) and intelligent gear ID APIs. The APIs follow well-known REST principle and can be used both internally by the sensor app or externally via the iOS/Android libraries. Movesense [API specification](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/resources/movesense-api/) is based on Swagger 2.0 syntax.
+[Movesense sensor](https://www.movesense.com/developers/technology/#developers) is a programmable multi-purpose device comprising of accelerometer, gyroscope, magnetometer and thermometer together with optional heartrate/IBI (inter-beat interval) and intelligent gear ID APIs.  
+
+Movesense APIs follow well-known REST principle and can be used both internally by the sensor app or externally via the iOS/Android libraries. The [API specification](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/resources/movesense-api/) is based on Swagger 2.0 syntax.
 
 You can order Movesense sensors and Movesense Developer Kit on our online [shop](https://www.movesense.com/shop/).
 
 Check also [Movesense mobile lib](https://bitbucket.org/suunto/movesense-mobile-lib) for developing Android and iOS applications to interact with Movesense sensor.
-Note: Access to mobile libraries on Bitbucket is currently restricted. Please contact us at [movesense.com](https://movesense.com) for access.
+**Note:** Access to mobile libraries repository on Bitbucket is currently restricted. Please contact us at [movesense.com](https://movesense.com) for access.
 
 ## API ##
 Resource | Description|Implemented
