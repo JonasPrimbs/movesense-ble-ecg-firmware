@@ -1,4 +1,4 @@
-### How to check HW variant? ###
+### How to identify which hardware variant the Movesense sensor is? ###
 
 Under the battery on the PCB you can find a number with letter like "14451D". The last letter means the variant.
 
@@ -100,3 +100,11 @@ You can disable some parts of the Movesense to reduce memory and power consumpti
 |IndicationService| enabled| Ui/inf.yaml
 |BleService| enabled| Comm/ble.yaml
 |EepromService| disabled| Component/eeprom.yaml
+
+### I'm experiencing data loss at high sampling frequencies, what's causing it? ###  
+
+Although Movesense sensor itself supports very high data sampling frequencies, Bluetooth transmission between the sensor and mobile device is often the bottleneck. 
+In some cases this can even lead to data loss (lost Bluetooth packets), depending on the quality of Bluetooth stack and radio implementation on the mobile.
+If such data loss occurs, the best strategy is to simply try to limit the amount of data transferred, either by lowering the data sampling rate or by implementing buffering mechanism.
+
+

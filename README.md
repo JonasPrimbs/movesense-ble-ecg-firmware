@@ -1,18 +1,25 @@
 ## Announcements ##
-**API CHANGES!** Before you start to write an app check the new API!
-**Known bugs!** Check the [CHANGES.md](CHANGES.md)
-**All tests are done only the G variant of the sensor** Please, check your HW variant.
+**API changes**  
+Movesense API has received several updates from its earlier versions. Please review the [Movesense API definition](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/resources/movesense-api/) and modify your existing code accordingly, if needed.
+
+**Known issues**  
+Please refer to [CHANGES.md](CHANGES.md) for a list of known issues.
+
+**Testing coverage**  
+Starting from release 1.0.0, Movesense Device Lib will internally be tested only on latest Movesense sensor hardware version ("G1" variant) -- please refer to the [FAQ section](FAQ.md) for instructions on how to identify which hardware version you have.  
+
+If you're experiencing issues with any earlier hardware version or would like to upgrade to the newest sensor version available, please contact the Movesense team via [movesense.com](https://movesense.com).
 
 ## Overview ##
 
-Movesense sensor is a programmable multi-purpose device comprising accelerometer, gyroscope, magnetometer and thermometer together with optional heartrate/IBI and intelligent gear ID APIs. The APIs follow the well known REST principle and can be used both internally by the partner app or externally via the iOS/Android libraries. API specification ([link to folder](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/resources/movesense-api/)), is based on Swagger 2.0 syntax.
+[Movesense sensor](https://www.movesense.com/developers/technology/#developers) is a programmable multi-purpose device comprising of accelerometer, gyroscope, magnetometer and thermometer together with optional heartrate/IBI (inter-beat interval) and intelligent gear ID APIs.  
 
-You can order the Movesense sensor and Movesense Developer Kit on our [shop](https://www.movesense.com/shop/).
+Movesense APIs follow well-known REST principle and can be used both internally by the sensor app or externally via the iOS/Android libraries. The [API specification](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/resources/movesense-api/) is based on Swagger 2.0 syntax.
 
-Check also the mobile (Android and iOS) part for the mobile applications development.
-[Movesense mobile lib](https://bitbucket.org/suunto/movesense-mobile-lib)
-Note: If you do not have access, please contact us. 
+You can order Movesense sensors and Movesense Developer Kit on our online [shop](https://www.movesense.com/shop/).
 
+Check also [Movesense mobile lib](https://bitbucket.org/suunto/movesense-mobile-lib) for developing Android and iOS applications to interact with Movesense sensor.
+**Note:** Access to mobile libraries repository on Bitbucket is currently restricted. Please contact us at [movesense.com](https://movesense.com) for access.
 
 ## API ##
 Resource | Description|Implemented
@@ -41,32 +48,33 @@ In this document you can find only the most important informations. Please check
 ## Setup the enviroment ##
 
 ### Windows ###
-Install tools:
+Install tools: 
+
 * [GNU Toolchain for ARM Embedded 6-2017-q2](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
-     * Remember to add it to the system path by the checkbox on the last step of installation.
-* [Ninja build tool](https://ninja-build.org/)
-     * Download the file
-     * Put ninja.exe file to C:/bin
-     * Add C:/bin to the system env. PATH variable
+    * Remember to add it to the system path by the checkbox on the last step of installation.
+* [Ninja build tool](https://ninja-build.org/) 
+    * Download the file 
+    * Put ninja.exe file to C:/bin
+    * Add C:/bin to the system env. PATH variable
 * [cmake >=3.6](https://cmake.org/download/)
     * Download cmake-3.8.2-win64-x64.zip
-    * Extract the file
-    * Add bin dir (with cmake) to the system env. PATH variable
+        * Extract the file
+        * Add bin dir (with cmake) to the system env. PATH variable
 * [nrfutil package & python 2.7 (for OTA firmware update package creation)](https://github.com/NordicSemiconductor/pc-nrfutil)
-     * Nordic provides precompiled Windows executable
+    * Nordic provides precompiled Windows executable
 * [Visual Studio Redistributable 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
 
 Optionally: 
 
- * For flashing using JIG:
-      * Nordic Semiconductor's [nRF5x-Command-Line-Tools-XXX](https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF52-DK)
- * In case you encounter `ImportError: No module named yaml`, try to install package `pyyaml` by pip
+* For flashing using JIG: 
+    * Nordic Semiconductor's [nRF5x-Command-Line-Tools-XXX](https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF52-DK)
+* In case you encounter `ImportError: No module named yaml`, try to install package `pyyaml` by pip
 
 ### OSX ###
-**Movesense development is supported on OSX - detailed installation instructions will be added here shortly.**
+Movesense development is supported on OSX - detailed instructions for setting up the development environment on OSX will be added here shortly.
 
 ### Linux ###
-**Movesense development is supported on Linux - detailed installation instructions will be added here shortly.**
+Movesense development is supported on Linux - detailed iinstructions for setting up the development environment on Linux will be added here shortly.
 
 ## Example App Build Flow ##
 
@@ -106,7 +114,7 @@ ninja flash
 ```
 or you can use any other nRF52 compatible programming software such as *nRFGo Studio*.
 
-### Remobving manufacturing/settings data from the sensor ###
+### Removing manufacturing/settings data from the sensor ###
 This command additionaly erase the whole memory. You should use it only if you want to add own Manufacturing/calibration data.
 Please, contact us first.
 ```
