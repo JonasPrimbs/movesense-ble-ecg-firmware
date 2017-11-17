@@ -18,6 +18,8 @@ All rights reserved.
 #include "ExtflashChunkStorage.h"
 #include "common/core/dbgAssert.h"
 
+void getLogbookMemoryArea(uint32_t &offset, uint32_t &size);
+
 /** Class to provide log file names to loggers. */
 class Logbook : 
     private whiteboard::ResourceClient,
