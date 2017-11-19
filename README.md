@@ -1,14 +1,14 @@
 ## Announcements ##
 **API changes**  
-Movesense API has received several updates from its earlier versions. Please review the [Movesense API definition](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/resources/movesense-api/) and modify your existing code accordingly, if needed.
+Movesense API has received several updates from its earlier versions. Please review the latest [API definition](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/resources/movesense-api/) and modify your existing code accordingly, if needed.
 
 **Known issues**  
 Please refer to [CHANGES.md](CHANGES.md) for a list of known issues.
 
 **Testing coverage**  
-Starting from release 1.0.0, Movesense Device Lib will internally be tested only on latest Movesense sensor hardware version ("G1" variant) -- please refer to the [FAQ section](FAQ.md) for instructions on how to identify which hardware version you have.  
+Starting from release 1.0.0, Movesense Device Lib will internally be tested only on the latest Movesense sensor hardware version ("G1" variant) -- please refer to the [FAQ section](FAQ.md) for instructions on how to identify which hardware version you have.  
 
-If you're experiencing issues with any earlier hardware version or would like to upgrade to the newest sensor version available, please contact the Movesense team via [movesense.com](https://movesense.com).
+If you're experiencing issues with any earlier hardware version and would like to upgrade to the newest sensor version available, please contact the Movesense team via [movesense.com](https://movesense.com).
 
 ## Overview ##
 
@@ -21,7 +21,17 @@ You can order Movesense sensors and Movesense Developer Kit on our online [shop]
 Check also [Movesense mobile lib](https://bitbucket.org/suunto/movesense-mobile-lib) for developing Android and iOS applications to interact with Movesense sensor.
 **Note:** Access to mobile libraries repository on Bitbucket is currently restricted. Please contact us at [movesense.com](https://movesense.com) for access.
 
-## API ##
+## Documentation ##
+
+Movesense developer documentation is divided in several documents:
+
+[README.md](README.md): this document, with build environment setup instructions and other important information.
+[CHANGES.md](CHANGES.md): version history of Movesense releases.
+[MIGRATION.md](MIGRATION.md): instructions on how to upgrade from earlier versions of the Movesense device library.
+[FAQ.md](FAQ.md): list of frequently asked questions.
+[Movesense developer guides](https://bitbucket.org/suunto/movesense-docs/wiki/Home) in movesense-docs repository on Bitbucket.
+
+## Movesense APIs ##
 Resource | Description|Implemented
 ---------|------------|--------------
 /Comm/Ble|API for managing BLE | YES
@@ -42,31 +52,31 @@ Resource | Description|Implemented
 /Time|API for accessing different time related services.| YES
 /Ui/Ind|API for controlling the LED.| YES
 
-## Documentation ##
-In this document you can find only the most important informations. Please check the [documentation](https://bitbucket.org/suunto/movesense-docs/wiki/Home)
+## Setting up the development enviroment ##  
 
-## Setup the enviroment ##
+This section gives platform specific instructions on how to set up Movesense development environment. If you run into problems or need to install additional components
+to your system to get the environment properly set up, please let us know by [submitting an issue](https://bitbucket.org/suunto/movesense-device-lib/issues/new).
 
 ### Windows ###
-Install tools: 
+Install the following tools: 
 
 * [GNU Toolchain for ARM Embedded 6-2017-q2](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
-    * Remember to add it to the system path by the checkbox on the last step of installation.
+    * Remember to add it to your system path by ticking the checkbox during the last step of installation.
 * [Ninja build tool](https://ninja-build.org/) 
     * Download the file 
-    * Put ninja.exe file to C:/bin
-    * Add C:/bin to the system env. PATH variable
+    * place ninja.exe file to C:/bin
+    * Add C:/bin to system settings (PATH variable)
 * [cmake >=3.6](https://cmake.org/download/)
     * Download cmake-3.8.2-win64-x64.zip
         * Extract the file
-        * Add bin dir (with cmake) to the system env. PATH variable
+        * Add the binary directory (containing cmake.exe) to the system settings (PATH variable)
 * [nrfutil package & python 2.7 (for OTA firmware update package creation)](https://github.com/NordicSemiconductor/pc-nrfutil)
-    * Nordic provides precompiled Windows executable
+    * Nordic provides pre-compiled Windows executable
 * [Visual Studio Redistributable 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
 
 Optionally: 
 
-* For flashing using JIG: 
+* For flashing with Movesense programming JIG: 
     * Nordic Semiconductor's [nRF5x-Command-Line-Tools-XXX](https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF52-DK)
 * In case you encounter `ImportError: No module named yaml`, try to install package `pyyaml` by pip
 
@@ -76,7 +86,7 @@ Movesense development is supported on OSX - detailed instructions for setting up
 ### Linux ###
 Movesense development is supported on Linux - detailed iinstructions for setting up the development environment on Linux will be added here shortly.
 
-## Example App Build Flow ##
+## Example application build flow ##
 
 ```
 #!python
@@ -99,45 +109,40 @@ or release version
 
 ### Updating sensor "over the air" ###
 
-If you want to create OTA firmware update package run command
+If you want to create OTA firmware update package, run command
 ```
 ninja dfupkg
 ```
 
-which places the OTA package with name *movesense_dfu.zip* in the build folder.
+which places the OTA package named *movesense_dfu.zip* in the build folder. You can then use our [Android Sample App](https://bitbucket.org/suunto/movesense-mobile-lib) to updater the firmware on your Movesense sensor over Bluetooth.
 
-### Updating sensor with programming jig ###
+### Updating sensor with programming JIG ###
 
 if you are using a *Movesense programming JIG* you can flash the resulting .hex-file (and the nRF52 SoftDevice) with:
 ```
 ninja flash
 ```
-or you can use any other nRF52 compatible programming software such as *nRFGo Studio*.
+or you can use any other nRF52 compatible programming software such as *nRFGo Studio*. To acquire Movesense programming JIG, please contact us via [movesense.com](https://movesense.com).
 
 ### Removing manufacturing/settings data from the sensor ###
-This command additionaly erase the whole memory. You should use it only if you want to add own Manufacturing/calibration data.
-Please, contact us first.
+Command below updates the sensor firmware and additionally erases all settings in its memory. You should use it only if you want to replace default manufacturing/calibration data. Please don't use the command unless you know what you're doing!
 ```
 ninja flash_all
 ```
 
-## What's New ##
-For information about releases, see the [CHANGES.md](CHANGES.md) file in repository.
+## Bug reports and other feedback ##
 
+Please report all bugs by [raising an Issue](https://bitbucket.org/suunto/movesense-device-lib/issues/new) on Bitbucket. 
 
-## Frequently Asked Questions ##
-Check [FAQ.md](FAQ.md) also some answers you can find on the stackoverflow.
-Please check http://stackoverflow.com/search?q=movesense
+You can also discuss Movesense related topics on [stack overflow](http://stackoverflow.com/search?q=movesense). If your question is not already addressed, 
+please [post](http://stackoverflow.com/questions/ask) a new one, tagging it with 'movesense' (i.e. include [tag:movesense] in the question body).  
 
-If your problem is not addressed there, please [post](http://stackoverflow.com/questions/ask) a new question, and tag it with 'movesense' (i.e. include [tag:movesense] in the question body).
+All feedback is welcome and helps to improve our offering!  
 
-## Bug Reports ##
+## Contributions to the source code ##
 
-Please report bugs by [raising](https://bitbucket.org/suunto/movesense-device-lib/issues/new) an Issue via Bitbucket.
-
-## Contributions ##
 Your input is appreciated and we encourage you to post your contributions as pull requests to this repository.
 
 ## License ##
 
-See the LICENSE file for more info.
+See [LICENSE.pdf](LICENSE.pdf) for details on Movesense license.
