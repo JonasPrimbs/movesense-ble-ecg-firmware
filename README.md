@@ -91,10 +91,11 @@ If the pip installation fails, try running command `sudo pip install nrfutil --i
 * [nrfutil package & python 2.7](https://github.com/NordicSemiconductor/pc-nrfutil) (for OTA firmware update package creation)
 
 Optionally:  
-* For flashing with Movesense programming JIG: 
-    * Nordic Semiconductor's [nRF5x-Command-Line-Tools-XXX](https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF52-DK)
-    * [Segger J-Link Software and Documentation pack for MacOSX](https://www.segger.com/downloads/jlink/)
-* In case you encounter `ImportError: No module named yaml`, try to install package `pyyaml` using [pip](https://pip.pypa.io/en/stable/).  
+
+* For flashing with Movesense programming JIG:  
+    * Nordic Semiconductor's [nRF5x-Command-Line-Tools-XXX](https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF52-DK)  
+    * [Segger J-Link Software and Documentation pack for MacOSX](https://www.segger.com/downloads/jlink/)  
+    * In case you encounter `ImportError: No module named yaml`, try to install package `pyyaml` using [pip](https://pip.pypa.io/en/stable/).  
  
 Path configuration:  
 
