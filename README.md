@@ -77,7 +77,7 @@ Optionally:
 
 * For flashing with Movesense programming JIG: 
     * Nordic Semiconductor's [nRF5x-Command-Line-Tools-XXX](https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF52-DK)
-* In case you encounter `ImportError: No module named yaml`, try to install package `pyyaml` by pip
+* In case you encounter `ImportError: No module named yaml`, try to install pyyaml package using pip.
 
 ### OSX ###
 Install the following tools: 
@@ -95,7 +95,7 @@ Optionally:
 * For flashing with Movesense programming JIG:  
     * Nordic Semiconductor's [nRF5x-Command-Line-Tools-XXX](https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF52-DK)  
     * Segger's [J-Link Software and Documentation pack](https://www.segger.com/downloads/jlink/) for Mac OSX
-    * In case you encounter `ImportError: No module named yaml`, try to install package `pyyaml` using [pip](https://pip.pypa.io/en/stable/).  
+    * In case you encounter `ImportError: No module named yaml`, try to install pyyaml package using command `sudo pip install pyyaml`. 
  
 Path configuration:  
 
