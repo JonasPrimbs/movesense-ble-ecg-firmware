@@ -18,9 +18,7 @@ Movesense APIs follow well-known REST principle and can be used both internally 
 
 You can order Movesense sensors and Movesense Developer Kit on our online [shop](https://www.movesense.com/shop/).
 
-Check also [Movesense mobile library](https://bitbucket.org/suunto/movesense-mobile-lib) for developing own Android and iOS applications to interact with the Movesense sensor.  
-
-**Note:** Access to mobile libraries repository on Bitbucket is currently restricted. Please contact us at [movesense.com](https://movesense.com) for access.
+Check also [Movesense mobile library](https://bitbucket.org/suunto/movesense-mobile-lib) for developing own Android and iOS applications to interact with the Movesense sensor. **Note:** Access to mobile libraries repository on Bitbucket is currently restricted. Please contact us at [movesense.com](https://movesense.com) for access.
 
 ## Documentation ##
 
@@ -53,7 +51,7 @@ Resource | Description|Implemented
 /Time|API for accessing different time related services.| YES
 /Ui/Ind|API for controlling the LED.| YES
 
-## Setting up the development enviroment ##  
+## Setting up the development enviroment  
 
 This section gives platform specific instructions on how to set up Movesense development environment. If you run into problems or need to install additional components
 to your system to get the environment properly set up, please let us know by [submitting an issue](https://bitbucket.org/suunto/movesense-device-lib/issues/new).
@@ -96,17 +94,22 @@ Movesense development is supported on Linux - detailed iinstructions for setting
 > mkdir myBuild
 > cd myBuild
 
-> cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/hello_world_app
-or
-> cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/accelerometer_app
-or
-> cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/blinky_app
-or release version
-> cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake -DCMAKE_BUILD_TYPE=Release ../samples/hello_world_app
+> cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/hello_world_app  
 
+OR  
+
+> cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/accelerometer_app  
+
+OR  
+
+> cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/blinky_app  
+
+OR to build a release version  
+
+> cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake -DCMAKE_BUILD_TYPE=Release ../samples/hello_world_app  
 > ninja
 ```
-*Note: As default, the SERIAL interface can be enabled (Check App.cpp file). If flashed/used without the JIG, remember to disable it to avoid excessive power consumption ([link to instructions](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/documentation/PowerOptimization.md?at=master&fileviewer=file-view-default))*
+*Note* By default, the serial interface is enabled on Movesense sensor (see [App.cpp](App.cpp) file). Unless you need serial support (for programming JIG, for example), remember to keep it disabled to avoid excessive power consumption ([link to instructions](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/documentation/PowerOptimization.md?at=master&fileviewer=file-view-default)
 
 ### Updating sensor "over the air" ###
 
