@@ -80,7 +80,25 @@ Optionally:
 * In case you encounter `ImportError: No module named yaml`, try to install package `pyyaml` by pip
 
 ### OSX ###
-Movesense development is supported on OSX - detailed instructions for setting up the development environment on OSX will be added here shortly.
+Install the following tools: 
+
+* [GNU Toolchain for ARM Embedded 6-2017-q2](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
+* [Ninja build tool](https://ninja-build.org/) 
+* [cmake >=3.6](https://cmake.org/download/)
+    * Download Mac OSX libraries and follow installation instructions
+* [pip](https://pip.pypa.io/en/stable/) for managing Python packages: `sudo easy_install pip` and then nrfutil: `sudo pip install nrfutil`. 
+If the pip installation fails, try running command `sudo pip install nrfutil --ignore-installed six`.
+* [nrfutil package & python 2.7](https://github.com/NordicSemiconductor/pc-nrfutil) (for OTA firmware update package creation)
+
+Optionally:  
+* For flashing with Movesense programming JIG: 
+    * Nordic Semiconductor's [nRF5x-Command-Line-Tools-XXX](https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF52-DK)
+    * [Segger J-Link Software and Documentation pack for MacOSX](https://www.segger.com/downloads/jlink/)
+* In case you encounter `ImportError: No module named yaml`, try to install package `pyyaml` using [pip](https://pip.pypa.io/en/stable/).  
+ 
+Path configuration:  
+
+* Remember to add ninja, CMake, GNU Toolchain for ARM, nrfjprog and mergehex (provided with nrfjprog) to system path by editing the PATH variable in .bash_profile.
 
 ### Linux ###
 Movesense development is supported on Linux - detailed iinstructions for setting up the development environment on Linux will be added here shortly.
@@ -104,7 +122,7 @@ OR
 
 > cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/blinky_app  
 
-OR to build a release version  
+OR to build a release version:  
 
 > cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake -DCMAKE_BUILD_TYPE=Release ../samples/hello_world_app  
 
@@ -119,7 +137,7 @@ If you want to create OTA firmware update package, run command
 ninja dfupkg
 ```
 
-which places the OTA package named *movesense_dfu.zip* in the build folder. You can then use our [Android Sample App](https://bitbucket.org/suunto/movesense-mobile-lib) to updater the firmware on your Movesense sensor over Bluetooth.
+which places the OTA package named *movesense_dfu.zip* in the build folder. You can then use our [Android Sample App](https://bitbucket.org/suunto/movesense-mobile-lib) to update the firmware on your Movesense sensor over Bluetooth.
 
 ### Updating sensor with programming JIG ###
 
@@ -141,7 +159,7 @@ Always start by checking if our [FAQ.md](FAQ.md) already contains the answer you
 
 Please report all bugs by [raising an Issue](https://bitbucket.org/suunto/movesense-device-lib/issues/new) on Bitbucket. 
 
-You can also discuss Movesense related topics on [stack overflow](http://stackoverflow.com/search?q=movesense). If your question is not already addressed, 
+You can also discuss Movesense related topics on [stack overflow](http://stackoverflow.com/search?q=movesense). If your topic is not already addressed, 
 please [post](http://stackoverflow.com/questions/ask) a new one, tagging it with 'movesense' (i.e. include [tag:movesense] in the question body).  
 
 All feedback is welcome and helps to improve our offering!  
