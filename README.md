@@ -107,9 +107,10 @@ OR
 OR to build a release version  
 
 > cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake -DCMAKE_BUILD_TYPE=Release ../samples/hello_world_app  
+
 > ninja
 ```
-*Note* By default, the serial interface is enabled on Movesense sensor (see [App.cpp](App.cpp) file). Unless you need serial support (for programming JIG, for example), remember to keep it disabled to avoid excessive power consumption ([link to instructions](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/documentation/PowerOptimization.md?at=master&fileviewer=file-view-default)
+**Note:** By default, the serial interface is enabled on Movesense sensor (see App.cpp file). Unless you need serial support (for programming JIG, for example), remember to keep it disabled to avoid excessive power consumption ([link to instructions](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/documentation/PowerOptimization.md?at=master&fileviewer=file-view-default)).
 
 ### Updating sensor "over the air" ###
 
@@ -135,6 +136,8 @@ ninja flash_all
 ```
 
 ## Bug reports and other feedback ##
+
+Always start by checking if our [FAQ.md](FAQ.md) already contains the answer you're looking for.   
 
 Please report all bugs by [raising an Issue](https://bitbucket.org/suunto/movesense-device-lib/issues/new) on Bitbucket. 
 
