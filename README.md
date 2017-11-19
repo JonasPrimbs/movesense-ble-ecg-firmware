@@ -102,7 +102,7 @@ Path configuration:
 * Remember to add ninja, CMake, GNU Toolchain for ARM, nrfjprog and mergehex (provided with nrfjprog) to system path by editing the PATH variable in .bash_profile.
 
 ### Linux ###
-Movesense development is supported on Linux - detailed iinstructions for setting up the development environment on Linux will be added here shortly.
+Movesense development is supported also on Linux - detailed instructions for setting up the development environment on Linux will be added here shortly.
 
 ## Example application build flow ##
 
