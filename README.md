@@ -6,7 +6,7 @@ Movesense API has received several updates from its earlier versions. Please rev
 Please refer to [CHANGES.md](CHANGES.md) for a list of known issues.
 
 **Testing coverage**  
-Starting from release 1.0.0, Movesense Device Lib will internally be tested only on the latest Movesense sensor hardware version ("G1" variant) -- please refer to the [FAQ section](FAQ.md) for instructions on how to identify which hardware version you have.  
+Starting from release 1.0.0, Movesense device library will internally be tested only on the latest Movesense sensor hardware version ("G1" variant) -- please refer to the [FAQ section](FAQ.md) for instructions on how to identify which hardware version you have.  
 
 If you're experiencing issues with any earlier hardware version and would like to upgrade to the newest sensor version available, please contact the Movesense team via [movesense.com](https://movesense.com).
 
@@ -18,18 +18,19 @@ Movesense APIs follow well-known REST principle and can be used both internally 
 
 You can order Movesense sensors and Movesense Developer Kit on our online [shop](https://www.movesense.com/shop/).
 
-Check also [Movesense mobile lib](https://bitbucket.org/suunto/movesense-mobile-lib) for developing Android and iOS applications to interact with Movesense sensor.
+Check also [Movesense mobile library](https://bitbucket.org/suunto/movesense-mobile-lib) for developing own Android and iOS applications to interact with the Movesense sensor.  
+
 **Note:** Access to mobile libraries repository on Bitbucket is currently restricted. Please contact us at [movesense.com](https://movesense.com) for access.
 
 ## Documentation ##
 
 Movesense developer documentation is divided in several documents:
 
-[README.md](README.md): this document, with build environment setup instructions and other important information.
-[CHANGES.md](CHANGES.md): version history of Movesense releases.
-[MIGRATION.md](MIGRATION.md): instructions on how to upgrade from earlier versions of the Movesense device library.
-[FAQ.md](FAQ.md): list of frequently asked questions.
-[Movesense developer guides](https://bitbucket.org/suunto/movesense-docs/wiki/Home) in movesense-docs repository on Bitbucket.
+[README.md](README.md): this document, with build environment setup instructions and other important information.  
+[CHANGES.md](CHANGES.md): version history of Movesense releases.  
+[MIGRATION.md](MIGRATION.md): instructions on how to upgrade from earlier versions of the Movesense device library.  
+[FAQ.md](FAQ.md): list of frequently asked questions.  
+[Movesense developer guides](https://bitbucket.org/suunto/movesense-docs/wiki/Home) in movesense-docs repository on Bitbucket.  
 
 ## Movesense APIs ##
 Resource | Description|Implemented
