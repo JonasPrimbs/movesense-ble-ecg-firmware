@@ -69,7 +69,7 @@ Install the following tools:
     * Download cmake-3.8.2-win64-x64.zip
         * Extract the file
         * Add the binary directory (containing cmake.exe) to the system settings (PATH variable)
-* [nrfutil package & python 2.7 (for OTA firmware update package creation)](https://github.com/NordicSemiconductor/pc-nrfutil)
+* [nrfutil package & python 2.7](https://github.com/NordicSemiconductor/pc-nrfutil) for OTA firmware update package creation
     * Nordic provides pre-compiled Windows executable
 * [Visual Studio Redistributable 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
 
@@ -88,13 +88,13 @@ Install the following tools:
     * Download Mac OSX libraries and follow installation instructions
 * [pip](https://pip.pypa.io/en/stable/) for managing Python packages: `sudo easy_install pip` and then nrfutil: `sudo pip install nrfutil`. 
 If the pip installation fails, try running command `sudo pip install nrfutil --ignore-installed six`.
-* [nrfutil package & python 2.7](https://github.com/NordicSemiconductor/pc-nrfutil) (for OTA firmware update package creation)
+* [nrfutil package & python 2.7](https://github.com/NordicSemiconductor/pc-nrfutil) for OTA firmware update package creation
 
 Optionally:  
 
 * For flashing with Movesense programming JIG:  
     * Nordic Semiconductor's [nRF5x-Command-Line-Tools-XXX](https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF52-DK)  
-    * [Segger J-Link Software and Documentation pack for MacOSX](https://www.segger.com/downloads/jlink/)  
+    * Segger's [J-Link Software and Documentation pack](https://www.segger.com/downloads/jlink/) for Mac OSX
     * In case you encounter `ImportError: No module named yaml`, try to install package `pyyaml` using [pip](https://pip.pypa.io/en/stable/).  
  
 Path configuration:  
