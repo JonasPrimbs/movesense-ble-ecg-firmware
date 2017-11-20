@@ -113,22 +113,17 @@ Movesense development is supported also on Linux - detailed instructions for set
 > mkdir myBuild
 > cd myBuild
 
+To build a debug version of a selected sample application:  
+
 > cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/hello_world_app  
 
-*OR*  
-
-> cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/accelerometer_app  
-
-*OR*  
-
-> cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/blinky_app  
-
-*OR to build a release version of the sample application:*  
+To build a release version:  
 
 > cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake -DCMAKE_BUILD_TYPE=Release ../samples/hello_world_app  
 
 > ninja
 ```
+
 **Note:** By default, the serial interface is enabled on Movesense sensor (see App.cpp file). Unless you need serial support (for programming JIG, for example), remember to keep it disabled to avoid excessive power consumption ([link to instructions](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/documentation/PowerOptimization.md?at=master&fileviewer=file-view-default)).
 
 ### Updating sensor "over the air" ###
