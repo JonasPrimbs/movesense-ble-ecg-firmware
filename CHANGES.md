@@ -1,14 +1,11 @@
 ## Version 1.0.1.894.28 ##
 
 ###Whats new:###
-- TBD
-
+- Fix: DataLogger does not record */Meas/IMU* -API's
+- Fix: Second EEPROM cannot write the data on 2 pages at the same time.
 ###Known Bugs:###
-- TBD
-
-###Notes:###
-- REQUIRED: Use **GNU Toolchain for ARM v. 5.4 2016q3**
-- To create DFU package for OTA update, compile application with "ninja dfupkg"
+- Please, check issues on bitbucket.
+- GET on */Logbook/byId/{ID}/Data* ASSERT's if the log is empty
 
 ## Version 1.0.0.855.25 ##
 
