@@ -36,6 +36,9 @@ extern "C" {
 typedef void (*PreLaunchCallback)(void);  
 extern PreLaunchCallback __preLaunchCallback;
 extern void WEAK __initAppInfoFields();
+extern void WEAK __logbookMemoryAreaOverride(uint32_t &offset, uint32_t &size);
+
+extern void getLogbookMemoryArea(uint32_t &offset, uint32_t &size);
 
 // Array to hold app's own module names
 extern const char * const*__MOVESENSE_APP_SPECIFIC_MODULES;
@@ -86,6 +89,10 @@ extern const char* g_appInfo_company;
 // Movesense Communication types (must be defined in App.cpp)
 #define SERIAL_COMMUNICATION(enable) const bool g_enableSerialComm = (enable);
 #define BLE_COMMUNICATION(enable) const bool g_enableBLEComm = (enable);
+#define LOGBOOK_MEMORY_AREA(offset, size) \
+STATIC_VERIFY(((offset) & 0xff) == 0, Logbook_offset_must_be_multiple_of_256); \
+STATIC_VERIFY(((size) & 0xff) == 0, Logbook_size_must_be_multiple_of_256); \
+void __logbookMemoryAreaOverride(uint32_t &rOffset, uint32_t &rSize) {rOffset = (offset);rSize = (size);}
 
 // Movesense application info
 #define APPINFO_NAME(name) void __initAppInfoFields() {\

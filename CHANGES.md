@@ -1,3 +1,15 @@
+## Version 1.0.1.894.28 ##
+
+###Whats new:###
+- Fix: DataLogger does not record */Meas/IMU* -API's
+- Fix: Second EEPROM cannot write the data on 2 pages at the same time.
+- Logbook uses 2 EEPROMs
+- Logbook size can be changed "LOGBOOK_MEMORY_AREA(offset, size);"
+
+###Known Bugs:###
+- Please, check issues on bitbucket.
+- GET on */Logbook/byId/{ID}/Data* ASSERT's if the log is empty
+
 ## Version 1.0.0.855.25 ##
 
 ###Whats new:###
@@ -12,12 +24,12 @@
 - Power consumption improvements
 - Memory consumption improvements
 - DFU recovery mode (CHECK FAQ)
-- Support for second EEPROM available in Movesense sensor G1 hardware variant
+- Support for the second EEPROM available in Movesense sensor G1 hardware variant
 - API: New /Meas/IMU provider
 - API: New /System/States provider
 - API: New /Info/App path in info.yaml
 - API: /Meas/Ecg contains sample rate (CHECK MIGRATION DOC)
-- Samples: Some updates in build proces debug/release for samples.
+- Samples: Some updates in the build proces debug/release for samples.
 - Samples: New BLE samples
 - Workaround: Logbook/Datalogger break /Component/Eeprom data
       Disabled by default  (CHECK MIGRATION DOC)
@@ -56,15 +68,15 @@ DO NOT USE THIS ON THE C VERSION!!!
 - New HW support
 - Eeprom provider: /Component/Eeprom
 - Fix: Wakeup for max3000x
-- Fix: Uart settings problem
+- Fix: UART settings problem
 - Fix: BLE Adv. too short
-- Fix: Battery level adv. is not working
-- Fix: Magnetometer's not working correctly
+- Fix: Battery level adv. does not work
+- Fix: Magnetometer does not work correctly
 
 ###Known Bugs:###
 - Magnetometer value needs scaling and unit
 - Detecting of the gear id is not working if is subscribed
-- Power performance needs additional work
+- Power performance needs the additional work
 
 ###Notes:###
 - REQUIRED: Use **GNU Toolchain for ARM v. 5.4 2016q3**
