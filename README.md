@@ -102,7 +102,58 @@ Path configuration:
 * Remember to add ninja, CMake, GNU Toolchain for ARM, nrfjprog and mergehex (provided with nrfjprog) to system path by editing the PATH variable in .bash_profile.
 
 ### Linux ###
-Movesense development is supported also on Linux - detailed instructions for setting up the development environment on Linux will be added here shortly.
+Instalation steps for Ubuntu 17.10
+
+* 1. Install dependencies
+>sudo apt install git cmake ninja-build python libc++1 python-pip
+
+* 2. Install the toolchain
+a) Installing from PPA
+
+>sudo add-apt-repository ppa:team-gcc-arm-embedded/ppa
+
+>sudo apt-get update
+
+>sudo apt-get install gcc-arm-embedded
+
+b) Instaling from tar.gz
+TBD
+
+* 3. Install python dependencies
+>sudo pip install nrfutil pyyaml
+
+* 4. Clone repository
+> git clone https://bitbucket.org/suunto/movesense-device-lib.git
+
+* 5. Building
+>cd movesense-device-lib
+>mkdir buildDir
+>cd buildDir
+>cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake >../samples/hello_world_app
+>ninja dfupkg
+
+
+Optional: JIG/Debugger support
+* 1. Downloading nRF5x-Command-Line Tools and JLink
+http://www.nordicsemi.com/eng/nordic/Products/nRF51-DK/nRF5x-Command-Line-Tools-Linux64/51392
+https://www.segger.com/downloads/jlink/JLink_Linux_V620h_x86_64.deb
+
+* 2. Install deb file
+>sudo dpkg -i ~/Downloads/JLink_Linux_V620h_x86_64.deb
+
+* 3. Extract commandline tools
+>tar -xvf ~/Downloads/nRF5x-Command-Line-Tools_9_7_1_Linux-x86_64.tar
+>mkdir ~/tools
+>sudo mv nrfjprog /opt/SEGGER/JLink/
+>mv mergehex/ ~/tools/
+
+* 4. Add Path
+a) Permanetly
+TBD
+b) Temporary
+>export PATH=$PATH:~/tools/mergehex:/opt/SEGGER/JLink/nrfjprog
+* 5. Flash
+>ninja flash
 
 ## Example application build flow ##
 
