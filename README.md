@@ -56,6 +56,19 @@ Resource | Description|Implemented
 This section gives platform specific instructions on how to set up Movesense development environment. If you run into problems or need to install additional components
 to your system to get the environment properly set up, please let us know by [submitting an issue](https://bitbucket.org/suunto/movesense-device-lib/issues/new).
 
+### Vagrant ###
+[Vagrant](https://www.vagrantup.com/) provides an easy, reproducable environment
+for setting up development environments. It provides an isolated environment with
+all the dependencies set up without any version clashes or corner case bugs.
+
+To get up and running
+
+1. Get [Vagrant for your platform](https://www.vagrantup.com/downloads.html)
+2. Get [Virtualbox](https://www.virtualbox.org/wiki/Downloads) (easiest way to run and manage VMs)
+3. Clone this repository and run `vagrant up` - this will pull the ubuntu image and set up the environment necessary to develop Movesense software. This should take around 3 minutes.
+4. Once the box is up, run `vagrant ssh` in the directory. You will be taken to the fully set up environment and ready to start developing. A great place to go next is *Example application build flow* below
+
+
 ### Windows ###
 Install the following tools: 
 
