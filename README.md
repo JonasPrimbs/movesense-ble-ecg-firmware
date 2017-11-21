@@ -58,7 +58,7 @@ to your system to get the environment properly set up, please let us know by [su
 
 ### Vagrant ###
 [Vagrant](https://www.vagrantup.com/) provides an easy, reproducable environment
-for setting up development environments. It provides an isolated environment with
+for setting up development environments **across all platforms**. It provides an isolated environment with
 all the dependencies set up without any version clashes or corner case bugs.
 
 To get up and running
