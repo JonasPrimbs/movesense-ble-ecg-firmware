@@ -105,9 +105,11 @@ Path configuration:
 Instalation steps for Ubuntu 17.10
 
 * Install dependencies
+
     >sudo apt install git cmake ninja-build python libc++1 python-pip
 
 * Install the toolchain
+
     a) Installing from PPA
         >sudo add-apt-repository ppa:team-gcc-arm-embedded/ppa
         >sudo apt-get update
@@ -117,10 +119,15 @@ Instalation steps for Ubuntu 17.10
        TBD
 
 * Install python dependencies
+
     > sudo pip install nrfutil pyyaml
+    
 * Clone repository
+
     > git clone https://bitbucket.org/suunto/movesense-device-lib.git
+
 * Building
+
     > cd movesense-device-lib
     > mkdir buildDir
     > cd buildDir
@@ -130,26 +137,37 @@ Instalation steps for Ubuntu 17.10
 
 
 Optional: JIG/Debugger support
+
 * Downloading nRF5x-Command-Line Tools and JLink
+
 http://www.nordicsemi.com/eng/nordic/Products/nRF51-DK/nRF5x-Command-Line-Tools-Linux64/51392
+
 https://www.segger.com/downloads/jlink/JLink_Linux_V620h_x86_64.deb
 
 * Install deb file
-    > sudo dpkg -i ~/Downloads/JLink_Linux_V620h_x86_64.deb
+
+   > sudo dpkg -i ~/Downloads/JLink_Linux_V620h_x86_64.deb
 
 * Extract commandline tools
+
     > tar -xvf ~/Downloads/nRF5x-Command-Line-Tools_9_7_1_Linux-x86_64.tar
     > mkdir ~/tools
     > sudo mv nrfjprog /opt/SEGGER/JLink/
     > mv mergehex/ ~/tools/
 
 * Add Path
+
     a) Permanetly
+    
     TBD
+    
     b) Temporary
+    
     > export PATH=$PATH:~/tools/mergehex:/opt/SEGGER/JLink/nrfjprog
+
 * Flash
-   >ninja flash
+
+    >ninja flash
 
 ## Example application build flow ##
 
