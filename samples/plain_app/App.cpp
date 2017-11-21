@@ -15,6 +15,11 @@ OPTIONAL_CORE_MODULE(IndicationService, true)
 OPTIONAL_CORE_MODULE(BleService, true)
 OPTIONAL_CORE_MODULE(EepromService, true)
 
+// NOTE: It is inadvisable to enable both Logbook/DataLogger and EepromService without 
+// explicit definition of Logbook memory are (see LOGBOOK_MEMORY_AREA macro in movesense.h and eeprom_logbook_app).
+// Default setting is for Logbook to use the whole EEPROM memory area.
+// LOGBOOK_MEMORY_AREA(offset, size);
+
 APPINFO_NAME("Sample Plain");
 APPINFO_VERSION("1.0.0");
 APPINFO_COMPANY("Movesense");
