@@ -1,3 +1,12 @@
+**Migration to 1.0.1**
+
+- Logbook/EEPROM service
+    -If you are using the Logbook and EEPROM parallel (The first EEPROM for Logbook and second for The EEPROM Service)
+      Make sure that you will add the limit to your App.cpp file:
+```LOGBOOK_MEMORY_AREA(offset, size);```
+
+      Please, check the plain_app sample.
+
 **Migration to 1.0.0**
 
 - Make sure that you use the latest *"samples/_build"* helper
