@@ -51,12 +51,14 @@ Resource | Description|Implemented
 /Time|API for accessing different time related services.| YES
 /Ui/Ind|API for controlling the LED.| YES
 
-## Setting up the development enviroment  
+## Setting up the development environment  
 
 This section gives platform specific instructions on how to set up Movesense development environment. If you run into problems or need to install additional components
 to your system to get the environment properly set up, please let us know by [submitting an issue](https://bitbucket.org/suunto/movesense-device-lib/issues/new).
 
-### Windows ###
+There is an experimental installation procedure using Vagrant to set up an isolated environment for development ([check it out below](#markdown-header-automated-setup-on-all-oses-using-vagrant)), or you can follow the manual installation instructions below.
+
+### Manual setup on Windows ###
 Install the following tools: 
 
 * [GNU Toolchain for ARM Embedded 6-2017-q2](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
@@ -79,7 +81,7 @@ Optionally:
     * Nordic Semiconductor's [nRF5x-Command-Line-Tools-XXX](https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF52-DK)
 * In case you encounter `ImportError: No module named yaml`, try to install pyyaml package using pip.
 
-### OSX ###
+### Manual setup on OSX ###
 Install the following tools: 
 
 * [GNU Toolchain for ARM Embedded 6-2017-q2](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
@@ -101,7 +103,7 @@ Path configuration:
 
 * Remember to add ninja, CMake, GNU Toolchain for ARM, nrfjprog and mergehex (provided with nrfjprog) to system path by editing the PATH variable in .bash_profile.
 
-### Linux ###
+### Manual setup on Linux ###
 Instalation steps for Ubuntu 17.10
 
 * Install dependencies
@@ -179,6 +181,21 @@ https://www.segger.com/downloads/jlink/JLink_Linux_V620h_x86_64.deb
 * Flash
 
     >ninja flash
+
+### Automated setup on all OSes using Vagrant ###
+[Vagrant](https://www.vagrantup.com/) provides an easy, reproducable environment
+for setting up development environments. It provides an isolated environment with
+all the dependencies set up without any version clashes or corner case bugs.
+
+**NB! This method doesn't automatically install JIG.** Feel free to follow [Linux intallation steps](#markdown-header-manual-setup-on-linux) for JIG to use it.
+
+To get up and running
+
+1. Get [Vagrant for your platform](https://www.vagrantup.com/downloads.html)
+2. Get [Virtualbox](https://www.virtualbox.org/wiki/Downloads) (easiest way to run and manage VMs)
+3. Clone this repository and run `vagrant up` - this will pull the ubuntu image and set up the environment necessary to develop Movesense software. This should take around 3 minutes.
+4. Once the box is up, run `vagrant ssh` in the directory. You will be taken to the fully set up environment and ready to start developing. A great place to go next is *Example application build flow* below
+
 
 ## Example application build flow ##
 
