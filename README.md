@@ -51,7 +51,7 @@ Resource | Description|Implemented
 /Time|API for accessing different time related services.| YES
 /Ui/Ind|API for controlling the LED.| YES
 
-## Setting up the development enviroment  
+## Setting up the development environment  
 
 This section gives platform specific instructions on how to set up Movesense development environment. If you run into problems or need to install additional components
 to your system to get the environment properly set up, please let us know by [submitting an issue](https://bitbucket.org/suunto/movesense-device-lib/issues/new).
