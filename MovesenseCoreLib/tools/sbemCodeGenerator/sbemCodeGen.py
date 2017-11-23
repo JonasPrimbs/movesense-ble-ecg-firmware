@@ -9,6 +9,8 @@ import glob, os
 oldDir = os.getcwd()
 
 loopNumber = 1
+MAX_CHUNKSTORAGE_LENGTH = 112
+MAX_NET_CHUNKSTORAGE_LENGTH = MAX_CHUNKSTORAGE_LENGTH - 2
 
 # In case we run this code in IDLE, set some useful command line parameters
 if "idlelib" in sys.modules and len(sys.argv) == 1:
@@ -522,8 +524,8 @@ for f in yamlFiles:
 
 print("Found ", len(resources), " resources and ", len(definitions), " datatype definitions.")
 
-patternForResource = re.compile('struct ([A-Z_]+)');
-patternForType = re.compile('struct WB_STRUCT_PACKED ([A-Z][a-z][A-Za-z]+)$');
+patternForResource = re.compile('struct ([A-Z0-9_]+)');
+patternForType = re.compile('struct WB_STRUCT_PACKED ([A-Z][a-z][A-Za-z0-9]+)$');
 
 decapitalize = lambda s: s[:1].lower() + s[1:] if s else ''
 
@@ -1230,21 +1232,26 @@ with open("sbem_definitions.h", 'wb') as f_h:
                 maxArrayLen = 8
 
             lengthCode = "".join(lengtCodeArr)
-            newLengthCode = None
-            sizeIdx = lengthCode.find('.size()')
-            if sizeIdx>0:
-                sizeStartIdx = lengthCode.rfind('+', 0, sizeIdx)
-                newLengthCode = lengthCode[:sizeStartIdx+1] + ' @#@' + lengthCode[sizeIdx + 7:]
-                lengthCode = newLengthCode
 
+            # replace all length expressions with the @#@ tag        
+            sizePartRegex = re.compile(r'@@[\.\w]+.size\(\)')
+            lengthCode = sizePartRegex.sub("@#@", lengthCode)
+
+            # create version or all groups until maxArrayLen which have 
             for i in range(1,maxArrayLen+1):
-                lengthInBytes = lengthCode.replace('@#@', " (" + str(i) + ") ")        
+                lengthInBytesExpr = lengthCode.replace('@#@', " (" + str(i) + ") ")        
+                lengthInBytes = eval(lengthInBytesExpr)
+                if lengthInBytes > MAX_NET_CHUNKSTORAGE_LENGTH:
+                    print("Skipping",v['SBEM_GRP']['id'],"size()==" + str(i),"because data too long.")
+                    continue
+                
+#                print("lengthInBytesExpr:", lengthInBytesExpr, " = ", lengthInBytes)
                 count += 1
                 if not subgroupsContainArray:
                     groupId = v['SBEM_GRP']['id'] + "_Group"
                 else:
                     groupId = v['SBEM_GRP']['id'] + str(i) + "_Group"
-                print("    {WB_RES::LOCAL::" + cppNameFromResName(k) + "::LID, " + lengthInBytes + ", " + groupId + " },", file=f_cpp)
+                print("    {WB_RES::LOCAL::" + cppNameFromResName(k) + "::LID, " + lengthInBytesExpr + ", " + groupId + " },", file=f_cpp)
         print("};", file=f_cpp)
 
         print("extern const SbemResID2GrpIdMapping s_sbemResID2GrpIdMap[" + str(count) + "];", file=f_h)
