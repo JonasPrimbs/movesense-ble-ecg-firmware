@@ -1,3 +1,13 @@
+## Version 1.0.2.914.29 ##
+
+###Whats new:###
+- Fix: Random reset when BLE connection drops if data transfer is ongoing
+
+###Known Bugs:###
+- Please, check issues on bitbucket.
+- Second subscription fails on _/Meas/ECG/{SampleRate}_ with _NOT_IMPLEMENTED_
+
+
 ## Version 1.0.1.894.28 ##
 
 ###Whats new:###
