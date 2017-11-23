@@ -113,12 +113,10 @@ Installation steps for Ubuntu 17.10:
 * Install the toolchain
 
     a) Installing from PPA
-    
-        `>sudo add-apt-repository ppa:team-gcc-arm-embedded/ppa'
-        
-        `>sudo apt-get update'
-        
-        `>sudo apt-get install gcc-arm-embedded'
+
+    `> sudo add-apt-repository ppa:team-gcc-arm-embedded/ppa`  
+    `> sudo apt-get update`  
+    `> sudo apt-get install gcc-arm-embedded`
 
     b) Installing from tar.gz  
    
@@ -126,7 +124,7 @@ Installation steps for Ubuntu 17.10:
 
 * Install python dependencies
 
-    > sudo pip install nrfutil pyyaml
+    `> sudo pip install nrfutil pyyaml`  
     
 * Clone repository
 
