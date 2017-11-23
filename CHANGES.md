@@ -1,10 +1,10 @@
 ## Version 1.0.2.914.29 ##
 
 ###Whats new:###
-- TBD
+- Fix: Random reset when BLE connection drops if data transfer is ongoing
 
 ###Known Bugs:###
-- TBD
+- Please, check issues on bitbucket.
 
 ###Notes:###
 - REQUIRED: Use **GNU Toolchain for ARM v. 5.4 2016q3**
