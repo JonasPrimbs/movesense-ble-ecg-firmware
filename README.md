@@ -144,15 +144,9 @@ Optionally:
         `> sudo mv nrfjprog /opt/SEGGER/JLink/`
         `> mv mergehex/ ~/tools/`
 
-* Add Path
-
-    a) Permanently
+Path configuration:      
     
-    TBD
-    
-    b) Temporarily
-    
-    > export PATH=$PATH:~/tools/mergehex:/opt/SEGGER/JLink/nrfjprog
+    `> export PATH=$PATH:~/tools/mergehex:/opt/SEGGER/JLink/nrfjprog`
 
 ### Automated setup on all operating systems using Vagrant ###
 [Vagrant](https://www.vagrantup.com/) provides an easy, reproducable environment
