@@ -6,10 +6,6 @@
 ###Known Bugs:###
 - Please, check issues on bitbucket.
 
-###Notes:###
-- REQUIRED: Use **GNU Toolchain for ARM v. 5.4 2016q3**
-- To create DFU package for OTA update, compile application with "ninja dfupkg"
-
 ## Version 1.0.1.894.28 ##
 
 ###Whats new:###
