@@ -187,7 +187,7 @@ https://www.segger.com/downloads/jlink/JLink_Linux_V620h_x86_64.deb
 for setting up development environments. It provides an isolated environment with
 all the dependencies set up without any version clashes or corner case bugs.
 
-**NB! This method doesn't automatically install JIG.** Feel free to follow Linux intallation steps for JIG to use it.
+**NB! This method doesn't automatically install JIG.** Feel free to follow [Linux intallation steps](#markdown-header-manual-setup-on-linux) for JIG to use it.
 
 To get up and running
 
