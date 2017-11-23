@@ -33,23 +33,23 @@ Movesense developer documentation is divided in several documents:
 ## Movesense APIs ##
 Resource | Description|Implemented
 ---------|------------|--------------
-/Comm/Ble|API for managing BLE | YES
-/Component/Eeprom|API for writing and reading the EEPROM memory/ies. | YES
-/Info|API for accessing generic device information.| YES
-/Meas/Acc|API enabling subscribing linear acceleration data (based on accelerometer).| YES
-/Meas/ECG|API for the electrocardiography measurement.| YES
-/Meas/Gyro|API enabling subscribing angular velocity data (based on gyroscope).| YES
-/Meas/HR|API enabling subscribing heart rate data.| YES
-/Meas/Magn|API enabling subscribing magnetic field data (based on magnetometer).| YES
-/Meas/Temp|API enabling reading or subscribing temperature data (based on thermometer).| YES
-/Mem/DataLogger|Generic logger capable of logging max. 8 different resources| YES
-/Mem/Logbook|Generic Logbook from where the logged data can be read| YES
-/Misc/Gear| API to get the globally unique Movesense ID associated with the physical gear | YES
-/System/Energy|API for reading the battery state.| YES
-/System/Mode|API for controlling the main system state (e.g. factory sleep).| YES
-/System/Settings| Settings API for a Movesense device. | YES
-/Time|API for accessing different time related services.| YES
-/Ui/Ind|API for controlling the LED.| YES
+/Comm/Ble|API for managing BLE.  
+/Component/Eeprom|API for writing and reading the EEPROM memory/ies. 
+/Info|API for accessing generic device information.
+/Meas/Acc|API enabling subscribing linear acceleration data (based on accelerometer).
+/Meas/ECG|API for the electrocardiography measurement.
+/Meas/Gyro|API enabling subscribing angular velocity data (based on gyroscope).
+/Meas/HR|API enabling subscribing heart rate data.
+/Meas/Magn|API enabling subscribing magnetic field data (based on magnetometer).
+/Meas/Temp|API enabling reading or subscribing temperature data (based on thermometer).
+/Mem/DataLogger|Generic logger capable of logging max. 8 different resources.
+/Mem/Logbook|Generic Logbook from where the logged data can be read.
+/Misc/Gear| API to get the globally unique Movesense ID associated with the physical gear.
+/System/Energy|API for reading the battery state.
+/System/Mode|API for controlling the main system state (e.g. factory sleep).
+/System/Settings| Settings API for a Movesense device.
+/Time|API for accessing different time related services.
+/Ui/Ind|API for controlling the LED.
 
 ## Setting up the development environment  
 
@@ -104,7 +104,7 @@ Path configuration:
 * Remember to add ninja, CMake, GNU Toolchain for ARM, nrfjprog and mergehex (provided with nrfjprog) to system path by editing the PATH variable in .bash_profile.
 
 ### Manual setup on Linux ###
-Instalation steps for Ubuntu 17.10
+Installation steps for Ubuntu 17.10:
 
 * Install dependencies
 
@@ -120,7 +120,7 @@ Instalation steps for Ubuntu 17.10
         
         >sudo apt-get install gcc-arm-embedded
 
-   b) Instaling from tar.gz
+   b) Installing from tar.gz
        TBD
 
 * Install python dependencies
@@ -148,7 +148,7 @@ Instalation steps for Ubuntu 17.10
 
 Optional: JIG/Debugger support
 
-* Downloading nRF5x-Command-Line Tools and JLink
+* Download nRF5x-Command-Line Tools and JLink
 
 http://www.nordicsemi.com/eng/nordic/Products/nRF51-DK/nRF5x-Command-Line-Tools-Linux64/51392
 
@@ -158,7 +158,7 @@ https://www.segger.com/downloads/jlink/JLink_Linux_V620h_x86_64.deb
 
    > sudo dpkg -i ~/Downloads/JLink_Linux_V620h_x86_64.deb
 
-* Extract commandline tools
+* Extract command line tools
 
     > tar -xvf ~/Downloads/nRF5x-Command-Line-Tools_9_7_1_Linux-x86_64.tar
     
@@ -170,11 +170,11 @@ https://www.segger.com/downloads/jlink/JLink_Linux_V620h_x86_64.deb
 
 * Add Path
 
-    a) Permanetly
+    a) Permanently
     
     TBD
     
-    b) Temporary
+    b) Temporarily
     
     > export PATH=$PATH:~/tools/mergehex:/opt/SEGGER/JLink/nrfjprog
 
@@ -182,12 +182,12 @@ https://www.segger.com/downloads/jlink/JLink_Linux_V620h_x86_64.deb
 
     >ninja flash
 
-### Automated setup on all OSes using Vagrant ###
+### Automated setup on all operating systems using Vagrant ###
 [Vagrant](https://www.vagrantup.com/) provides an easy, reproducable environment
 for setting up development environments. It provides an isolated environment with
 all the dependencies set up without any version clashes or corner case bugs.
 
-**NB! This method doesn't automatically install JIG.** Feel free to follow [Linux intallation steps](#markdown-header-manual-setup-on-linux) for JIG to use it.
+**Note: this method doesn't automatically install support for Movesense programming JIG.** Refer to [Linux installation steps](#markdown-header-manual-setup-on-linux) to enable JIG support.
 
 To get up and running
 
