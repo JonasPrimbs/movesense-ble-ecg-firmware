@@ -31,8 +31,8 @@ Movesense developer documentation is divided in several documents:
 [Movesense developer guides](https://bitbucket.org/suunto/movesense-docs/wiki/Home) in movesense-docs repository on Bitbucket.  
 
 ## Movesense APIs ##
-Resource | Description|Implemented
----------|------------|--------------
+Resource | Description
+---------|------------
 /Comm/Ble|API for managing BLE.  
 /Component/Eeprom|API for writing and reading the EEPROM memory/ies. 
 /Info|API for accessing generic device information.
