@@ -5,6 +5,8 @@
 
 ###Known Bugs:###
 - Please, check issues on bitbucket.
+- Second subscription fails on _/Meas/ECG/{SampleRate}_ with _NOT_IMPLEMENTED_
+
 
 ## Version 1.0.1.894.28 ##
 
