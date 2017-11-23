@@ -119,53 +119,30 @@ Installation steps for Ubuntu 17.10:
     `> sudo apt-get install gcc-arm-embedded`
 
     b) Installing from tar.gz  
-   
-        TBD
-
+    
+    *TBD*  
+    
 * Install python dependencies
 
     `> sudo pip install nrfutil pyyaml`  
     
 * Clone repository
 
-    > git clone https://bitbucket.org/suunto/movesense-device-lib.git
+    `> git clone https://bitbucket.org/suunto/movesense-device-lib.git`
 
-* Building
+Optionally: 
 
-    > cd movesense-device-lib
-    
-    > mkdir buildDir
-    
-    > cd buildDir
-    
-    > cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake
-    
-    > ../samples/hello_world_app
-    
-    > ninja dfupkg
-
-
-Optional: JIG/Debugger support
-
-* Download nRF5x-Command-Line Tools and JLink
-
-http://www.nordicsemi.com/eng/nordic/Products/nRF51-DK/nRF5x-Command-Line-Tools-Linux64/51392
-
-https://www.segger.com/downloads/jlink/JLink_Linux_V620h_x86_64.deb
-
-* Install deb file
-
-   > sudo dpkg -i ~/Downloads/JLink_Linux_V620h_x86_64.deb
-
-* Extract command line tools
-
-    > tar -xvf ~/Downloads/nRF5x-Command-Line-Tools_9_7_1_Linux-x86_64.tar
-    
-    > mkdir ~/tools
-    
-    > sudo mv nrfjprog /opt/SEGGER/JLink/
-    
-    > mv mergehex/ ~/tools/
+* For flashing with Movesense programming JIG:  
+    * Download nRF5x-Command-Line Tools and JLink  
+        * http://www.nordicsemi.com/eng/nordic/Products/nRF51-DK/nRF5x-Command-Line-Tools-Linux64/51392  
+        * https://www.segger.com/downloads/jlink/JLink_Linux_V620h_x86_64.deb
+    * Install .deb file   
+        `> sudo dpkg -i ~/Downloads/JLink_Linux_V620h_x86_64.deb`
+    * Extract command line tools  
+        `> tar -xvf ~/Downloads/nRF5x-Command-Line-Tools_9_7_1_Linux-x86_64.tar`
+        `> mkdir ~/tools`
+        `> sudo mv nrfjprog /opt/SEGGER/JLink/`
+        `> mv mergehex/ ~/tools/`
 
 * Add Path
 
@@ -176,10 +153,6 @@ https://www.segger.com/downloads/jlink/JLink_Linux_V620h_x86_64.deb
     b) Temporarily
     
     > export PATH=$PATH:~/tools/mergehex:/opt/SEGGER/JLink/nrfjprog
-
-* Flash
-
-    >ninja flash
 
 ### Automated setup on all operating systems using Vagrant ###
 [Vagrant](https://www.vagrantup.com/) provides an easy, reproducable environment
