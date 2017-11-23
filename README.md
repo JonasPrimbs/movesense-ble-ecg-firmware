@@ -106,22 +106,23 @@ Path configuration:
 ### Manual setup on Linux ###
 Installation steps for Ubuntu 17.10:
 
-* Install dependencies
+* Install dependencies  
 
-    `sudo apt install git cmake ninja-build python libc++1 python-pip'
+    `> sudo apt install git cmake ninja-build python libc++1 python-pip`  
 
 * Install the toolchain
 
     a) Installing from PPA
     
-        >sudo add-apt-repository ppa:team-gcc-arm-embedded/ppa
+        `>sudo add-apt-repository ppa:team-gcc-arm-embedded/ppa'
         
-        >sudo apt-get update
+        `>sudo apt-get update'
         
-        >sudo apt-get install gcc-arm-embedded
+        `>sudo apt-get install gcc-arm-embedded'
 
-   b) Installing from tar.gz
-       TBD
+    b) Installing from tar.gz  
+   
+        TBD
 
 * Install python dependencies
 
