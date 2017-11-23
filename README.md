@@ -18,7 +18,7 @@ Movesense APIs follow well-known REST principle and can be used both internally 
 
 You can order Movesense sensors and Movesense Developer Kit on our online [shop](https://www.movesense.com/shop/).
 
-Check also [Movesense mobile library](https://bitbucket.org/suunto/movesense-mobile-lib) for developing own Android and iOS applications to interact with the Movesense sensor. **Note:** Access to mobile libraries repository on Bitbucket is currently restricted. Please contact us at [movesense.com](https://movesense.com) for access.
+Check also [Movesense mobile library](https://bitbucket.org/suunto/movesense-mobile-lib) for developing own Android and iOS applications to interact with the Movesense sensor.  
 
 ## Documentation ##
 
@@ -108,7 +108,7 @@ Installation steps for Ubuntu 17.10:
 
 * Install dependencies
 
-    >sudo apt install git cmake ninja-build python libc++1 python-pip
+    `sudo apt install git cmake ninja-build python libc++1 python-pip'
 
 * Install the toolchain
 
