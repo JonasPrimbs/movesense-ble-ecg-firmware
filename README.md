@@ -153,6 +153,7 @@ Optionally:
         `mv mergehex/ ~/tools/`
 
 Path configuration:  
+
     `export PATH=$PATH:~/tools/mergehex:/opt/SEGGER/JLink/nrfjprog`
 
 ### Automated setup on all operating systems using Vagrant ###
@@ -193,26 +194,27 @@ To build a release version:
 
 ### Updating sensor "over the air" ###
 
-If you want to create OTA firmware update package, run command
-```
+If you want to create OTA firmware update package, run command:
+`
 ninja dfupkg
-```
+`
 
 which places the OTA package named *movesense_dfu.zip* in the build folder. You can then use our [Android Sample App](https://bitbucket.org/suunto/movesense-mobile-lib) to update the firmware on your Movesense sensor over Bluetooth.
 
 ### Updating sensor with programming JIG ###
 
 if you are using a *Movesense programming JIG* you can flash the resulting .hex-file (and the nRF52 SoftDevice) with:
-```
+`
 ninja flash
-```
+`
+
 or you can use any other nRF52 compatible programming software such as *nRFGo Studio*. To acquire Movesense programming JIG, please contact us via [movesense.com](https://movesense.com).
 
 ### Removing manufacturing/settings data from the sensor ###
 Command below updates the sensor firmware and additionally erases all settings in its memory. You should use it only if you want to replace default manufacturing/calibration data. Please don't use the command unless you know what you're doing!
-```
+`
 ninja flash_all
-```
+`
 
 ## Bug reports and other feedback ##
 
