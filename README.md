@@ -194,7 +194,8 @@ To build a release version:
 
 ### Updating sensor "over the air" ###
 
-If you want to create OTA firmware update package, run command:
+If you want to create OTA firmware update package, run command:  
+
 `
 ninja dfupkg
 `
@@ -203,7 +204,8 @@ which places the OTA package named *movesense_dfu.zip* in the build folder. You 
 
 ### Updating sensor with programming JIG ###
 
-if you are using a *Movesense programming JIG* you can flash the resulting .hex-file (and the nRF52 SoftDevice) with:
+if you are using a *Movesense programming JIG* you can flash the resulting .hex-file (and the nRF52 SoftDevice) with:  
+
 `
 ninja flash
 `
@@ -211,7 +213,8 @@ ninja flash
 or you can use any other nRF52 compatible programming software such as *nRFGo Studio*. To acquire Movesense programming JIG, please contact us via [movesense.com](https://movesense.com).
 
 ### Removing manufacturing/settings data from the sensor ###
-Command below updates the sensor firmware and additionally erases all settings in its memory. You should use it only if you want to replace default manufacturing/calibration data. Please don't use the command unless you know what you're doing!
+Command below updates the sensor firmware and additionally erases all settings in its memory. You should use it only if you want to replace default manufacturing/calibration data. Please don't use the command unless you know what you're doing!  
+
 `
 ninja flash_all
 `
