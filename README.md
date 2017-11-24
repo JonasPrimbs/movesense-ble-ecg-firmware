@@ -89,6 +89,7 @@ Install the following tools:
 * [cmake >=3.6](https://cmake.org/download/)
     * Download Mac OSX libraries and follow installation instructions
 * [pip](https://pip.pypa.io/en/stable/) for managing Python packages:  
+
     `sudo easy_install pip` and then nrfutil: `sudo pip install nrfutil`.  
     
     If the pip installation fails, try running command  
