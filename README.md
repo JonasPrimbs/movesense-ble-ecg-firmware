@@ -1,6 +1,6 @@
 ## Announcements ##
 **API changes**  
-Movesense API has received several updates from its earlier versions. Please review the latest [API definition](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/resources/movesense-api/) and modify your existing code accordingly, if needed.
+Movesense API has been updated. Please review the latest [API definition](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/resources/movesense-api/) and modify your existing code accordingly, if needed.
 
 **Known issues**  
 Please refer to [CHANGES.md](CHANGES.md) for a list of known issues.
@@ -40,7 +40,9 @@ Resource | Description
 /Meas/ECG|API for the electrocardiography measurement.
 /Meas/Gyro|API enabling subscribing angular velocity data (based on gyroscope).
 /Meas/HR|API enabling subscribing heart rate data.
+/Meas/Imu|API for synchronous access to motion data (accelerometer, gyroscope, magnetometer) - **NOT IMPLEMENTED**.
 /Meas/Magn|API enabling subscribing magnetic field data (based on magnetometer).
+/Meas/Sensorhub|API for synchronous access to data from multiple sensors - **NOT IMPLEMENTED**.
 /Meas/Temp|API enabling reading or subscribing temperature data (based on thermometer).
 /Mem/DataLogger|Generic logger capable of logging max. 8 different resources.
 /Mem/Logbook|Generic Logbook from where the logged data can be read.
