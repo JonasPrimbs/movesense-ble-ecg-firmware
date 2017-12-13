@@ -1,6 +1,6 @@
 ## Announcements ##
 **API changes**  
-Movesense API has received several updates from its earlier versions. Please review the latest [API definition](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/resources/movesense-api/) and modify your existing code accordingly, if needed.
+Movesense API has been updated. Please review the latest [API definition](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/resources/movesense-api/) and modify your existing code accordingly, if needed.
 
 **Known issues**  
 Please refer to [CHANGES.md](CHANGES.md) for a list of known issues.
@@ -40,7 +40,9 @@ Resource | Description
 /Meas/ECG|API for the electrocardiography measurement.
 /Meas/Gyro|API enabling subscribing angular velocity data (based on gyroscope).
 /Meas/HR|API enabling subscribing heart rate data.
+/Meas/Imu|API for synchronous access to motion data (accelerometer, gyroscope, magnetometer) - **NOT IMPLEMENTED**.
 /Meas/Magn|API enabling subscribing magnetic field data (based on magnetometer).
+/Meas/Sensorhub|API for synchronous access to data from multiple sensors - **NOT IMPLEMENTED**.
 /Meas/Temp|API enabling reading or subscribing temperature data (based on thermometer).
 /Mem/DataLogger|Generic logger capable of logging max. 8 different resources.
 /Mem/Logbook|Generic Logbook from where the logged data can be read.
@@ -88,8 +90,14 @@ Install the following tools:
 * [Ninja build tool](https://ninja-build.org/) 
 * [cmake >=3.6](https://cmake.org/download/)
     * Download Mac OSX libraries and follow installation instructions
-* [pip](https://pip.pypa.io/en/stable/) for managing Python packages: `sudo easy_install pip` and then nrfutil: `sudo pip install nrfutil`. 
-If the pip installation fails, try running command `sudo pip install nrfutil --ignore-installed six`.
+* [pip](https://pip.pypa.io/en/stable/) for managing Python packages:  
+
+    `sudo easy_install pip` and then nrfutil: `sudo pip install nrfutil`.  
+    
+    If the pip installation fails, try running command  
+    
+    `sudo pip install nrfutil --ignore-installed six`  
+    
 * [nrfutil package & python 2.7](https://github.com/NordicSemiconductor/pc-nrfutil) for OTA firmware update package creation
 
 Optionally:  
@@ -106,82 +114,51 @@ Path configuration:
 ### Manual setup on Linux ###
 Installation steps for Ubuntu 17.10:
 
-* Install dependencies
+* Install dependencies  
 
-    `sudo apt install git cmake ninja-build python libc++1 python-pip'
+    `sudo apt install git cmake ninja-build python libc++1 python-pip`  
 
 * Install the toolchain
 
-    a) Installing from PPA
+    a) Installing from PPA  
+
+    `sudo add-apt-repository ppa:team-gcc-arm-embedded/ppa`  
+    `sudo apt-get update`  
+    `sudo apt-get install gcc-arm-embedded`
+
+    b) Installing from tar.gz  
     
-        >sudo add-apt-repository ppa:team-gcc-arm-embedded/ppa
+    *TBD*  
+    
+* Install python dependencies  
+
+    `sudo pip install nrfutil pyyaml`  
+    
+* Clone repository  
+
+    `git clone https://bitbucket.org/suunto/movesense-device-lib.git`
+
+Optionally: 
+
+* For flashing with Movesense programming JIG:  
+    * Download nRF5x-Command-Line Tools and JLink  
+        * http://www.nordicsemi.com/eng/nordic/Products/nRF51-DK/nRF5x-Command-Line-Tools-Linux64/51392  
+        * https://www.segger.com/downloads/jlink/JLink_Linux_V620h_x86_64.deb
+    * Install .deb file  
+    
+        `sudo dpkg -i ~/Downloads/JLink_Linux_V620h_x86_64.deb`  
         
-        >sudo apt-get update
-        
-        >sudo apt-get install gcc-arm-embedded
-
-   b) Installing from tar.gz
-       TBD
-
-* Install python dependencies
-
-    > sudo pip install nrfutil pyyaml
+    * Extract command line tools  
     
-* Clone repository
+        `tar -xvf ~/Downloads/nRF5x-Command-Line-Tools_9_7_1_Linux-x86_64.tar`
+        `mkdir ~/tools`
+        `sudo mv nrfjprog /opt/SEGGER/JLink/`
+        `mv mergehex/ ~/tools/`
 
-    > git clone https://bitbucket.org/suunto/movesense-device-lib.git
-
-* Building
-
-    > cd movesense-device-lib
+    * Path configuration:   
     
-    > mkdir buildDir
+        `export PATH=$PATH:~/tools/mergehex:/opt/SEGGER/JLink/nrfjprog`  
     
-    > cd buildDir
-    
-    > cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake
-    
-    > ../samples/hello_world_app
-    
-    > ninja dfupkg
-
-
-Optional: JIG/Debugger support
-
-* Download nRF5x-Command-Line Tools and JLink
-
-http://www.nordicsemi.com/eng/nordic/Products/nRF51-DK/nRF5x-Command-Line-Tools-Linux64/51392
-
-https://www.segger.com/downloads/jlink/JLink_Linux_V620h_x86_64.deb
-
-* Install deb file
-
-   > sudo dpkg -i ~/Downloads/JLink_Linux_V620h_x86_64.deb
-
-* Extract command line tools
-
-    > tar -xvf ~/Downloads/nRF5x-Command-Line-Tools_9_7_1_Linux-x86_64.tar
-    
-    > mkdir ~/tools
-    
-    > sudo mv nrfjprog /opt/SEGGER/JLink/
-    
-    > mv mergehex/ ~/tools/
-
-* Add Path
-
-    a) Permanently
-    
-    TBD
-    
-    b) Temporarily
-    
-    > export PATH=$PATH:~/tools/mergehex:/opt/SEGGER/JLink/nrfjprog
-
-* Flash
-
-    >ninja flash
-
 ### Automated setup on all operating systems using Vagrant ###
 [Vagrant](https://www.vagrantup.com/) provides an easy, reproducable environment
 for setting up development environments. It provides an isolated environment with
@@ -213,7 +190,6 @@ To build a debug version of a selected sample application:
 To build a release version:  
 
 > cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake -DCMAKE_BUILD_TYPE=Release ../samples/hello_world_app  
-
 > ninja
 ```
 
@@ -221,26 +197,30 @@ To build a release version:
 
 ### Updating sensor "over the air" ###
 
-If you want to create OTA firmware update package, run command
-```
+If you want to create OTA firmware update package, run command:  
+
+`
 ninja dfupkg
-```
+`
 
 which places the OTA package named *movesense_dfu.zip* in the build folder. You can then use our [Android Sample App](https://bitbucket.org/suunto/movesense-mobile-lib) to update the firmware on your Movesense sensor over Bluetooth.
 
 ### Updating sensor with programming JIG ###
 
-if you are using a *Movesense programming JIG* you can flash the resulting .hex-file (and the nRF52 SoftDevice) with:
-```
+if you are using a *Movesense programming JIG* you can flash the resulting .hex-file (and the nRF52 SoftDevice) with:  
+
+`
 ninja flash
-```
+`
+
 or you can use any other nRF52 compatible programming software such as *nRFGo Studio*. To acquire Movesense programming JIG, please contact us via [movesense.com](https://movesense.com).
 
 ### Removing manufacturing/settings data from the sensor ###
-Command below updates the sensor firmware and additionally erases all settings in its memory. You should use it only if you want to replace default manufacturing/calibration data. Please don't use the command unless you know what you're doing!
-```
+Command below updates the sensor firmware and additionally erases all settings in its memory. You should use it only if you want to replace default manufacturing/calibration data. Please don't use the command unless you know what you're doing!  
+
+`
 ninja flash_all
-```
+`
 
 ## Bug reports and other feedback ##
 
