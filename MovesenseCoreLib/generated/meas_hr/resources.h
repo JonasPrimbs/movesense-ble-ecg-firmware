@@ -40,32 +40,18 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
+struct WB_ALIGN(4) HRInfo;
 
-struct WB_STRUCT_PACKED HRInfo;
-
-struct WB_STRUCT_PACKED HRInfo
+struct WB_ALIGN(4) HRInfo
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 16384;
-	static const whiteboard::StructureValueSerializer<HRInfo> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<HRInfo> cleaner;)
 
 	WB_ALIGN(2) uint16 min;
 	WB_ALIGN(2) uint16 max;
 	WB_ALIGN(4) float accuracy;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(min)
-			.visit(max)
-			.visit(accuracy);
-	}
 };
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {

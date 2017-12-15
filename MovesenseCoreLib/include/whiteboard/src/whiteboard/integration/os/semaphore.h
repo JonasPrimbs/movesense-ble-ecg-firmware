@@ -49,3 +49,18 @@ WB_API bool WbSemaphoreTryWait(WbSemaphoreHandle semaphoreHandle, size_t timeout
 @param semaphoreHandle Semaphore to delete.
 */
 WB_API void WbSemaphoreRelease(WbSemaphoreHandle semaphoreHandle);
+
+#ifdef WB_HAVE_HEAP_TRACE
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+WB_HEAP_TRACE_DECLARE_WRAPPER(WbSemaphoreHandle, WbSemaphoreCreate, size_t, size_t);
+#define WbSemaphoreCreate(initialCount, maximumCount) WB_HEAP_TRACE_WRAPPER(WbSemaphoreCreate, initialCount, maximumCount)
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // WB_HAVE_HEAP_TRACE

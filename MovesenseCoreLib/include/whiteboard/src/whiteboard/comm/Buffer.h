@@ -3,15 +3,19 @@
 
 #include "whiteboard/WhiteboardConfig.h"
 #include "whiteboard/integration/port.h"
-#include "whiteboard/builtinTypes/StructurePack.h"
-#include "whiteboard/comm/IBufferAllocator.h"
+#include "whiteboard/builtinTypes/Structures.h"
+#include "whiteboard/comm/IBufferPool.h"
 
 // Define these to ease buffer pool debugging (by default these are enabled in 
 // non cpu & memory constrained builds)
+#ifndef NDEBUG
 #if defined(_WIN32) || defined(__linux__) || (defined(__APPLE__) && defined(__MACH__))
 #define WB_EXTRA_BUFFER_DEBUG_DATA
 #define WB_CLEAN_HEADERS_OF_FREED_BUFFERS
 #endif
+#endif
+
+WB_HEADER_CHECK_DEFINE(WB_HAVE_CUSTOM_BUFFER_POOLS);
 
 namespace whiteboard
 {
@@ -26,11 +30,13 @@ struct WB_API BufferHeader
     const char* threadName;
 #endif
 
+#ifdef WB_HAVE_CUSTOM_BUFFER_POOLS
     /** Allocator of the buffer */
-    IBufferAllocator* pAllocator;
+    IBufferPool* pBufferPool;
+#endif
 
     /** Index of the pool */
-    IBufferAllocator::PoolIndex poolIndex;
+    IBufferPool::PoolIndex poolIndex;
 
     /** Payload offset */
     uint8 payloadOffset;
@@ -52,14 +58,18 @@ struct WB_API Buffer
     };
 
     /** Data follows (aligned on qword boundary) */
-	uint8 data[1];
+    uint8 data[1];
 
     /** Deallocates buffer */
+#ifdef WB_HAVE_CUSTOM_BUFFER_POOLS
     inline void free()
     {
-        WB_ASSERT(header.pAllocator != NULL);
-        header.pAllocator->freeBuffer(this);
+        WB_ASSERT(header.pBufferPool != NULL);
+        header.pBufferPool->free(this);
     }
+#else
+    void free();
+#endif
 
     /** Gets data message header
     *

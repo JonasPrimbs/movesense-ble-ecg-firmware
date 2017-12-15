@@ -40,68 +40,38 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
+struct WB_ALIGN(4) GyroInfo;
+struct WB_ALIGN(4) GyroConfig;
+struct WB_ALIGN(4) GyroData;
 
-struct WB_STRUCT_PACKED GyroInfo;
-struct WB_STRUCT_PACKED GyroConfig;
-struct WB_STRUCT_PACKED GyroData;
-
-struct WB_STRUCT_PACKED GyroInfo
+struct WB_ALIGN(4) GyroInfo
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 15360;
-	static const whiteboard::StructureValueSerializer<GyroInfo> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<GyroInfo> cleaner;)
 
 	WB_ALIGN(4) whiteboard::Array< uint16 > sampleRates;
 	WB_ALIGN(4) whiteboard::Array< uint16 > ranges;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(sampleRates)
-			.visit(ranges);
-	}
 };
 
-struct WB_STRUCT_PACKED GyroConfig
+struct WB_ALIGN(4) GyroConfig
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 15361;
-	static const whiteboard::StructureValueSerializer<GyroConfig> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<GyroConfig> cleaner;)
 
 	WB_ALIGN(4) int32 dPSRange;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(dPSRange);
-	}
 };
 
-struct WB_STRUCT_PACKED GyroData
+struct WB_ALIGN(4) GyroData
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 15362;
-	static const whiteboard::StructureValueSerializer<GyroData> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<GyroData> cleaner;)
 
 	WB_ALIGN(4) uint32 timestamp;
 	WB_ALIGN(4) whiteboard::Array< whiteboard::FloatVector3D > arrayGyro;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(timestamp)
-			.visit(arrayGyro);
-	}
 };
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {

@@ -40,72 +40,40 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
+struct WB_ALIGN(4) AdvParams;
+struct WB_ALIGN(4) AdvState;
+struct WB_ALIGN(4) AdvSettings;
 
-struct WB_STRUCT_PACKED AdvParams;
-struct WB_STRUCT_PACKED AdvState;
-struct WB_STRUCT_PACKED AdvSettings;
-
-struct WB_STRUCT_PACKED AdvParams
+struct WB_ALIGN(4) AdvParams
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14080;
-	static const whiteboard::StructureValueSerializer<AdvParams> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<AdvParams> cleaner;)
 
 	WB_ALIGN(4) whiteboard::Optional< whiteboard::WrapperFor32BitPointer<const char> > peerAddr;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(peerAddr);
-	}
 };
 
-struct WB_STRUCT_PACKED AdvState
+struct WB_ALIGN(4) AdvState
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14081;
-	static const whiteboard::StructureValueSerializer<AdvState> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<AdvState> cleaner;)
 
 	WB_ALIGN(1) bool isAdvertising;
 	WB_ALIGN(4) whiteboard::Optional< whiteboard::WrapperFor32BitPointer<const char> > peerAddr;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(isAdvertising)
-			.visit(peerAddr);
-	}
 };
 
-struct WB_STRUCT_PACKED AdvSettings
+struct WB_ALIGN(4) AdvSettings
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14082;
-	static const whiteboard::StructureValueSerializer<AdvSettings> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<AdvSettings> cleaner;)
 
 	WB_ALIGN(4) whiteboard::Optional< whiteboard::Array< uint8 > > advPacket;
 	WB_ALIGN(4) whiteboard::Optional< whiteboard::Array< uint8 > > scanRespPacket;
 	WB_ALIGN(2) uint16 interval;
 	WB_ALIGN(2) uint16 timeout;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(advPacket)
-			.visit(scanRespPacket)
-			.visit(interval)
-			.visit(timeout);
-	}
 };
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {

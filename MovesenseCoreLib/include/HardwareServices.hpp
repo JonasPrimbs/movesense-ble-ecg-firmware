@@ -43,7 +43,10 @@
 #include "hal/useroutput/UserFeedbackProvider.hpp"
 #endif // defined (BUILD_HAL_WANT_BUZZER) || defined (BUILD_HAL_WANT_VIBRA)
 
+#if defined(BUILD_HAL_WANT_PMIC)
 #include "hal/pmic/PmicProvider.hpp"
+#endif
+
 #include "hal/sensor/batteryGauge/SS2/BatteryChargeProvider.hpp"
 
 

@@ -40,10 +40,6 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
-
-WB_STRUCT_PACK_END()
-
 namespace LOCAL
 {
 

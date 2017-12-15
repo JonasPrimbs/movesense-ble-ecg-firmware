@@ -205,7 +205,7 @@ public:
 
     whiteboard::Result disconnect(const whiteboard::Address& /*rDestination*/) OVERRIDE FINAL;
 
-    whiteboard::IBufferAllocator& getAllocator() OVERRIDE FINAL;
+    whiteboard::IBufferPool& getBufferPool() OVERRIDE FINAL;
 
     Result formatAddress(const Address& rAddress, size_t bufferSize, char* addressBuffer) OVERRIDE FINAL;
 
@@ -277,6 +277,12 @@ private:
     static void sendTimerCallback(WbTimerHandle handle);
 
 private:
+    /** Connect delay */
+    uint32 mConnectDelay;
+
+    /** Send delay */
+    uint32 mSendDelay;
+
     /** Timer for simulating asynchronous connect operations */
     WbTimerHandle mConnectTimer;
 

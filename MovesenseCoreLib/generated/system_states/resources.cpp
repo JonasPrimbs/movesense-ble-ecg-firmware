@@ -11,7 +11,4 @@ WB_STATIC_VERIFY(sizeof(StateChange) == 16, SizeOfStructure_StateChange_IsNotWha
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(StateChange) == 8, AlignmentOfStructure_StateChange_IsNotWhatExpected);
 
 
-const whiteboard::StructureValueSerializer<StateChange> StateChange::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<StateChange> StateChange::cleaner;)
-
 } // namespace WB_RES

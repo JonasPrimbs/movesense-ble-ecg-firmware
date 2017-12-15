@@ -5,6 +5,7 @@
  
 #pragma once
 
+#include <whiteboard/Initialization.h>
 #include "whiteboard/LaunchableModule.h"
 #include "common/compiler/genDef.h"
 
@@ -46,7 +47,15 @@ extern const char * const*__MOVESENSE_APP_SPECIFIC_MODULES;
 // Main app thread stack size
 extern uint16_t g_WB_EXEC_CTX_APPLICATION_STACKSIZE;
 // and macro to set it
+
+
 #define MOVESENSE_APPLICATION_STACKSIZE(stackSizeInWords) uint16_t g_WB_EXEC_CTX_APPLICATION_STACKSIZE = (stackSizeInWords);
+
+// Macros to fine-tune Whiteboard configuration (pool sizes etc)
+#define MOVESENSE_WHITEBOARD_CONFIGURATION(appSpecificConfig) \
+extern const whiteboard::Config& __getWhiteboardConfig() {\
+    return (appSpecificConfig);\
+}
 
 // define macros that app use to specify their own launchable modules. Structurally result is a class with preLaunchHappened callback and array of the created modules. Modules are reserved from the heap
 #define MOVESENSE_PROVIDERS_BEGIN(NumModules) \
@@ -78,7 +87,7 @@ extern const char* g_appInfo_name;
 extern const char* g_appInfo_version;
 extern const char* g_appInfo_company;
 
-#define MAX_OPTIONAL_CORE_MODULES 6
+#define MAX_OPTIONAL_CORE_MODULES 8
 
 #define MOVESENSE_FEATURES_BEGIN()
 

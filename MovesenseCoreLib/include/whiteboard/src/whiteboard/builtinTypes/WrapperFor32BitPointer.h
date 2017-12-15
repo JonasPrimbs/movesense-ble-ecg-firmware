@@ -5,7 +5,6 @@
 ******************************************************************************/
 
 #include "whiteboard/integration/port.h"
-#include "whiteboard/builtinTypes/StructurePack.h"
 
 namespace whiteboard
 {
@@ -13,14 +12,12 @@ namespace whiteboard
 // Forward declarations
 class WrapperFor32BitPointerAccessor;
 
-WB_STRUCT_PACK_BEGIN()
-
 #if defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64) || defined(_M_X64) || defined(_M_AMD64) || defined(__LP64__)
     
 WB_STATIC_VERIFY(sizeof(void*) > 4, SizeOf_Pointer_Is_Not_Greater_Than_4_Bytes);
 
 #define WB_NEED_POINTER_WRAPPER_POOL // This is so that we can adapt rest of the code to do necessary init/deinit of the pool (mutex) & structure cleanup
-#define WB_MAX_64BIT_POINTER_WRAPPERS 4096
+#define WB_MAX_64BIT_POINTER_WRAPPERS 1024*16 // Size of this really dont matter, max can be pretty big as initial size is small and size grows dynamically on need basis
 
 /** Type of ID used to map pointers */
 typedef uint32 WrappedPointerId;
@@ -57,7 +54,7 @@ public:
 *
 * @tparam ItemType Type of the pointer
 */
-template <typename ItemType> class WB_STRUCT_PACKED WrapperFor32BitPointer
+template <typename ItemType> class WrapperFor32BitPointer
 {
 private:
     /** Library internal implementation can access these members */
@@ -66,7 +63,7 @@ private:
     /** Pointer ID in the registry */
     WrappedPointerId mWrappedPointerId;
 
-    /** Internal assign method used by the structure deserialized, that does not free existing pointer from the registry
+    /** Internal assign method used by the structure deserializer, that does not free existing pointer from the registry
     *
     * @param pointer New value for the pointer
     * @return Reference to this object
@@ -145,7 +142,7 @@ WB_STATIC_VERIFY(sizeof(void*) == 4, SizeOf_Pointer_Is_Not_4_Bytes);
  *
  * @tparam ItemType Type of the pointer
  */
-template <typename ItemType> class WB_STRUCT_PACKED WrapperFor32BitPointer
+template <typename ItemType> class WrapperFor32BitPointer
 {
 private:
     /** Library internal implementation can access these members */
@@ -210,6 +207,11 @@ public:
 
 WB_STATIC_VERIFY(sizeof(WrapperFor32BitPointer<void>) == 4, SizeOf_WrapperFor32BitPointer_Is_Not_4_Bytes);
 
-WB_STRUCT_PACK_END()
+#ifndef WB_NEED_POINTER_WRAPPER_POOL
+#define WB_WHEN_STRUCTURE_CLEANING_NEEDED(stmt)
+#else
+#define WB_NEED_STRUCTURE_CLEANING
+#define WB_WHEN_STRUCTURE_CLEANING_NEEDED(stmt)   stmt
+#endif
 
 } // namespace whiteboard

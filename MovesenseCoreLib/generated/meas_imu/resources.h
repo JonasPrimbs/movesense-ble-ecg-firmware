@@ -40,124 +40,68 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
+struct WB_ALIGN(4) IMUInfo;
+struct WB_ALIGN(2) IMUConfig;
+struct WB_ALIGN(4) IMU9Data;
+struct WB_ALIGN(4) IMU6Data;
+struct WB_ALIGN(4) IMU6MData;
 
-struct WB_STRUCT_PACKED IMUInfo;
-struct WB_STRUCT_PACKED IMUConfig;
-struct WB_STRUCT_PACKED IMU9Data;
-struct WB_STRUCT_PACKED IMU6Data;
-struct WB_STRUCT_PACKED IMU6MData;
-
-struct WB_STRUCT_PACKED IMUInfo
+struct WB_ALIGN(4) IMUInfo
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 17920;
-	static const whiteboard::StructureValueSerializer<IMUInfo> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<IMUInfo> cleaner;)
 
 	WB_ALIGN(4) whiteboard::Array< uint16 > sampleRates;
 	WB_ALIGN(4) whiteboard::Array< uint8 > accRanges;
 	WB_ALIGN(4) whiteboard::Array< uint16 > gyroRanges;
 	WB_ALIGN(4) whiteboard::Array< uint16 > magnRanges;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(sampleRates)
-			.visit(accRanges)
-			.visit(gyroRanges)
-			.visit(magnRanges);
-	}
 };
 
-struct WB_STRUCT_PACKED IMUConfig
+struct WB_ALIGN(2) IMUConfig
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 17921;
-	static const whiteboard::StructureValueSerializer<IMUConfig> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<IMUConfig> cleaner;)
 
 	WB_ALIGN(1) uint8 accRange;
 	WB_ALIGN(2) uint16 gyroRange;
 	WB_ALIGN(2) uint16 magnRange;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(accRange)
-			.visit(gyroRange)
-			.visit(magnRange);
-	}
 };
 
-struct WB_STRUCT_PACKED IMU9Data
+struct WB_ALIGN(4) IMU9Data
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 17922;
-	static const whiteboard::StructureValueSerializer<IMU9Data> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<IMU9Data> cleaner;)
 
 	WB_ALIGN(4) uint32 timestamp;
 	WB_ALIGN(4) whiteboard::Array< whiteboard::FloatVector3D > arrayAcc;
 	WB_ALIGN(4) whiteboard::Array< whiteboard::FloatVector3D > arrayGyro;
 	WB_ALIGN(4) whiteboard::Array< whiteboard::FloatVector3D > arrayMagn;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(timestamp)
-			.visit(arrayAcc)
-			.visit(arrayGyro)
-			.visit(arrayMagn);
-	}
 };
 
-struct WB_STRUCT_PACKED IMU6Data
+struct WB_ALIGN(4) IMU6Data
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 17923;
-	static const whiteboard::StructureValueSerializer<IMU6Data> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<IMU6Data> cleaner;)
 
 	WB_ALIGN(4) uint32 timestamp;
 	WB_ALIGN(4) whiteboard::Array< whiteboard::FloatVector3D > arrayAcc;
 	WB_ALIGN(4) whiteboard::Array< whiteboard::FloatVector3D > arrayGyro;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(timestamp)
-			.visit(arrayAcc)
-			.visit(arrayGyro);
-	}
 };
 
-struct WB_STRUCT_PACKED IMU6MData
+struct WB_ALIGN(4) IMU6MData
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 17924;
-	static const whiteboard::StructureValueSerializer<IMU6MData> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<IMU6MData> cleaner;)
 
 	WB_ALIGN(4) uint32 timestamp;
 	WB_ALIGN(4) whiteboard::Array< whiteboard::FloatVector3D > arrayAcc;
 	WB_ALIGN(4) whiteboard::Array< whiteboard::FloatVector3D > arrayMagn;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(timestamp)
-			.visit(arrayAcc)
-			.visit(arrayMagn);
-	}
 };
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {

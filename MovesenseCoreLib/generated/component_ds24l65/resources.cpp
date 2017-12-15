@@ -14,9 +14,4 @@ WB_STATIC_VERIFY(sizeof(EEprom64ByteArray) == 8, SizeOfStructure_EEprom64ByteArr
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(EEprom64ByteArray) == 4, AlignmentOfStructure_EEprom64ByteArray_IsNotWhatExpected);
 
 
-const whiteboard::StructureValueSerializer<CommandsObject> CommandsObject::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<CommandsObject> CommandsObject::cleaner;)
-const whiteboard::StructureValueSerializer<EEprom64ByteArray> EEprom64ByteArray::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<EEprom64ByteArray> EEprom64ByteArray::cleaner;)
-
 } // namespace WB_RES

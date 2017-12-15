@@ -30,8 +30,11 @@ inline void WbDebugSetThreadName(const char*) {}
 
 #if !defined(NDEBUG) || defined(WB_HAVE_DEBUGLOG_IN_RELEASE)
 #define WB_DEBUGLOG(format, ...) WbDebugOut(format, ##__VA_ARGS__)
+#define WB_DEBUGLOG_SIZE() WB_DEBUGLOG("[this]:%s: %uB", __FUNCTION__, sizeof(*this))
+
 #else
 #define WB_DEBUGLOG(format, ...) ((void)0)
+#define WB_DEBUGLOG_SIZE()
 #endif
 
 // Assert implementation. Do not use this directly.

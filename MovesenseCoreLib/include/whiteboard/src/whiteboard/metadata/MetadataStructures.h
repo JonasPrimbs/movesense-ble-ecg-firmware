@@ -82,6 +82,16 @@ enum ValueType
     WB_TYPE_LAST_SCALAR = WB_TYPE_STRING
 };
 
+/** Array of scalar type sizes */
+extern const uint8 SCALAR_VALUE_DATA_SIZE[(WB_TYPE_DOUBLE - WB_TYPE_NONE) + 1];
+
+const uint8 VALUE_DATA_SIZE[] =
+{
+    0, sizeof(bool), sizeof(int8), sizeof(uint8),
+    sizeof(int16), sizeof(uint16), sizeof(int32), sizeof(uint32),
+    sizeof(int64), sizeof(uint64), sizeof(float), sizeof(double)
+};
+
 /** Type of a request */
 enum RequestType
 {
@@ -289,6 +299,18 @@ struct ArrayType
 {
     /** Item type */
     DataTypeId itemTypeId;
+
+    /** Reserved for future use */
+    uint16 reserved : 2;
+
+    /** A value indicating whether array has a fixed size */
+    uint16 fixedSize : 1;
+
+    /** Alignment of the array item (range 1 - 8) */
+    uint16 alignment : 3;
+
+    /** Size of the item (excluding variant size chunks) */
+    uint16 itemSize : 10;
 };
 
 /** Structure that stores structure data type related meta data */
@@ -296,6 +318,18 @@ struct StructureType
 {
     /** ID of the structure's property list */
     PropertyListId propertyListId;
+
+    /** Reserved for future use */
+    uint16 reserved : 2;
+
+    /** A value indicating whether structure has a fixed size */
+    uint16 fixedSize : 1;
+
+    /** Alignment of the structure (range 1 - 8) */
+    uint16 alignment : 3;
+
+    /** Size of the structure (excluding variant size chunks) */
+    uint16 structureSize : 10;
 };
 
 /** Structure that stores structure data type related meta data */
@@ -308,11 +342,20 @@ struct Property
     DataTypeId typeId;
 
     /** A value indicating whether the property is required */
-    bool required;
+    uint16 required : 1;
 
     /** A value indicating whether the property is stored inline in the structure
     or whether it is stored as reference to actual data */
-    bool inlineStorage;
+    uint16 inlineStorage : 1;
+
+    /** A value indicating whether property has a fixed size */
+    uint16 fixedSize : 1;
+
+    /** Alignment of the property data type (range 1 - 8) */
+    uint16 alignment : 3;
+
+    /** Size of the property data type (excluding variant size chunks) */
+    uint16 propertySize : 10;
 };
 
 /** Structure that stores property list meta data */

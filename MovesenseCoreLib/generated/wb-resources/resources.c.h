@@ -28,19 +28,20 @@ static const unsigned short NET_INFO_REMOTEWHITEBOARDIDINLOCALSCOPE_SERIALNUMBER
 static const unsigned short NET_INFO_REMOTEWHITEBOARDIDINLOCALSCOPE_STATE_LID = 262;
 static const unsigned short WHITEBOARD_INFO_LID = 263;
 static const unsigned short WHITEBOARD_INFO_SUBSCRIPTIONS_LID = 264;
-static const unsigned short WHITEBOARD_METRICS_EVENTS_LID = 265;
-static const unsigned short WHITEBOARD_METRICS_POOLS_LID = 266;
-static const unsigned short WHITEBOARD_METRICS_THREADS_LID = 267;
-static const unsigned short WHITEBOARD_METRICS_THREADS_COUNT_LID = 268;
-static const unsigned short WHITEBOARD_METRICS_THREADS_INDEX_NAME_LID = 269;
-static const unsigned short WHITEBOARD_METRICS_THREADS_INDEX_PROGRAMCOUNTER_LID = 270;
-static const unsigned short WHITEBOARD_METRICS_THREADS_INDEX_RETURNADDRESS_LID = 271;
-static const unsigned short WHITEBOARD_SYSTEM_LAUNCHER_LID = 272;
-static const unsigned short WHITEBOARD_TEST_BYPASS_LID = 273;
-static const unsigned short WHITEBOARD_TEST_ECHO_LID = 274;
-static const unsigned short WHITEBOARD_TEST_NULL_LID = 275;
-static const unsigned short WHITEBOARD_TEST_PING_LID = 276;
-static const unsigned short WHITEBOARD_TEST_ZERO_LID = 277;
+static const unsigned short WHITEBOARD_METRICS_COMM_LID = 265;
+static const unsigned short WHITEBOARD_METRICS_EVENTS_LID = 266;
+static const unsigned short WHITEBOARD_METRICS_POOLS_LID = 267;
+static const unsigned short WHITEBOARD_METRICS_THREADS_LID = 268;
+static const unsigned short WHITEBOARD_METRICS_THREADS_COUNT_LID = 269;
+static const unsigned short WHITEBOARD_METRICS_THREADS_INDEX_NAME_LID = 270;
+static const unsigned short WHITEBOARD_METRICS_THREADS_INDEX_PROGRAMCOUNTER_LID = 271;
+static const unsigned short WHITEBOARD_METRICS_THREADS_INDEX_RETURNADDRESS_LID = 272;
+static const unsigned short WHITEBOARD_SYSTEM_LAUNCHER_LID = 273;
+static const unsigned short WHITEBOARD_TEST_BYPASS_LID = 274;
+static const unsigned short WHITEBOARD_TEST_ECHO_LID = 275;
+static const unsigned short WHITEBOARD_TEST_NULL_LID = 276;
+static const unsigned short WHITEBOARD_TEST_PING_LID = 277;
+static const unsigned short WHITEBOARD_TEST_ZERO_LID = 278;
 
 #elif defined(RELEASE) 
 /***********************************************************************
@@ -65,11 +66,13 @@ static const unsigned short META_SECURITYTAG_LID = 10;
 static const unsigned short META_STRING_LID = 12;
 static const unsigned short NET_LID = 256;
 static const unsigned short WHITEBOARD_INFO_LID = 257;
-static const unsigned short WHITEBOARD_METRICS_THREADS_LID = 258;
-static const unsigned short WHITEBOARD_METRICS_THREADS_COUNT_LID = 259;
-static const unsigned short WHITEBOARD_METRICS_THREADS_INDEX_NAME_LID = 260;
-static const unsigned short WHITEBOARD_METRICS_THREADS_INDEX_PROGRAMCOUNTER_LID = 261;
-static const unsigned short WHITEBOARD_METRICS_THREADS_INDEX_RETURNADDRESS_LID = 262;
-static const unsigned short WHITEBOARD_SYSTEM_LAUNCHER_LID = 263;
+static const unsigned short WHITEBOARD_METRICS_COMM_LID = 258;
+static const unsigned short WHITEBOARD_METRICS_THREADS_LID = 259;
+static const unsigned short WHITEBOARD_METRICS_THREADS_COUNT_LID = 260;
+static const unsigned short WHITEBOARD_METRICS_THREADS_INDEX_NAME_LID = 261;
+static const unsigned short WHITEBOARD_METRICS_THREADS_INDEX_PROGRAMCOUNTER_LID = 262;
+static const unsigned short WHITEBOARD_METRICS_THREADS_INDEX_RETURNADDRESS_LID = 263;
+static const unsigned short WHITEBOARD_SYSTEM_LAUNCHER_LID = 264;
+static const unsigned short WHITEBOARD_TEST_BYPASS_LID = 265;
 
 #endif 

@@ -17,11 +17,4 @@ WB_STATIC_VERIFY(sizeof(DataEntry) == 4, SizeOfStructure_DataEntry_IsNotWhatExpe
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(DataEntry) == 4, AlignmentOfStructure_DataEntry_IsNotWhatExpected);
 
 
-const whiteboard::StructureValueSerializer<DataLoggerConfig> DataLoggerConfig::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<DataLoggerConfig> DataLoggerConfig::cleaner;)
-const whiteboard::StructureValueSerializer<DataEntryArray> DataEntryArray::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<DataEntryArray> DataEntryArray::cleaner;)
-const whiteboard::StructureValueSerializer<DataEntry> DataEntry::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<DataEntry> DataEntry::cleaner;)
-
 } // namespace WB_RES

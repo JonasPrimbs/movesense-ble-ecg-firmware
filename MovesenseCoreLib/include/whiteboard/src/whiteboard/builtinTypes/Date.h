@@ -10,14 +10,12 @@ All rights reserved.
 namespace whiteboard
 {
 
-WB_STRUCT_BITFIELD_PACK_BEGIN()
-
 /**
 *	Date (DD.MM.YYYY)
 *	Range: 1.1.1 - 31.12.4095
 *	Precision: 1 day
 */
-struct WB_STRUCT_BITFIELD_PACKED Date
+struct Date
 {
     /** Default constructor */
     inline Date() : year(1), month(1), day(1){};
@@ -76,27 +74,13 @@ struct WB_STRUCT_BITFIELD_PACKED Date
         return valid;
     };
 
-#ifdef WB_STRUCTS_SUPPORT_BITFIELDS
-    // Using bitfields to avoid alignment problems in target device.
-    uint16 year : 12; // 0 - 4095
-    uint16 month : 4;
-    uint8 day : 5;
-#else
     WB_ALIGNED(uint16) year;
     WB_ALIGNED(uint8) month;
     WB_ALIGNED(uint8) day;
-#endif
 
-    // Structure type identification and serialization
+    // Structure type identification
     typedef int Structure;
     static const LocalDataTypeId DATA_TYPE_ID = 24;
-    WB_API static const StructureValueSerializer<Date> serializer;
-    WB_WHEN_STRUCTURE_CLEANING_NEEDED(WB_API static const StructureValueCleaner<Date> cleaner;)
-
-    // Visitor pattern implementation
-    inline void visit(IStructureVisitor& rVisitor) { rVisitor.visit(year).visit(month).visit(day); }
 };
-
-WB_STRUCT_BITFIELD_PACK_END()
 
 } // namespace whiteboard

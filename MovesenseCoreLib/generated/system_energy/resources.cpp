@@ -11,7 +11,4 @@ WB_STATIC_VERIFY(sizeof(Energy) == 6, SizeOfStructure_Energy_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(Energy) == 2, AlignmentOfStructure_Energy_IsNotWhatExpected);
 
 
-const whiteboard::StructureValueSerializer<Energy> Energy::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<Energy> Energy::cleaner;)
-
 } // namespace WB_RES

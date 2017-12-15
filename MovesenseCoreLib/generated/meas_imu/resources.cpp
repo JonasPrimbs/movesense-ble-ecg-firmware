@@ -23,15 +23,4 @@ WB_STATIC_VERIFY(sizeof(IMU6MData) == 20, SizeOfStructure_IMU6MData_IsNotWhatExp
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(IMU6MData) == 4, AlignmentOfStructure_IMU6MData_IsNotWhatExpected);
 
 
-const whiteboard::StructureValueSerializer<IMUInfo> IMUInfo::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<IMUInfo> IMUInfo::cleaner;)
-const whiteboard::StructureValueSerializer<IMUConfig> IMUConfig::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<IMUConfig> IMUConfig::cleaner;)
-const whiteboard::StructureValueSerializer<IMU9Data> IMU9Data::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<IMU9Data> IMU9Data::cleaner;)
-const whiteboard::StructureValueSerializer<IMU6Data> IMU6Data::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<IMU6Data> IMU6Data::cleaner;)
-const whiteboard::StructureValueSerializer<IMU6MData> IMU6MData::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<IMU6MData> IMU6MData::cleaner;)
-
 } // namespace WB_RES

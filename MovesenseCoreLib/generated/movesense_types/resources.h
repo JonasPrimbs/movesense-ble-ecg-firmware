@@ -39,90 +39,51 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
-
-struct WB_STRUCT_PACKED VersionInfo;
-struct WB_STRUCT_PACKED VersionInfoArray;
-struct WB_STRUCT_PACKED AddressInfo;
-struct WB_STRUCT_PACKED HRData;
+struct WB_ALIGN(4) VersionInfo;
+struct WB_ALIGN(4) VersionInfoArray;
+struct WB_ALIGN(4) AddressInfo;
+struct WB_ALIGN(4) HRData;
 
 typedef uint64 TimestampFromStartup;
 
-struct WB_STRUCT_PACKED VersionInfo
+struct WB_ALIGN(4) VersionInfo
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 512;
-	static const whiteboard::StructureValueSerializer<VersionInfo> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<VersionInfo> cleaner;)
 
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> name;
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> version;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(name)
-			.visit(version);
-	}
 };
 
-struct WB_STRUCT_PACKED VersionInfoArray
+struct WB_ALIGN(4) VersionInfoArray
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 513;
-	static const whiteboard::StructureValueSerializer<VersionInfoArray> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<VersionInfoArray> cleaner;)
 
 	WB_ALIGN(4) whiteboard::Array< VersionInfo > versionInfo;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(versionInfo);
-	}
 };
 
-struct WB_STRUCT_PACKED AddressInfo
+struct WB_ALIGN(4) AddressInfo
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 514;
-	static const whiteboard::StructureValueSerializer<AddressInfo> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<AddressInfo> cleaner;)
 
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> name;
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> address;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(name)
-			.visit(address);
-	}
 };
 
-struct WB_STRUCT_PACKED HRData
+struct WB_ALIGN(4) HRData
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 515;
-	static const whiteboard::StructureValueSerializer<HRData> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<HRData> cleaner;)
 
 	WB_ALIGN(4) float average;
 	WB_ALIGN(4) whiteboard::Array< uint16 > rrData;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(average)
-			.visit(rrData);
-	}
 };
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {

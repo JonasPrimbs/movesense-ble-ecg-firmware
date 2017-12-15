@@ -14,9 +14,4 @@ WB_STATIC_VERIFY(sizeof(ECGData) == 8, SizeOfStructure_ECGData_IsNotWhatExpected
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ECGData) == 4, AlignmentOfStructure_ECGData_IsNotWhatExpected);
 
 
-const whiteboard::StructureValueSerializer<ECGInfo> ECGInfo::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<ECGInfo> ECGInfo::cleaner;)
-const whiteboard::StructureValueSerializer<ECGData> ECGData::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<ECGData> ECGData::cleaner;)
-
 } // namespace WB_RES

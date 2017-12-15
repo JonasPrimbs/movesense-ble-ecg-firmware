@@ -19,7 +19,7 @@
 */
 #define WB_HEADER_CHECK_DEFINE(def)     \
     namespace _ ## def { \
-        extern WB_API int WB_EVAL_AND_CONCATENATE(__header_check_failed_, def); \
+        extern WB_API uint8 WB_EVAL_AND_CONCATENATE(__header_check_failed_, def); \
         const int WB_ATTRIBUTE_UNUSED WB_EVAL_AND_CONCATENATE(header_checker_, __LINE__) = WB_EVAL_AND_CONCATENATE(__header_check_failed_, def); \
     }
 
@@ -34,4 +34,4 @@
   @endcode
 */
 #define WB_HEADER_CHECK_CONFIRM(def) \
-    namespace _ ## def { int WB_ATTRIBUTE_UNUSED WB_EVAL_AND_CONCATENATE(__header_check_failed_, def); }
+    namespace _ ## def { uint8 WB_ATTRIBUTE_UNUSED WB_EVAL_AND_CONCATENATE(__header_check_failed_, def); }

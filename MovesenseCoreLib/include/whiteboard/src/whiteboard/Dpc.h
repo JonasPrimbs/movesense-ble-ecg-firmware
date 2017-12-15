@@ -60,7 +60,7 @@ private:
     friend class DpcFunctor;
 
     /** Prevents use of default constructor */
-    Dpc() : mpEventProcessor(NULL), mpDpcFunction(NULL)
+    Dpc() : mpEventProcessor(NULL), mpDpcFunction(NULL), mDelayed(false)
     {
     }
 
@@ -79,6 +79,9 @@ private:
 
     /** The DPC function to execute */
     IDpcFunctor* mpDpcFunction;
+
+    /** In delayed mode the Dpc functor will be called only after event processing */
+    bool mDelayed;
 };
 
 } // namespace whiteboard

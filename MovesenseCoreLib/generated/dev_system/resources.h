@@ -39,8 +39,6 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
-
 struct ActiveProcessorValues
 {
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 2048;
@@ -52,8 +50,6 @@ struct ActiveProcessorValues
 	};
 };
 typedef whiteboard::TypedEnum<ActiveProcessorValues, ActiveProcessorValues::Type, uint8> ActiveProcessor;
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {

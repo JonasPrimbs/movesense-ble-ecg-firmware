@@ -1,8 +1,7 @@
 #pragma once
-/******************************************************************************
-Copyright (c) Suunto Oy 2012.
-All rights reserved.
-******************************************************************************/
+// Copyright (c) Suunto Oy 2012. All rights reserved.
+
+#include "whiteboard/integration/shared/macros.h"
 
 // Structure packing macros
 
@@ -30,22 +29,11 @@ All rights reserved.
 
 #endif
 
-// Helper macro for disabling warnings about unaligned data access that
-// we know are safe
-#if defined(__IAR_SYSTEMS_ICC__)
-
-#define WB_SAFE_UNALIGNED_ACCESS_BEGIN() _Pragma("diag_suppress = Pa039")
-#define WB_SAFE_UNALIGNED_ACCESS_END() _Pragma("diag_default = Pa039")
-
-#else
-
-#define WB_SAFE_UNALIGNED_ACCESS_BEGIN()
-#define WB_SAFE_UNALIGNED_ACCESS_END()
-
-#endif
-
 // Structure member alignment macros
-#if defined(__GNUC__) || defined(__clang__)
+#if defined(WB_HAVE_CPLUSPLUS_11)
+// Use standard version of alignment control
+#define WB_ALIGN(align) alignas(align)
+#elif defined(__GNUC__) || defined(__clang__)
 // Enforce alignment with attribute aligned
 #define WB_ALIGN(align) __attribute__((__aligned__((align))))
 #else

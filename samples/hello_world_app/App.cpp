@@ -18,6 +18,7 @@ OPTIONAL_CORE_MODULE(LedService, true)
 OPTIONAL_CORE_MODULE(IndicationService, true)
 OPTIONAL_CORE_MODULE(BleService, true)
 OPTIONAL_CORE_MODULE(EepromService, true)
+OPTIONAL_CORE_MODULE(BypassService, false)
 
 APPINFO_NAME("Sample HelloWorld");
 APPINFO_VERSION("1.0.0");

@@ -1,18 +1,19 @@
 #pragma once
 // Copyright (c) Suunto Oy 2015. All rights reserved.
 
-#include "whiteboard/integration/port.h"
 #include "whiteboard/WhiteboardConfig.h"
 #include "whiteboard/Identifiers.h"
 #include "whiteboard/Result.h"
 #include "whiteboard/RoutingTableEntryHandle.h"
+
+WB_HEADER_CHECK_DEFINE(WB_HAVE_CUSTOM_BUFFER_POOLS);
 
 namespace whiteboard
 {
 
 // Forward declarations
 struct Buffer;
-class IBufferAllocator;
+class IBufferPool;
 class WhiteboardCommunication;
 
 /** Type of buffer that stores communication addresses */
@@ -53,6 +54,9 @@ public:
         * unnecessary message encryption itself.
         */
         uint8 encrypted : 1;
+
+        /** Number of bytes to reserve for communication layer headers */
+        uint8 payloadOffset;
     };
 
     /** Constructor
@@ -190,12 +194,15 @@ public:
     */
     virtual Result disconnect(const Address& rDestination) = 0;
 
-    /** Gets buffer allocator that should be used to allocate and deallocate
+    /** Gets buffer pool that should be used to allocate and deallocate
      * adapter buffers
      *
-     * @return Buffer allocator instance
+     * @return Buffer pool instance
      */
-    virtual IBufferAllocator& getAllocator() = 0;
+#ifdef WB_HAVE_CUSTOM_BUFFER_POOLS
+    virtual
+#endif
+    IBufferPool& getBufferPool();
 
     /** Sends a message using the communication adapter to specified destination
      *

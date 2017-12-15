@@ -17,11 +17,4 @@ WB_STATIC_VERIFY(sizeof(GyroData) == 12, SizeOfStructure_GyroData_IsNotWhatExpec
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(GyroData) == 4, AlignmentOfStructure_GyroData_IsNotWhatExpected);
 
 
-const whiteboard::StructureValueSerializer<GyroInfo> GyroInfo::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<GyroInfo> GyroInfo::cleaner;)
-const whiteboard::StructureValueSerializer<GyroConfig> GyroConfig::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<GyroConfig> GyroConfig::cleaner;)
-const whiteboard::StructureValueSerializer<GyroData> GyroData::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<GyroData> GyroData::cleaner;)
-
 } // namespace WB_RES

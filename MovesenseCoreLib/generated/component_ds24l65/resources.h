@@ -40,46 +40,26 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
+struct WB_ALIGN(4) CommandsObject;
+struct WB_ALIGN(4) EEprom64ByteArray;
 
-struct WB_STRUCT_PACKED CommandsObject;
-struct WB_STRUCT_PACKED EEprom64ByteArray;
-
-struct WB_STRUCT_PACKED CommandsObject
+struct WB_ALIGN(4) CommandsObject
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 3072;
-	static const whiteboard::StructureValueSerializer<CommandsObject> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<CommandsObject> cleaner;)
 
 	WB_ALIGN(4) whiteboard::Array< uint8 > commands;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(commands);
-	}
 };
 
-struct WB_STRUCT_PACKED EEprom64ByteArray
+struct WB_ALIGN(4) EEprom64ByteArray
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 3073;
-	static const whiteboard::StructureValueSerializer<EEprom64ByteArray> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<EEprom64ByteArray> cleaner;)
 
 	WB_ALIGN(4) whiteboard::Array< uint8 > bytes;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(bytes);
-	}
 };
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {

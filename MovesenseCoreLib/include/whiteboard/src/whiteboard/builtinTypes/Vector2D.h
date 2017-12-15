@@ -4,20 +4,18 @@
     All rights reserved.
 ******************************************************************************/
 
-#include "../integration/port.h"
-#include "VectorMathHelper.h"
-#include "Structures.h"
+#include "whiteboard/integration/port.h"
+#include "whiteboard/builtinTypes/VectorMathHelper.h"
+#include "whiteboard/builtinTypes/Structures.h"
 
 namespace whiteboard
 {
-
-WB_STRUCT_PACK_BEGIN()
 
 /** 2D vector implementation.
 *
 * @tparam T Type of the internal data type
 */
-template <typename T> class WB_STRUCT_PACKED Vector2D
+template <typename T> class Vector2D
 {
 public:
     /** X component */
@@ -234,19 +232,10 @@ public:
     // Fixed ID of the data type (must be defined in the header or it is not treated as constant)
     static const LocalDataTypeId DATA_TYPE_ID = static_cast<LocalDataTypeId>(
         IsSame<T, int32>::value ? 28 : IsSame<T, float>::value ? 29 : -1);
-
-    // Structure serializer and cleanr instances
-    static const StructureValueSerializer<Vector2D<T> > serializer;
-    WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const StructureValueCleaner<Vector2D<T> > cleaner;)
-
-    // Visitor pattern implementation
-    inline void visit(IStructureVisitor& rVisitor) { rVisitor.visit(mX).visit(mY); }
 };
 
 // Static template members
 template <typename T> const LocalDataTypeId Vector2D<T>::DATA_TYPE_ID;
-template <typename T> const StructureValueSerializer<Vector2D<T> > Vector2D<T>::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(template <typename T> const StructureValueCleaner<Vector2D<T> > Vector2D<T>::cleaner;)
 
 // Typedef some helpers
 typedef Vector2D<int32> IntVector2D;
@@ -395,7 +384,5 @@ Vector2D<U> Vector2D<T>::closestPointFromLine(const Vector2D<T>& rPoint1, const 
     // And finally caluclate closest point from line
     return Vector2D<U>(static_cast<U>(rPoint1.mX) + a.mX * normDistance, static_cast<U>(rPoint1.mY) + a.mY * normDistance);
 }
-
-WB_STRUCT_PACK_END()
 
 } // namespace whiteboard

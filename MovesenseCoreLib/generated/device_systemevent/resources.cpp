@@ -14,9 +14,4 @@ WB_STATIC_VERIFY(sizeof(SystemEventLogEntry) == 20, SizeOfStructure_SystemEventL
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(SystemEventLogEntry) == 4, AlignmentOfStructure_SystemEventLogEntry_IsNotWhatExpected);
 
 
-const whiteboard::StructureValueSerializer<SystemEventLogEntryArray> SystemEventLogEntryArray::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<SystemEventLogEntryArray> SystemEventLogEntryArray::cleaner;)
-const whiteboard::StructureValueSerializer<SystemEventLogEntry> SystemEventLogEntry::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<SystemEventLogEntry> SystemEventLogEntry::cleaner;)
-
 } // namespace WB_RES

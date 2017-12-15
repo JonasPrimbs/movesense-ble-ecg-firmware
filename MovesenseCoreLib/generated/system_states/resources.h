@@ -40,45 +40,32 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
-
 struct StateIdValues
 {
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 17664;
 
 	enum Type
 	{
-		MOVEMENT = 0
+		MOVEMENT = 0,
+		BATTERYSTATUS = 1
 	};
 };
 typedef whiteboard::TypedEnum<StateIdValues, StateIdValues::Type, int32> StateId;
 
-struct WB_STRUCT_PACKED StateChange;
+struct WB_ALIGN(8) StateChange;
 
 typedef uint32 State;
 
-struct WB_STRUCT_PACKED StateChange
+struct WB_ALIGN(8) StateChange
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 17665;
-	static const whiteboard::StructureValueSerializer<StateChange> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<StateChange> cleaner;)
 
 	WB_ALIGN(8) TimestampFromStartup timestamp;
 	WB_ALIGN(4) StateId stateId;
 	WB_ALIGN(4) State newState;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(timestamp)
-			.visit(stateId)
-			.visit(newState);
-	}
 };
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {

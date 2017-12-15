@@ -14,9 +14,4 @@ WB_STATIC_VERIFY(sizeof(TemperatureValue) == 8, SizeOfStructure_TemperatureValue
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(TemperatureValue) == 4, AlignmentOfStructure_TemperatureValue_IsNotWhatExpected);
 
 
-const whiteboard::StructureValueSerializer<TempInfo> TempInfo::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<TempInfo> TempInfo::cleaner;)
-const whiteboard::StructureValueSerializer<TemperatureValue> TemperatureValue::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<TemperatureValue> TemperatureValue::cleaner;)
-
 } // namespace WB_RES

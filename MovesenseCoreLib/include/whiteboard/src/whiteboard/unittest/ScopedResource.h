@@ -105,6 +105,28 @@ protected:
     ScopedResourceImpl(
         WhiteboardMockup& rWhiteboard);
 
+    /** Constructor
+    *
+    * @param executionContextId ID of the execution context that owns the resource
+    * @param localResourceId Local resource ID
+    * @param rWhiteboard Whiteboard instance where this resource is binded to
+    */
+    ScopedResourceImpl(
+        ExecutionContextId executionContextId,
+        LocalResourceId localResourceId,
+        Whiteboard& rWhiteboard);
+
+    /** Constructor
+    *
+    * @param executionContextId ID of the execution context that owns the resource
+    * @param localResourceId Local resource ID
+    * @param rWhiteboard WhiteboardMockup instance where this resource is binded to
+    */
+    ScopedResourceImpl(
+        ExecutionContextId executionContextId,
+        LocalResourceId localResourceId,
+        WhiteboardMockup& rWhiteboard);
+
     /** Intializes the resource 
      *
      * @param name Name of the resource
@@ -140,6 +162,45 @@ private:
 };
 
 /**
+*	ScopedResourceImpl wrapper for dummy resource.
+*/
+class ScopedResourceInstantiator : public ScopedResourceImpl
+{
+public:
+    /** Constructor
+    *
+    * @param executionContextId ID of the execution context that owns the resource
+    * @param localResourceId Local resource ID
+    * @param rWhiteboard Whiteboard instance where this resource is binded to
+    */
+    ScopedResourceInstantiator(
+        ExecutionContextId executionContextId,
+        LocalResourceId localResourceId,
+        Whiteboard& rWhiteboard)
+        : ScopedResourceImpl(executionContextId,
+            localResourceId,
+            rWhiteboard)
+    {
+    }
+
+    /** Constructor
+    *
+    * @param executionContextId ID of the execution context that owns the resource
+    * @param localResourceId Local resource ID
+    * @param rWhiteboard WhiteboardMockup instance where this resource is binded to
+    */
+    ScopedResourceInstantiator(
+        ExecutionContextId executionContextId,
+        LocalResourceId localResourceId,
+        WhiteboardMockup& rWhiteboard)
+        : ScopedResourceImpl(executionContextId,
+            localResourceId,
+            rWhiteboard)
+    {
+    }
+};
+
+/**
 *	Test resource class with template parameter T used for variable type in provider operations.
 */
 template <typename T, typename METADATA_CREATOR = MetadataCreator>
@@ -168,10 +229,48 @@ public:
 
     /** Constructor
      *
-     * @param name Name of the resource
-     * @param accessRights Access rights to the resource
-     * @param rWhiteboard WhiteboardMockup instance where this resource is binded to
+     * @param executionContextId ID of the execution context that owns the resource
+     * @param localResourceId Local resource ID
+     * @param rWhiteboard Whiteboard instance where this resource is binded to
      */
+    ScopedResource(
+        ExecutionContextId executionContextId,
+        LocalResourceId localResourceId,
+        Whiteboard& rWhiteboard)
+        : ScopedResourceImpl(
+            executionContextId,
+            localResourceId,
+            rWhiteboard)
+    {
+    }
+
+    /** Constructor
+    *
+    * @param executionContextId ID of the execution context that owns the resource
+    * @param localResourceId Local resource ID
+    * @param rWhiteboard WhiteboardMockup instance where this resource is binded to
+    */
+    ScopedResource(
+        ExecutionContextId executionContextId,
+        LocalResourceId localResourceId,
+        WhiteboardMockup& rWhiteboard)
+        : ScopedResourceImpl(
+            executionContextId,
+            localResourceId,
+            rWhiteboard)
+    {
+    }
+
+    /** Constructor
+    *
+    * @param localResourceId
+    */
+    /** Constructor
+    *
+    * @param name Name of the resource
+    * @param accessRights Access rights to the resource
+    * @param rWhiteboard WhiteboardMockup instance where this resource is binded to
+    */
     ScopedResource(
         const char* name,
         metadata::SecurityMask accessRights,

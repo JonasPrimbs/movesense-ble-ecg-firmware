@@ -40,8 +40,6 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
-
 struct LedColorValues
 {
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14848;
@@ -55,46 +53,27 @@ struct LedColorValues
 };
 typedef whiteboard::TypedEnum<LedColorValues, LedColorValues::Type, uint8> LedColor;
 
-struct WB_STRUCT_PACKED LedState;
-struct WB_STRUCT_PACKED Leds;
+struct WB_ALIGN(1) LedState;
+struct WB_ALIGN(4) Leds;
 
-struct WB_STRUCT_PACKED LedState
+struct WB_ALIGN(1) LedState
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14849;
-	static const whiteboard::StructureValueSerializer<LedState> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<LedState> cleaner;)
 
 	WB_ALIGN(1) bool isOn;
 	WB_ALIGN(1) whiteboard::Optional< LedColor > ledColor;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(isOn)
-			.visit(ledColor);
-	}
 };
 
-struct WB_STRUCT_PACKED Leds
+struct WB_ALIGN(4) Leds
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14850;
-	static const whiteboard::StructureValueSerializer<Leds> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<Leds> cleaner;)
 
 	WB_ALIGN(4) whiteboard::Array< LedState > ledStates;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(ledStates);
-	}
 };
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {

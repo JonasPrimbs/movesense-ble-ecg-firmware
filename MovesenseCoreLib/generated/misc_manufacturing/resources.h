@@ -40,21 +40,17 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
+struct WB_ALIGN(4) ProductData;
+struct WB_ALIGN(4) CalibrationMatrix;
+struct WB_ALIGN(4) CalibrationData;
+struct WB_ALIGN(1) Step;
+struct WB_ALIGN(4) StepsDone;
 
-struct WB_STRUCT_PACKED ProductData;
-struct WB_STRUCT_PACKED CalibrationMatrix;
-struct WB_STRUCT_PACKED CalibrationData;
-struct WB_STRUCT_PACKED Step;
-struct WB_STRUCT_PACKED StepsDone;
-
-struct WB_STRUCT_PACKED ProductData
+struct WB_ALIGN(4) ProductData
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 3584;
-	static const whiteboard::StructureValueSerializer<ProductData> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<ProductData> cleaner;)
 
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> manufacturerName;
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> productName;
@@ -65,99 +61,47 @@ struct WB_STRUCT_PACKED ProductData
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> pcbaSerial;
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> hw;
 	WB_ALIGN(4) whiteboard::Optional< whiteboard::Array< AddressInfo > > addressInfo;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(manufacturerName)
-			.visit(productName)
-			.visit(variant)
-			.visit(design)
-			.visit(hwCompatibilityId)
-			.visit(serial)
-			.visit(pcbaSerial)
-			.visit(hw)
-			.visit(addressInfo);
-	}
 };
 
-struct WB_STRUCT_PACKED CalibrationMatrix
+struct WB_ALIGN(4) CalibrationMatrix
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 3585;
-	static const whiteboard::StructureValueSerializer<CalibrationMatrix> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<CalibrationMatrix> cleaner;)
 
 	WB_ALIGN(4) whiteboard::Array< whiteboard::FloatVector3D > data;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(data);
-	}
 };
 
-struct WB_STRUCT_PACKED CalibrationData
+struct WB_ALIGN(4) CalibrationData
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 3586;
-	static const whiteboard::StructureValueSerializer<CalibrationData> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<CalibrationData> cleaner;)
 
 	WB_ALIGN(4) whiteboard::Optional< CalibrationMatrix > acc_matrix;
 	WB_ALIGN(4) whiteboard::Optional< whiteboard::FloatVector3D > acc_bias;
 	WB_ALIGN(4) whiteboard::Optional< CalibrationMatrix > gyro_matrix;
 	WB_ALIGN(4) whiteboard::Optional< CalibrationMatrix > magn_matrix;
 	WB_ALIGN(4) whiteboard::Optional< whiteboard::FloatVector3D > magn_bias;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(acc_matrix)
-			.visit(acc_bias)
-			.visit(gyro_matrix)
-			.visit(magn_matrix)
-			.visit(magn_bias);
-	}
 };
 
-struct WB_STRUCT_PACKED Step
+struct WB_ALIGN(1) Step
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 3587;
-	static const whiteboard::StructureValueSerializer<Step> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<Step> cleaner;)
 
 	WB_ALIGN(1) uint8 stepNum;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(stepNum);
-	}
 };
 
-struct WB_STRUCT_PACKED StepsDone
+struct WB_ALIGN(4) StepsDone
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 3588;
-	static const whiteboard::StructureValueSerializer<StepsDone> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<StepsDone> cleaner;)
 
 	WB_ALIGN(4) whiteboard::Array< Step > steps;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(steps);
-	}
 };
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {

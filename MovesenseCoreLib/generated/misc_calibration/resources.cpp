@@ -11,7 +11,4 @@ WB_STATIC_VERIFY(sizeof(CalibrationSequence) == 8, SizeOfStructure_CalibrationSe
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(CalibrationSequence) == 4, AlignmentOfStructure_CalibrationSequence_IsNotWhatExpected);
 
 
-const whiteboard::StructureValueSerializer<CalibrationSequence> CalibrationSequence::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<CalibrationSequence> CalibrationSequence::cleaner;)
-
 } // namespace WB_RES

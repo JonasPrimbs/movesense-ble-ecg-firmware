@@ -40,50 +40,28 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
+struct WB_ALIGN(4) ECGInfo;
+struct WB_ALIGN(4) ECGData;
 
-struct WB_STRUCT_PACKED ECGInfo;
-struct WB_STRUCT_PACKED ECGData;
-
-struct WB_STRUCT_PACKED ECGInfo
+struct WB_ALIGN(4) ECGInfo
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 17152;
-	static const whiteboard::StructureValueSerializer<ECGInfo> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<ECGInfo> cleaner;)
 
 	WB_ALIGN(2) uint16 currentSampleRate;
 	WB_ALIGN(4) whiteboard::Array< uint16 > availableSampleRates;
 	WB_ALIGN(2) uint16 arraySize;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(currentSampleRate)
-			.visit(availableSampleRates)
-			.visit(arraySize);
-	}
 };
 
-struct WB_STRUCT_PACKED ECGData
+struct WB_ALIGN(4) ECGData
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 17153;
-	static const whiteboard::StructureValueSerializer<ECGData> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<ECGData> cleaner;)
 
 	WB_ALIGN(4) whiteboard::Array< int32 > samples;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(samples);
-	}
 };
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {

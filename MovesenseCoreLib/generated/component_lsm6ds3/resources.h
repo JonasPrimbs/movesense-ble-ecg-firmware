@@ -40,8 +40,6 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
-
 struct LSM6DS3OperationModeValues
 {
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14592;
@@ -54,28 +52,17 @@ struct LSM6DS3OperationModeValues
 };
 typedef whiteboard::TypedEnum<LSM6DS3OperationModeValues, LSM6DS3OperationModeValues::Type, uint8> LSM6DS3OperationMode;
 
-struct WB_STRUCT_PACKED WakeUpState;
+struct WB_ALIGN(1) WakeUpState;
 
-struct WB_STRUCT_PACKED WakeUpState
+struct WB_ALIGN(1) WakeUpState
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14593;
-	static const whiteboard::StructureValueSerializer<WakeUpState> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<WakeUpState> cleaner;)
 
 	WB_ALIGN(1) uint8 state;
 	WB_ALIGN(1) uint8 level;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(state)
-			.visit(level);
-	}
 };
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {

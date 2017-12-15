@@ -9,31 +9,46 @@ All rights reserved.
 #include "ut-resources/resources.h"
 
 void fillStructure(WB_RES::TestStructure& rStructure);
-void checkSerializedData(const WB_RES::TestStructure& rStructure, const uint8* pBuffer, size_t serializationLength);
 whiteboard::IDataTypeMetadataContainer* getMetadataContainer(const WB_RES::TestStructure*);
+#ifdef WB_HAVE_UNKNOWN_STRUCTURES
 whiteboard::IStructureDataVisitor* getDynamicDeserializationValidator(const WB_RES::TestStructure& rReferenceData);
+#endif
+#ifdef WB_HAVE_ALIEN_STRUCTURES
 whiteboard::IStructureDataAccessor* getDynamicSerializationDataAccessor(const WB_RES::TestStructure& rReferenceData);
+#endif
 
 void fillStructure(WB_RES::AllPrimitiveAndBuiltinTypesInAStructure& rStructure);
-void checkSerializedData(const WB_RES::AllPrimitiveAndBuiltinTypesInAStructure& rStructure, const uint8* pBuffer, size_t serializationLength);
 whiteboard::IDataTypeMetadataContainer* getMetadataContainer(const WB_RES::AllPrimitiveAndBuiltinTypesInAStructure*);
+#ifdef WB_HAVE_UNKNOWN_STRUCTURES
 whiteboard::IStructureDataVisitor* getDynamicDeserializationValidator(const WB_RES::AllPrimitiveAndBuiltinTypesInAStructure& rReferenceData);
+#endif
+#ifdef WB_HAVE_ALIEN_STRUCTURES
 whiteboard::IStructureDataAccessor* getDynamicSerializationDataAccessor(const WB_RES::AllPrimitiveAndBuiltinTypesInAStructure& rReferenceData);
+#endif
 
 void fillStructure(WB_RES::AllOptionalPrimitiveAndBuiltinTypesInAStructure& rStructure);
-void checkSerializedData(const WB_RES::AllOptionalPrimitiveAndBuiltinTypesInAStructure& rStructure, const uint8* pBuffer, size_t serializationLength);
 whiteboard::IDataTypeMetadataContainer* getMetadataContainer(const WB_RES::AllOptionalPrimitiveAndBuiltinTypesInAStructure*);
+#ifdef WB_HAVE_UNKNOWN_STRUCTURES
 whiteboard::IStructureDataVisitor* getDynamicDeserializationValidator(const WB_RES::AllOptionalPrimitiveAndBuiltinTypesInAStructure& rReferenceData);
+#endif
+#ifdef WB_HAVE_ALIEN_STRUCTURES
 whiteboard::IStructureDataAccessor* getDynamicSerializationDataAccessor(const WB_RES::AllOptionalPrimitiveAndBuiltinTypesInAStructure& rReferenceData);
+#endif
 
 void fillStructure(WB_RES::AllArrayPrimitiveAndBuiltinTypesInAStructure& rStructure);
-void checkSerializedData(const WB_RES::AllArrayPrimitiveAndBuiltinTypesInAStructure& rStructure, const uint8* pBuffer, size_t serializationLength);
 whiteboard::IDataTypeMetadataContainer* getMetadataContainer(const WB_RES::AllArrayPrimitiveAndBuiltinTypesInAStructure*);
+#ifdef WB_HAVE_UNKNOWN_STRUCTURES
 whiteboard::IStructureDataVisitor* getDynamicDeserializationValidator(const WB_RES::AllArrayPrimitiveAndBuiltinTypesInAStructure& rReferenceData);
+#endif
+#ifdef WB_HAVE_ALIEN_STRUCTURES
 whiteboard::IStructureDataAccessor* getDynamicSerializationDataAccessor(const WB_RES::AllArrayPrimitiveAndBuiltinTypesInAStructure& rReferenceData);
+#endif
 
 void fillStructure(WB_RES::AllOptionalArrayPrimitiveAndBuiltinTypesInAStructure& rStructure);
-void checkSerializedData(const WB_RES::AllOptionalArrayPrimitiveAndBuiltinTypesInAStructure& rStructure, const uint8* pBuffer, size_t serializationLength);
 whiteboard::IDataTypeMetadataContainer* getMetadataContainer(const WB_RES::AllOptionalArrayPrimitiveAndBuiltinTypesInAStructure*);
+#ifdef WB_HAVE_UNKNOWN_STRUCTURES
 whiteboard::IStructureDataVisitor* getDynamicDeserializationValidator(const WB_RES::AllOptionalArrayPrimitiveAndBuiltinTypesInAStructure& rReferenceData);
+#endif
+#ifdef WB_HAVE_ALIEN_STRUCTURES
 whiteboard::IStructureDataAccessor* getDynamicSerializationDataAccessor(const WB_RES::AllOptionalArrayPrimitiveAndBuiltinTypesInAStructure& rReferenceData);
+#endif

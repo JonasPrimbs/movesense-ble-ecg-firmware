@@ -40,48 +40,27 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
+struct WB_ALIGN(4) EepromData;
+struct WB_ALIGN(4) EepromInfo;
 
-struct WB_STRUCT_PACKED EepromData;
-struct WB_STRUCT_PACKED EepromInfo;
-
-struct WB_STRUCT_PACKED EepromData
+struct WB_ALIGN(4) EepromData
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 17408;
-	static const whiteboard::StructureValueSerializer<EepromData> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<EepromData> cleaner;)
 
 	WB_ALIGN(4) whiteboard::Array< uint8 > bytes;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(bytes);
-	}
 };
 
-struct WB_STRUCT_PACKED EepromInfo
+struct WB_ALIGN(4) EepromInfo
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 17409;
-	static const whiteboard::StructureValueSerializer<EepromInfo> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<EepromInfo> cleaner;)
 
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> model;
 	WB_ALIGN(4) uint32 size;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(model)
-			.visit(size);
-	}
 };
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {
