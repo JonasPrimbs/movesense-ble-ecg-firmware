@@ -11,7 +11,7 @@
 
 ###Known Bugs:###
 - Timestamp sometimes is reseted after subscription Acc/Gyro/Magn
-- The first package of Acc/Magn/Gyro can by corrupted for high sample rates
+- The first package of Acc/Magn/Gyro can be corrupted for high sample rates
 
 
 ## Version 1.0.2.914.29 ##
