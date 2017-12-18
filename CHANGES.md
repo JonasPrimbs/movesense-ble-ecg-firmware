@@ -1,14 +1,18 @@
 ## Version 1.1.0.1058.32 ##
 
 ###Whats new:###
-- TBD
+- Movesense memory optimalizations
+- ByPass service as additional module
+- Battery provider improvements
+- Low battery warning
+- New Ble optional modules BleStandardHRS BleNordicUART
+- Whiteboard update 3.9.0
+- New samples: custom_bleadv_app and ble_std_services
 
 ###Known Bugs:###
-- TBD
+- Timestamp sometimes is reseted after subscription Acc/Gyro/Magn
+- The first package of Acc/Magn/Gyro can by corrupted for high sample rates
 
-###Notes:###
-- REQUIRED: Use **GNU Toolchain for ARM v. 5.4 2016q3**
-- To create DFU package for OTA update, compile application with "ninja dfupkg"
 
 ## Version 1.0.2.914.29 ##
 
