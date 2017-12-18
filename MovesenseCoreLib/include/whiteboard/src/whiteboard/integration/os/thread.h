@@ -14,8 +14,8 @@ enum WbThreadPriority
 /** Type of thread entry point */
 typedef void (*WbThreadEntryPoint)(void* pUserData);
 
-struct WbThreadInfo; // Forward declaration hides the implementation
-typedef WbThreadInfo* WbThreadHandle;
+struct WbThread; // Forward declaration hides the implementation
+typedef WbThread* WbThreadHandle;
 #define WB_INVALID_THREAD NULL
 
 /** Creates a new thread.
@@ -30,11 +30,16 @@ typedef WbThreadInfo* WbThreadHandle;
 WB_API WbThreadHandle WbThreadCreate(
     const char* threadName, uint16 maxStackDepth, WbThreadPriority priority, WbThreadEntryPoint threadEntryPoint, void* pUserData);
 
-/** Attaches existing external thread to whiteboard threading system
+/** Attaches currently executing existing external thread to whiteboard threading system
 *
 * @return Handle to the thread
 */
 WB_API WbThreadHandle WbThreadAttachExternal();
+
+/** Detaches currently executing external thread from whiteboard threading system
+*   freeing any allocated resources
+*/
+WB_API void WbThreadDetachExternal();
 
 /** Deletes a thread
 *
@@ -70,3 +75,19 @@ WB_API void WbThreadSleepMs(size_t milliseconds);
 /** Yields thread execution.
 */
 WB_API void WbThreadYield();
+
+#ifdef WB_HAVE_HEAP_TRACE
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+WB_HEAP_TRACE_DECLARE_WRAPPER(WbThreadHandle, WbThreadCreate, const char*, uint16, WbThreadPriority, WbThreadEntryPoint, void*);
+#define WbThreadCreate(threadName, maxStackDepth, priority, threadEntryPoint, pUserData) \
+    WB_HEAP_TRACE_WRAPPER(WbThreadCreate, threadName, maxStackDepth, priority, threadEntryPoint, pUserData)
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // WB_HAVE_HEAP_TRACE

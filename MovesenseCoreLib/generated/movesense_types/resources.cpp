@@ -20,13 +20,4 @@ WB_STATIC_VERIFY(sizeof(HRData) == 12, SizeOfStructure_HRData_IsNotWhatExpected)
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(HRData) == 4, AlignmentOfStructure_HRData_IsNotWhatExpected);
 
 
-const whiteboard::StructureValueSerializer<VersionInfoArray> VersionInfoArray::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<VersionInfoArray> VersionInfoArray::cleaner;)
-const whiteboard::StructureValueSerializer<VersionInfo> VersionInfo::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<VersionInfo> VersionInfo::cleaner;)
-const whiteboard::StructureValueSerializer<AddressInfo> AddressInfo::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<AddressInfo> AddressInfo::cleaner;)
-const whiteboard::StructureValueSerializer<HRData> HRData::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<HRData> HRData::cleaner;)
-
 } // namespace WB_RES

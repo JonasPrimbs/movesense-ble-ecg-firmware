@@ -5,7 +5,7 @@
 ******************************************************************************/
 
 #include "whiteboard/integration/port.h"
-#include "whiteboard/builtinTypes/StructurePack.h"
+#include "whiteboard/builtinTypes/Structures.h"
 #include "whiteboard/builtinTypes/WrapperFor32BitPointer.h"
 
 namespace whiteboard
@@ -14,13 +14,11 @@ namespace whiteboard
 // Forward declarations
 class ArrayAccessor;
 
-WB_STRUCT_PACK_BEGIN()
-
 /** Structure that handles optionality of an structure member
 *
 * @tparam ItemType Type of the array item
 */
-template <typename ItemType> struct WB_STRUCT_PACKED Array FINAL
+template <typename ItemType> struct Array FINAL
 {
 private:
     /** Library internal implementation can access these members */
@@ -101,8 +99,6 @@ public:
 
 WB_STATIC_VERIFY(sizeof(Array<char>) == 8, SizeOf_Array_Is_Not_Eight_Bytes);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(Array<char>) == 4, Array_Is_Not_Aligned_On_Double_Word_Boundary);
-
-WB_STRUCT_PACK_END()
 
 /** Helper for constructing arrays without specifying template parameters
  *

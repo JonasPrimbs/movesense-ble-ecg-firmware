@@ -40,11 +40,7 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
-
 typedef uint64 GearId;
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {

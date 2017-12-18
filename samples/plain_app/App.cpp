@@ -14,6 +14,7 @@ OPTIONAL_CORE_MODULE(LedService, true)
 OPTIONAL_CORE_MODULE(IndicationService, true)
 OPTIONAL_CORE_MODULE(BleService, true)
 OPTIONAL_CORE_MODULE(EepromService, true)
+OPTIONAL_CORE_MODULE(BypassService, false)
 
 // NOTE: It is inadvisable to enable both Logbook/DataLogger and EepromService without 
 // explicit definition of Logbook memory are (see LOGBOOK_MEMORY_AREA macro in movesense.h and eeprom_logbook_app).

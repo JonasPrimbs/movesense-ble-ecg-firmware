@@ -11,7 +11,4 @@ WB_STATIC_VERIFY(sizeof(FilterData) == 4, SizeOfStructure_FilterData_IsNotWhatEx
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(FilterData) == 4, AlignmentOfStructure_FilterData_IsNotWhatExpected);
 
 
-const whiteboard::StructureValueSerializer<FilterData> FilterData::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<FilterData> FilterData::cleaner;)
-
 } // namespace WB_RES

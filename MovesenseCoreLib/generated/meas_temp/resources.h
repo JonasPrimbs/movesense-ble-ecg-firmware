@@ -40,52 +40,29 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
+struct WB_ALIGN(4) TempInfo;
+struct WB_ALIGN(4) TemperatureValue;
 
-struct WB_STRUCT_PACKED TempInfo;
-struct WB_STRUCT_PACKED TemperatureValue;
-
-struct WB_STRUCT_PACKED TempInfo
+struct WB_ALIGN(4) TempInfo
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 15872;
-	static const whiteboard::StructureValueSerializer<TempInfo> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<TempInfo> cleaner;)
 
 	WB_ALIGN(4) int32 min;
 	WB_ALIGN(4) int32 max;
 	WB_ALIGN(4) float accuracy;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(min)
-			.visit(max)
-			.visit(accuracy);
-	}
 };
 
-struct WB_STRUCT_PACKED TemperatureValue
+struct WB_ALIGN(4) TemperatureValue
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 15873;
-	static const whiteboard::StructureValueSerializer<TemperatureValue> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<TemperatureValue> cleaner;)
 
 	WB_ALIGN(4) uint32 timestamp;
 	WB_ALIGN(4) float measurement;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(timestamp)
-			.visit(measurement);
-	}
 };
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {

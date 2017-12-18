@@ -81,6 +81,12 @@ definitions:
           0 = Not Moving
           1 = Moving
         value: 0
+      - name: 'BatteryStatus'
+        description: |
+          Describes battery status
+          0 = Battery OK
+          1 = Warning: low battery
+        value: 1
 
   State:
     type: integer

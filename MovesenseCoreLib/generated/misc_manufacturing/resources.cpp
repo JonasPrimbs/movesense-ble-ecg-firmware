@@ -23,15 +23,4 @@ WB_STATIC_VERIFY(sizeof(Step) == 1, SizeOfStructure_Step_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(Step) == 1, AlignmentOfStructure_Step_IsNotWhatExpected);
 
 
-const whiteboard::StructureValueSerializer<ProductData> ProductData::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<ProductData> ProductData::cleaner;)
-const whiteboard::StructureValueSerializer<CalibrationData> CalibrationData::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<CalibrationData> CalibrationData::cleaner;)
-const whiteboard::StructureValueSerializer<CalibrationMatrix> CalibrationMatrix::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<CalibrationMatrix> CalibrationMatrix::cleaner;)
-const whiteboard::StructureValueSerializer<StepsDone> StepsDone::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<StepsDone> StepsDone::cleaner;)
-const whiteboard::StructureValueSerializer<Step> Step::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<Step> Step::cleaner;)
-
 } // namespace WB_RES

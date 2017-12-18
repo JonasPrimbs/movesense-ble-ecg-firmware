@@ -3,6 +3,10 @@
 
 #include "whiteboard/metadata/IDataTypeMetadataContainer.h"
 
+WB_HEADER_CHECK_DEFINE(WB_HAVE_ALIEN_STRUCTURES)
+
+#ifdef WB_HAVE_ALIEN_STRUCTURES
+
 namespace whiteboard
 {
 
@@ -168,67 +172,6 @@ public:
     virtual bool exitArrayItem() = 0;
 };
 
-/** This class is used to serialize a whiteboard structure from a source data that is 
- * in another format e.g. JSON. */
-class AlienStructureValueSerializer FINAL : public IValueSerializer
-{
-public:
-    /** Default constructor */
-    inline AlienStructureValueSerializer() {}
-
-    /** Destructor */
-    inline ~AlienStructureValueSerializer() {}
-
-    /** Calculates serialization length of a structure
-    *
-    * @param rStructureSerializationLengthCalculator Structure serialization length calculator to use
-    * @param bufferOffset Buffer offset for serialization start. Needed for alignment calculations.
-    * @param pData Pointer to the actual object that should be serialized
-    * @return Required serialization length in bytes.
-    */
-    size_t getStructureSerializationLength(
-        const IStructureSerializationLengthCalculator& rStructureSerializationLengthCalculator,
-        size_t bufferOffset,
-        const void* pData) const OVERRIDE FINAL;
-
-    /** Serializes the structure
-    *
-    * @param rStructureSerializer Structure serializer to use
-    * @param pBuffer Destination buffer
-    * @param bufferLength Length of the buffer
-    * @param pData Pointer to the actual object that should be serialized
-    * @param isReceiverDataType Is the message in receiver format (true)
-    * @return Length of the serialized data in bytes.
-    */
-    size_t serializeStructure(
-        const IStructureSerializer& rStructureSerializer,
-        void* pBuffer,
-        size_t bufferLength,
-        const void* pData,
-        bool isReceiverDataType) const OVERRIDE FINAL;
-
-    /// @see whiteboard::IValueSerializer::deserializeStructureHeader
-    bool deserializeStructureHeader(
-        const void* pData,
-        const IStructureDeserializer& rStructureDeserializer,
-        bool& rIsReceiverDataType,
-        bool& rIsSenderDataType) const OVERRIDE;
-
-    /** Deserializes a structure
-    *
-    * @param rStructureDeserializer Structure deserializer instance
-    * @param pBuffer Pointer to the buffer that has serialized structure
-    * @param rIsReceiverDataType On output contains a value that indicates whether this is data type with receiver's data type ID
-    * @param rIsSenderDataType On output contains a value that indicates whether this is data type with sender's data type ID
-    * @return  Pointer to deserialized structure within the buffer or NULL on failure
-    */
-    const void* deserializeStructure(
-        const IStructureDeserializer& rStructureDeserializer,
-        void* pBuffer,
-        bool& rIsReceiverDataType,
-        bool& rIsSenderDataType) const OVERRIDE FINAL;
-};
-
 /** Class for passing non-whiteboard data structure as whiteboard value */
 class WB_API AlienStructure FINAL
 {
@@ -314,3 +257,5 @@ private:
 };
 
 } // namespace whiteboard
+
+#endif

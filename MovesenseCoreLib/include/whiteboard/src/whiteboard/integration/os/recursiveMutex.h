@@ -42,3 +42,18 @@ WB_API bool WbRecursiveMutexTryLock(WbRecursiveMutexHandle mutexHandle);
 @param mutexHandle Handle to mutext to release
 */
 WB_API void WbRecursiveMutexUnlock(WbRecursiveMutexHandle mutexHandle);
+
+#ifdef WB_HAVE_HEAP_TRACE
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+WB_HEAP_TRACE_DECLARE_WRAPPER(WbRecursiveMutexHandle, WbRecursiveMutexCreate);
+#define WbRecursiveMutexCreate() WB_HEAP_TRACE_WRAPPER(WbRecursiveMutexCreate)
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // WB_HAVE_HEAP_TRACE

@@ -40,54 +40,30 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
+struct WB_ALIGN(4) SystemEventLogEntry;
+struct WB_ALIGN(4) SystemEventLogEntryArray;
 
-struct WB_STRUCT_PACKED SystemEventLogEntry;
-struct WB_STRUCT_PACKED SystemEventLogEntryArray;
-
-struct WB_STRUCT_PACKED SystemEventLogEntry
+struct WB_ALIGN(4) SystemEventLogEntry
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 1536;
-	static const whiteboard::StructureValueSerializer<SystemEventLogEntry> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<SystemEventLogEntry> cleaner;)
 
 	WB_ALIGN(4) uint32 sequenceNumber;
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> event;
 	WB_ALIGN(2) uint16 compoundSystemState;
 	WB_ALIGN(4) uint32 timestamp;
 	WB_ALIGN(2) uint16 moduleID;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(sequenceNumber)
-			.visit(event)
-			.visit(compoundSystemState)
-			.visit(timestamp)
-			.visit(moduleID);
-	}
 };
 
-struct WB_STRUCT_PACKED SystemEventLogEntryArray
+struct WB_ALIGN(4) SystemEventLogEntryArray
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 1537;
-	static const whiteboard::StructureValueSerializer<SystemEventLogEntryArray> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<SystemEventLogEntryArray> cleaner;)
 
 	WB_ALIGN(4) whiteboard::Array< SystemEventLogEntry > events;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(events);
-	}
 };
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {

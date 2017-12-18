@@ -11,7 +11,4 @@ WB_STATIC_VERIFY(sizeof(HRInfo) == 8, SizeOfStructure_HRInfo_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(HRInfo) == 4, AlignmentOfStructure_HRInfo_IsNotWhatExpected);
 
 
-const whiteboard::StructureValueSerializer<HRInfo> HRInfo::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<HRInfo> HRInfo::cleaner;)
-
 } // namespace WB_RES

@@ -3,6 +3,7 @@
 
 #include "whiteboard/integration/port.h"
 #include "whiteboard/metadata/MetadataStructures.h"
+#include "whiteboard/Result.h"
 
 namespace whiteboard
 {
@@ -22,9 +23,12 @@ public:
 
     /** Checks validity of the metadata blob 
     *
-    * @return A value indicating wether the metadata blob i valid
+    * @return A value indicating wether the metadata blob i valid or not;
+    * HTTP_CODE_OK - the blob is valid
+    * HTTP_CODE_BAD_VERSION - the blob version is not correct
+    * HTTP_CODE_BAD_REQUEST - the blob is corrupt
     */
-    bool isValid() const;
+    Result isValid() const;
 
     /// @return The metadata header
     inline const metadata::MetadataBlobHeader& getMetadataHeader() const
@@ -275,6 +279,13 @@ public:
     * @return Object or NULL if invalid id is given
     */
     const metadata::DataType* getDataTypeById(metadata::DataTypeId id) const;
+
+    /** Returns a base data type of data type with ID
+    *
+    * @param rId On input ID of the object. On output ID of the base data type.
+    * @return Object or NULL if invalid id is given
+    */
+    const metadata::DataType* getBaseDataTypeByDataTypeId(metadata::DataTypeId& rId) const;
 
     /** Returns a data type by index
     *

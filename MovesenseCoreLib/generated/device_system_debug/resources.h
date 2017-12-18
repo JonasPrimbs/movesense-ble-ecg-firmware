@@ -39,28 +39,16 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
+struct WB_ALIGN(4) FilterData;
 
-struct WB_STRUCT_PACKED FilterData;
-
-struct WB_STRUCT_PACKED FilterData
+struct WB_ALIGN(4) FilterData
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 768;
-	static const whiteboard::StructureValueSerializer<FilterData> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<FilterData> cleaner;)
 
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> filterString;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(filterString);
-	}
 };
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {

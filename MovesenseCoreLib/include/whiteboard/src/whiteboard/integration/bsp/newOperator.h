@@ -109,8 +109,8 @@ static inline TRIVIALLY_DESTRUCTIBLE_TYPE* New()
     new (ptr) T();
     return ptr;
 }
-template <typename T, typename T1>
-static inline TRIVIALLY_DESTRUCTIBLE_TYPE* New(T1 P1)
+template <typename T, typename P1>
+static inline TRIVIALLY_DESTRUCTIBLE_TYPE* New(P1 p1)
 {
     WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(T) <= WB_MALLOC_ALIGNMENT, AlignedNewMustBeUsed);
 
@@ -118,7 +118,7 @@ static inline TRIVIALLY_DESTRUCTIBLE_TYPE* New(T1 P1)
     T* ptr = static_cast<T*>(WbMemAlloc(sizeof(T)));
 
     // Clear memory to its default values by using compiler generated default constructor
-    new (ptr) T(P1);
+    new (ptr) T(p1);
     return ptr;
 }
 
@@ -187,8 +187,6 @@ static inline void DeleteArray(T* pointer, TRIVIALLY_DESTRUCTIBLE_TYPE* = 0)
 template <typename T>
 static inline TRIVIALLY_DESTRUCTIBLE_TYPE* NewAligned()
 {
-    WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(T) <= WB_MALLOC_ALIGNMENT, AlignedNewAlignedMustBeUsed);
-
     // No assert here, because memory allocation failures are already asserted in WbMemAlloc
     T* ptr = static_cast<T*>(WbMemAllocAlignedAlways(sizeof(T), WB_TYPE_ALIGNMENT(T)));
 
@@ -199,8 +197,6 @@ static inline TRIVIALLY_DESTRUCTIBLE_TYPE* NewAligned()
 template <typename T, typename T1>
 static inline TRIVIALLY_DESTRUCTIBLE_TYPE* NewAligned(T1 P1)
 {
-    WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(T) <= WB_MALLOC_ALIGNMENT, AlignedNewAlignedMustBeUsed);
-
     // No assert here, because memory allocation failures are already asserted in WbMemAlloc
     T* ptr = static_cast<T*>(WbMemAllocAlignedAlways(sizeof(T), WB_TYPE_ALIGNMENT(T)));
 
@@ -237,8 +233,6 @@ static inline void DeleteAligned(T* pointer, TRIVIALLY_DESTRUCTIBLE_TYPE* = 0)
 template <typename T>
 static inline TRIVIALLY_DESTRUCTIBLE_TYPE* NewAlignedArray(size_t itemCount)
 {
-    WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(T) <= WB_MALLOC_ALIGNMENT, AlignedNewAlignedArrayMustBeUsed);
-
     // No assert here, because memory allocation failures are already asserted in WbMemAlloc
     T* ptr = static_cast<T*>(WbMemAllocAlignedAlways(sizeof(T) * itemCount, WB_TYPE_ALIGNMENT(T)));
 
@@ -263,5 +257,123 @@ static inline void DeleteAlignedArray(T* pointer, TRIVIALLY_DESTRUCTIBLE_TYPE* =
         WbMemFreeAlignedAlways(pointer);
     }
 }
+
+#ifdef WB_HAVE_HEAP_TRACE
+
+class ht_New
+{
+public:
+    const char* mCallerFile;
+    size_t mCallerLine;
+    const char* mCallerFunc;
+
+    ht_New(const char* callerFile, size_t callerLine, const char* callerFunc)
+        : mCallerFile(callerFile), mCallerLine(callerLine), mCallerFunc(callerFunc)
+    {
+    }
+
+    template <typename T>
+    inline TRIVIALLY_DESTRUCTIBLE_TYPE* call()
+    {
+        heapTraceEnter(mCallerFile, mCallerLine, mCallerFunc, "New");
+        TRIVIALLY_DESTRUCTIBLE_TYPE* result = New<T>();
+        heapTraceExit(mCallerFile, mCallerLine, mCallerFunc, "New");
+        return result;
+    }
+
+    template <typename T, typename P1>
+    inline TRIVIALLY_DESTRUCTIBLE_TYPE* call(P1 p1)
+    {
+        heapTraceEnter(mCallerFile, mCallerLine, mCallerFunc, "New");
+        TRIVIALLY_DESTRUCTIBLE_TYPE* result = New<T, P1>(p1);
+        heapTraceExit(mCallerFile, mCallerLine, mCallerFunc, "New");
+        return result;
+    }
+};
+
+#define New ht_New(__FILE__, __LINE__, __FUNCTION__).call
+
+class ht_NewArray
+{
+public:
+    const char* mCallerFile;
+    size_t mCallerLine;
+    const char* mCallerFunc;
+
+    ht_NewArray(const char* callerFile, size_t callerLine, const char* callerFunc)
+        : mCallerFile(callerFile), mCallerLine(callerLine), mCallerFunc(callerFunc)
+    {
+    }
+
+    template <typename T>
+    inline TRIVIALLY_DESTRUCTIBLE_TYPE* call(size_t itemCount)
+    {
+        heapTraceEnter(mCallerFile, mCallerLine, mCallerFunc, "NewArray");
+        TRIVIALLY_DESTRUCTIBLE_TYPE* result = NewArray<T>(itemCount);
+        heapTraceExit(mCallerFile, mCallerLine, mCallerFunc, "NewArray");
+        return result;
+    }
+};
+
+#define NewArray ht_NewArray(__FILE__, __LINE__, __FUNCTION__).call
+
+class ht_NewAligned
+{
+public:
+    const char* mCallerFile;
+    size_t mCallerLine;
+    const char* mCallerFunc;
+
+    ht_NewAligned(const char* callerFile, size_t callerLine, const char* callerFunc)
+        : mCallerFile(callerFile), mCallerLine(callerLine), mCallerFunc(callerFunc)
+    {
+    }
+
+    template <typename T>
+    inline TRIVIALLY_DESTRUCTIBLE_TYPE* call()
+    {
+        heapTraceEnter(mCallerFile, mCallerLine, mCallerFunc, "NewAligned");
+        TRIVIALLY_DESTRUCTIBLE_TYPE* result = NewAligned<T>();
+        heapTraceExit(mCallerFile, mCallerLine, mCallerFunc, "NewAligned");
+        return result;
+    }
+
+    template <typename T, typename P1>
+    inline TRIVIALLY_DESTRUCTIBLE_TYPE* call(P1 p1)
+    {
+        heapTraceEnter(mCallerFile, mCallerLine, mCallerFunc, "NewAligned");
+        TRIVIALLY_DESTRUCTIBLE_TYPE* result = NewAligned<T, P1>(p1);
+        heapTraceExit(mCallerFile, mCallerLine, mCallerFunc, "NewAligned");
+        return result;
+    }
+};
+
+#define NewAligned ht_NewAligned(__FILE__, __LINE__, __FUNCTION__).call
+
+class ht_NewAlignedArray
+{
+public:
+    const char* mCallerFile;
+    size_t mCallerLine;
+    const char* mCallerFunc;
+
+    ht_NewAlignedArray(const char* callerFile, size_t callerLine, const char* callerFunc)
+        : mCallerFile(callerFile), mCallerLine(callerLine), mCallerFunc(callerFunc)
+    {
+    }
+
+    template <typename T>
+    inline TRIVIALLY_DESTRUCTIBLE_TYPE* call(size_t itemCount)
+    {
+        heapTraceEnter(mCallerFile, mCallerLine, mCallerFunc, "NewAlignedArray");
+        TRIVIALLY_DESTRUCTIBLE_TYPE* result = NewAlignedArray<T>(itemCount);
+        heapTraceExit(mCallerFile, mCallerLine, mCallerFunc, "NewAlignedArray");
+        return result;
+    }
+};
+
+#define NewAlignedArray ht_NewAlignedArray(__FILE__, __LINE__, __FUNCTION__).call
+
+#endif
 
 }

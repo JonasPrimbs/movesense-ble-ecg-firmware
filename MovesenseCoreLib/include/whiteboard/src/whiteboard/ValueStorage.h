@@ -3,11 +3,11 @@
 
 #include "whiteboard/Value.h"
 
-#include <cstring>
-#include <algorithm>
-
 namespace whiteboard
 {
+
+// Forward declarations
+class ValueStorageAccessor;
 
 /**
 Generic storage class for primitive datatypes (scalar types & strings) for 
@@ -178,6 +178,7 @@ private:
     T convertToNative() const;
 
     friend class whiteboard::Value;
+    friend class whiteboard::ValueStorageAccessor;
 
     /// @see whiteboard::ValueType
     ValueType mValueType;

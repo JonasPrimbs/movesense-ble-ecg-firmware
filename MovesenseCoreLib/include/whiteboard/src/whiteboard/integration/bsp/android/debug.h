@@ -12,8 +12,11 @@
 
 #if! defined(NDEBUG) || defined(WB_HAVE_DEBUGLOG_IN_RELEASE)
 #define WB_DEBUGLOG(...) ((void)__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__))
+#define WB_DEBUGLOG_SIZE() WB_DEBUGLOG("[this]:%s: %uB", __FUNCTION__, sizeof(*this))
+
 #else
 #define WB_DEBUGLOG(...) ((void)0)
+#define WB_DEBUGLOG_SIZE()
 #endif
 
 // Assert implementation. Do not use this directly.

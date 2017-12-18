@@ -17,6 +17,9 @@ WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ListOfStrings) == 4, AlignmentOfStructure_Lis
 WB_STATIC_VERIFY(sizeof(WbInfo) == 8, SizeOfStructure_WbInfo_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(WbInfo) == 4, AlignmentOfStructure_WbInfo_IsNotWhatExpected);
 
+WB_STATIC_VERIFY(sizeof(CommStats) == 8, SizeOfStructure_CommStats_IsNotWhatExpected);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(CommStats) == 4, AlignmentOfStructure_CommStats_IsNotWhatExpected);
+
 WB_STATIC_VERIFY(sizeof(ThreadInfo) == 28, SizeOfStructure_ThreadInfo_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ThreadInfo) == 4, AlignmentOfStructure_ThreadInfo_IsNotWhatExpected);
 
@@ -87,59 +90,6 @@ WB_STATIC_VERIFY(sizeof(StringMetadata) == 8, SizeOfStructure_StringMetadata_IsN
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(StringMetadata) == 4, AlignmentOfStructure_StringMetadata_IsNotWhatExpected);
 
 
-const whiteboard::StructureValueSerializer<ListOfBytes> ListOfBytes::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<ListOfBytes> ListOfBytes::cleaner;)
-const whiteboard::StructureValueSerializer<ListOfStrings> ListOfStrings::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<ListOfStrings> ListOfStrings::cleaner;)
-const whiteboard::StructureValueSerializer<WbInfo> WbInfo::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<WbInfo> WbInfo::cleaner;)
-const whiteboard::StructureValueSerializer<ThreadInfo> ThreadInfo::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<ThreadInfo> ThreadInfo::cleaner;)
-const whiteboard::StructureValueSerializer<ThreadInfoList> ThreadInfoList::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<ThreadInfoList> ThreadInfoList::cleaner;)
-const whiteboard::StructureValueSerializer<PoolStats> PoolStats::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<PoolStats> PoolStats::cleaner;)
-const whiteboard::StructureValueSerializer<PoolStatsList> PoolStatsList::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<PoolStatsList> PoolStatsList::cleaner;)
-const whiteboard::StructureValueSerializer<EventQueueInfo> EventQueueInfo::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<EventQueueInfo> EventQueueInfo::cleaner;)
-const whiteboard::StructureValueSerializer<EventQueueInfoList> EventQueueInfoList::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<EventQueueInfoList> EventQueueInfoList::cleaner;)
-const whiteboard::StructureValueSerializer<SubscriptionInfo> SubscriptionInfo::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<SubscriptionInfo> SubscriptionInfo::cleaner;)
-const whiteboard::StructureValueSerializer<SubscriptionList> SubscriptionList::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<SubscriptionList> SubscriptionList::cleaner;)
-const whiteboard::StructureValueSerializer<RoutingTableEntry> RoutingTableEntry::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<RoutingTableEntry> RoutingTableEntry::cleaner;)
-const whiteboard::StructureValueSerializer<RoutingTable> RoutingTable::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<RoutingTable> RoutingTable::cleaner;)
-const whiteboard::StructureValueSerializer<CompactWbVersion> CompactWbVersion::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<CompactWbVersion> CompactWbVersion::cleaner;)
-const whiteboard::StructureValueSerializer<LaunchableModule> LaunchableModule::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<LaunchableModule> LaunchableModule::cleaner;)
-const whiteboard::StructureValueSerializer<LaunchableList> LaunchableList::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<LaunchableList> LaunchableList::cleaner;)
-const whiteboard::StructureValueSerializer<ExecutionContextMetadata> ExecutionContextMetadata::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<ExecutionContextMetadata> ExecutionContextMetadata::cleaner;)
-const whiteboard::StructureValueSerializer<ResourceMetadata> ResourceMetadata::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<ResourceMetadata> ResourceMetadata::cleaner;)
-const whiteboard::StructureValueSerializer<OperationMetadata> OperationMetadata::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<OperationMetadata> OperationMetadata::cleaner;)
-const whiteboard::StructureValueSerializer<ResponseMetadata> ResponseMetadata::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<ResponseMetadata> ResponseMetadata::cleaner;)
-const whiteboard::StructureValueSerializer<ParameterMetadata> ParameterMetadata::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<ParameterMetadata> ParameterMetadata::cleaner;)
-const whiteboard::StructureValueSerializer<StructurePropertyMetadata> StructurePropertyMetadata::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<StructurePropertyMetadata> StructurePropertyMetadata::cleaner;)
-const whiteboard::StructureValueSerializer<EnumerationItemMetadata> EnumerationItemMetadata::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<EnumerationItemMetadata> EnumerationItemMetadata::cleaner;)
-const whiteboard::StructureValueSerializer<DataTypeMetadata> DataTypeMetadata::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<DataTypeMetadata> DataTypeMetadata::cleaner;)
-const whiteboard::StructureValueSerializer<SecurityTagMetadata> SecurityTagMetadata::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<SecurityTagMetadata> SecurityTagMetadata::cleaner;)
-const whiteboard::StructureValueSerializer<StringMetadata> StringMetadata::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<StringMetadata> StringMetadata::cleaner;)
-
 } // namespace WB_RES
 #elif defined(RELEASE) 
 /***********************************************************************
@@ -159,6 +109,9 @@ WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ListOfStrings) == 4, AlignmentOfStructure_Lis
 
 WB_STATIC_VERIFY(sizeof(WbInfo) == 8, SizeOfStructure_WbInfo_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(WbInfo) == 4, AlignmentOfStructure_WbInfo_IsNotWhatExpected);
+
+WB_STATIC_VERIFY(sizeof(CommStats) == 8, SizeOfStructure_CommStats_IsNotWhatExpected);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(CommStats) == 4, AlignmentOfStructure_CommStats_IsNotWhatExpected);
 
 WB_STATIC_VERIFY(sizeof(ThreadInfo) == 28, SizeOfStructure_ThreadInfo_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ThreadInfo) == 4, AlignmentOfStructure_ThreadInfo_IsNotWhatExpected);
@@ -208,45 +161,6 @@ WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(SecurityTagMetadata) == 2, AlignmentOfStructu
 WB_STATIC_VERIFY(sizeof(StringMetadata) == 8, SizeOfStructure_StringMetadata_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(StringMetadata) == 4, AlignmentOfStructure_StringMetadata_IsNotWhatExpected);
 
-
-const whiteboard::StructureValueSerializer<ListOfBytes> ListOfBytes::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<ListOfBytes> ListOfBytes::cleaner;)
-const whiteboard::StructureValueSerializer<ListOfStrings> ListOfStrings::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<ListOfStrings> ListOfStrings::cleaner;)
-const whiteboard::StructureValueSerializer<WbInfo> WbInfo::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<WbInfo> WbInfo::cleaner;)
-const whiteboard::StructureValueSerializer<ThreadInfo> ThreadInfo::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<ThreadInfo> ThreadInfo::cleaner;)
-const whiteboard::StructureValueSerializer<ThreadInfoList> ThreadInfoList::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<ThreadInfoList> ThreadInfoList::cleaner;)
-const whiteboard::StructureValueSerializer<RoutingTable> RoutingTable::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<RoutingTable> RoutingTable::cleaner;)
-const whiteboard::StructureValueSerializer<CompactWbVersion> CompactWbVersion::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<CompactWbVersion> CompactWbVersion::cleaner;)
-const whiteboard::StructureValueSerializer<LaunchableModule> LaunchableModule::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<LaunchableModule> LaunchableModule::cleaner;)
-const whiteboard::StructureValueSerializer<LaunchableList> LaunchableList::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<LaunchableList> LaunchableList::cleaner;)
-const whiteboard::StructureValueSerializer<ExecutionContextMetadata> ExecutionContextMetadata::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<ExecutionContextMetadata> ExecutionContextMetadata::cleaner;)
-const whiteboard::StructureValueSerializer<ResourceMetadata> ResourceMetadata::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<ResourceMetadata> ResourceMetadata::cleaner;)
-const whiteboard::StructureValueSerializer<OperationMetadata> OperationMetadata::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<OperationMetadata> OperationMetadata::cleaner;)
-const whiteboard::StructureValueSerializer<ResponseMetadata> ResponseMetadata::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<ResponseMetadata> ResponseMetadata::cleaner;)
-const whiteboard::StructureValueSerializer<ParameterMetadata> ParameterMetadata::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<ParameterMetadata> ParameterMetadata::cleaner;)
-const whiteboard::StructureValueSerializer<StructurePropertyMetadata> StructurePropertyMetadata::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<StructurePropertyMetadata> StructurePropertyMetadata::cleaner;)
-const whiteboard::StructureValueSerializer<EnumerationItemMetadata> EnumerationItemMetadata::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<EnumerationItemMetadata> EnumerationItemMetadata::cleaner;)
-const whiteboard::StructureValueSerializer<DataTypeMetadata> DataTypeMetadata::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<DataTypeMetadata> DataTypeMetadata::cleaner;)
-const whiteboard::StructureValueSerializer<SecurityTagMetadata> SecurityTagMetadata::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<SecurityTagMetadata> SecurityTagMetadata::cleaner;)
-const whiteboard::StructureValueSerializer<StringMetadata> StringMetadata::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<StringMetadata> StringMetadata::cleaner;)
 
 } // namespace WB_RES
 #endif 

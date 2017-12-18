@@ -40,8 +40,6 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
-
 struct SystemModeValues
 {
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 2304;
@@ -61,28 +59,17 @@ struct SystemModeValues
 };
 typedef whiteboard::TypedEnum<SystemModeValues, SystemModeValues::Type, uint8> SystemMode;
 
-struct WB_STRUCT_PACKED SystemModeStatus;
+struct WB_ALIGN(1) SystemModeStatus;
 
-struct WB_STRUCT_PACKED SystemModeStatus
+struct WB_ALIGN(1) SystemModeStatus
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 2305;
-	static const whiteboard::StructureValueSerializer<SystemModeStatus> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<SystemModeStatus> cleaner;)
 
 	WB_ALIGN(1) SystemMode current;
 	WB_ALIGN(1) whiteboard::Optional< SystemMode > next;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(current)
-			.visit(next);
-	}
 };
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {

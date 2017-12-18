@@ -40,35 +40,23 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
+struct WB_ALIGN(1) TxPow;
+struct WB_ALIGN(4) TestMode;
 
-struct WB_STRUCT_PACKED TxPow;
-struct WB_STRUCT_PACKED TestMode;
-
-struct WB_STRUCT_PACKED TxPow
+struct WB_ALIGN(1) TxPow
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14336;
-	static const whiteboard::StructureValueSerializer<TxPow> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<TxPow> cleaner;)
 
 	WB_ALIGN(1) uint8 level;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(level);
-	}
 };
 
-struct WB_STRUCT_PACKED TestMode
+struct WB_ALIGN(4) TestMode
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14337;
-	static const whiteboard::StructureValueSerializer<TestMode> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<TestMode> cleaner;)
 
 	WB_ALIGN(1) uint8 cmd;
 	WB_ALIGN(1) uint8 chn;
@@ -76,20 +64,7 @@ struct WB_STRUCT_PACKED TestMode
 	WB_ALIGN(1) uint8 len;
 	WB_ALIGN(4) uint32 payload;
 	WB_ALIGN(1) uint8 timeout;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(cmd)
-			.visit(chn)
-			.visit(chn_end)
-			.visit(len)
-			.visit(payload)
-			.visit(timeout);
-	}
 };
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {

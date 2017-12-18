@@ -40,8 +40,6 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
-
 struct DataLoggerStateValues
 {
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 13059;
@@ -55,62 +53,36 @@ struct DataLoggerStateValues
 };
 typedef whiteboard::TypedEnum<DataLoggerStateValues, DataLoggerStateValues::Type, uint8> DataLoggerState;
 
-struct WB_STRUCT_PACKED DataEntry;
-struct WB_STRUCT_PACKED DataEntryArray;
-struct WB_STRUCT_PACKED DataLoggerConfig;
+struct WB_ALIGN(4) DataEntry;
+struct WB_ALIGN(4) DataEntryArray;
+struct WB_ALIGN(4) DataLoggerConfig;
 
-struct WB_STRUCT_PACKED DataEntry
+struct WB_ALIGN(4) DataEntry
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 13056;
-	static const whiteboard::StructureValueSerializer<DataEntry> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<DataEntry> cleaner;)
 
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> path;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(path);
-	}
 };
 
-struct WB_STRUCT_PACKED DataEntryArray
+struct WB_ALIGN(4) DataEntryArray
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 13057;
-	static const whiteboard::StructureValueSerializer<DataEntryArray> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<DataEntryArray> cleaner;)
 
 	WB_ALIGN(4) whiteboard::Array< DataEntry > dataEntry;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(dataEntry);
-	}
 };
 
-struct WB_STRUCT_PACKED DataLoggerConfig
+struct WB_ALIGN(4) DataLoggerConfig
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 13058;
-	static const whiteboard::StructureValueSerializer<DataLoggerConfig> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<DataLoggerConfig> cleaner;)
 
 	WB_ALIGN(4) DataEntryArray dataEntries;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(dataEntries);
-	}
 };
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {

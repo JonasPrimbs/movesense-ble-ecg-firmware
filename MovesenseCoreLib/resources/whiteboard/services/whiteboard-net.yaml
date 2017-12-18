@@ -64,15 +64,11 @@ paths:
 
   /Net/Subscription:
     post:
-      tags:
-        - Suunto API
       description: |
         Subscribe to the routing table changes, ie changes on remote whiteboards.
       responses:
         200:
           description: Operation completed successfully
-        x-std-errors:
-          description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
         x-notification:
           description: |
             Event notification, contains serial number of the remote whiteboard that has changed.
@@ -93,15 +89,11 @@ paths:
         - suuntoAccessCode:
           - public
     delete:
-      tags:
-        - Suunto API
       description: |
         Unsubscribe from routing table changes.
       responses:
         200:
           description: Operation completed successfully
-        x-std-errors:
-          description: See common error codes http://developer.suunto.com/api/std-errors#unsubscribe
       security:
         - suuntoAccessCode:
           - public

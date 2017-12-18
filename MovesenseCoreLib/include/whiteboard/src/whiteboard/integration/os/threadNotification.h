@@ -3,12 +3,11 @@
 
 #include "whiteboard/integration/port.h"
 
-#include "whiteboard/integration/os/thread.h"
 #include "whiteboard/integration/os/eventGroup.h"
 
-// Simulate thread notification with event group
-typedef WbEventGroupHandle WbThreadNotificationHandle;
-#define WB_INVALID_THREADNOTIFICATION WB_INVALID_EVENTGROUP
+struct WbThreadNotification; // Forward declaration hides the implementation
+typedef WbThreadNotification* WbThreadNotificationHandle;
+#define WB_INVALID_THREADNOTIFICATION NULL
 
 /** Initializes thread notification for given thread.
 * Note that thread can have only one notification bit set.
@@ -39,3 +38,18 @@ WB_API WbEventFlagMask WbThreadNotificationWait(WbThreadNotificationHandle threa
 * @param isIsr A value indicating whether this function is called from interrupt service routine
 */
 WB_API void WbThreadNotificationSetFlags(WbThreadNotificationHandle threadNotificationHandle, WbEventFlagMask flags, bool isIsr);
+
+#ifdef WB_HAVE_HEAP_TRACE
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+WB_HEAP_TRACE_DECLARE_WRAPPER(WbThreadNotificationHandle, WbThreadNotificationInitialize, WbThreadHandle);
+#define WbThreadNotificationInitialize(threadHandle) WB_HEAP_TRACE_WRAPPER(WbThreadNotificationInitialize, threadHandle)
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // WB_HAVE_HEAP_TRACE

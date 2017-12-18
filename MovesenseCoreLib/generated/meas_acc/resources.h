@@ -40,68 +40,38 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
+struct WB_ALIGN(4) AccInfo;
+struct WB_ALIGN(1) AccConfig;
+struct WB_ALIGN(4) AccData;
 
-struct WB_STRUCT_PACKED AccInfo;
-struct WB_STRUCT_PACKED AccConfig;
-struct WB_STRUCT_PACKED AccData;
-
-struct WB_STRUCT_PACKED AccInfo
+struct WB_ALIGN(4) AccInfo
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 15104;
-	static const whiteboard::StructureValueSerializer<AccInfo> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<AccInfo> cleaner;)
 
 	WB_ALIGN(4) whiteboard::Array< uint16 > sampleRates;
 	WB_ALIGN(4) whiteboard::Array< uint8 > ranges;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(sampleRates)
-			.visit(ranges);
-	}
 };
 
-struct WB_STRUCT_PACKED AccConfig
+struct WB_ALIGN(1) AccConfig
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 15105;
-	static const whiteboard::StructureValueSerializer<AccConfig> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<AccConfig> cleaner;)
 
 	WB_ALIGN(1) uint8 gRange;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(gRange);
-	}
 };
 
-struct WB_STRUCT_PACKED AccData
+struct WB_ALIGN(4) AccData
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 15106;
-	static const whiteboard::StructureValueSerializer<AccData> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<AccData> cleaner;)
 
 	WB_ALIGN(4) uint32 timestamp;
 	WB_ALIGN(4) whiteboard::Array< whiteboard::FloatVector3D > arrayAcc;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(timestamp)
-			.visit(arrayAcc);
-	}
 };
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {

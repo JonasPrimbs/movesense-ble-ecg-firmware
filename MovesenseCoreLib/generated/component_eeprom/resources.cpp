@@ -14,9 +14,4 @@ WB_STATIC_VERIFY(sizeof(EepromInfo) == 8, SizeOfStructure_EepromInfo_IsNotWhatEx
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(EepromInfo) == 4, AlignmentOfStructure_EepromInfo_IsNotWhatExpected);
 
 
-const whiteboard::StructureValueSerializer<EepromData> EepromData::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<EepromData> EepromData::cleaner;)
-const whiteboard::StructureValueSerializer<EepromInfo> EepromInfo::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<EepromInfo> EepromInfo::cleaner;)
-
 } // namespace WB_RES

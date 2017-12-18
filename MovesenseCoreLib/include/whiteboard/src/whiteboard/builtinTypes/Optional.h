@@ -1,14 +1,9 @@
 #pragma once
-/******************************************************************************
-
-    Copyright (c) Suunto Oy 2015.
-    All rights reserved.
-
-******************************************************************************/
+// Copyright (c) Suunto Oy 2015. All rights reserved.
 
 #include "whiteboard/integration/port.h"
 #include "whiteboard/builtinTypes/NoType.h"
-#include "whiteboard/builtinTypes/StructurePack.h"
+#include "whiteboard/builtinTypes/Structures.h"
 
 namespace whiteboard
 {
@@ -16,11 +11,9 @@ namespace whiteboard
 // Forward declarations
 class IStructureVisitor;
 
-WB_STRUCT_PACK_BEGIN()
-
 /** Structure that handles optionality of an structure member */
 template <typename ItemType>
-struct WB_STRUCT_PACKED Optional
+struct Optional
 {
 private:
     friend class IStructureVisitor;
@@ -99,7 +92,5 @@ public:
     inline friend bool operator!=(const Optional& lhs, const ItemType& rhs) { return !(lhs == rhs); }
     inline friend bool operator!=(const ItemType& lhs, const Optional& rhs) { return !(lhs == rhs); }
 };
-
-WB_STRUCT_PACK_END()
 
 } // namespace whiteboard

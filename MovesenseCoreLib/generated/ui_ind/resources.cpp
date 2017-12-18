@@ -11,7 +11,4 @@ WB_STATIC_VERIFY(sizeof(VisualIndState) == 2, SizeOfStructure_VisualIndState_IsN
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(VisualIndState) == 2, AlignmentOfStructure_VisualIndState_IsNotWhatExpected);
 
 
-const whiteboard::StructureValueSerializer<VisualIndState> VisualIndState::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<VisualIndState> VisualIndState::cleaner;)
-
 } // namespace WB_RES

@@ -11,6 +11,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern NSString *const sServiceUUID;
+
 typedef void (^WBCentralConnectPeripheralFailureCallback)(NSError *_Nullable error);
 typedef void (^WBCentralDidConnectPeripheralCallback)(NSUUID* uuid, BOOL result);
 typedef void (^WBCentralDidDisconnectPeripheralCallback)(NSUUID* uuid, BOOL wasRemotelyInitiated);
@@ -55,14 +57,25 @@ typedef void (^WBCentralDidNotifyDisconnectPeripheralCallback)(NSUUID* uuid, BOO
            resetAutoReconnectStatus:(BOOL)resetAutoReconnectStatus;
 
 /**
+ Starts disconnect attempt from a peripheral with given @c uuid
+ If peripheral was connected when this method was called, calls @c didDisconnectFromPeripheral callback when the disconnect either succeeds or fails.
+ This method can also be used to cancel a connection attempt previously started with @c connectToPeripheralWithUUID: even if
+ connection has not yet been established
+ @param uuid UUID of the peripheral
+ @return @c YES, if peripheral was found with given @c uuid and the request to cancel/close the connection to that peripheral was sent successfully. @c NO if the peripheral was not found, or it was found but it was already disconnected.
+ */
+- (BOOL)disconnectFromPeripheralWithUUID:(NSUUID *)uuid;
+
+/**
    Starts disconnect attempt from a peripheral with given @c uuid
    If peripheral was connected when this method was called, calls @c didDisconnectFromPeripheral callback when the disconnect either succeeds or fails.
    This method can also be used to cancel a connection attempt previously started with @c connectToPeripheralWithUUID: even if
    connection has not yet been established
    @param uuid UUID of the peripheral
+   @param remove If YES peripheral is removed from the "known" devices list
    @return @c YES, if peripheral was found with given @c uuid and the request to cancel/close the connection to that peripheral was sent successfully. @c NO if the peripheral was not found, or it was found but it was already disconnected.
  */
-- (BOOL)disconnectFromPeripheralWithUUID:(NSUUID *)uuid;
+- (BOOL)disconnectFromPeripheralWithUUID:(NSUUID *)uuid remove:(BOOL)remove;
 
 /**
    Writes the given @c data to peripheral with given @c uuid. Writing is asyncronous and happens in chunks.
@@ -83,6 +96,21 @@ typedef void (^WBCentralDidNotifyDisconnectPeripheralCallback)(NSUUID* uuid, BOO
    @param serial Serial number of the device for which auto-reconnect should be disabled. Duplicate serials will be ignored. Cannot be nil.
  */
 - (void)disableAutoReconnectForDeviceWithSerial:(NSString *)serial;
+
+/**
+ Prevent receiver from automatically reconnecting to device with given @c uuid after it has been disconnected.
+ If this method is not called, the default behaviour is to reconnect to device, also when the app is suspended in the background.
+ @param uuid UUID of the device for which auto-reconnect should be disabled. Duplicate uuids will be ignored. Cannot be nil.
+ */
+- (void)disableAutoReconnectForDeviceWithUUID:(NSUUID *)uuid;
+
+
+/**
+ Sets whether the compatible devices are retrieved (and connected) from the system (retrieveConnectedPeripheralsWithServices) or just handling
+ those that are explicitely connected (using connectToPeripheralWithUUID)
+ @param state If YES devices are retrieved from the system.
+ */
+- (void)setRetrieveFromSystem:(BOOL)state;
 
 @end
 
