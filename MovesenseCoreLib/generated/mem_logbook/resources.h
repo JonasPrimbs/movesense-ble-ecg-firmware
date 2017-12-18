@@ -40,50 +40,28 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
+struct WB_ALIGN(8) LogEntry;
+struct WB_ALIGN(4) LogEntries;
 
-struct WB_STRUCT_PACKED LogEntry;
-struct WB_STRUCT_PACKED LogEntries;
-
-struct WB_STRUCT_PACKED LogEntry
+struct WB_ALIGN(8) LogEntry
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 13312;
-	static const whiteboard::StructureValueSerializer<LogEntry> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<LogEntry> cleaner;)
 
 	WB_ALIGN(4) uint32 id;
 	WB_ALIGN(4) uint32 modificationTimestamp;
 	WB_ALIGN(8) whiteboard::Optional< uint64 > size;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(id)
-			.visit(modificationTimestamp)
-			.visit(size);
-	}
 };
 
-struct WB_STRUCT_PACKED LogEntries
+struct WB_ALIGN(4) LogEntries
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 13313;
-	static const whiteboard::StructureValueSerializer<LogEntries> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<LogEntries> cleaner;)
 
 	WB_ALIGN(4) whiteboard::Array< LogEntry > elements;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(elements);
-	}
 };
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {

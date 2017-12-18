@@ -1,0 +1,20 @@
+# Type of the document
+wbres:
+  version: "2.0"
+  type: "root"
+
+# Execution context definitions
+executionContexts:
+  application:
+    numberOfDpcs: 8
+    numberOfRequests: 20
+    numberOfResponses: 25
+    externalThread: true # we run this execution context in main thread
+    stackSize: 768
+    priority: normal
+  meas:
+    numberOfDpcs: 9
+    numberOfRequests: 25
+    numberOfResponses: 10
+    stackSize: 768
+    priority: normal

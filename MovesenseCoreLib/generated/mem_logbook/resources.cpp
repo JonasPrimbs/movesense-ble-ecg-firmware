@@ -14,9 +14,4 @@ WB_STATIC_VERIFY(sizeof(LogEntry) == 24, SizeOfStructure_LogEntry_IsNotWhatExpec
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(LogEntry) == 8, AlignmentOfStructure_LogEntry_IsNotWhatExpected);
 
 
-const whiteboard::StructureValueSerializer<LogEntries> LogEntries::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<LogEntries> LogEntries::cleaner;)
-const whiteboard::StructureValueSerializer<LogEntry> LogEntry::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<LogEntry> LogEntry::cleaner;)
-
 } // namespace WB_RES

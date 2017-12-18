@@ -81,18 +81,27 @@ public:
     {
     public:
         ResourceIdOrPath(const ResourceId resourceId)
-            : mResourceId(resourceId), mResourcePath(NULL)
+            : mResourceId(resourceId), mResourcePath(NULL), mpClient(NULL)
         {
         }
 
         ResourceIdOrPath(const ResourceId::Value resourceIdValue)
-            : mResourceId(resourceIdValue), mResourcePath(NULL)
+            : mResourceId(resourceIdValue), mResourcePath(NULL), mpClient(NULL)
         {
         }
 
         ResourceIdOrPath(const char* resourcePath)
-            : mResourceId(ID_INVALID_RESOURCE), mResourcePath(resourcePath)
+            : mResourceId(ID_INVALID_RESOURCE), mResourcePath(resourcePath), mpClient(NULL)
         {
+        }
+
+        ~ResourceIdOrPath()
+        {
+            // Release resource on exit
+            if (mResourcePath && mpClient)
+            {
+                mpClient->callAsyncReleaseResourceAndWaitResult(mResourceId);
+            }
         }
 
         ResourceId getId(TestClientWithDefaults& rClient) const
@@ -107,6 +116,10 @@ public:
             }
             else
             {
+                // Don't mix clients with same ResourceIdOrPath instance
+                WB_ASSERT((mpClient == NULL) || (mpClient == &rClient));
+                mpClient = &rClient;
+
                 TestResult<NoType> result = rClient.callGetResourceInternal(mResourcePath);
                 return result ? result.mResourceId : ID_INVALID_RESOURCE;
             }
@@ -114,6 +127,7 @@ public:
 
         ResourceId mResourceId;
         const char* mResourcePath;
+        mutable TestClientWithDefaults* mpClient;
     };
 
     /*******************************
@@ -184,7 +198,10 @@ public:
     */
     AsyncTestResult<NoType> callAsyncReleaseResource(ResourceId resourceId)
     {
+        // This is to update current resource for the test client
         resourceId = ResourceIdOrPath(resourceId).getId(*this);
+
+        // Start async op
         return callAsyncOp<NoType, NoType, NoType, NoType>(
             &TestClientWithDefaults::asyncReleaseResourceDpcHandler, resourceId, NoType::NoValue, NoType::NoValue, NoType::NoValue);
     }
@@ -203,7 +220,7 @@ public:
         {
             // Failed to resolve resource
             AsyncTestResult<R> result;
-            result.mCallResultCode = HTTP_CODE_NOT_FOUND;
+            static_cast<TestResult<R>&>(result).mCallResultCode = HTTP_CODE_NOT_FOUND;
             return result;
         }
 
@@ -225,7 +242,7 @@ public:
         {
             // Failed to resolve resource
             AsyncTestResult<R> result;
-            result.mCallResultCode = HTTP_CODE_NOT_FOUND;
+            static_cast<TestResult<R>&>(result).mCallResultCode = HTTP_CODE_NOT_FOUND;
             return result;
         }
 
@@ -247,7 +264,7 @@ public:
         {
             // Failed to resolve resource
             AsyncTestResult<R> result;
-            result.mCallResultCode = HTTP_CODE_NOT_FOUND;
+            static_cast<TestResult<R>&>(result).mCallResultCode = HTTP_CODE_NOT_FOUND;
             return result;
         }
 
@@ -269,7 +286,7 @@ public:
         {
             // Failed to resolve resource
             AsyncTestResult<R> result;
-            result.mCallResultCode = HTTP_CODE_NOT_FOUND;
+            static_cast<TestResult<R>&>(result).mCallResultCode = HTTP_CODE_NOT_FOUND;
             return result;
         }
 
@@ -292,7 +309,7 @@ public:
         {
             // Failed to resolve resource
             AsyncTestResult<R> result;
-            result.mCallResultCode = HTTP_CODE_NOT_FOUND;
+            static_cast<TestResult<R>&>(result).mCallResultCode = HTTP_CODE_NOT_FOUND;
             return result;
         }
 
@@ -314,7 +331,7 @@ public:
         {
             // Failed to resolve resource
             AsyncTestResult<R> result;
-            result.mCallResultCode = HTTP_CODE_NOT_FOUND;
+            static_cast<TestResult<R>&>(result).mCallResultCode = HTTP_CODE_NOT_FOUND;
             return result;
         }
 
@@ -370,7 +387,10 @@ public:
     */
     TestResult<NoType> callAsyncReleaseResourceAndWaitResult(ResourceId resourceId)
     {
+        // This is to update current resource for the test client
         resourceId = ResourceIdOrPath(resourceId).getId(*this);
+
+        // Start async op
         return callAsyncOpAndWaitResult<NoType, NoType, NoType, NoType>(
             &TestClientWithDefaults::asyncReleaseResourceDpcHandler, resourceId, NoType::NoValue, NoType::NoValue, NoType::NoValue);
     }
@@ -695,11 +715,11 @@ private:
     {
         const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs);
 
-        if (IsSame<P1, NoType>::value)
+        if (IsSame<P1, NoType>::value && IsSame<P2, NoType>::value && IsSame<P3, NoType>::value)
         {
             return asyncGet(mResourceId, options);
         }
-        else if (IsSame<P2, NoType>::value)
+        else if (IsSame<P2, NoType>::value && IsSame<P3, NoType>::value)
         {
             return asyncGet(
                 mResourceId, options, wrapper.mrParam1);
@@ -721,12 +741,12 @@ private:
     {
         const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs);
 
-        if (IsSame<P1, NoType>::value)
+        if (IsSame<P1, NoType>::value && IsSame<P2, NoType>::value && IsSame<P3, NoType>::value)
         {
             return asyncPut(
                 mResourceId, options);
         }
-        else if (IsSame<P2, NoType>::value)
+        else if (IsSame<P2, NoType>::value && IsSame<P3, NoType>::value)
         {
             return asyncPut(
                 mResourceId, options, wrapper.mrParam1);
@@ -748,12 +768,12 @@ private:
     {
         const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs);
 
-        if (IsSame<P1, NoType>::value)
+        if (IsSame<P1, NoType>::value && IsSame<P2, NoType>::value && IsSame<P3, NoType>::value)
         {
             return asyncPost(
                 mResourceId, options);
         }
-        else if (IsSame<P2, NoType>::value)
+        else if (IsSame<P2, NoType>::value && IsSame<P3, NoType>::value)
         {
             return asyncPost(
                 mResourceId, options, wrapper.mrParam1);
@@ -775,12 +795,12 @@ private:
     {
         const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs);
 
-        if (IsSame<P1, NoType>::value)
+        if (IsSame<P1, NoType>::value && IsSame<P2, NoType>::value && IsSame<P3, NoType>::value)
         {
             return asyncDelete(
                 mResourceId, options);
         }
-        else if (IsSame<P2, NoType>::value)
+        else if (IsSame<P2, NoType>::value && IsSame<P3, NoType>::value)
         {
             return asyncDelete(
                 mResourceId, options, wrapper.mrParam1);
@@ -801,12 +821,12 @@ private:
     Result asyncSubscribeDpcHandler(OpWrapper<P1, P2, P3>& wrapper)
     {
         const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs, wrapper.mForceAsync, wrapper.mIsCritical);
-        if (IsSame<P1, NoType>::value)
+        if (IsSame<P1, NoType>::value && IsSame<P2, NoType>::value && IsSame<P3, NoType>::value)
         {
             return asyncSubscribe(
                 mResourceId, options);
         }
-        else if (IsSame<P2, NoType>::value)
+        else if (IsSame<P2, NoType>::value && IsSame<P3, NoType>::value)
         {
             return asyncSubscribe(
                 mResourceId, options, wrapper.mrParam1);
@@ -828,12 +848,12 @@ private:
     {
         const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs);
 
-        if (IsSame<P1, NoType>::value)
+        if (IsSame<P1, NoType>::value && IsSame<P2, NoType>::value && IsSame<P3, NoType>::value)
         {
             return asyncUnsubscribe(
                 mResourceId, options);
         }
-        else if (IsSame<P2, NoType>::value)
+        else if (IsSame<P2, NoType>::value && IsSame<P3, NoType>::value)
         {
             return asyncUnsubscribe(
                 mResourceId, options, wrapper.mrParam1);

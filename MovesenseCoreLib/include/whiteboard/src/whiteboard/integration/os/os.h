@@ -9,7 +9,6 @@
 #include "whiteboard/integration/os/thread.h"
 #include "whiteboard/integration/os/timer.h"
 #include "whiteboard/integration/os/criticalSection.h"
-#include "whiteboard/integration/os/eventQueue.h"
 #include "whiteboard/integration/os/threadNotification.h"
 #include "whiteboard/integration/os/threadStatistics.h"
 #include "whiteboard/integration/os/dynamicLinkLibrary.h"

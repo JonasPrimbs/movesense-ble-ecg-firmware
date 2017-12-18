@@ -1,3 +1,19 @@
+## Version 1.1.0.1058.32 ##
+
+###Whats new:###
+- Movesense memory optimalizations
+- ByPass service as additional module
+- Battery provider improvements
+- Low battery warning
+- New Ble optional modules BleStandardHRS BleNordicUART
+- Whiteboard update 3.9.0
+- New samples: custom_bleadv_app and ble_std_services
+
+###Known Bugs:###
+- Timestamp sometimes is reseted after subscription Acc/Gyro/Magn
+- The first package of Acc/Magn/Gyro can be corrupted for high sample rates
+
+
 ## Version 1.0.2.914.29 ##
 
 ###Whats new:###

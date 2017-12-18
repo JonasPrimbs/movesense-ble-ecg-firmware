@@ -1,3 +1,3 @@
 // Copyright (c) Suunto Oy 2017. All rights reserved.
 // We are using nea implementation
-#include "../nea/BleAdapter.h"
+#include "whiteboard/plugins/ble/nea/BleAdapter.h"

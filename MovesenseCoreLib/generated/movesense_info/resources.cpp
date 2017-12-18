@@ -20,13 +20,4 @@ WB_STATIC_VERIFY(sizeof(DeviceInfo) == 76, SizeOfStructure_DeviceInfo_IsNotWhatE
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(DeviceInfo) == 4, AlignmentOfStructure_DeviceInfo_IsNotWhatExpected);
 
 
-const whiteboard::StructureValueSerializer<ModulesStatusArray> ModulesStatusArray::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<ModulesStatusArray> ModulesStatusArray::cleaner;)
-const whiteboard::StructureValueSerializer<ModuleStatus> ModuleStatus::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<ModuleStatus> ModuleStatus::cleaner;)
-const whiteboard::StructureValueSerializer<AppInfo> AppInfo::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<AppInfo> AppInfo::cleaner;)
-const whiteboard::StructureValueSerializer<DeviceInfo> DeviceInfo::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<DeviceInfo> DeviceInfo::cleaner;)
-
 } // namespace WB_RES

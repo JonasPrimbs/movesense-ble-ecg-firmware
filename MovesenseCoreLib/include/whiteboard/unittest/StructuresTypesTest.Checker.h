@@ -7,9 +7,6 @@ All rights reserved.
 #include "StructuresTypesTest.Shared.h"
 #include "ut-resources/resources.h"
 
-// Forward declarations
-struct WB_STRUCT_PACKED ComplexUnitTestStruct;
-
 class Checker
 {
 public:
@@ -69,8 +66,6 @@ public:
             checkEqual(*pReferenceSubStruct, *pActualSubStruct);
         }
     }
-
-    static void checkEqual(const ComplexUnitTestStruct& rReference, const ComplexUnitTestStruct& rActual);
 
     static void checkEqual(const WB_RES::TestStructure& rReference, const WB_RES::TestStructure& rActual);
 

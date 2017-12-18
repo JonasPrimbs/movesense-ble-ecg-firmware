@@ -40,28 +40,16 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
+struct WB_ALIGN(4) CalibrationSequence;
 
-struct WB_STRUCT_PACKED CalibrationSequence;
-
-struct WB_STRUCT_PACKED CalibrationSequence
+struct WB_ALIGN(4) CalibrationSequence
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 13824;
-	static const whiteboard::StructureValueSerializer<CalibrationSequence> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<CalibrationSequence> cleaner;)
 
 	WB_ALIGN(4) whiteboard::Array< whiteboard::FloatVector3D > vector;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(vector);
-	}
 };
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {

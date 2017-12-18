@@ -18,7 +18,6 @@
 
 #include "LogbookDb.hpp"
 #include "SettingsService.hpp"
-#include "ManufacturingService.hpp"
 #include "StatesService.hpp"
 #include "internal/AppInfoProvider.hpp"
 
@@ -56,7 +55,6 @@ private:
 
     LogbookDb       mLogbookDb;
     SettingsService mSettingsService;
-    ManufacturingService mManufacturingService;
 
     AppInfoProvider mAppInfoProvider;
 

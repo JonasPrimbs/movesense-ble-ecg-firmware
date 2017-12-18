@@ -17,11 +17,4 @@ WB_STATIC_VERIFY(sizeof(MagnData) == 12, SizeOfStructure_MagnData_IsNotWhatExpec
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(MagnData) == 4, AlignmentOfStructure_MagnData_IsNotWhatExpected);
 
 
-const whiteboard::StructureValueSerializer<MagnInfo> MagnInfo::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<MagnInfo> MagnInfo::cleaner;)
-const whiteboard::StructureValueSerializer<MagnConfig> MagnConfig::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<MagnConfig> MagnConfig::cleaner;)
-const whiteboard::StructureValueSerializer<MagnData> MagnData::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<MagnData> MagnData::cleaner;)
-
 } // namespace WB_RES

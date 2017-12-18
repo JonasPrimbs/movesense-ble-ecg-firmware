@@ -1,13 +1,8 @@
 #pragma once
-/******************************************************************************
-
-    Copyright (c) Suunto Oy 2015.
-    All rights reserved.
-
-******************************************************************************/
+// Copyright (c) Suunto Oy 2015. All rights reserved.
 
 #include "whiteboard/Identifiers.h"
-#include "whiteboard/builtinTypes/StructurePack.h"
+#include "whiteboard/builtinTypes/Structures.h"
 
 namespace whiteboard
 {
@@ -38,8 +33,6 @@ namespace TypedEnumHelper
     WB_API bool parseEnum(LocalDataTypeId id, const char* valueName, int32& rValue);
 }
 
-WB_STRUCT_PACK_BEGIN()
-
 /** Enumeration class implementation for non C++11 compatible compilers.
  * Enumeration class is a type safe enumeration that stores its value
  * in explicitly defined storage type.
@@ -49,7 +42,7 @@ WB_STRUCT_PACK_BEGIN()
  * @tparam BaseType Underlying data storage type
  */
 template <typename Definition, typename DefinitionType, typename BaseType>
-class WB_STRUCT_PACKED TypedEnum : public Definition
+class TypedEnum : public Definition
 {
 private:
     /** Type of the enumeration */
@@ -146,7 +139,5 @@ public:
     inline friend bool operator>(const TypedEnum& lhs, const TypedEnum& rhs) { return lhs.value > rhs.value; }
     inline friend bool operator>=(const TypedEnum& lhs, const TypedEnum& rhs) { return lhs.value >= rhs.value; }
 };
-
-WB_STRUCT_PACK_END()
 
 } // namespace whiteboard

@@ -14,9 +14,4 @@ WB_STATIC_VERIFY(sizeof(TestMode) == 16, SizeOfStructure_TestMode_IsNotWhatExpec
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(TestMode) == 4, AlignmentOfStructure_TestMode_IsNotWhatExpected);
 
 
-const whiteboard::StructureValueSerializer<TxPow> TxPow::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<TxPow> TxPow::cleaner;)
-const whiteboard::StructureValueSerializer<TestMode> TestMode::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<TestMode> TestMode::cleaner;)
-
 } // namespace WB_RES

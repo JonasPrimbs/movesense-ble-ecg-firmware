@@ -2,7 +2,6 @@
 // Copyright (c) Suunto Oy 2015. All rights reserved.
 
 #include <whiteboard/comm/CommAdapter.h>
-#include <whiteboard/comm/BufferPoolAllocator.h>
 
 namespace whiteboard {
 namespace comm_ble {
@@ -68,12 +67,6 @@ public:
     */
     Result disconnect(const Address& rDestination) OVERRIDE;
 
-    /** Gets buffer allocator used to allocate and deallocate adapter buffers
-     *
-     * @return Buffer allocator instance
-     */
-    IBufferAllocator& getAllocator() OVERRIDE;
-
     /** Sends a message using the adapter to specified destination
      *
      * @param rDestination Message destination
@@ -104,12 +97,6 @@ public:
     using CommAdapter::onDisconnectCompleted;
     using CommAdapter::onDataReceived;
     using CommAdapter::onSendCompleted;
-
-private:
-#ifdef WB_UNITTEST_BUILD
-    /** Buffer allocator */
-    BufferPoolAllocator mBufferAllocator;
-#endif
 };
 
 } // namespace comm_ble

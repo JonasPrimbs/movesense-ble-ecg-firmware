@@ -32,13 +32,14 @@ class WB_API ResourceClient_RequestOptions
 {
 public:
     /** Ctor
-    @param timeoutMs [in] Request timeout in milliseconds (Timeout applies only to remote requests.
-                          If zero, request won't timeout).
+    @param doPathParameterAllocation [in] path parameter allocation / deallocation (true). No allocation (false). 
+    Could be useful if it is desired to resolve resourceId from path for debugging purposes or in other special scenarios 
+    where the path is interpreted from an input file for instance.
     */
-    EXPLICIT ResourceClient_RequestOptions(size_t timeoutMs) : mTimeoutMs(timeoutMs) {}
+    EXPLICIT ResourceClient_RequestOptions(bool doPathParameterAllocation) : mDoPathParameterAllocation(doPathParameterAllocation) {}
 
     /** @return timeout in ms to wait until the call is cancelled */
-    inline size_t getTimeout() const { return mTimeoutMs; }
+    inline bool getDoPathParameterCacheAllocation() const { return mDoPathParameterAllocation; }
 
     /// Empty request options, that can be used if no options required for the operation
     static const ResourceClient_RequestOptions Empty;
@@ -48,8 +49,8 @@ private:
     ResourceClient_RequestOptions() DELETED;
 
 private:
-    /** Request timeout in milliseconds. Ignore in local Whiteboard queries. */
-    size_t mTimeoutMs;
+    /** Make path parameter cache allocation during the getResource call / skip deallocation during releaseResourceCall */
+    bool mDoPathParameterAllocation;
 };
 
 /** Options for the asynchronous operation can be given with this class. */
@@ -170,8 +171,8 @@ public:
     ExecutionContextId getExecutionContextId() const;
 
     /**
-    *	Resolves resource path. Blocks calling thread until request
-    *	result has been received.
+    *	Resolves resource path. Only for local paths. Use asyncGetResource to resolve external paths.
+    *	@see whiteboard::ResourceClient::asyncGetResource .
     *
     *	@param pFullPath Path of the resource
     *	@param rResourceId On successful output contains the resource identifier
@@ -193,7 +194,8 @@ public:
 
     /**
     *	Performs resource release. Release is intented to indicate to the provider's whiteboard, that this client does not use the
-    *	resource anymore.
+    *	resource anymore. Only for local paths, use asyncReleaseResource for external resourceIds. 
+    *	@see whiteboard::ResourceClient::asyncReleaseResource
     *
     *	@param resourceId ID of the associated resource
     *	@param rOptions Optional. The options for the request

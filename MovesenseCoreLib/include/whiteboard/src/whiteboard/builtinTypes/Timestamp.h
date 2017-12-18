@@ -9,14 +9,12 @@ All rights reserved.
 namespace whiteboard
 {
 
-WB_STRUCT_PACK_BEGIN()
-
 /**
 *	Timestamp
 *	Range: -
 *	Precision: 1us
 */
-struct WB_STRUCT_PACKED Timestamp
+struct Timestamp
 {
     /** Default constructor */
     inline Timestamp() : timestamp(0){};
@@ -30,16 +28,9 @@ struct WB_STRUCT_PACKED Timestamp
     /** The timestamp value */
     WB_ALIGNED(int64) timestamp;
 
-    // Structure type identification and serialization
+    // Structure type identification
     typedef int Structure;
     static const LocalDataTypeId DATA_TYPE_ID = 27;
-    WB_API static const StructureValueSerializer<Timestamp> serializer;
-    WB_WHEN_STRUCTURE_CLEANING_NEEDED(WB_API static const StructureValueCleaner<Timestamp> cleaner;)
-
-    // Visitor pattern implementation
-    inline void visit(IStructureVisitor& rVisitor) { rVisitor.visit(timestamp); }
 };
-
-WB_STRUCT_PACK_END()
 
 } // namespace whiteboard

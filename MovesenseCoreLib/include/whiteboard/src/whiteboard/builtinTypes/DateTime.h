@@ -5,15 +5,13 @@ All rights reserved.
 ******************************************************************************/
 
 #include <ctime>
-#include "../integration/port.h"
-#include "Date.h"
-#include "Time.h"
-#include "Structures.h"
+#include "whiteboard/integration/port.h"
+#include "whiteboard/builtinTypes/Date.h"
+#include "whiteboard/builtinTypes/Time.h"
+#include "whiteboard/builtinTypes/Structures.h"
 
 namespace whiteboard
 {
-
-WB_STRUCT_PACK_BEGIN()
 
 /**
 *	DateTime (DD.MM.YYYY HH:MM:SS.us100 TimeZone)
@@ -21,7 +19,7 @@ WB_STRUCT_PACK_BEGIN()
 *	Precision: 100us
 *	TimeZone: [-48, 56]; UTC-12 to UTC+14 with 15min resolution.
 */
-struct WB_STRUCT_PACKED DateTime
+struct DateTime
 {
     /** Default constructor. */
     inline DateTime() : date(1, 1, 1), time(0, 0, 0, 0), timeZone(0){};
@@ -84,16 +82,9 @@ struct WB_STRUCT_PACKED DateTime
     /** Time zone with 15-minute resolution ranging from UTC -12 to UTC +14; [-48, 56] */
     WB_ALIGNED(int8) timeZone;
 
-    // Structure type identification and serialization
+    // Structure type identification
     typedef int Structure;
     static const LocalDataTypeId DATA_TYPE_ID = 25;
-    WB_API static const StructureValueSerializer<DateTime> serializer;
-    WB_WHEN_STRUCTURE_CLEANING_NEEDED(WB_API static const StructureValueCleaner<DateTime> cleaner;)
-
-    // Visitor pattern implementation
-    inline void visit(IStructureVisitor& rVisitor) { rVisitor.visit(date).visit(time).visit(timeZone); }
 };
-
-WB_STRUCT_PACK_END()
 
 } // namespace whiteboard

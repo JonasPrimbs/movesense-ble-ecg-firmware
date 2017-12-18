@@ -3,10 +3,11 @@
 
 #include "whiteboard/integration/port.h"
 
-#include "common/core/dbgassert.h"
+#include "platform/bsp/assert.h"
 #include "common/core/debug.h"
 
 #define WB_DEBUGLOG DEBUGLOG
+#define WB_DEBUGLOG_SIZE DEBUGLOG_SIZE
 
 #if !defined(NDEBUG) || defined(WB_ASSERT_IN_RELEASE)
   #define WB_ASSERT ASSERT
@@ -15,6 +16,6 @@
 #endif
 
 #define WB_DEBUG_ASSERT DEBUG_ASSERT
-#define WB_VERIFY VERIFY
+#define WB_VERIFY VERIFY_WITH_RETVAL
 
 #define WbDebugSetThreadName debugSetThreadName

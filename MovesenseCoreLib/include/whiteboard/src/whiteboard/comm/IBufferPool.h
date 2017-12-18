@@ -14,11 +14,11 @@ struct Buffer;
  * Separate interface from CommAdapter because we need to be able
  * to deallocate buffers even after adapter has been removed
  */
-class WB_API IBufferAllocator
+class WB_API IBufferPool
 {
 public:
     /** Destructor */
-    virtual ~IBufferAllocator() {}
+    virtual ~IBufferPool() {}
 
     /** Pool. We have distinct pools for
      * send, receive and internal messages so that
@@ -40,25 +40,27 @@ public:
      * for single type and this index won't match the enumeration above */
     typedef uint8 PoolIndex;
 
-    /** Gets length of the header needed for lower level protocol and offset where whiteboard
-     * protocol data can start */
-    virtual size_t getPayloadOffset() const = 0;
-
-    /** Allocates buffer from the driver. Function should block
-    * until a buffer is available.
+    /** Allocates a new buffer from buffer pool. Blocks calling
+    * thread until a buffer is available.
     *
-    * @param pool Type of the pool where the buffer should be allocated from
+    * @param pool Type of the pool where the buffer should allocated from
+    * @param payloadOffset Number of bytes to allocate for communication protocol headers
     * @param payloadLength Number of bytes to allocate for the payload
     * @param timeoutMs Timeout in milliseconds
-    * @return Pointer to allocated buffer. Allocation should always succeed.
+    * @return Pointer to communication buffer or NULL if timeout elapsed before
+    * buffer could be allocated
     */
-    virtual Buffer* allocateBuffer(PoolType pool, uint16 payloadLength, size_t timeoutMs = static_cast<size_t>(-1)) = 0;
+    virtual Buffer* allocate(
+        PoolType pool,
+        uint16 payloadOffset,
+        uint16 payloadLength,
+        size_t timeoutMs = WB_INFINITE) = 0;
 
-    /** Frees buffer that was allocated from the bus driver
+    /** Frees buffer back to buffer pool.
     *
-    * @param pBuffer Buffer that should be freed
+    * @param pBuffer Pointer to communication buffer
     */
-    virtual void freeBuffer(Buffer* pBuffer) = 0;
+    virtual void free(Buffer* pBuffer) = 0;
 };
 
 } // namespace whiteboard

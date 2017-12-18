@@ -32,6 +32,9 @@ public:
     /** Destructor */
     ~WhiteboardMockup();
 
+    /** Terminates all event processing */
+    void terminate();
+
     /** Implicit cast operator for using this class in place of any Whiteboard */
     operator Whiteboard&();
 

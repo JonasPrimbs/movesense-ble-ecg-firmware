@@ -40,79 +40,47 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
+struct WB_ALIGN(4) ModuleStatus;
+struct WB_ALIGN(4) ModulesStatusArray;
+struct WB_ALIGN(4) AppInfo;
+struct WB_ALIGN(4) DeviceInfo;
 
-struct WB_STRUCT_PACKED ModuleStatus;
-struct WB_STRUCT_PACKED ModulesStatusArray;
-struct WB_STRUCT_PACKED AppInfo;
-struct WB_STRUCT_PACKED DeviceInfo;
-
-struct WB_STRUCT_PACKED ModuleStatus
+struct WB_ALIGN(4) ModuleStatus
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 3328;
-	static const whiteboard::StructureValueSerializer<ModuleStatus> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<ModuleStatus> cleaner;)
 
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> name;
 	WB_ALIGN(1) bool enabled;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(name)
-			.visit(enabled);
-	}
 };
 
-struct WB_STRUCT_PACKED ModulesStatusArray
+struct WB_ALIGN(4) ModulesStatusArray
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 3329;
-	static const whiteboard::StructureValueSerializer<ModulesStatusArray> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<ModulesStatusArray> cleaner;)
 
 	WB_ALIGN(4) whiteboard::Array< ModuleStatus > data;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(data);
-	}
 };
 
-struct WB_STRUCT_PACKED AppInfo
+struct WB_ALIGN(4) AppInfo
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 3330;
-	static const whiteboard::StructureValueSerializer<AppInfo> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<AppInfo> cleaner;)
 
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> name;
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> version;
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> company;
 	WB_ALIGN(4) whiteboard::Optional< ModulesStatusArray > modules;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(name)
-			.visit(version)
-			.visit(company)
-			.visit(modules);
-	}
 };
 
-struct WB_STRUCT_PACKED DeviceInfo
+struct WB_ALIGN(4) DeviceInfo
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 3331;
-	static const whiteboard::StructureValueSerializer<DeviceInfo> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<DeviceInfo> cleaner;)
 
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> manufacturerName;
 	WB_ALIGN(4) whiteboard::Optional< whiteboard::WrapperFor32BitPointer<const char> > brandName;
@@ -127,27 +95,7 @@ struct WB_STRUCT_PACKED DeviceInfo
 	WB_ALIGN(4) whiteboard::Optional< VersionInfoArray > additionalVersionInfo;
 	WB_ALIGN(4) whiteboard::Optional< whiteboard::Array< AddressInfo > > addressInfo;
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> apiLevel;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(manufacturerName)
-			.visit(brandName)
-			.visit(productName)
-			.visit(variant)
-			.visit(design)
-			.visit(hwCompatibilityId)
-			.visit(serial)
-			.visit(pcbaSerial)
-			.visit(sw)
-			.visit(hw)
-			.visit(additionalVersionInfo)
-			.visit(addressInfo)
-			.visit(apiLevel);
-	}
 };
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {

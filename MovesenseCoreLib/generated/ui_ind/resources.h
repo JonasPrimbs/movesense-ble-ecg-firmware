@@ -40,30 +40,18 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
-
-struct WB_STRUCT_PACKED VisualIndState;
+struct WB_ALIGN(2) VisualIndState;
 
 typedef uint16 VisualIndType;
 
-struct WB_STRUCT_PACKED VisualIndState
+struct WB_ALIGN(2) VisualIndState
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 16896;
-	static const whiteboard::StructureValueSerializer<VisualIndState> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<VisualIndState> cleaner;)
 
 	WB_ALIGN(2) VisualIndType state;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(state);
-	}
 };
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {

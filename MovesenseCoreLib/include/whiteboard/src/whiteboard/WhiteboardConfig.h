@@ -28,6 +28,9 @@
 /** Maximum size of message payload */
 #define WB_MAX_MESSAGE_PAYLOAD_LENGTH 470
 
+/** Minimum length of whiteboard messages */
+#define WB_MIN_MESSAGE_LENGTH 6
+
 /** Maximum length of whiteboard messages */
 #define WB_MAX_MESSAGE_LENGTH 512
 
@@ -40,3 +43,10 @@
 
 /** Maximum address length is defined to hold IPv4 addresses (sockaddr_in structure) */
 #define WB_COMM_MAX_ADDRESS_LENGTH 16
+
+/** Unit test helpers require custom buffer pools always.
+ */
+#ifdef WB_UNITTEST_BUILD
+#undef WB_HAVE_CUSTOM_BUFFER_POOLS
+#define WB_HAVE_CUSTOM_BUFFER_POOLS 1
+#endif

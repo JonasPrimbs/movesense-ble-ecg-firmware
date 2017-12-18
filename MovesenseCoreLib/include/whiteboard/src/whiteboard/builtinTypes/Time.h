@@ -9,14 +9,12 @@ All rights reserved.
 namespace whiteboard
 {
 
-WB_STRUCT_BITFIELD_PACK_BEGIN()
-
 /**
 *	Time (HH:MM:SS.us100)
 *	Range: 00:00:00.0000 - 23:59:59.9999
 *	Precision: 100us
 */
-struct WB_STRUCT_BITFIELD_PACKED Time
+struct Time
 {
     /** Default constructor. */
     inline Time() : hour(0), minute(0), second(0), us100(0){}
@@ -57,31 +55,14 @@ struct WB_STRUCT_BITFIELD_PACKED Time
         return valid;
     }
 
-#ifdef WB_STRUCTS_SUPPORT_BITFIELDS
-    uint32 hour : 5;
-    uint32 minute : 6;
-    uint32 second : 6;
-    uint32 us100 : 15;
-#else
     WB_ALIGNED(uint8) hour;
     WB_ALIGNED(uint8) minute;
     WB_ALIGNED(uint8) second;
     WB_ALIGNED(uint16) us100;
-#endif
 
-    // Structure type identification and serialization
+    // Structure type identification
     typedef int Structure;
     static const LocalDataTypeId DATA_TYPE_ID = 26;
-    WB_API static const StructureValueSerializer<Time> serializer;
-    WB_WHEN_STRUCTURE_CLEANING_NEEDED(WB_API static const StructureValueCleaner<Time> cleaner;)
-
-    // Visitor pattern implementation
-    inline void visit(IStructureVisitor& rVisitor)
-    {
-        rVisitor.visit(hour).visit(minute).visit(second).visit(us100);
-    }
 };
-
-WB_STRUCT_BITFIELD_PACK_END()
 
 } // namespace whiteboard

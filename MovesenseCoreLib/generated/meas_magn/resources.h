@@ -40,68 +40,38 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
+struct WB_ALIGN(4) MagnInfo;
+struct WB_ALIGN(2) MagnConfig;
+struct WB_ALIGN(4) MagnData;
 
-struct WB_STRUCT_PACKED MagnInfo;
-struct WB_STRUCT_PACKED MagnConfig;
-struct WB_STRUCT_PACKED MagnData;
-
-struct WB_STRUCT_PACKED MagnInfo
+struct WB_ALIGN(4) MagnInfo
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 15616;
-	static const whiteboard::StructureValueSerializer<MagnInfo> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<MagnInfo> cleaner;)
 
 	WB_ALIGN(4) whiteboard::Array< uint16 > sampleRates;
 	WB_ALIGN(4) whiteboard::Array< uint16 > scale;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(sampleRates)
-			.visit(scale);
-	}
 };
 
-struct WB_STRUCT_PACKED MagnConfig
+struct WB_ALIGN(2) MagnConfig
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 15617;
-	static const whiteboard::StructureValueSerializer<MagnConfig> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<MagnConfig> cleaner;)
 
 	WB_ALIGN(2) uint16 scale;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(scale);
-	}
 };
 
-struct WB_STRUCT_PACKED MagnData
+struct WB_ALIGN(4) MagnData
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 15618;
-	static const whiteboard::StructureValueSerializer<MagnData> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<MagnData> cleaner;)
 
 	WB_ALIGN(4) uint32 timestamp;
 	WB_ALIGN(4) whiteboard::Array< whiteboard::FloatVector3D > arrayMagn;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(timestamp)
-			.visit(arrayMagn);
-	}
 };
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {

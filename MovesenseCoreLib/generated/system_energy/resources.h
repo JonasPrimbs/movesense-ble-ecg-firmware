@@ -40,30 +40,17 @@
 
 namespace WB_RES {
 
-WB_STRUCT_PACK_BEGIN()
+struct WB_ALIGN(2) Energy;
 
-struct WB_STRUCT_PACKED Energy;
-
-struct WB_STRUCT_PACKED Energy
+struct WB_ALIGN(2) Energy
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 12800;
-	static const whiteboard::StructureValueSerializer<Energy> serializer;
-	WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const whiteboard::StructureValueCleaner<Energy> cleaner;)
 
 	WB_ALIGN(1) uint8 percent;
 	WB_ALIGN(2) whiteboard::Optional< uint16 > milliVoltages;
-
-	inline void visit(whiteboard::IStructureVisitor& rVisitor)
-	{
-		rVisitor
-			.visit(percent)
-			.visit(milliVoltages);
-	}
 };
-
-WB_STRUCT_PACK_END()
 
 namespace LOCAL
 {

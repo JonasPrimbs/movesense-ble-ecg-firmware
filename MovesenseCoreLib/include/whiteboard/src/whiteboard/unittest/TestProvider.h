@@ -202,12 +202,44 @@ public:
         bool registerProvider = true,
         Whiteboard& rWhiteboard = getWhiteboardInstance())
         : TestProviderBase(name, executionContextId, rWhiteboard),
+          mResourceImpl(ID_INVALID_EXECUTION_CONTEXT, ID_INVALID_LOCAL_RESOURCE, rWhiteboard),
           mResource(name, executionContextId, 0, rWhiteboard),
-          mRegisterProvider(registerProvider)
+          mpResource(&mResource),
+          mRegisterProvider(registerProvider),
+          mGetRequestCounter(0),
+          mPutRequestCounter(0)
     {
         if (mRegisterProvider)
         {
-            DpcFunctor::syncQueueOnce(executionContextId, mrWhiteboard, this, &TestProvider::initInWbContext);
+            registerTestResourceInWbContext();
+        }
+    }
+
+    /**
+    *	Constructor
+    *	@param name Name of the resource.
+    *	@param localResourceId Local resource ID to register.
+    *	@param executionContextId Providers execution context.
+    *	@param registerProvider Flag to enable registration of provider resource. Default true.
+    *   @param rWhiteboard Whiteboard instance to use
+    */
+    TestProvider(
+        const char* name,
+        LocalResourceId localResourceId,
+        ExecutionContextId executionContextId,
+        bool registerProvider = true,
+        Whiteboard& rWhiteboard = getWhiteboardInstance())
+        : TestProviderBase(name, executionContextId, rWhiteboard),
+          mResourceImpl(executionContextId, localResourceId, rWhiteboard),
+          mResource("N/A", executionContextId, 0, rWhiteboard),
+          mpResource(&mResourceImpl),
+          mRegisterProvider(registerProvider),
+          mGetRequestCounter(0),
+          mPutRequestCounter(0)
+    {
+        if (mRegisterProvider)
+        {
+            registerTestResourceInWbContext();
         }
     }
 
@@ -226,13 +258,17 @@ public:
         const T& rInitialValue,
         Whiteboard& rWhiteboard = getWhiteboardInstance())
         : TestProviderBase(name, executionContextId, rWhiteboard),
+          mResourceImpl(ID_INVALID_EXECUTION_CONTEXT, ID_INVALID_LOCAL_RESOURCE, rWhiteboard),
           mResource(name, executionContextId, 0, rWhiteboard),
-          mRegisterProvider(registerProvider)
+          mpResource(&mResource),
+          mRegisterProvider(registerProvider),
+          mGetRequestCounter(0),
+          mPutRequestCounter(0)
     {
         setValue(rInitialValue);
         if (mRegisterProvider)
         {
-            DpcFunctor::syncQueueOnce(executionContextId, mrWhiteboard, this, &TestProvider::initInWbContext);
+            registerTestResourceInWbContext();
         }
     }
 
@@ -247,12 +283,16 @@ public:
         bool registerProvider,
         WhiteboardMockup& rWhiteboard)
         : TestProviderBase(name, rWhiteboard),
+          mResourceImpl(ID_INVALID_EXECUTION_CONTEXT, ID_INVALID_LOCAL_RESOURCE, rWhiteboard),
           mResource(name, 0, rWhiteboard),
-          mRegisterProvider(registerProvider)
+          mpResource(&mResource),
+          mRegisterProvider(registerProvider),
+          mGetRequestCounter(0),
+          mPutRequestCounter(0)
     {
         if (mRegisterProvider)
         {
-            DpcFunctor::syncQueueOnce(getExecutionContextId(), mrWhiteboard, this, &TestProvider::initInWbContext);
+            registerTestResourceInWbContext();
         }
     }
 
@@ -270,13 +310,17 @@ public:
         const T& rInitialValue,
         WhiteboardMockup& rWhiteboard)
         : TestProviderBase(name, rWhiteboard),
+          mResourceImpl(ID_INVALID_EXECUTION_CONTEXT, ID_INVALID_LOCAL_RESOURCE, rWhiteboard),
           mResource(name, 0, rWhiteboard),
-          mRegisterProvider(registerProvider)
+          mpResource(&mResource),
+          mRegisterProvider(registerProvider),
+          mGetRequestCounter(0),
+          mPutRequestCounter(0)
     {
         setValue(rInitialValue);
         if (mRegisterProvider)
         {
-            DpcFunctor::syncQueueOnce(getExecutionContextId(), mrWhiteboard, this, &TestProvider::initInWbContext);
+            registerTestResourceInWbContext();
         }
     }
 
@@ -285,24 +329,38 @@ public:
     {
         if (mRegisterProvider)
         {
-            DpcFunctor::syncQueueOnce(getExecutionContextId(), mrWhiteboard, this, &TestProvider::deinitInWbContext);
+            unregisterTestResourceInWbContext();
         }
     }
 
     /**
-    Functor callback for init DPC
+     * Performs resource registration inside correct execution context
     */
-    void initInWbContext()
+    void registerTestResourceInWbContext()
     {
-        this->ResourceProvider::registerProviderResource(mResource.getId().localResourceId);
+        if (!ExecutionContext::isCurrentThread(getExecutionContextId(), mrWhiteboard))
+        {
+            DpcFunctor::syncQueueOnce(getExecutionContextId(), mrWhiteboard, this, &TestProvider::registerTestResourceInWbContext);
+        }
+        else
+        {
+            registerProviderResource(mpResource->getId().localResourceId);
+        }
     }
 
     /**
-    Functor callback for deinit DPC
+    * Performs resource unregistration inside correct execution context
     */
-    void deinitInWbContext()
+    void unregisterTestResourceInWbContext()
     {
-        this->ResourceProvider::unregisterProviderResource(mResource.getId().localResourceId);
+        if (!ExecutionContext::isCurrentThread(getExecutionContextId(), mrWhiteboard))
+        {
+            DpcFunctor::syncQueueOnce(getExecutionContextId(), mrWhiteboard, this, &TestProvider::unregisterTestResourceInWbContext);
+        }
+        else
+        {
+            unregisterProviderResource(mpResource->getId().localResourceId);
+        }
     }
 
     /**
@@ -321,16 +379,28 @@ public:
     *	Function to get resource ID of the provider.
     *	@return Resource ID of the provider.
     */
-    const ResourceId getResourceId() const { return mResource.getId(); }
+    const ResourceId getResourceId() const { return mpResource->getId(); }
 
     /**
     *	Function to notify subscribers. Will pass value of member variable mValue.
     */
     void notifySubscribers()
     {
-        NotifyStatus status(*this, mResource.getId(), mValue);
+        NotifyStatus status(*this, mpResource->getId(), mValue);
         DpcFunctor::queueOnce(getExecutionContextId(), mrWhiteboard, &TestProvider::notifyDpcHandler, &status);
         WbSemaphoreTryWait(status.mComplete, 500);
+    }
+
+    /**
+    *  Test helper for waiting GET requests.
+    *
+    *  @param requests How many requests TestProvider should have had received before returning
+    *  @param timeout How many milliseconds to wait for requests (internally 10 ms resolution)
+    *  @return Result of the operation, true if all requests were received withing the timeout
+    */
+    virtual bool waitUntilReceivedGetRequests(const int32 requests, const int32 timeout = 1000)
+    {
+        return waitUntilReceivedRequests(mGetRequestCounter, requests, timeout);
     }
 
     /**
@@ -343,9 +413,23 @@ public:
     virtual void onGetRequest(
         const Request& rRequest, const ParameterList& /* rParameters */) OVERRIDE
     {
-        WB_ASSERT(rRequest.getResourceId() == mResource.getId());
-        return returnResult(
+        WB_ASSERT(rRequest.getResourceId() == mpResource->getId());
+
+        returnResult(
             rRequest, HTTP_CODE_OK, ResourceProvider::ResponseOptions::Empty, static_cast<T>(mValue));
+        ++mGetRequestCounter;
+    }
+
+    /**
+    *  Test helper for waiting PUT requests.
+    *
+    *  @param requests How many requests TestProvider should have had received before returning
+    *  @param timeout How many milliseconds to wait for requests (internally 10 ms resolution)
+    *  @return Result of the operation, true if all requests were received withing the timeout
+    */
+    virtual bool waitUntilReceivedPutRequests(const int32 requests, const int32 timeout = 1000)
+    {
+        return waitUntilReceivedRequests(mPutRequestCounter, requests, timeout);
     }
 
     /**
@@ -358,19 +442,69 @@ public:
     virtual void onPutRequest(
         const Request& rRequest, const ParameterList& rParameters) OVERRIDE
     {
+        WB_ASSERT(rRequest.getResourceId() == mpResource->getId());
+
         this->mValue = rParameters[0].convertTo<T>();
-        return returnResult(rRequest, HTTP_CODE_OK);
+        returnResult(rRequest, HTTP_CODE_OK);
+        ++mPutRequestCounter;
+    }
+
+private:
+
+    /** Helper function for waiting requests to be received */
+    bool waitUntilReceivedRequests(volatile int32& counter, const int32 requests, const int32 timeout)
+    {
+        WB_ASSERT(requests);
+        WB_ASSERT(!ExecutionContext::isCurrentThread(getExecutionContextId(), mrWhiteboard));
+
+        const int32 timerResolution = 10;
+        const int32 maxSleeps = timeout < timerResolution ? 1 : timeout / timerResolution;
+        int32 sleepCounter = 0;
+
+        while (1)
+        {
+            if (counter < requests)
+            {
+                if (sleepCounter++ < maxSleeps)
+                {
+                    // Wait for the requests to come
+                    WbThreadSleepMs(10);
+                }
+                else
+                {
+                    // Timeout, not all requests have been received
+                    return false;
+                }
+            }
+            else
+            {
+                // Counter limit achieved, all requests have been received
+                return true;
+            }
+        }
     }
 
 protected:
-    /** Resource associated with the provider */
+    /** Resource associated with the provider if using local resource */
+    ScopedResourceInstantiator mResourceImpl;
+
+    /** Resource associated with the provider if using dynamic resource */
     ScopedResource<T, METADATA_CREATOR> mResource;
+
+    /** Pointer to resource associated with the provider, either local or dynamic */
+    ScopedResourceImpl* mpResource;
 
     /** A value indicating whether provider has registered the resource automatically */
     bool mRegisterProvider;
 
     /** Current value of the resource */
     TestValue<typename RemoveAll<T>::type> mValue;
+
+    /** Counter for incoming GET requests */
+    volatile int32 mGetRequestCounter;
+
+    /** Counter for incoming PUT requests */
+    volatile int32 mPutRequestCounter;
 
     class NotifyStatus
     {

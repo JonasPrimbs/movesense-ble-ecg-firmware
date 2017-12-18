@@ -46,3 +46,18 @@ WB_API void WbEventGroupClearFlags(WbEventGroupHandle group, WbEventFlagMask fla
 * @param isIsr A value indicating whether this function is called from interrupt service routine
 */
 WB_API void WbEventGroupSetFlags(WbEventGroupHandle group, WbEventFlagMask flags, bool isIsr);
+
+#ifdef WB_HAVE_HEAP_TRACE
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+WB_HEAP_TRACE_DECLARE_WRAPPER(WbEventGroupHandle, WbEventGroupCreate, size_t);
+#define WbEventGroupCreate(numberOfFlags) WB_HEAP_TRACE_WRAPPER(WbEventGroupCreate, numberOfFlags)
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // WB_HAVE_HEAP_TRACE

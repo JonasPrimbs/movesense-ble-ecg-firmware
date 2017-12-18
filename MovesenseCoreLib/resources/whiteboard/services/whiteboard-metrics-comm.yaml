@@ -1,0 +1,88 @@
+# Copyright Suunto Oy 2017
+# All rights reserved.
+#
+swagger: '2.0'
+
+# Document metadata
+info:
+  version: "1.0.0"
+  title: /Whiteboard/Metrics API
+  description: |
+    This file defines Suunto Whiteboard Metrics Comm Services API.
+
+    See http://developer.suunto.com for more information.
+  termsOfService: http://suunto.com/wbapi/terms/
+  contact:
+    name: Suunto team
+    url: http://developer.suunto.com
+  
+# Security definitions
+security:
+  - suuntoAccessCode:
+    - public
+
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+    flow: accessCode
+    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
+    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
+    
+# Paths
+paths:
+  /Whiteboard/Metrics/Comm:
+    get:
+      description: |
+        Returns information about comm send / receive statistics.
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            $ref: '#/definitions/CommStats'
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Whiteboard/Metrics/Comm/Subscription:
+    post:
+      description: |
+        Subscribe to the comm statistics events. Note the subscriber will be notified at most once a second.
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            $ref: '#/definitions/CommStats'
+        x-notification:
+          description: |
+            Comm stats notification, contains received and send data amounts.
+          schema:
+            $ref: '#/definitions/CommStats'
+      security:
+        - suuntoAccessCode:
+          - public
+    delete:
+      description: |
+        Unsubscribe from communication statistics events.
+      responses:
+        200:
+          description: Operation completed successfully
+      security:
+        - suuntoAccessCode:
+          - public
+
+definitions:
+  CommStats:
+    required:
+      - sentBytes
+      - receivedBytes
+    properties:
+      sentBytes:
+        description: Transmitted Whiteboard data in bytes, excluding possible communication channel specific extra.
+        type: integer
+        format: uint32
+      receivedBytes:
+        description: Received Whiteboard data in bytes, excluding possible communication channel specific extra.
+        type: integer
+        format: uint32

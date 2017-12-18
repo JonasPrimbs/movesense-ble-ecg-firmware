@@ -2,7 +2,6 @@
 // Copyright (c) Suunto Oy 2015. All rights reserved.
 
 #include <whiteboard/comm/CommAdapter.h>
-#include <whiteboard/comm/BufferPoolAllocator.h>
 
 namespace whiteboard {
 
@@ -71,13 +70,6 @@ public:
      * @return Result of the operation
      */
     Result cancelConnect(const Address& rDestination, Result reason) OVERRIDE;
-    
-    /** Gets buffer allocator that should be used to allocate and deallocate
-    * adapter buffers
-    *
-    * @return Buffer allocator instance
-    */
-    IBufferAllocator& getAllocator() OVERRIDE;
 
     /** Sends a message using the communication adapter to specified destination
     *
@@ -107,11 +99,6 @@ public:
 private:
     /** BLE Central implementation */
     BLECentral *mBLECentral;
-
-#ifdef WB_UNITTEST_BUILD
-    /** Buffer allocator */
-    BufferPoolAllocator mBufferAllocator;
-#endif
 };
 
 } // namespace comm_ble

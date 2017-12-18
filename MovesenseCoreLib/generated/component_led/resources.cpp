@@ -14,9 +14,4 @@ WB_STATIC_VERIFY(sizeof(Leds) == 8, SizeOfStructure_Leds_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(Leds) == 4, AlignmentOfStructure_Leds_IsNotWhatExpected);
 
 
-const whiteboard::StructureValueSerializer<LedState> LedState::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<LedState> LedState::cleaner;)
-const whiteboard::StructureValueSerializer<Leds> Leds::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<Leds> Leds::cleaner;)
-
 } // namespace WB_RES

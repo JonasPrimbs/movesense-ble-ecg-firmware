@@ -3,21 +3,18 @@
     Copyright © Suunto Oy 2013.
     All rights reserved.
 ******************************************************************************/
-#include "VectorMathHelper.h"
-#include "Matrix.h"
-#include "Structures.h"
+#include "whiteboard/builtinTypes/VectorMathHelper.h"
+#include "whiteboard/builtinTypes/Matrix.h"
+#include "whiteboard/builtinTypes/Structures.h"
 
 namespace whiteboard
 {
-
-// Packed for structure compatibility
-WB_STRUCT_PACK_BEGIN()
 
 /** 3D vector implementation.
  *
  * @tparam T Type of the internal data type
  */
-template <typename T> class WB_STRUCT_PACKED Vector3D
+template <typename T> class Vector3D
 {
 public:
     /** X component */
@@ -331,19 +328,10 @@ public:
     // Fixed ID of the data type (must be defined in the header or it is not treated as constant)
     static const LocalDataTypeId DATA_TYPE_ID = static_cast<LocalDataTypeId>(
         IsSame<T, int32>::value ? 30 : IsSame<T, float>::value ? 31 : -1);
-
-    // Structure serializer and cleaner instances
-    static const StructureValueSerializer<Vector3D<T> > serializer;
-    WB_WHEN_STRUCTURE_CLEANING_NEEDED(static const StructureValueCleaner<Vector3D<T> > cleaner;)
-
-    // Visitor pattern implementation
-    inline void visit(IStructureVisitor& rVisitor) { rVisitor.visit(mX).visit(mY).visit(mZ); }
 };
 
 // Static template members
 template <typename T> const LocalDataTypeId Vector3D<T>::DATA_TYPE_ID;
-template <typename T> const StructureValueSerializer<Vector3D<T> > Vector3D<T>::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(template <typename T> const StructureValueCleaner<Vector3D<T> > Vector3D<T>::cleaner;)
 
 // Typedef some helpers
 typedef Vector3D<int32> IntVector3D;
@@ -410,7 +398,7 @@ public:
        @param rAxes		Axes to rotate
        @param angle		Angle to rotate
      */
-    void make(Vector3D<T> axes, T angle);
+    void make(const Vector3D<T>& rAxes, T angle);
 
     /**
        Set unit matrix
@@ -783,10 +771,11 @@ template <typename T> typename Vector3D<T>::RotateMatrix& Vector3D<T>::RotateMat
     return *this;
 }
 
-template <typename T> void Vector3D<T>::RotateMatrix::make(Vector3D<T> axes, T angle)
+template <typename T> void Vector3D<T>::RotateMatrix::make(const Vector3D<T>& rAxes, T angle)
 {
     static const Vector3D<T> sUnit[3] = {Vector3D<T>(1, 0, 0), Vector3D<T>(0, 1, 0), Vector3D<T>(0, 0, 1)};
 
+    Vector3D<T> axes(rAxes);
     axes /= axes.length<T>();
     const T xy = axes.mX * axes.mY;
     const T xz = axes.mX * axes.mZ;
@@ -855,7 +844,5 @@ template <typename T> void Vector3D<T>::RotateMatrix::getData(float* pTarget) co
     *pTarget++ = mRow[Z_AXIS].mY;
     *pTarget++ = mRow[Z_AXIS].mZ;
 }
-
-WB_STRUCT_PACK_END()
 
 } // namespace whiteboard

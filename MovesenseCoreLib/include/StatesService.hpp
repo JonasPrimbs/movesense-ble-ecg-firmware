@@ -65,12 +65,18 @@ public:
 
 private:
 
-    /** List of supported event slots available in the device.
+    /** List of available event slots.
         Slots defined here should match API spec from system/states.yaml
-        and be in sync with method getStateSlot() and forEachSlot(). */
+        and be in sync with method getStateSlot() and forEachSlot().
+
+        When a new StateId item is defined in states.yaml, these steps should be made:
+        - add new entry in struct slots,
+        - add new case to switch inside getStateSlot(),
+        - add new function() call inside forEachSlot(). */
     struct
     {
         StateSlot movement;
+        StateSlot batteryStatus;
 
     } slots;
 
@@ -81,6 +87,9 @@ private:
         {
         case StateId::MOVEMENT:
             return &slots.movement;
+
+        case StateId::BATTERYSTATUS:
+            return &slots.batteryStatus;
 
         default:
             return nullptr;
@@ -93,6 +102,7 @@ private:
     void forEachSlot(StateSlotFunctor function)
     {
         function(&slots.movement, StateId::MOVEMENT);
+        function(&slots.batteryStatus, StateId::BATTERYSTATUS);
     }
 
 

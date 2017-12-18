@@ -17,11 +17,4 @@ WB_STATIC_VERIFY(sizeof(AdvSettings) == 28, SizeOfStructure_AdvSettings_IsNotWha
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(AdvSettings) == 4, AlignmentOfStructure_AdvSettings_IsNotWhatExpected);
 
 
-const whiteboard::StructureValueSerializer<AdvParams> AdvParams::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<AdvParams> AdvParams::cleaner;)
-const whiteboard::StructureValueSerializer<AdvState> AdvState::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<AdvState> AdvState::cleaner;)
-const whiteboard::StructureValueSerializer<AdvSettings> AdvSettings::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<AdvSettings> AdvSettings::cleaner;)
-
 } // namespace WB_RES

@@ -3,6 +3,8 @@
 
 #include "whiteboard/integration/port.h"
 #include "whiteboard/builtinTypes/Structures.h"
+#include "whiteboard/builtinTypes/TypedEnum.h"
+#include "whiteboard/builtinTypes/WrapperFor32BitPointer.h"
 #include "quantity/quantity/quantity.h"
 
 // TODO: These are not required by Value class header,
@@ -22,8 +24,12 @@ namespace whiteboard
 
 // Forward declarations
 class IValueSerializer;
+#ifdef WB_HAVE_ALIEN_STRUCTURES
 class AlienStructure;
+#endif
+#ifdef WB_HAVE_UNKNOWN_STRUCTURES
 class UnknownStructure;
+#endif
 class ValueAccessor;
 class ValueStorage;
 
@@ -49,17 +55,21 @@ public:
     */
     EXPLICIT inline Value(const char* value);
 
+#ifdef WB_HAVE_UNKNOWN_STRUCTURES
     /** Constructor for creating value of type UnknownStructure
     *
     * @param rValue UnknownStructure instance
     */
     EXPLICIT Value(const UnknownStructure& rValue);
+#endif
 
+#ifdef WB_HAVE_ALIEN_STRUCTURES
     /** Constructor for creating value of type AlienStructure
     *
     * @param rValue AlienStructure instance constructed from semi-structured data like JSON
     */
     EXPLICIT Value(const AlienStructure& rValue);
+#endif
 
     /** Constructor for creating value from whiteboard::ValueStorage .
     *
@@ -176,8 +186,10 @@ private:
     /* Helper for DataTypeId resolver. */
     template <typename Type, bool isStructure> struct DataTypeIdHelper;
 
-    /* Construction helper. */
-    template <typename Type, bool isStructure> struct ConstructionHelper;
+#ifdef WB_NEED_STRUCTURE_CLEANING
+    /* Deallocates wrapped pointers reserved for deserialized structure. */
+    void cleanDeserializedStructure();
+#endif
 
     /* Conversion helper. */
     template <typename Type, bool isStructure> struct ConversionHelper;
@@ -192,13 +204,9 @@ private:
 
     /** Structure value deserializer
      *
-     * @param rValueSerializer Value serializer implementation
-     * @param rValueCleaner Value cleaner implementation
      * @return Pointer to deserialized structure
      */
-    const void* deserialize(
-        const IValueSerializer& rValueSerializer
-        WB_WHEN_STRUCTURE_CLEANING_NEEDED(WB_COMMA const IValueCleaner& rValueCleaner));
+    const void* deserialize();
 
     /** Helper for convertTo for checking the that the dataType of the Value matches */
     void dataTypeCheck(size_t dataTypeId) const;
@@ -207,7 +215,7 @@ private:
     bool castToBool() const;
 public:
     /** Deserialization state flags */
-    enum
+    enum DeserializationState
     {
         NO_DESERIALIZATION_NEEDED,
         NOT_DESERIALIZED,
@@ -231,17 +239,25 @@ private:
     /** Deserialization state of the value */
     uint8 mDeserializationState : 2;
 
+    /** A flag indicating whether the value is an UnknownStructure */
+    uint8 mIsUnknownStructure : 1;
+
+    /** A flag indicating whether the value is an AlienStructure */
+    uint8 mIsAlienStructure : 1;
+
+    /** Reserved for future use,
+     *
+     * @note Above flags have their own storage space only for convenience and debuggability.
+     *       If we would need more flags we could have use
+     *       union { mDeserializationState, struct { mIsUnknownStructure, mIsAlienStructure } }
+     */
+    uint8 mReserved : 2;
+
     /** Protocol version */
     ProtocolVersion mProtocolVersion;
 
     /** The data */
     const void* mpData;
-
-    /** Serializer implementation */
-    const IValueSerializer* mpValueSerializer;
-
-    /** Deserialized structure cleaner */
-    WB_WHEN_STRUCTURE_CLEANING_NEEDED(const IValueCleaner* mpDeserializedStructureCleaner;)
 };
 
 inline Value::Value()
@@ -249,10 +265,11 @@ inline Value::Value()
       mSenderDataType(1),
       mReceiverDataType(1),
       mDeserializationState(NO_DESERIALIZATION_NEEDED),
+      mIsUnknownStructure(0),
+      mIsAlienStructure(0),
+      mReserved(0),
       mProtocolVersion(0),
-      mpData(NULL),
-      mpValueSerializer(NULL)
-      WB_WHEN_STRUCTURE_CLEANING_NEEDED(WB_COMMA mpDeserializedStructureCleaner(NULL))
+      mpData(NULL)
 {
 }
 
@@ -261,23 +278,17 @@ inline Value::Value(char* rValue)
       mSenderDataType(1),
       mReceiverDataType(1),
       mDeserializationState(NO_DESERIALIZATION_NEEDED),
+      mIsUnknownStructure(0),
+      mIsAlienStructure(0),
+      mReserved(0),
       mProtocolVersion(0), 
-      mpData(rValue),
-      mpValueSerializer(NULL)
-      WB_WHEN_STRUCTURE_CLEANING_NEEDED(WB_COMMA mpDeserializedStructureCleaner(NULL))
+      mpData(rValue)
 {
 }
 
 inline Value::Value(const char* rValue)
-    : mDataTypeId(WB_TYPE_STRING),
-      mSenderDataType(1),
-      mReceiverDataType(1),
-      mDeserializationState(NO_DESERIALIZATION_NEEDED),
-      mProtocolVersion(0), 
-      mpData(rValue),
-      mpValueSerializer(NULL)
-      WB_WHEN_STRUCTURE_CLEANING_NEEDED(WB_COMMA mpDeserializedStructureCleaner(NULL))
 {
+    new (this) Value(const_cast<char*>(rValue));
 }
 
 template <typename NativeType>
@@ -286,10 +297,11 @@ inline Value::Value(const NativeType& rValue)
       mSenderDataType(1),
       mReceiverDataType(1),
       mDeserializationState(NO_DESERIALIZATION_NEEDED),
+      mIsUnknownStructure(0),
+      mIsAlienStructure(0),
+      mReserved(0),
       mProtocolVersion(0), 
-      mpData(&rValue),
-      mpValueSerializer(ConstructionHelper<NativeType, IsStructure<NativeType>::value>::getValueSerializer())
-      WB_WHEN_STRUCTURE_CLEANING_NEEDED(WB_COMMA mpDeserializedStructureCleaner(NULL))
+      mpData(&rValue)
 {
 }
 
@@ -298,10 +310,11 @@ inline Value::Value(LocalDataTypeId dataTypeId, ProtocolVersion protocolVersion,
       mSenderDataType(1),
       mReceiverDataType(1),
       mDeserializationState(NO_DESERIALIZATION_NEEDED),
+      mIsUnknownStructure(0),
+      mIsAlienStructure(0),
+      mReserved(0),
       mProtocolVersion(protocolVersion),
-      mpData(pData),
-      mpValueSerializer(NULL)
-      WB_WHEN_STRUCTURE_CLEANING_NEEDED(WB_COMMA mpDeserializedStructureCleaner(NULL))
+      mpData(pData)
 {
 }
 
@@ -310,8 +323,7 @@ inline Value::~Value()
 #ifdef WB_NEED_STRUCTURE_CLEANING
     if (mDeserializationState == DESERIALIZED)
     {
-        WB_ASSERT(mpDeserializedStructureCleaner != NULL);
-        mpDeserializedStructureCleaner->clean(const_cast<void*>(mpData));
+        cleanDeserializedStructure();
     }
 #endif
 }
@@ -323,17 +335,6 @@ inline Value& Value::operator=(const Value& rOther)
     return *this;
 }
 #endif
-
-/* Construction helper. Default case */
-template <typename NativeType, bool isStructure> struct Value::ConstructionHelper
-{
-    static inline const IValueSerializer* getValueSerializer() { return NULL; }
-};
-
-template <typename NativeType> struct Value::ConstructionHelper<NativeType, true>
-{
-    static inline const IValueSerializer* getValueSerializer() { return &NativeType::serializer; };
-};
 
 inline ValueType Value::getType(LocalDataTypeId dataTypeId)
 {
@@ -421,10 +422,13 @@ template <> struct Value::NativeValueType<ByteStream>
 {
     static const ValueType value = WB_TYPE_BYTE_STREAM;
 };
+
+#ifdef WB_HAVE_UNKNOWN_STRUCTURES
 template <> struct Value::NativeValueType<UnknownStructure>
 {
     static const ValueType value = WB_TYPE_STRUCTURE;
 };
+#endif
 
 // Enumerations
 template <typename Definition, typename DefitionType, typename ScalarBaseType>
@@ -499,11 +503,13 @@ template <> struct Value::ResultType<char*>
 {
     typedef const char* type;
 };
+#ifdef WB_HAVE_UNKNOWN_STRUCTURES
 template <> struct Value::ResultType<UnknownStructure>
 {
     // UnknownStructure is passed by value
     typedef UnknownStructure type;
 };
+#endif
 
 // Enumerations
 template <typename Definition, typename DefitionType, typename ScalarBaseType>
@@ -572,20 +578,19 @@ template <> struct WB_API Value::ConversionHelper<ByteStream, false>
     static const ByteStream& convertTo(const Value& rValue);
 };
 
+#ifdef WB_HAVE_UNKNOWN_STRUCTURES
 template <> struct WB_API Value::ConversionHelper<UnknownStructure, false>
 {
     static UnknownStructure convertTo(const Value& rValue);
 };
+#endif
 
 /* Structure conversion */
 template <typename StructureType> struct Value::ConversionHelper<StructureType, true>
 {
     static inline const StructureType& convertTo(const Value& rValue)
     {
-        return *static_cast<const StructureType*>(
-            const_cast<Value&>(rValue).deserialize(
-                StructureType::serializer
-                WB_WHEN_STRUCTURE_CLEANING_NEEDED(WB_COMMA StructureType::cleaner)));
+        return *static_cast<const StructureType*>(const_cast<Value&>(rValue).deserialize());
     }
 };
 
@@ -596,7 +601,7 @@ inline typename Value::ConvertResult<NativeType>::type Value::convertTo(const un
     NativeType value = convertTo<NativeType>();
     unit::Value result;
     bool success = unit::tryConvert(rSourceUnit, rTargetUnit, static_cast<unit::Value>(value), result);
-    (void)success;
+    WB_NOT_USED(success);
     WB_ASSERT(success);
     return static_cast<NativeType>(result);
 }

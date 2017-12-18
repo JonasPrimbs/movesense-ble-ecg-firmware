@@ -3,6 +3,10 @@
 
 #include "whiteboard/metadata/IDataTypeMetadataContainer.h"
 
+WB_HEADER_CHECK_DEFINE(WB_HAVE_UNKNOWN_STRUCTURES)
+
+#ifdef WB_HAVE_UNKNOWN_STRUCTURES
+
 namespace whiteboard
 {
 
@@ -197,66 +201,6 @@ public:
     virtual void exitArrayItem() {}
 };
 
-/** This class is used to re-serialize received unknown structure, for example to be passed forward. */
-class UnknownStructureValueSerializer FINAL : public IValueSerializer
-{
-public:
-    /** Default constructor */
-    inline UnknownStructureValueSerializer() {}
-
-    /** Destructor */
-    inline ~UnknownStructureValueSerializer() {}
-
-    /** Calculates serialization length of a structure
-    *
-    * @param rStructureSerializationLengthCalculator Structure serialization length calculator to use
-    * @param bufferOffset Buffer offset for serialization start. Needed for alignment calculations.
-    * @param pData Pointer to the actual object that should be serialized
-    * @return Required serialization length in bytes.
-    */
-    size_t getStructureSerializationLength(
-        const IStructureSerializationLengthCalculator& rStructureSerializationLengthCalculator,
-        size_t bufferOffset,
-        const void* pData) const OVERRIDE;
-
-    /** Serializes the structure
-    *
-    * @param rStructureSerializer Structure serializer to use
-    * @param pBuffer Destination buffer
-    * @param bufferLength Length of the buffer
-    * @param pData Pointer to the actual object that should be serialized
-    * @param isReceiverDataType Is the message in receiver format (true)
-    * @return Length of the serialized data in bytes.
-    */
-    size_t serializeStructure(
-        const IStructureSerializer& rStructureSerializer,
-        void* pBuffer,
-        size_t bufferLength,
-        const void* pData,
-        bool isReceiverDataType) const OVERRIDE;
-
-    /// @see whiteboard::IValueSerializer::deserializeStructureHeader
-    bool deserializeStructureHeader(
-        const void* pData,
-        const IStructureDeserializer& rStructureDeserializer,
-        bool& rIsReceiverDataType,
-        bool& rIsSenderDataType) const OVERRIDE;
-
-    /** Deserializes a structure
-    *
-    * @param rStructureDeserializer Structure deserializer instance
-    * @param pBuffer Pointer to the buffer that has serialized structure
-    * @param rIsReceiverDataType On output contains a value that indicates whether this is data type with receiver's data type ID
-    * @param rIsSenderDataType On output contains a value that indicates whether this is data type with sender's data type ID
-    * @return  Pointer to deserialized structure within the buffer or NULL on failure
-    */
-    const void* deserializeStructure(
-        const IStructureDeserializer& rStructureDeserializer,
-        void* pBuffer,
-        bool& rIsReceiverDataType,
-        bool& rIsSenderDataType) const OVERRIDE;
-};
-
 /** Class that represents unknown structure. Receiver can always convert request parameters and
 * return values to UnknownStructure instance and then walk the structure contents in a more dynamic
 * way. */
@@ -335,10 +279,10 @@ private:
      *
      * @param dataTypeId ID of the data type
      * @param protocolVersion Protocol version that was used to encode the structure
-     * @param pData Encoded data
      * @param dataOwner Ownership of the data
+     * @param pData Encoded data
      */
-    UnknownStructure(LocalDataTypeId dataTypeId, ProtocolVersion protocolVersion, const void* pData, bool dataOwner);
+    UnknownStructure(LocalDataTypeId dataTypeId, ProtocolVersion protocolVersion, bool dataOwner, const void* pData);
 
 private:
     /** Library internal implementation can access these members */
@@ -350,11 +294,13 @@ private:
     /** Protocol version */
     ProtocolVersion mProtocolVersion;
 
-    /** The data */
-    mutable const void* mpData;
-
     /** Ownership of the data */
     mutable bool mDataOwner;
+
+    /** The data */
+    mutable const void* mpData;
 };
 
 } // namespace whiteboard
+
+#endif

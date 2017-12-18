@@ -11,7 +11,4 @@ WB_STATIC_VERIFY(sizeof(SystemModeStatus) == 3, SizeOfStructure_SystemModeStatus
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(SystemModeStatus) == 1, AlignmentOfStructure_SystemModeStatus_IsNotWhatExpected);
 
 
-const whiteboard::StructureValueSerializer<SystemModeStatus> SystemModeStatus::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<SystemModeStatus> SystemModeStatus::cleaner;)
-
 } // namespace WB_RES

@@ -17,11 +17,4 @@ WB_STATIC_VERIFY(sizeof(AccData) == 12, SizeOfStructure_AccData_IsNotWhatExpecte
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(AccData) == 4, AlignmentOfStructure_AccData_IsNotWhatExpected);
 
 
-const whiteboard::StructureValueSerializer<AccInfo> AccInfo::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<AccInfo> AccInfo::cleaner;)
-const whiteboard::StructureValueSerializer<AccConfig> AccConfig::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<AccConfig> AccConfig::cleaner;)
-const whiteboard::StructureValueSerializer<AccData> AccData::serializer;
-WB_WHEN_STRUCTURE_CLEANING_NEEDED(const whiteboard::StructureValueCleaner<AccData> AccData::cleaner;)
-
 } // namespace WB_RES
