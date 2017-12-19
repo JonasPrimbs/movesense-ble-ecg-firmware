@@ -40,7 +40,7 @@ Resource | Description
 /Meas/ECG|API for the electrocardiography measurement.
 /Meas/Gyro|API enabling subscribing angular velocity data (based on gyroscope).
 /Meas/HR|API enabling subscribing heart rate data.
-/Meas/Imu|API for synchronous access to motion data (accelerometer, gyroscope, magnetometer) - **NOT IMPLEMENTED**.
+/Meas/Imu|API for synchronous access to motion data (accelerometer, gyroscope, magnetometer)
 /Meas/Magn|API enabling subscribing magnetic field data (based on magnetometer).
 /Meas/Sensorhub|API for synchronous access to data from multiple sensors - **NOT IMPLEMENTED**.
 /Meas/Temp|API enabling reading or subscribing temperature data (based on thermometer).
@@ -183,7 +183,7 @@ To get up and running
 > mkdir myBuild
 > cd myBuild
 
-To build a debug version of a selected sample application:  
+To build a debug version of a selected sample application (hello_world app in this example):  
 
 > cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/hello_world_app  
 
