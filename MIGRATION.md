@@ -1,3 +1,7 @@
+**Migration to 1.2.0 (bootloader)**
+- The new bootloader contains a new SoftDevice made by Nordic Semiconductor in version 4.0.5. You can find the new bootloader in migration/bootloader_2.zip. Before you will send a new dfu with 1.2.0 based software you HAVE TO update bootloader, without this step your Movesense will be always in dfu mode. Your Movesense automatically will go to the second dfu mode after bootloader update. The bootloader can not be downgraded.
+
+
 **Migration to 1.0.1**
 
 - Logbook/EEPROM service
