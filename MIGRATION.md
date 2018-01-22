@@ -1,7 +1,11 @@
 **Migration to 1.2.0 (bootloader)**
 
-- The Movesense device software v1.2.0 includes a new SoftDevice bluetooth stack version 4.0.5 (by Nordic Semiconductors) as well as new bootloader. When updating the sensor software using DFU from 1.1 version (or older), one **must update bootloader first**. You can either use the "*bootloader update DFU package*" (found in migration/bootloader_2.zip) **or** you can use DFU package that includes the new bootloader and SoftDevice (built as part for compiling sensor software with movesense-device-lib >=1.2). 
-** *NOTE: The once updated bootloader and softdevice cannot be downgraded* **.
+- The Movesense device software v1.2.0 includes a new SoftDevice bluetooth stack version 4.0.5 (by Nordic Semiconductors) as well as new bootloader. When updating the sensor software using DFU from 1.1 version (or older), one **must update bootloader first**. You can either:
+  - use the "*bootloader update DFU package*" (found in migration/bootloader_2.zip) 
+  **or** 
+  - update with DFU package that includes the new bootloader and SoftDevice (built as part for compiling sensor software with movesense-device-lib >=1.2).
+
+***NOTE: The once updated bootloader and softdevice cannot be downgraded***.
 
 
 **Migration to 1.0.1**
