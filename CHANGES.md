@@ -6,6 +6,7 @@
     Note: DFU with bootloader is flashed two times in Mobile Application - process is splited.
     Note: We recommend to reboot the mobile device to avoid the problem with BLE cache (both iOS and Android) after dfu update.
 - Update: Component/LED is using new API
+- Update: Portable-python update
 - Fix: Wrong SBEM version
 - Fix: Logbook ID is always 1
 - Fix: Potential overflow in timestamps
