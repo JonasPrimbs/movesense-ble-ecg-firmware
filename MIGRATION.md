@@ -1,4 +1,5 @@
 **Migration to 1.2.0 **
+
 - Update nrfutil:
 
   If you do not use portable-python from movesense-device-lib, but ex. your system one. You should update nrfutil to version 3.4.0 which support the new SoftDevice.
