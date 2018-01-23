@@ -47,7 +47,8 @@ struct StateIdValues
 	enum Type
 	{
 		MOVEMENT = 0,
-		BATTERYSTATUS = 1
+		BATTERYSTATUS = 1,
+		CONNECTOR = 2
 	};
 };
 typedef whiteboard::TypedEnum<StateIdValues, StateIdValues::Type, int32> StateId;

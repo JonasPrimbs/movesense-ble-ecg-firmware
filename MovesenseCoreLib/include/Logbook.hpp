@@ -60,6 +60,10 @@ private:
     virtual void onPutRequest(const wb::Request& request,
                               const wb::ParameterList& parameters) OVERRIDE;
 
+    /** @see whiteboard::ResourceProvider::onPostRequest */
+    virtual void onPostRequest(const wb::Request& request,
+                               const wb::ParameterList& parameters) OVERRIDE;
+
     /** @see whiteboard::ResourceProvider::onSubscribe */
     virtual void onSubscribe(const wb::Request& request,
                              const wb::ParameterList& parameters) OVERRIDE;
@@ -103,6 +107,7 @@ private:
 
     void resetGetLogDataState();
     void resetGetLogDescriptorsState();
+    uint32_t startNewLog();
 
     uint16_t mCurrentDescriptorItemIndex;
     uint16_t mCurrentDescriptorGroupIndex;

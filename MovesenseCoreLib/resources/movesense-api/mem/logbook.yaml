@@ -135,6 +135,16 @@ paths:
         404:
           description: |
             StartAfterId was not found in logs
+    post:
+      description: |
+        Create a new log entry resource (increment log Id). Returns the new log Id
+        Note: actual time that entry appears in /Logbook/Entries depends on the implementation (e.g. Movesense sensor it only happens when log has data)
+      responses:
+        201:
+          description: Log entry created successfully
+          schema:
+            type: integer
+            format: uint32
     delete:
       description: |
         Deletes the content of the whole Logbook.

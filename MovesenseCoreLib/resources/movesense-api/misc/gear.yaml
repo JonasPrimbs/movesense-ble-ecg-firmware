@@ -4,7 +4,8 @@ info:
   version: NA
   title: Gear - Movesense-API
   description: |
-    API to get the globally unique Movesense ID associated with the physical gear
+    API to get the globally unique Movesense ID associated with the Movesense 
+    compatible physical gear
   x-api-type: public
   x-api-required: true
 
@@ -12,19 +13,22 @@ paths:
   /Misc/Gear/Id:
     get:
       description: |
-        Get the ID associated to the gear into which the Movesense device is connected to.
+        Get the ID associated to the physical gear (Movesense smart connector) 
+        which the Movesense device is connected to.
       responses:
         200:
           description: Globally unique Movesense gear ID
           schema:
             $ref: '#/definitions/GearId'
         404:
-            description: Not connected to a Movesense compatible gear
+          description: Not found.
+
   /Misc/Gear/Id/Subscription:
     post:
       description: |
-        Subscription to Gear ID. Notification triggered when Movesense device is connected to a extenal gear with unique ID.
-        There is no indication for disconnecting the gear.
+        Subscription to Gear ID. Notification triggered when Movesense device is 
+        connected to or disconnected from an extenal gear with unique ID. On 
+        disconnection GearID returned is 0.
       responses:
         201:
           description: Subscription created successfully
@@ -43,5 +47,6 @@ paths:
 
 definitions:
   GearId:
+    description: ID associated to the physical gear. When no external gear is connected to the Movesense device, the GearId is 0.
     type: integer
     format: uint64

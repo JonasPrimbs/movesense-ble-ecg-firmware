@@ -12,10 +12,13 @@ set(NRFJPROG_CMD nrfjprog)
 set(PING_CMD ping -c 6)
 endif()
 
+set(APPLICATION_VERSION 2)
+set(BOOTLOADER_VERSION 2)
+
 add_custom_command(
         OUTPUT flash.1
         DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}
-        COMMAND ${NRFUTIL_CMD} settings generate --family NRF52 --application ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}.hex --application-version 1 --bootloader-version 1 --bl-settings-version 1 ${CMAKE_CURRENT_BINARY_DIR}/settings.hex
+        COMMAND ${NRFUTIL_CMD} settings generate --family NRF52 --application ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}.hex --application-version ${APPLICATION_VERSION} --bootloader-version ${BOOTLOADER_VERSION} --bl-settings-version 1 ${CMAKE_CURRENT_BINARY_DIR}/settings.hex
         COMMAND ${MERGEHEX_CMD} -m ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}.hex ${CMAKE_CURRENT_BINARY_DIR}/settings.hex -o ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}_w_settings.hex
         COMMENT "Prepare app for flashing"
 )
@@ -23,8 +26,9 @@ add_custom_command(
 add_custom_command(
         OUTPUT create_dfu_pkg
         DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}
-        COMMAND ${NRFUTIL_CMD} pkg generate --hw-version 52 --sd-req 0x8C --application-version 1 --application ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}.hex --key-file ${MOVESENSE_CORE_LIBRARY}/privatekey_debug.pem movesense_dfu.zip
-        COMMENT "Creating DFU package"
+        COMMAND ${NRFUTIL_CMD} pkg generate --hw-version 52 --sd-req 0x8C,0x9F --application-version ${APPLICATION_VERSION} --application ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}.hex --sd-id 0x9F --softdevice ${MOVESENSE_CORE_LIBRARY}/softdevice/${MOVESENSE_INTENDED_SOFTDEVICE_HEX_FILE} --bootloader ${MOVESENSE_CORE_LIBRARY}/bootloader/bootloader.hex --bootloader-version ${BOOTLOADER_VERSION} --key-file ${MOVESENSE_CORE_LIBRARY}/privatekey_debug.pem movesense_dfu_w_bootloader.zip
+        COMMAND ${NRFUTIL_CMD} pkg generate --hw-version 52 --sd-req 0x9F --application-version 2 --application ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}.hex --key-file ${MOVESENSE_CORE_LIBRARY}/privatekey_debug.pem movesense_dfu.zip
+        COMMENT "Creating DFU packages"
 )
 add_custom_command(
         OUTPUT flash.2

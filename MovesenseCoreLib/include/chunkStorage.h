@@ -140,6 +140,12 @@ public:
     virtual uint16_t getSessionId() = 0;
 
     /**
+        increments current session id by 1.
+        @return new Session id.
+    */
+    virtual uint16_t incrementSessionId() = 0;
+
+    /**
         Appends a chunk to storage ring buffer.
 
         @param chunkHeader    Points to chunk header. Checksum values are updated
