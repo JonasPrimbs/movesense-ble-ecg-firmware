@@ -114,7 +114,6 @@ void HrWakeupApp::setShutdownTimer()
     counter = 0;
 }
 
-
 void HrWakeupApp::onTimer(whiteboard::TimerId timerId)
 {
     counter = counter + LED_BLINKING_PERIOD;
@@ -122,23 +121,22 @@ void HrWakeupApp::onTimer(whiteboard::TimerId timerId)
     if (counter < AVAILABILITY_TIME)
     {
         asyncPut(WB_RES::LOCAL::UI_IND_VISUAL::ID,
-            AsyncRequestOptions::Empty, (uint16_t)2); // SHORT_VISUAL_INDICATION
+                 AsyncRequestOptions::Empty, (uint16_t)2); // SHORT_VISUAL_INDICATION
         return;
     }
 
-    if (counter < AVAILABILITY_TIME + WAKE_PREPARATION_TIME)
+    if (counter == AVAILABILITY_TIME)
     {
         // Prepare AFE to wake-up mode
         asyncPut(WB_RES::LOCAL::COMPONENT_MAX3000X_WAKEUP::ID,
-            AsyncRequestOptions(NULL, 0, true), (uint8_t) 1);
-        return;
+                 AsyncRequestOptions(NULL, 0, true), (uint8_t)1);
+
+        // Make PUT request to switch LED on
+        asyncPut(WB_RES::LOCAL::COMPONENT_LED::ID, AsyncRequestOptions::Empty, true);
+
+        // Make PUT request to eneter power off mode
+        asyncPut(WB_RES::LOCAL::SYSTEM_MODE::ID,
+                 AsyncRequestOptions(NULL, 0, true), // Force async
+                 (uint8_t)1U);                       // WB_RES::SystemMode::FULLPOWEROFF
     }
-
-    // Make PUT request to switch LED on
-    asyncPut(WB_RES::LOCAL::COMPONENT_LED::ID, AsyncRequestOptions::Empty, true);
-
-    // Make PUT request to eneter power off mode
-    asyncPut(WB_RES::LOCAL::SYSTEM_MODE::ID,
-        AsyncRequestOptions(NULL, 0, true), // Force async
-        (uint8_t)1U);                       // WB_RES::SystemMode::FULLPOWEROFF
 }

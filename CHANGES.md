@@ -1,3 +1,21 @@
+## Version 1.2.0.1182.2689dce322ff ##
+
+###Whats new:###
+- IMPORTANT! New soft device 4.0.5 (Check MIGRATION.md)
+- Sample apps generate 2 dfu files (with and without bootloader and SD).
+    Note: DFU with bootloader is flashed two times in Mobile Application - process is splited.
+    Note: We recommend to reboot the mobile device to avoid the problem with BLE cache (both iOS and Android) after dfu update.
+- Update: Component/LED is using new API
+- Fix: Wrong SBEM version
+- Fix: Logbook ID is always 1
+- Fix: Potential overflow in timestamps
+- Fix: BLEadv: get wrong data
+- Fix: HR doesn't send RR value after long delay
+
+###Known Bugs:###
+- The first package of Acc/Magn/Gyro can be corrupted for high sample rates
+- HR stops sending data after Acc/Magn/Gyro subscription
+
 ## Version 1.1.0.1058.32 ##
 
 ###Whats new:###

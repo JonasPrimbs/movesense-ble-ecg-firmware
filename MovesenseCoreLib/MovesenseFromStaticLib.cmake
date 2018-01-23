@@ -87,4 +87,4 @@ set(LINK_STARTAT "0x1f000")
 ################################
 
 # Variable that contains the filename of the softdevice hex-file that is supposed to be used with this version of Movesense Core-lib 
-set(MOVESENSE_INTENDED_SOFTDEVICE_HEX_FILE "s132_nrf52_3.0.0_softdevice.hex")
+set(MOVESENSE_INTENDED_SOFTDEVICE_HEX_FILE "s132_nrf52_4.0.5_softdevice.hex")
