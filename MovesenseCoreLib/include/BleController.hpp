@@ -30,9 +30,7 @@ protected:
     virtual void OnHrsNotificationEnabled() {}
     virtual void OnHrsNotificationDisabled() {}
     virtual void OnUartData(uint8_t * p_data, uint16_t length) {}
-
-public:
-    void SendUartData(uint8_t * p_data, uint16_t length);
 };
 
 void send_ble_hr_measurement(uint16_t heart_rate);
+void send_ble_nus_data(uint8_t * p_data, uint16_t length);

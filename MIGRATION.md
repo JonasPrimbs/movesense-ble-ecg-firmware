@@ -1,6 +1,46 @@
+**Migration to 1.2.0 **
+
+- Update nrfutil:
+
+  If you do not use portable-python from movesense-device-lib, but ex. your system one. You should update nrfutil to version 3.4.0 which support the new SoftDevice.
+  
+  ```pip install nrfutil==3.4.0```
+
+- New LED API:
+
+    After 1.2 release the optimal way of use the LED has changed.
+
+    a) Old commands:
+
+      ```wbcmd --port COM13 --path 'Component/Led' --op put --opdatatype bool --opdata false```
+
+      ```asyncPut(WB_RES::LOCAL::COMPONENT_LED(), AsyncRequestOptions::Empty, true);```
+
+    b) New commands: 
+	
+      ```wbcmd --port COM13 --path 'Component/Leds/0' --op put --opdatatype LedState --opdata '{"IsOn":false}'    // '0' is ledIndex```
+	  
+      ```WB_RES::LedState ledState = {true};```
+
+      ```asyncPut(WB_RES::LOCAL::COMPONENT_LEDS_LEDINDEX(), NULL, 0, ledState);    // '0' is ledIndex```
+
+    Also some new LED options are available:
+	
+    a) via wbcmd:
+	
+      ```wbcmd --port COM13 --path 'Component/Leds'```
+	  
+      ```wbcmd --port COM13 --path 'Component/Leds/0'    // '0' is ledIndex```
+
+    b) via internal request: 
+	
+      ```asyncGet(WB_RES::LOCAL::COMPONENT_LEDS());```
+	  
+      ```asyncGet(WB_RES::LOCAL::COMPONENT_LEDS_LEDINDEX(), AsyncRequestOptions::Empty, 0);    // '0' is ledIndex```
+
 **Migration to 1.2.0 (bootloader)**
 
-- The Movesense device software v1.2.0 includes a new SoftDevice bluetooth stack version 4.0.5 (by Nordic Semiconductors) as well as new bootloader. When updating the sensor software using DFU from 1.1 version (or older), one **must update bootloader first**. You can either:
+The Movesense device software v1.2.0 includes a new SoftDevice bluetooth stack version 4.0.5 (by Nordic Semiconductors) as well as new bootloader. When updating the sensor software using DFU from 1.1 version (or older), one **must update bootloader first**. You can either:
   - use the "*bootloader update DFU package*" (found in migration/bootloader_2.zip) 
   **or** 
   - update with DFU package that includes the new bootloader and SoftDevice (built as part for compiling sensor software with movesense-device-lib >=1.2).

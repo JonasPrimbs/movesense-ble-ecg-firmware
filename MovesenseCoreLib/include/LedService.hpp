@@ -28,6 +28,12 @@ private:
     /** @see whiteboard::ILaunchableModule::stopModule */
     virtual void stopModule() OVERRIDE { mModuleState = WB_RES::ModuleStateValues::STOPPED; }
 
-    virtual void onPutRequest(const whiteboard::Request& request,
-                              const whiteboard::ParameterList& parameters) OVERRIDE;
+    virtual void onPutRequest(const whiteboard::Request& request, const whiteboard::ParameterList& parameters) OVERRIDE;
+
+    virtual void onGetRequest(const whiteboard::Request& request, const whiteboard::ParameterList& parameters) OVERRIDE;
+
+private:
+    void changeLedState(uint8_t newState);
+    
+    bool mLedIsOn;
 };

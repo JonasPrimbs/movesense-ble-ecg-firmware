@@ -87,6 +87,13 @@ definitions:
           0 = Battery OK
           1 = Warning: low battery
         value: 1
+      - name: 'Connector'
+        description: |
+          Describes (movesense) connector state
+          0 = No connection
+          1 = Connection
+          2 = Unknown
+        value: 2
 
   State:
     type: integer

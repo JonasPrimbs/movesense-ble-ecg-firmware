@@ -157,6 +157,21 @@ struct MEM_LOGBOOK_ENTRIES
 		}
 	};
 
+	struct POST
+	{
+		typedef whiteboard::StronglyTypedResult<uint32, whiteboard::HTTP_CODE_CREATED> HTTP_CODE_CREATED;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
+	};
+
 	struct DELETE
 	{
 		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;

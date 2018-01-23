@@ -47,8 +47,10 @@ public:
         virtual void setPreDeleteListener( void (*listenerFunc)( const void *userData, uint32_t address ) );
     #endif
 
-private:
     virtual uint16_t getSessionId();
+    virtual uint16_t incrementSessionId();
+private:
+
     virtual void getAddressSpace( uint32_t *startAddress, uint32_t *length );
     virtual bool getFirstAddress( uint32_t *dest );
 
