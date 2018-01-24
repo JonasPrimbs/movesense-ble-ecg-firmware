@@ -42,7 +42,6 @@ Resource | Description
 /Meas/HR|API enabling subscribing heart rate data.
 /Meas/Imu|API for synchronous access to motion data (accelerometer, gyroscope, magnetometer)
 /Meas/Magn|API enabling subscribing magnetic field data (based on magnetometer).
-/Meas/Sensorhub|API for synchronous access to data from multiple sensors - **NOT IMPLEMENTED**.
 /Meas/Temp|API enabling reading or subscribing temperature data (based on thermometer).
 /Mem/DataLogger|Generic logger capable of logging max. 8 different resources.
 /Mem/Logbook|Generic Logbook from where the logged data can be read.
