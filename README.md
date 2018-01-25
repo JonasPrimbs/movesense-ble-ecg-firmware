@@ -182,13 +182,17 @@ To get up and running
 > cd movesense-device-lib
 > mkdir myBuild
 > cd myBuild
+```  
 
 To build a debug version of a selected sample application (hello_world app in this example):  
 
+`  
 > cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/hello_world_app  
+`  
 
 To build a release version:  
 
+```  
 > cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake -DCMAKE_BUILD_TYPE=Release ../samples/hello_world_app  
 > ninja
 ```
