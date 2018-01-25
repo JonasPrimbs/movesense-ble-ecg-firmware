@@ -1,12 +1,23 @@
-**Migration to 1.2.0 **
+##Migration to 1.2.0##
 
-- Update nrfutil:
+###Updating bootloader and SoftDevice###  
+
+Movesense device software version 1.2.0 includes a new SoftDevice Bluetooth stack version 4.0.5 (by Nordic Semiconductor) as well as new bootloader. When updating the sensor software using DFU from 1.1 version (or older), **the bootloader must be updated first!**.  
+
+You can either:  
+
+    - use the "*bootloader update DFU package*" (found in migration/bootloader_2.zip), or
+    - use a DFU package that includes both the new bootloader and SoftDevice (package is automatically built when compiling sensor applications with movesense-device-lib >=1.2).
+
+***NOTE: Once updated, the bootloader or softdevice cannot be downgraded.***
+
+###Updating nrfutil###
 
   If you do not use portable-python from movesense-device-lib, but ex. your system one. You should update nrfutil to version 3.4.0 which support the new SoftDevice.
   
   ```pip install nrfutil==3.4.0```
 
-- New LED API:
+###New LED API###
 
     After 1.2 release the optimal way of use the LED has changed.
 
@@ -38,17 +49,7 @@
 	  
       ```asyncGet(WB_RES::LOCAL::COMPONENT_LEDS_LEDINDEX(), AsyncRequestOptions::Empty, 0);    // '0' is ledIndex```
 
-**Migration to 1.2.0 (bootloader)**
-
-The Movesense device software v1.2.0 includes a new SoftDevice bluetooth stack version 4.0.5 (by Nordic Semiconductors) as well as new bootloader. When updating the sensor software using DFU from 1.1 version (or older), one **must update bootloader first**. You can either:
-  - use the "*bootloader update DFU package*" (found in migration/bootloader_2.zip) 
-  **or** 
-  - update with DFU package that includes the new bootloader and SoftDevice (built as part for compiling sensor software with movesense-device-lib >=1.2).
-
-***NOTE: The once updated bootloader and softdevice cannot be downgraded***.
-
-
-**Migration to 1.0.1**
+##Migration to 1.0.1##
 
 - Logbook/EEPROM service
     -If you are using the Logbook and EEPROM parallel (The first EEPROM for Logbook and second for The EEPROM Service)
@@ -57,7 +58,7 @@ The Movesense device software v1.2.0 includes a new SoftDevice bluetooth stack v
 
       Please, check the plain_app sample.
 
-**Migration to 1.0.0**
+##Migration to 1.0.0##
 
 - Make sure that you use the latest *"samples/_build"* helper
 
