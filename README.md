@@ -1,6 +1,7 @@
 ## Announcements ##
-**API changes**  
-Movesense API has been updated. Please review the latest [API definition](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/resources/movesense-api/) and modify your existing code accordingly, if needed.
+
+**(Jan 24th 2018) Sensor firmware version 1.2 is released!**  
+This version contains an update to Nordic Semiconductor's SoftDevice which implements the Bluetooth stack in Movesense sensor. Please follow the installation instructions in [CHANGES.md](CHANGES.md) carefully.  
 
 **Known issues**  
 Please refer to [CHANGES.md](CHANGES.md) for a list of known issues.
