@@ -1,7 +1,7 @@
 ## Announcements ##
 
-**(Jan 24th 2018) Sensor firmware version 1.2 is released!**  
-This version contains an update to Nordic Semiconductor's SoftDevice which implements the Bluetooth stack in Movesense sensor. Please follow the installation instructions in [CHANGES.md](CHANGES.md) carefully.  
+**(Jan 24th 2018) Sensor firmware version 1.2.0 is released!**  
+This version contains a new bootloader and an update to Nordic Semiconductor's SoftDevice which implements the Bluetooth stack in Movesense sensor. Please follow the installation instructions in [CHANGES.md](CHANGES.md) carefully.  
 
 **Known issues**  
 Please refer to [CHANGES.md](CHANGES.md) for a list of known issues.
