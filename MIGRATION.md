@@ -6,10 +6,10 @@ Movesense device software version 1.2.0 includes a new SoftDevice Bluetooth stac
 
 You can either:  
 
-- use the "*bootloader update DFU package*" (found in migration/bootloader_2.zip), *OR*  
+- use the "*bootloader update DFU package*" (found in migration/bootloader_2.zip), **OR**  
 - use a DFU package that includes both the new bootloader and SoftDevice (package is automatically built when compiling sensor applications with movesense-device-lib >= 1.2).
 
-***NOTE: Once updated, the bootloader or SoftDevice cannot be downgraded***  
+**NOTE: Once updated, the bootloader or SoftDevice cannot be downgraded**  
  
 ### Updating nrfutil ###  
 
