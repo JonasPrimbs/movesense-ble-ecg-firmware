@@ -1,6 +1,6 @@
-## Migration to 1.2.0 ##  
+## Migration to 1.2.0 
 
-### Updating bootloader and SoftDevice ###  
+### Updating bootloader and SoftDevice
 
 Movesense device software version 1.2.0 includes a new SoftDevice Bluetooth stack version 4.0.5 (by Nordic Semiconductor) as well as new bootloader. When updating the sensor software using DFU from 1.1 version (or older), **the bootloader must be updated first!**  
 
@@ -11,45 +11,45 @@ You can either:
 
 **NOTE: Once updated, the bootloader or SoftDevice cannot be downgraded**  
  
-### Updating nrfutil ###  
+### Updating nrfutil
 
-  If you do not use portable-python from movesense-device-lib, but ex. your system one. You should update nrfutil to version 3.4.0 which support the new SoftDevice.
+If you do not use portable-python from movesense-device-lib, but ex. your system one. You should update nrfutil to version 3.4.0 which support the new SoftDevice.
   
-  ```pip install nrfutil==3.4.0```
+`pip install nrfutil==3.4.0`
 
-### New LED API ###  
+### New LED API
 
-    After 1.2 release the optimal way of use the LED has changed.
+After 1.2 release the optimal way of use the LED has changed.
 
-    a) Old commands:
+a) Old commands:
 
-      ```wbcmd --port COM13 --path 'Component/Led' --op put --opdatatype bool --opdata false```
+`wbcmd --port COM13 --path 'Component/Led' --op put --opdatatype bool --opdata false`
 
-      ```asyncPut(WB_RES::LOCAL::COMPONENT_LED(), AsyncRequestOptions::Empty, true);```
+`asyncPut(WB_RES::LOCAL::COMPONENT_LED(), AsyncRequestOptions::Empty, true);`
 
-    b) New commands: 
-	
-      ```wbcmd --port COM13 --path 'Component/Leds/0' --op put --opdatatype LedState --opdata '{"IsOn":false}'    // '0' is ledIndex```
-	  
-      ```WB_RES::LedState ledState = {true};```
+b) New commands: 
 
-      ```asyncPut(WB_RES::LOCAL::COMPONENT_LEDS_LEDINDEX(), NULL, 0, ledState);    // '0' is ledIndex```
+`wbcmd --port COM13 --path 'Component/Leds/0' --op put --opdatatype LedState --opdata '{"IsOn":false}'    // '0' is ledIndex`
 
-    Also some new LED options are available:
-	
-    a) via wbcmd:
-	
-      ```wbcmd --port COM13 --path 'Component/Leds'```
-	  
-      ```wbcmd --port COM13 --path 'Component/Leds/0'    // '0' is ledIndex```
+`WB_RES::LedState ledState = {true};`
 
-    b) via internal request: 
-	
-      ```asyncGet(WB_RES::LOCAL::COMPONENT_LEDS());```
-	  
-      ```asyncGet(WB_RES::LOCAL::COMPONENT_LEDS_LEDINDEX(), AsyncRequestOptions::Empty, 0);    // '0' is ledIndex```
+`asyncPut(WB_RES::LOCAL::COMPONENT_LEDS_LEDINDEX(), NULL, 0, ledState);    // '0' is ledIndex`
 
-##Migration to 1.0.1##
+Also some new LED options are available:
+
+a) via wbcmd:
+
+`wbcmd --port COM13 --path 'Component/Leds'`
+
+`wbcmd --port COM13 --path 'Component/Leds/0'    // '0' is ledIndex`
+
+b) via internal request: 
+
+`asyncGet(WB_RES::LOCAL::COMPONENT_LEDS());`
+
+`asyncGet(WB_RES::LOCAL::COMPONENT_LEDS_LEDINDEX(), AsyncRequestOptions::Empty, 0);    // '0' is ledIndex`
+
+## Migration to 1.0.1
 
 - Logbook/EEPROM service
     -If you are using the Logbook and EEPROM parallel (The first EEPROM for Logbook and second for The EEPROM Service)
@@ -58,7 +58,7 @@ You can either:
 
       Please, check the plain_app sample.
 
-##Migration to 1.0.0##
+## Migration to 1.0.0
 
 - Make sure that you use the latest *"samples/_build"* helper
 
