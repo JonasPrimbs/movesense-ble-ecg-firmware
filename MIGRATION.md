@@ -1,6 +1,6 @@
-##Migration to 1.2.0##  
+## Migration to 1.2.0 ##  
 
-###Updating bootloader and SoftDevice###  
+### Updating bootloader and SoftDevice ###  
 
 Movesense device software version 1.2.0 includes a new SoftDevice Bluetooth stack version 4.0.5 (by Nordic Semiconductor) as well as new bootloader. When updating the sensor software using DFU from 1.1 version (or older), **the bootloader must be updated first!**  
 
@@ -10,14 +10,14 @@ You can either:
 - use a DFU package that includes both the new bootloader and SoftDevice (package is automatically built when compiling sensor applications with movesense-device-lib >= 1.2).
 
 ***NOTE: Once updated, the bootloader or SoftDevice cannot be downgraded***  
-
-###Updating nrfutil###  
+ 
+### Updating nrfutil ###  
 
   If you do not use portable-python from movesense-device-lib, but ex. your system one. You should update nrfutil to version 3.4.0 which support the new SoftDevice.
   
   ```pip install nrfutil==3.4.0```
 
-###New LED API###  
+### New LED API ###  
 
     After 1.2 release the optimal way of use the LED has changed.
 
