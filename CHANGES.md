@@ -3,8 +3,8 @@
 ###Whats new:###
 - IMPORTANT! SoftDevice upgraded to version 4.0.5 (Please review [MIGRATION.md](MIGRATION.md))
 - Each sensor sample app now generates two DFU files (with and without bootloader and SoftDevice)  
-   - Note: DFU package containing the bootloader ('movesense_dfu_w_bootloader.zip') is applied two times when firmware update is performed using Movesense Sample App on mobile, i.e. the update process is splitted into two stages  
-   - Note: After the firmware update process is complete, we recommend to either reset Bluetooth on mobile or reboot the mobile device to avoid reconnection problems with the updated sensor. This applies to both iOS and Android    
+    - Note: DFU package containing the bootloader ('movesense_dfu_w_bootloader.zip') is applied two times when firmware update is performed using Movesense Sample App on mobile, i.e. the update process is splitted into two stages  
+    - Note: After the firmware update process is complete, we recommend to either reset Bluetooth on mobile or reboot the mobile device to avoid reconnection problems with the updated sensor. This applies to both iOS and Android    
 - Update: Component/LED is using new API
 - Update: Portable-python update
 - Fix: Wrong SBEM version
@@ -105,7 +105,7 @@
 
 
 ##Version 0.9.0.602 ##
-DO NOT USE THIS ON THE C VERSION!!!
+DO NOT USE THIS ON THE C HARDWARE VARIANT!!!
 
 ###Whats new:###
 - Samples sens_output_test_app, hr_wakeup_app
