@@ -43,8 +43,8 @@ WARNING: This command will wipe all data on sensor, including settings.
 
 ### Why there are two ways of turning ON/OFF serial? ###
 
-The main method for turning on serial is to use whiteboard command (Refer to _How to enable serial communication?_)
-After you turn on serial this way your choise will be stored in non volatile Movesense settings.
+The main method for turning ON serial is to use whiteboard command (Refer to _How to enable serial communication?_)
+After you turn ON serial this way your choise will be stored in non volatile Movesense settings.
 ```SERIAL_COMMUNICATION(true)``` is used for setup default value in application in case when manufacturing data on sensor settings are cleared by "flash_all" command.  
 WARNING: Please refer to _Why does SERIAL_COMMUNICATION(true) not work?_ and _How to enable serial communication?_ Try to not use "flash_all" since it will wipe all manufacturing data without recovery option.
 
@@ -118,7 +118,7 @@ You can notice that in some cases amount of sensor data copletely jams the senso
 You should take into consideration that the issue can happen when you are trying to send data from couple sensor subscriptions working on low frequecies or from one subscription for example on accelerometer but with very high frequency.  
 Data amount limit depends also on mobile phone since mobiles uses different BT chipsets and stacks.
 
-### Why battery level is higher after power off or reset? ###
+### Why battery level is higher after power OFF or reset? ###
 ### Why battery level is not changing very long time? ###
 
 Movesense battery level estimation is based on measuring voltage of the battery which means that battery level values are reliable only when battery is almost discharged.  
@@ -136,11 +136,11 @@ The issue is mainly caused by mobile phone Bluetooth stack cache.
 Some phones remembers BT specific settings and that leads to rejecting Movesens connection especialy after firmware update.  
 You can try couple solutions for the problem:  
 
-   - Turn off and on BT in your phone  
-   - For some phones toggling BT is not enough - turn off and on phone  
+   - Turn OFF and on BT in your phone  
+   - For some phones toggling BT is not enough - turn OFF and on phone  
    - If those two doesn't help - try to clear Bluetooth settings cache in application manageer in Android  
 
-### I have turned off Bluetooth advertising in my own Movesense application. I cannot connect to the Movesense sensor any more. What to do? ###
+### I have turned OFF Bluetooth advertising in my own Movesense application. I cannot connect to the Movesense sensor any more. What to do? ###
 
 There are two ways to recover from this situation.  
 
