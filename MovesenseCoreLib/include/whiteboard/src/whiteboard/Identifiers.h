@@ -268,8 +268,11 @@ struct WB_API ClientId
             /** Is the request type checked at client's end. */
             uint8 typeChecked : 1;
 
+            /** Does client require a result for the request (1) or not (0) */
+            uint8 noRequestResponse : 1;
+
             /** Reserved for future use */
-            uint8 reserved : 2;
+            uint8 reserved : 1;
 
             /** ID of the execution context */
             ExecutionContextId executionContextId : 4;
@@ -303,6 +306,7 @@ struct WB_API ClientId
                     const LocalClientId _localClientId)
         : nonCriticalSubscription(0),
           typeChecked(0),
+          noRequestResponse(0),
           reserved(0),
           executionContextId(_executionContextId),
           whiteboardId(_whiteboardId),

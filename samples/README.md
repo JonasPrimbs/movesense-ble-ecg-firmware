@@ -9,13 +9,25 @@ This README file explains how to use each of the sample applications.
 - [Accelerometer](#markdown-header-accelerometer-application)
 - [BLE Conformance Test](#markdown-header-ble-conformance-test-application)
 - [Blinky](#markdown-header-blinky-application)
+- [Connection Scanner](#markdown-header-connection-scanner-application)
 - [Hello World](#markdown-header-hello-world-application)
 - [Jumpmeter](#markdown-header-jumpmeter-application)
 - [Powermodes](#markdown-header-powermodes-application)
 - [SensorOutputService](#markdown-header-sensoroutputservice-application)
 
 
+# Connection Scanner application
 
+Application description in general
+-------------
+The provided applications purpose is to detect what kind of device is connected to the Movesense.
+
+Output uses blinks to show the result:
+- GearID device connected: 2 blinks
+- HR belt 4 blinks
+- Unknown device (ex. short circuit with fingers) 5 blinks
+
+In some scenarios you can wait more than 5 seconds on the result. See ConnectionScanner.h file to see how the sample works.
 
 
 # SensorOutputService application

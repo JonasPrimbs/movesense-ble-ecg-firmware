@@ -20,6 +20,7 @@
 #include "SettingsService.hpp"
 #include "StatesService.hpp"
 #include "internal/AppInfoProvider.hpp"
+#include "internal/ConnectorSwitch.hpp"
 
 
 class SmartSensor2Application : public whiteboard::ResourceClient
@@ -57,6 +58,8 @@ private:
     SettingsService mSettingsService;
 
     AppInfoProvider mAppInfoProvider;
+
+    ConnectorSwitch mConnSwitch;
 
     // Shutdown timer
     bool                mAppModulesStarted;

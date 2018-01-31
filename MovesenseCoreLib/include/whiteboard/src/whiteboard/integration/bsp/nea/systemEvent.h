@@ -3,7 +3,7 @@
 
 #include "whiteboard/integration/port.h"
 
-#include "hal/systemevent.h"
+#include "platform/bsp/systemevent.h"
 
 #define WB_SYSEVENT_API_ERROR        SYSEVENT_WBAPI_ERROR
 #define WB_SYSEVENT_API_WARNING      SYSEVENT_WBAPI_WARNING

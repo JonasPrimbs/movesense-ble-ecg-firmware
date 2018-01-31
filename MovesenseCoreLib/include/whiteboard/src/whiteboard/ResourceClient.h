@@ -68,12 +68,25 @@ public:
 
     In case of resource subscription of a path containing path parameters, the criticality flag affects ALL subscriptions of that path from
     that client.
+    
+    @param noRequestResponse [in] Optional, default false. If client has not implemented eg. onPutResult /onSubscibeResult / 
+    onUnsubscribeResult handlers, with this optional flag the result messages can be omitted to tweak system performance. Only meaningful in 
+    requests to another execution context or to remote whiteboard. Note: For safety reasons also no effect if the request returns a value
+    with the response.
     */
-    ResourceClient_AsyncRequestOptions(RequestId* pRequestId, size_t timeoutMs = 0, bool forceAsync = false, bool isCriticalSubscription = true)
+    ResourceClient_AsyncRequestOptions(
+        RequestId* pRequestId, 
+        size_t timeoutMs = 0, 
+        bool forceAsync = false, 
+        bool isCriticalSubscription = true,
+        bool noRequestResponse = false,
+        bool forceReceiverDatatype = false)
         : mpRequestId(pRequestId), 
           mTimeoutMs(timeoutMs), 
           mForceAsync(forceAsync ? 1 : 0), 
           mIsCriticalSub(isCriticalSubscription ? 1 : 0), 
+          mNoRequestResponse(noRequestResponse ? 1 : 0),
+          mForceReceiverDataType(forceReceiverDatatype ? 1 : 0),
           mReserved(0) 
     {
         WB_NOT_USED(mReserved);
@@ -97,8 +110,30 @@ public:
     */
     inline bool isCriticalSubscription() const { return mIsCriticalSub ? true : false; }
 
+    /**
+    @return true if result of the response of async request is not needed. 
+    */
+    inline bool noRequestResponse() const { return mNoRequestResponse ? true : false; }
+
+    /**
+    @return true if serialization should set bit to treat the sent datatypes of the request as receivers own.
+    */
+    inline bool getForceReceiverDataType() const { return mForceReceiverDataType ? true : false; }
+
     /// Empty async request options, that can be used if no options required for the operation
     static const ResourceClient_AsyncRequestOptions Empty;
+
+    /// "Force async" async request options for convenience
+    static const ResourceClient_AsyncRequestOptions ForceAsync;
+
+    /// "Not critical subscription" async request options for convenience
+    static const ResourceClient_AsyncRequestOptions NotCriticalSubscription;
+
+    /// "No request response" async request options for convenience
+    static const ResourceClient_AsyncRequestOptions NoResponseRequired;
+
+    /// Advanced use only: Force serialization to set bit to treat the sent datatypes of the request as receivers own.
+    static const ResourceClient_AsyncRequestOptions ForceReceiverDataType;
 
 private:
     /** Prevent use of default constructor */
@@ -117,8 +152,14 @@ private:
     /** A value indicating whether subscription request is considered critical */
     uint8 mIsCriticalSub : 1;
 
+    /** A value indicating whether subscribe / unsubscribe result is required (0) or not (1) */
+    uint8 mNoRequestResponse : 1;
+
+    /** Force serialization to set bit to treat the sent datatypes of the request as receivers own. */
+    uint8 mForceReceiverDataType : 1;
+
     /** Reserved for future use */
-    uint8 mReserved : 6;
+    uint8 mReserved : 4;
 };
 
 /**
@@ -363,9 +404,10 @@ public:
     *   @param numberOfResources Number of resources to subscribe
     *   @param pResourceIds Array of resources to subscribe
     *   @param isCriticalSubscription A value indicating whether subscriptions are critical
+    *   @param noResponseExpected A value indicating if subscription operation response is required (for optimization purposes)
     */
     void asyncSubscribeLocalResources(
-        size_t numberOfResources, const LocalResourceId* const pResourceIds, bool isCriticalSubscription = true);
+        size_t numberOfResources, const LocalResourceId* const pResourceIds, bool isCriticalSubscription = true, bool noResponseExpected = false);
 
     /**
     *   Subscribes array of local Whiteboard resources
@@ -375,12 +417,13 @@ public:
     *
     *   @param rResourceIds Array of resources to subscribe
     *   @param isCriticalSubscription A value indicating whether subscriptions are critical
+    *   @param noResponseExpected A value indicating if subscription operation response is required (for optimization purposes)
     */
     template <size_t NUMBER_OF_RESOURCES>
     inline void asyncSubscribeLocalResources(
-        const LocalResourceId(&rResourceIds)[NUMBER_OF_RESOURCES], bool isCriticalSubscription = true)
+        const LocalResourceId(&rResourceIds)[NUMBER_OF_RESOURCES], bool isCriticalSubscription = true, bool noResponseExpected = false)
     {
-        asyncSubscribeLocalResources(NUMBER_OF_RESOURCES, &rResourceIds[0], isCriticalSubscription);
+        asyncSubscribeLocalResources(NUMBER_OF_RESOURCES, &rResourceIds[0], isCriticalSubscription, noResponseExpected);
     }
 
     /**
@@ -391,10 +434,11 @@ public:
     *
     *   @param localResourceId Resources to subscribe
     *   @param isCriticalSubscription A value indicating whether subscriptions are critical
+    *   @param noResponseExpected A value indicating if subscription operation response is required (for optimization purposes)
     */
-    inline void asyncSubscribeLocalResource(const LocalResourceId localResourceId, bool isCriticalSubscription = true)
+    inline void asyncSubscribeLocalResource(const LocalResourceId localResourceId, bool isCriticalSubscription = true, bool noResponseExpected = false)
     {
-        asyncSubscribeLocalResources(1, &localResourceId, isCriticalSubscription);
+        asyncSubscribeLocalResources(1, &localResourceId, isCriticalSubscription, noResponseExpected);
     }
 
     /**
@@ -406,8 +450,9 @@ public:
     *
     *   @param numberOfResources Number of resources to unsubscribe
     *   @param pResourceIds Array of resources to unsubscribe
+    *   @param noResponseExpected A value indicating if unsubscription operation response is required (for optimization purposes)
     */
-    void asyncUnsubscribeLocalResources(size_t numberOfResources, const LocalResourceId* const pResourceIds);
+    void asyncUnsubscribeLocalResources(size_t numberOfResources, const LocalResourceId* const pResourceIds, bool noResponseExpected = false);
 
     /**
     *   Unsubscribes array of local Whiteboard resources
@@ -417,11 +462,12 @@ public:
     *         except for missing subscriptions.
     *
     *   @param rResourceIds Array of resources to unsubscribe
+    *   @param noResponseExpected A value indicating if unsubscription operation response is required (for optimization purposes)
     */
     template <size_t NUMBER_OF_RESOURCES>
-    inline void asyncUnsubscribeLocalResources(const LocalResourceId(&rResourceIds)[NUMBER_OF_RESOURCES])
+    inline void asyncUnsubscribeLocalResources(const LocalResourceId(&rResourceIds)[NUMBER_OF_RESOURCES], bool noResponseExpected = false)
     {
-        asyncUnsubscribeLocalResources(NUMBER_OF_RESOURCES, &rResourceIds[0]);
+        asyncUnsubscribeLocalResources(NUMBER_OF_RESOURCES, &rResourceIds[0], noResponseExpected);
     }
 
     /**
@@ -432,10 +478,11 @@ public:
     *         except for missing subscriptions.
     *
     *   @param localResourceId Resources to unsubscribe
+    *   @param noResponseExpected A value indicating if unsubscription operation response is required (for optimization purposes)
     */
-    inline void asyncUnsubscribeLocalResource(const LocalResourceId localResourceId)
+    inline void asyncUnsubscribeLocalResource(const LocalResourceId localResourceId, bool noResponseExpected = false)
     {
-        asyncUnsubscribeLocalResources(1, &localResourceId);
+        asyncUnsubscribeLocalResources(1, &localResourceId, noResponseExpected);
     }
 
     /**
@@ -754,14 +801,13 @@ private:
     /**
     *	System callback for asynchronous SUBSCRIBE requests
     *
-    *	@param requestId ID of the request
-    *	@param resourceId Successful request contains ID of the resource
+    *	@param The request object
     *	@param resultCode Result code of the request
     *	@param rResultData Successful result contains the request result
     */
-    void onSubscribeResultSys(RequestId requestId, ResourceId resourceId, Result resultCode, const Value& rResultData);
+    void onSubscribeResultSys(const Request& rRequest, Result resultCode, const Value& rResultData);
 
-private:
+WB_PUBLIC_IN_UNITTESTS(private):
     // disallow C++ default constructor and copy constructor usage
     ResourceClient() DELETED;
     ResourceClient(ResourceClient&) DELETED;
@@ -789,7 +835,7 @@ private:
     ExecutionContextId mExecutionContextId;
 
     /** Flag to enable / disable broadcast events during unbind */
-    bool mHasSubscribtions;
+    bool mHasSubscriptions;
 
     /** Stream handle that is used for splitting large PUT streams into multiple smaller requests */
     StreamHandle mInternalStreamId;

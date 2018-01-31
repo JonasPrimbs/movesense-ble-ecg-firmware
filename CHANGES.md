@@ -1,3 +1,18 @@
+## Version 1.3.0.1216.3d263fcc962d ##
+
+###Whats new:###
+- New: API System/States for connector (please, see the new sample app)
+- New: Sample "connection scanner app". [See full description](samples/README.md)
+- Update: Whiteboard 3.11
+- Fix: Gear detection fixes
+
+###Known Bugs:###
+- The first package of Acc/Magn/Gyro can be corrupted for high sample rates
+- HR stops sending data after Acc/Magn/Gyro subscription
+- DataLogger does not record */Meas/IMU* -API's
+- be sure to also check Bitbucket for any additional reported issues: [device library](https://bitbucket.org/suunto/movesense-device-lib/issues?status=new&status=open) and [mobile library](https://bitbucket.org/suunto/movesense-mobile-lib/issues?status=new&status=open)
+
+
 ## Version 1.2.0.1182.2689dce322ff ##
 
 ###Whats new:###

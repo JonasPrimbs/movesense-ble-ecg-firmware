@@ -30,7 +30,6 @@ WB_API bool WbTimerDelete(WbTimerHandle timerHandle);
 /** Starts a timer.
 
 @param timerHandle Timer to start.
-
 @return true if the timer was started, else false.
 */
 WB_API bool WbTimerStart(WbTimerHandle timerHandle);
@@ -40,7 +39,6 @@ restarted.
 
 @param timerHandle Timer to reschedule
 @param periodMs New timer period in [ms]
-
 @return true if rescheduling succeeded, else false.
 */
 WB_API bool WbTimerReschedule(WbTimerHandle timerHandle, uint32 periodMs);
@@ -48,7 +46,6 @@ WB_API bool WbTimerReschedule(WbTimerHandle timerHandle, uint32 periodMs);
 /** Stops a timer.
 
 @param timerHandle Timer to stop.
-
 @return true if the timer was running and was stopped, else false.
 */
 WB_API bool WbTimerStop(WbTimerHandle timerHandle);
@@ -56,10 +53,42 @@ WB_API bool WbTimerStop(WbTimerHandle timerHandle);
 /** Retrieves the user-data associated with the given timer.
 
 @param timerHandle Timer of which user data is to be fetched.
-
 @return pointer to the user data.
 */
 WB_API void* WbTimerGetUserData(WbTimerHandle timerHandle);
+
+#ifdef MIM_HAVE_INTERRUPT_API
+
+/** Starts a timer.
+*
+* @note This function should be called only from interrupt service routines
+*
+* @param timerHandle Timer to start.
+* @return true if the timer was started, else false.
+*/
+WB_API bool WbTimerStartISR(WbTimerHandle timerHandle);
+
+/** Stops a timer.
+*
+* @note This function should be called only from interrupt service routines
+*
+* @param timerHandle Timer to stop.
+* @return true if the timer was running and was stopped, else false.
+*/
+WB_API bool WbTimerStopISR(WbTimerHandle timerHandle);
+
+/** Changes timer period. If the timer is running it is stopped, then rescheduled and
+* restarted.
+*
+* @note This function should be called only from interrupt service routines
+*
+* @param timerHandle Timer to reschedule
+* @param periodMs New timer period in [ms]
+* @return true if rescheduling succeeded, else false.
+*/
+WB_API bool WbTimerRescheduleISR(WbTimerHandle timerHandle, uint32 periodMs);
+
+#endif
 
 #ifdef WB_HAVE_HEAP_TRACE
 
@@ -76,3 +105,4 @@ WB_HEAP_TRACE_DECLARE_WRAPPER(WbTimerHandle, WbTimerCreate, uint32, bool, WbTime
 #endif
 
 #endif // WB_HAVE_HEAP_TRACE
+

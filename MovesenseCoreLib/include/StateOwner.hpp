@@ -18,6 +18,9 @@ public:
     /** Called when there is no more subscribers related to registered event source. */
     virtual void onStateUnsubscribed(const StateId& stateId) {}
 
+    /** Called when there is get request to registered event source. */
+    virtual void onStateGet(const StateId& stateId) {}
+
     /** Needed by StatesService. */
     whiteboard::ExecutionContextId getExecutionContextId() { return mExecutionContextId; }
 
