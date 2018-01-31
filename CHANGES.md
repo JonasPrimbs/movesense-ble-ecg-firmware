@@ -1,14 +1,17 @@
-## Version 1.3.0.1216.39 ##
+## Version 1.3.0.1216.3d263fcc962d ##
 
 ###Whats new:###
-- TBD
+- New: API System/States for connector (please, see the new sample app)
+- New: Sample "connection scanner app". [See full description](samples/README.md)
+- Update: Whiteboard 3.11
+- Fix: Gear detection fixes
 
 ###Known Bugs:###
-- TBD
+- Please, check issues on bitbucket.
+- The first package of Acc/Magn/Gyro can be corrupted for high sample rates
+- HR stops sending data after Acc/Magn/Gyro subscription
+- DataLogger does not record */Meas/IMU* -API's
 
-###Notes:###
-- REQUIRED: Use **GNU Toolchain for ARM v. 5.4 2016q3**
-- To create DFU package for OTA update, compile application with "ninja dfupkg"
 
 ## Version 1.2.0.1182.2689dce322ff ##
 
@@ -26,6 +29,7 @@
 - Fix: HR doesn't send RR value after long delay
 
 ###Known Bugs:###
+- Please, check issues on bitbucket.
 - The first package of Acc/Magn/Gyro can be corrupted for high sample rates
 - HR stops sending data after Acc/Magn/Gyro subscription
 
