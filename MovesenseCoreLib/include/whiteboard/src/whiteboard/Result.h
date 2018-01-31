@@ -110,6 +110,12 @@ inline bool RETURN_OKN(const Result result)
     return result == wb::HTTP_CODE_OK || result == wb::HTTP_CODE_ACCEPTED || result == wb::HTTP_CODE_NO_CONTENT;
 }
 
+/** @return true  if the result is NOT among 100 & 200 series of results, ie error */
+inline bool IsErrorResult(const Result result)
+{
+    return (result != 0) && (result >= 300);
+}
+
 /** StronglyTypedResult class acts as wrapper class for type safe returnResult calls
  *
  * @tparam ValueType Type of the value

@@ -23,6 +23,7 @@ enum /* : Size */
     YARD,
     MILE,
     NAUTICAL_MILE,
+    CENTI_METER,
     UNIT_COUNT
 
 };
@@ -40,6 +41,7 @@ typedef Quantity<DISTANCE, distance::KILO_FOOT> KiloFeet;
 typedef Quantity<DISTANCE, distance::YARD> Yards;
 typedef Quantity<DISTANCE, distance::MILE> Miles;
 typedef Quantity<DISTANCE, distance::NAUTICAL_MILE> NauticalMiles;
+typedef Quantity<DISTANCE, distance::CENTI_METER> Centimeters;
 // Base unit
 typedef Meters Distance;
 

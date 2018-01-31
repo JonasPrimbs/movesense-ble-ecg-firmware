@@ -69,13 +69,31 @@ public:
 
     /** @return true if the request is an update that overrides previous similar request from the client.
     
-    Currently used only if RequestType is SUBSCRIPTION.
+    Currently used only if RequestType is REQUEST_SUBSCRIBE.
     
     @see whiteboard::RequestType
     */
     inline bool isUpdate() const
     {
         return mIsUpdate == 0 ? false : true;
+    }
+
+    /** @return true if request needs a response or not. */
+    inline bool noRequestResponse() const
+    {
+        return mNoRequestResponse == 1 ? true : false;
+    }
+
+    /** @return true if request datatypes need to be forced to be sent as receivers datatype */
+    inline bool forceReceiverDataType() const
+    {
+        return mForceReceiverDatatype == 1 ? true : false;
+    }
+
+    /** @return true if provider returned ok return code of returnResult */
+    inline bool isSuccess() const
+    {
+        return  (mSuccess == 1) || (mState == NOT_OWNER);
     }
 
 public:
@@ -121,8 +139,14 @@ private:
     // Is this request update to the previous request
     uint8 mIsUpdate : 1;
 
-    // Not used at the moment
-    uint8 mReserved : 3;
+    // No response required for the request
+    uint8 mNoRequestResponse : 1;
+
+    // Set receiver datatype bit
+    uint8 mForceReceiverDatatype : 1;
+
+    // Used currently in onSubscribe & returnResult to mark subscribe result successful by the provider
+    uint8 mSuccess : 1;
 
     // Request ID of the request
     RequestId mRequestId;

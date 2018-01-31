@@ -88,10 +88,17 @@ definitions:
         type: integer
         format: uint16
       pathParams:
+        description: Path parameters for path parameter subscription
         type: array
         items:
           type: integer
           format: int32
+      critical:
+        description: Subscription is critical (true) or not (false)
+        type: boolean
+      direct:
+        description: Client and the resource are in the same context
+        type: boolean
 
   SubscriptionList:
     required:

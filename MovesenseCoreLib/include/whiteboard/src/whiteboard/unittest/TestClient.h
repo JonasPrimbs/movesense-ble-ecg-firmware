@@ -213,7 +213,9 @@ public:
         const P1& param1 = NoType::NoValue,
         const P2& param2 = NoType::NoValue,
         const P3& param3 = NoType::NoValue,
-        bool forceAsync = false)
+        bool forceAsync = false,
+        bool noResponse = false,
+        bool forceReceiverDataType = false)
     {
         ResourceId resourceId = rResourceIdOrPath.getId(*this);
         if (resourceId == ID_INVALID_RESOURCE)
@@ -225,7 +227,7 @@ public:
         }
 
         return callAsyncOp<R, P1, P2, P3>(
-            &TestClientWithDefaults::asyncGetDpcHandler, resourceId, param1, param2, param3, forceAsync);
+            &TestClientWithDefaults::asyncGetDpcHandler, resourceId, param1, param2, param3, forceAsync, true, noResponse, forceReceiverDataType);
     }
 
     /** asyncPut */
@@ -235,7 +237,9 @@ public:
         const P1& param1 = NoType::NoValue,
         const P2& param2 = NoType::NoValue,
         const P3& param3 = NoType::NoValue,
-        bool forceAsync = false)
+        bool forceAsync = false,
+        bool noResponse = false,
+        bool forceReceiverDataType = false)
     {
         ResourceId resourceId = rResourceIdOrPath.getId(*this);
         if (resourceId == ID_INVALID_RESOURCE)
@@ -247,7 +251,7 @@ public:
         }
 
         return callAsyncOp<R, P1, P2, P3>(
-            &TestClientWithDefaults::asyncPutDpcHandler, resourceId, param1, param2, param3, forceAsync);
+            &TestClientWithDefaults::asyncPutDpcHandler, resourceId, param1, param2, param3, forceAsync, true, noResponse, forceReceiverDataType);
     }
 
     /** asyncPost */
@@ -257,7 +261,9 @@ public:
         const P1& param1 = NoType::NoValue,
         const P2& param2 = NoType::NoValue,
         const P3& param3 = NoType::NoValue,
-        bool forceAsync = false)
+        bool forceAsync = false,
+        bool noResponse = false,
+        bool forceReceiverDataType = false)
     {
         ResourceId resourceId = rResourceIdOrPath.getId(*this);
         if (resourceId == ID_INVALID_RESOURCE)
@@ -269,7 +275,7 @@ public:
         }
 
         return callAsyncOp<R, P1, P2, P3>(
-            &TestClientWithDefaults::asyncPostDpcHandler, resourceId, param1, param2, param3, forceAsync);
+            &TestClientWithDefaults::asyncPostDpcHandler, resourceId, param1, param2, param3, forceAsync, true, noResponse, forceReceiverDataType);
     }
 
     /** asyncDelete */
@@ -279,7 +285,9 @@ public:
         const P1& param1 = NoType::NoValue,
         const P2& param2 = NoType::NoValue,
         const P3& param3 = NoType::NoValue,
-        bool forceAsync = false)
+        bool forceAsync = false,
+        bool noResponse = false,
+        bool forceReceiverDataType = false)
     {
         ResourceId resourceId = rResourceIdOrPath.getId(*this);
         if (resourceId == ID_INVALID_RESOURCE)
@@ -291,7 +299,7 @@ public:
         }
 
         return callAsyncOp<R, P1, P2, P3>(
-            &TestClientWithDefaults::asyncDeleteDpcHandler, resourceId, param1, param2, param3, forceAsync);
+            &TestClientWithDefaults::asyncDeleteDpcHandler, resourceId, param1, param2, param3, forceAsync, true, noResponse, forceReceiverDataType);
     }
 
     /** asyncSubscribe */
@@ -302,7 +310,9 @@ public:
         const P2& param2 = NoType::NoValue,
         const P3& param3 = NoType::NoValue,
         bool forceAsync = false,
-        bool isCritical = true)
+        bool isCritical = true,
+        bool noResponse = false,
+        bool forceReceiverDataType = false)
     {
         ResourceId resourceId = rResourceIdOrPath.getId(*this);
         if (resourceId == ID_INVALID_RESOURCE)
@@ -314,7 +324,7 @@ public:
         }
 
         return callAsyncOp<R, P1, P2, P3>(
-            &TestClientWithDefaults::asyncSubscribeDpcHandler, resourceId, param1, param2, param3, forceAsync, isCritical);
+            &TestClientWithDefaults::asyncSubscribeDpcHandler, resourceId, param1, param2, param3, forceAsync, isCritical, noResponse, forceReceiverDataType);
     }
 
     /** asyncUnsubscribe */
@@ -324,7 +334,9 @@ public:
         const P1& param1 = NoType::NoValue,
         const P2& param2 = NoType::NoValue,
         const P3& param3 = NoType::NoValue,
-        bool forceAsync = false)
+        bool forceAsync = false,
+        bool noResponse = false,
+        bool forceReceiverDataType = false)
     {
         ResourceId resourceId = rResourceIdOrPath.getId(*this);
         if (resourceId == ID_INVALID_RESOURCE)
@@ -336,7 +348,7 @@ public:
         }
 
         return callAsyncOp<R, P1, P2, P3>(
-            &TestClientWithDefaults::asyncUnsubscribeDpcHandler, resourceId, param1, param2, param3, forceAsync);
+            &TestClientWithDefaults::asyncUnsubscribeDpcHandler, resourceId, param1, param2, param3, forceAsync, noResponse, forceReceiverDataType);
     }
 
     /** Waits for asynchronous operation to complete */
@@ -402,7 +414,8 @@ public:
         const P1& param1 = NoType::NoValue,
         const P2& param2 = NoType::NoValue,
         const P3& param3 = NoType::NoValue,
-        bool forceAsync = false)
+        bool forceAsync = false,
+        bool forceReceiverDataType = false)
     {
         ResourceId resourceId = rResourceIdOrPath.getId(*this);
         if (resourceId == ID_INVALID_RESOURCE)
@@ -414,7 +427,7 @@ public:
         }
 
         return callAsyncOpAndWaitResult<R, P1, P2, P3>(
-            &TestClientWithDefaults::asyncGetDpcHandler, resourceId, param1, param2, param3, forceAsync);
+            &TestClientWithDefaults::asyncGetDpcHandler, resourceId, param1, param2, param3, forceAsync, false, forceReceiverDataType);
     }
 
     /** asyncPut */
@@ -424,7 +437,8 @@ public:
         const P1& param1 = NoType::NoValue,
         const P2& param2 = NoType::NoValue,
         const P3& param3 = NoType::NoValue,
-        bool forceAsync = false)
+        bool forceAsync = false,
+        bool forceReceiverDataType = false)
     {
         ResourceId resourceId = rResourceIdOrPath.getId(*this);
         if (resourceId == ID_INVALID_RESOURCE)
@@ -436,7 +450,7 @@ public:
         }
 
         return callAsyncOpAndWaitResult<R, P1, P2, P3>(
-            &TestClientWithDefaults::asyncPutDpcHandler, resourceId, param1, param2, param3, forceAsync);
+            &TestClientWithDefaults::asyncPutDpcHandler, resourceId, param1, param2, param3, forceAsync, false, forceReceiverDataType);
     }
 
     /** asyncPost */
@@ -446,7 +460,8 @@ public:
         const P1& param1 = NoType::NoValue,
         const P2& param2 = NoType::NoValue,
         const P3& param3 = NoType::NoValue,
-        bool forceAsync = false)
+        bool forceAsync = false,
+        bool forceReceiverDataType = false)
     {
         ResourceId resourceId = rResourceIdOrPath.getId(*this);
         if (resourceId == ID_INVALID_RESOURCE)
@@ -458,7 +473,7 @@ public:
         }
 
         return callAsyncOpAndWaitResult<R, P1, P2, P3>(
-            &TestClientWithDefaults::asyncPostDpcHandler, resourceId, param1, param2, param3, forceAsync);
+            &TestClientWithDefaults::asyncPostDpcHandler, resourceId, param1, param2, param3, forceAsync, false, forceReceiverDataType);
     }
 
     /** asyncDelete */
@@ -468,7 +483,8 @@ public:
         const P1& param1 = NoType::NoValue,
         const P2& param2 = NoType::NoValue,
         const P3& param3 = NoType::NoValue,
-        bool forceAsync = false)
+        bool forceAsync = false,
+        bool forceReceiverDataType = false)
     {
         ResourceId resourceId = rResourceIdOrPath.getId(*this);
         if (resourceId == ID_INVALID_RESOURCE)
@@ -480,7 +496,7 @@ public:
         }
 
         return callAsyncOpAndWaitResult<R, P1, P2, P3>(
-            &TestClientWithDefaults::asyncDeleteDpcHandler, resourceId, param1, param2, param3, forceAsync);
+            &TestClientWithDefaults::asyncDeleteDpcHandler, resourceId, param1, param2, param3, forceAsync, false, forceReceiverDataType);
     }
 
     /** asyncSubscribe */
@@ -491,7 +507,8 @@ public:
         const P2& param2 = NoType::NoValue,
         const P3& param3 = NoType::NoValue,
         bool forceAsync = false,
-        bool isCritical = true)
+        bool isCritical = true,
+        bool forceReceiverDataType = false)
     {
         ResourceId resourceId = rResourceIdOrPath.getId(*this);
         if (resourceId == ID_INVALID_RESOURCE)
@@ -503,7 +520,7 @@ public:
         }
 
         return callAsyncOpAndWaitResult<R, P1, P2, P3>(
-            &TestClientWithDefaults::asyncSubscribeDpcHandler, resourceId, param1, param2, param3, forceAsync, isCritical);
+            &TestClientWithDefaults::asyncSubscribeDpcHandler, resourceId, param1, param2, param3, forceAsync, isCritical, forceReceiverDataType);
     }
 
     /** asyncUnsubscribe */
@@ -513,7 +530,8 @@ public:
         const P1& param1 = NoType::NoValue,
         const P2& param2 = NoType::NoValue,
         const P3& param3 = NoType::NoValue,
-        bool forceAsync = false)
+        bool forceAsync = false,
+        bool forceReceiverDataType = false)
     {
         ResourceId resourceId = rResourceIdOrPath.getId(*this);
         if (resourceId == ID_INVALID_RESOURCE)
@@ -525,7 +543,7 @@ public:
         }
 
         return callAsyncOpAndWaitResult<R, P1, P2, P3>(
-            &TestClientWithDefaults::asyncUnsubscribeDpcHandler, resourceId, param1, param2, param3, forceAsync);
+            &TestClientWithDefaults::asyncUnsubscribeDpcHandler, resourceId, param1, param2, param3, forceAsync, false, forceReceiverDataType);
     }
 
     /*********************************
@@ -586,12 +604,16 @@ private:
             const P2& rParam2,
             const P3& rParam3,
             bool forceAsync = false,
-            bool isCritical = true) :
+            bool isCritical = true,
+            bool noResponse = false,
+            bool forceReceiverDataType = false) :
             mrParam1(rParam1),
             mrParam2(rParam2),
             mrParam3(rParam3),
             mForceAsync(forceAsync),
-            mIsCritical(isCritical)
+            mIsCritical(isCritical),
+            mNoResponse(noResponse),
+            mForceReceiverDataType(forceReceiverDataType)
         {
         }
 
@@ -603,6 +625,8 @@ private:
         const P3& mrParam3;
         bool mForceAsync;
         bool mIsCritical;
+        bool mNoResponse;
+        bool mForceReceiverDataType;
     };
 
     /** Implementation of asynchronous operations */
@@ -614,7 +638,9 @@ private:
         const P2& param2,
         const P3& param3,
         bool forceAsync = false,
-        bool isCritical = true)
+        bool isCritical = true,
+        bool noResponse = false,
+        bool forceReceiverDataType = false)
     {
         AsyncTestResult<R> result;
 
@@ -627,14 +653,14 @@ private:
         }
 
         TestResult<R>& rSyncResult = static_cast<TestResult<R>&>(result);
-        OpWrapper<P1, P2, P3> wrapper(param1, param2, param3, forceAsync, isCritical);
+        OpWrapper<P1, P2, P3> wrapper(param1, param2, param3, forceAsync, isCritical, noResponse, forceReceiverDataType);
         mpResult = &rSyncResult;
         mResourceId = resourceId;
         mUpdateCurrentTestResource = resourceId == ID_INVALID_RESOURCE;
 
         rSyncResult.mCallResultCode = DpcFunctor::syncQueueOnce<Result, TestClientWithDefaults, OpWrapper<P1, P2, P3>&>(
             getExecutionContextId(), getWhiteboard(), this, pFnMemberFunction, wrapper);
-        if (!RETURN_OK(rSyncResult.mCallResultCode))
+        if (!RETURN_OK(rSyncResult.mCallResultCode) || noResponse)
         {
             mpResult = NULL;
             WbSemaphoreRelease(mMutualExclusionSemaphore);
@@ -652,7 +678,8 @@ private:
         const P2& param2,
         const P3& param3,
         bool forceAsync = true,
-        bool isCritical = false)
+        bool isCritical = false,
+        bool forceReceiverDataType = false)
     {
         TestResult<R> result;
 
@@ -664,7 +691,7 @@ private:
             return result;
         }
 
-        OpWrapper<P1, P2, P3> wrapper(param1, param2, param3, forceAsync, isCritical);
+        OpWrapper<P1, P2, P3> wrapper(param1, param2, param3, forceAsync, isCritical, false, forceReceiverDataType);
         mpResult = &result;
         mResourceId = resourceId;
         mUpdateCurrentTestResource = resourceId == ID_INVALID_RESOURCE;
@@ -713,7 +740,7 @@ private:
     template <typename P1, typename P2, typename P3>
     Result asyncGetDpcHandler(OpWrapper<P1, P2, P3>& wrapper)
     {
-        const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs);
+        const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs, false, true, wrapper.mNoResponse, wrapper.mForceReceiverDataType);
 
         if (IsSame<P1, NoType>::value && IsSame<P2, NoType>::value && IsSame<P3, NoType>::value)
         {
@@ -739,7 +766,7 @@ private:
     template <typename P1, typename P2, typename P3>
     Result asyncPutDpcHandler(OpWrapper<P1, P2, P3>& wrapper)
     {
-        const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs);
+        const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs, false, true, wrapper.mNoResponse, wrapper.mForceReceiverDataType);
 
         if (IsSame<P1, NoType>::value && IsSame<P2, NoType>::value && IsSame<P3, NoType>::value)
         {
@@ -766,7 +793,7 @@ private:
     template <typename P1, typename P2, typename P3>
     Result asyncPostDpcHandler(OpWrapper<P1, P2, P3>& wrapper)
     {
-        const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs);
+        const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs, false, true, wrapper.mNoResponse, wrapper.mForceReceiverDataType);
 
         if (IsSame<P1, NoType>::value && IsSame<P2, NoType>::value && IsSame<P3, NoType>::value)
         {
@@ -793,7 +820,7 @@ private:
     template <typename P1, typename P2, typename P3>
     Result asyncDeleteDpcHandler(OpWrapper<P1, P2, P3>& wrapper)
     {
-        const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs);
+        const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs, false, true, wrapper.mNoResponse, wrapper.mForceReceiverDataType);
 
         if (IsSame<P1, NoType>::value && IsSame<P2, NoType>::value && IsSame<P3, NoType>::value)
         {
@@ -820,7 +847,7 @@ private:
     template <typename P1, typename P2, typename P3>
     Result asyncSubscribeDpcHandler(OpWrapper<P1, P2, P3>& wrapper)
     {
-        const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs, wrapper.mForceAsync, wrapper.mIsCritical);
+        const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs, wrapper.mForceAsync, wrapper.mIsCritical, wrapper.mNoResponse, wrapper.mForceReceiverDataType);
         if (IsSame<P1, NoType>::value && IsSame<P2, NoType>::value && IsSame<P3, NoType>::value)
         {
             return asyncSubscribe(
@@ -846,7 +873,7 @@ private:
     template <typename P1, typename P2, typename P3>
     Result asyncUnsubscribeDpcHandler(OpWrapper<P1, P2, P3>& wrapper)
     {
-        const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs);
+        const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs, false, true, wrapper.mNoResponse, wrapper.mForceReceiverDataType);
 
         if (IsSame<P1, NoType>::value && IsSame<P2, NoType>::value && IsSame<P3, NoType>::value)
         {

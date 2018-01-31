@@ -477,6 +477,10 @@ protected:
     /**
     *	Subscribe notification callback.
     *
+    *	Note that if provider transfers the ownership of the rRequest to Provider's own request object
+    *	by copying the request object, the subscription is always added to Whiteboard's subscription list -
+    *	even if provider later returns error code in returnResult.
+    *
     *	@param rRequest Request information
     *	@param rParameters List of parameters for the request, if resource path contains path variables,
     *			the path variables are added to the beginning of the parameter list.

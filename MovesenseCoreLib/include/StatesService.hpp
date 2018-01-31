@@ -77,6 +77,7 @@ private:
     {
         StateSlot movement;
         StateSlot batteryStatus;
+        StateSlot connector;
 
     } slots;
 
@@ -91,6 +92,9 @@ private:
         case StateId::BATTERYSTATUS:
             return &slots.batteryStatus;
 
+        case StateId::CONNECTOR:
+            return &slots.connector;
+
         default:
             return nullptr;
         }
@@ -103,6 +107,7 @@ private:
     {
         function(&slots.movement, StateId::MOVEMENT);
         function(&slots.batteryStatus, StateId::BATTERYSTATUS);
+        function(&slots.connector, StateId::CONNECTOR);
     }
 
 

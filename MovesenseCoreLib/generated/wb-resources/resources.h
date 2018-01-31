@@ -485,6 +485,8 @@ struct WB_ALIGN(4) SubscriptionInfo
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> name;
 	WB_ALIGN(2) uint16 localClientId;
 	WB_ALIGN(4) whiteboard::Array< int32 > pathParams;
+	WB_ALIGN(1) whiteboard::Optional< bool > critical;
+	WB_ALIGN(1) whiteboard::Optional< bool > direct;
 };
 
 struct WB_ALIGN(4) SubscriptionList

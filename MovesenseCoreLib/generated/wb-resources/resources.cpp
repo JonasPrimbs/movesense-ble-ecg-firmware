@@ -38,7 +38,7 @@ WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(EventQueueInfo) == 4, AlignmentOfStructure_Ev
 WB_STATIC_VERIFY(sizeof(EventQueueInfoList) == 8, SizeOfStructure_EventQueueInfoList_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(EventQueueInfoList) == 4, AlignmentOfStructure_EventQueueInfoList_IsNotWhatExpected);
 
-WB_STATIC_VERIFY(sizeof(SubscriptionInfo) == 16, SizeOfStructure_SubscriptionInfo_IsNotWhatExpected);
+WB_STATIC_VERIFY(sizeof(SubscriptionInfo) == 20, SizeOfStructure_SubscriptionInfo_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(SubscriptionInfo) == 4, AlignmentOfStructure_SubscriptionInfo_IsNotWhatExpected);
 
 WB_STATIC_VERIFY(sizeof(SubscriptionList) == 8, SizeOfStructure_SubscriptionList_IsNotWhatExpected);

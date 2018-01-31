@@ -37,7 +37,19 @@ WB_API WbEventFlagMask WbThreadNotificationWait(WbThreadNotificationHandle threa
 * @param flags Mask of flags that should be set
 * @param isIsr A value indicating whether this function is called from interrupt service routine
 */
-WB_API void WbThreadNotificationSetFlags(WbThreadNotificationHandle threadNotificationHandle, WbEventFlagMask flags, bool isIsr);
+WB_API void WbThreadNotificationSetFlags(WbThreadNotificationHandle threadNotificationHandle, WbEventFlagMask flags);
+
+#ifdef MIM_HAVE_INTERRUPT_API
+
+/** Sets flags from interrupt service routine
+*
+* @param threadNotificationHandle Thread notification structure of thread which notification flags should be set
+* @param flags Mask of flags that should be set
+* @param isIsr A value indicating whether this function is called from interrupt service routine
+*/
+WB_API void WbThreadNotificationSetFlagsISR(WbThreadNotificationHandle threadNotificationHandle, WbEventFlagMask flags);
+
+#endif
 
 #ifdef WB_HAVE_HEAP_TRACE
 
