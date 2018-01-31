@@ -41,7 +41,7 @@ You can use the [Settings API](https://bitbucket.org/suunto/movesense-device-lib
 The data from SERIAL_COMMUNICATION is saved to settings, but only if you use "flash_all" command.  
 WARNING: This command will wipe all data on sensor, including settings.
 
-### Why there are two ways of turning on/off serial? ###
+### Why there are two ways of turning ON/OFF serial? ###
 
 The main method for turning on serial is to use whiteboard command (Refer to _How to enable serial communication?_)
 After you turn on serial this way your choise will be stored in non volatile Movesense settings.
@@ -144,6 +144,6 @@ You can try couple solutions for the problem:
 
 There are two ways to recover from this situation.  
 
-   - You can use jig and ST-Link to flash device with new aplication (Refer to _How to flash, i.e update the software (firmware) in sensor?_)  
+   - You can use jig and ST-Link to flash device with new application (Refer to _How to flash, i.e update the software (firmware) in sensor?_)  
    - You can use your phone and Movesense application to flash device with new firmware. Note that you can't connect to sensor using BT, and before you use phone you need to put sensor into DFU mode manually (Refer to _How to use DFU recovery mode?_)  
 
