@@ -31,21 +31,23 @@ WB_API void WbEventGroupDelete(WbEventGroupHandle group);
 */
 WB_API WbEventFlagMask WbEventGroupWait(WbEventGroupHandle group, bool waitAll, size_t timeoutMs);
 
-/** Clears flags
-*
-* @param group Event group instance
-* @param flags Mask of flags that should be cleared
-* @param isIsr A value indicating whether this function is called from interrupt service routine
-*/
-WB_API void WbEventGroupClearFlags(WbEventGroupHandle group, WbEventFlagMask flags, bool isIsr);
-
 /** Sets flags
 *
 * @param group Event group instance
 * @param flags Mask of flags that should be set
-* @param isIsr A value indicating whether this function is called from interrupt service routine
 */
-WB_API void WbEventGroupSetFlags(WbEventGroupHandle group, WbEventFlagMask flags, bool isIsr);
+WB_API void WbEventGroupSetFlags(WbEventGroupHandle group, WbEventFlagMask flags);
+
+#ifdef MIM_HAVE_INTERRUPT_API
+
+/** Sets flags from interrupt service routing
+*
+* @param group Event group instance
+* @param flags Mask of flags that should be set
+*/
+WB_API void WbEventGroupSetFlagsISR(WbEventGroupHandle group, WbEventFlagMask flags);
+
+#endif
 
 #ifdef WB_HAVE_HEAP_TRACE
 

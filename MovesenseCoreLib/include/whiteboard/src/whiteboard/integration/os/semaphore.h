@@ -50,6 +50,18 @@ WB_API bool WbSemaphoreTryWait(WbSemaphoreHandle semaphoreHandle, size_t timeout
 */
 WB_API void WbSemaphoreRelease(WbSemaphoreHandle semaphoreHandle);
 
+#ifdef MIM_HAVE_INTERRUPT_API
+
+/** Increases the count of the semaphore by one.
+*
+* @note This function should be called only from interrupt service routines
+*
+* @param semaphoreHandle Semaphore to delete.
+*/
+WB_API void WbSemaphoreReleaseISR(WbSemaphoreHandle semaphoreHandle);
+
+#endif
+
 #ifdef WB_HAVE_HEAP_TRACE
 
 #ifdef __cplusplus

@@ -31,6 +31,7 @@ const Value KM_IN_METERS = Value(1000.0);
 const Value YARD_IN_METERS = Value(0.9144);
 const Value MILE_IN_METERS = Value(1609.355);
 const Value NAUTICAL_MILE_IN_METERS = Value(1852.0);
+const Value CM_IN_METERS = Value(0.01);
 
 // Mass
 const Value POUND_IN_KILOGRAMS = Value(0.45359237);
@@ -48,6 +49,7 @@ const Value INHG_IN_PASCAL = Value(3386.3886667);
 
 // Energy
 const Value KCALS_IN_JOULE = Value(4183.99538087);
+const Value KNM_IN_JOULE = Value(1000.0);
 
 // Time
 const Value MINUTE_IN_SECONDS = Value(60);

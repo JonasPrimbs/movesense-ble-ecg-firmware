@@ -18,6 +18,7 @@ enum /* : Size */
 {
     JOULE = unit::BaseId, /* MUST be 1st */
     KCAL,
+    KNM,
     UNIT_COUNT
 
 };
@@ -29,6 +30,8 @@ enum /* : Size */
 ///
 
 typedef Quantity<ENERGY, energy::JOULE> Joules;
+typedef Quantity<ENERGY, energy::KNM> KiloNewtonMeters;
+
 // Base unit
 typedef Joules Energy;
 

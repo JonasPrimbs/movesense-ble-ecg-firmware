@@ -3,6 +3,7 @@
 
 #include <whiteboard/integration/port.h>
 #include <whiteboard/WhiteboardConfig.h>
+#include <whiteboard/Result.h>
 
 namespace whiteboard {
 namespace comm_ble {
@@ -15,7 +16,6 @@ class BleAdapter;
 
 namespace wbble
 {
-
 /** Type of buffer that stores communication addresses */
 typedef uint8 Address[WB_COMM_MAX_ADDRESS_LENGTH];
 
@@ -47,47 +47,39 @@ bool FormatAddress(const Address& rAddress, size_t bufferSize, char* addressBuff
 /** Connect to the given address
 *
 * @param address Address of the destination
-* @return true if connection establishment was started, false otherwise
+* @return status of operation after the call
 */
-bool Connect(const Address& address);
+whiteboard::Result Connect(const Address& address);
 
 /** Cancel an ongoing connect to the given address
 *
 * @param address Address of the destination
-* @return true if connection establishment was started, false otherwise
+* @return status of operation after the call
 */
-bool CancelConnect(const Address& address);
+whiteboard::Result CancelConnect(const Address& address);
 
 /** Disconnect from the given address
 *
 * @param address Address of the destination
-* @return true if disconnection was started, false otherwise
+* @return status of operation after the call
 */
-bool Disconnect(const Address& address);
-
-/// Ble send result
-enum SendResult_e
-{
-    SEND_RESULT_ACCEPTED, ///< Send was accepted, but the send is pending (async send)
-    SEND_RESULT_OK,       ///< Send was ok
-    SEND_RESULT_FAILED    ///< Send failed
-};
+whiteboard::Result Disconnect(const Address& address);
 
 /** Send a message to the given address
 *
 * @param address Address of the destination
 * @param pData Pointer to the data to send
 * @param size Size of the data to send
-* @return @see wbble::SendResult_e
+* @return status of operation after the call
 */
-SendResult_e Send(const Address& address, const void* pData, uint32 size);
+whiteboard::Result Send(const Address& address, const void* pData, uint32 size);
 
 /** Cancel sending a message
 *
 * @param pData Pointer to the data to be canceled
-* @return true if sending was canceled, false otherwise
+* @return status of operation after the call
 */
-bool CancelSend(const void* pData);
+whiteboard::Result CancelSend(const void* pData);
 
 /** Callback that should be called when send completes. */
 void onSendCompleted(const void* pData, bool success);

@@ -19,7 +19,7 @@ public:
     BleTxThread(const BleCallbacks_t* pIfCb, SerialFrameSender* pSfSender);
     ~BleTxThread();
 
-    SendResult_e send(uint32 deviceId, const void* pData, uint32 size);
+    whiteboard::Result send(uint32 deviceId, const void* pData, uint32 size);
     bool cancelSend(const void* pData);
 
     void reset();
