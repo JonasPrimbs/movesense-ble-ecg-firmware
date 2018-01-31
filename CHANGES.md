@@ -7,19 +7,19 @@
 - Fix: Gear detection fixes
 
 ###Known Bugs:###
-- Please, check issues on bitbucket.
 - The first package of Acc/Magn/Gyro can be corrupted for high sample rates
 - HR stops sending data after Acc/Magn/Gyro subscription
 - DataLogger does not record */Meas/IMU* -API's
+- be sure to also check Bitbucket for any additional reported issues: [device library](https://bitbucket.org/suunto/movesense-device-lib/issues?status=new&status=open) and [mobile library](https://bitbucket.org/suunto/movesense-mobile-lib/issues?status=new&status=open)
 
 
 ## Version 1.2.0.1182.2689dce322ff ##
 
 ###Whats new:###
-- IMPORTANT! New soft device 4.0.5 (Check MIGRATION.md)
-- Sample apps generate 2 dfu files (with and without bootloader and SD).
-    Note: DFU with bootloader is flashed two times in Mobile Application - process is splited.
-    Note: We recommend to reboot the mobile device to avoid the problem with BLE cache (both iOS and Android) after dfu update.
+- IMPORTANT! SoftDevice upgraded to version 4.0.5 (Please review [MIGRATION.md](MIGRATION.md))
+- Each sensor sample app now generates two DFU files (with and without bootloader and SoftDevice)  
+    - Note: DFU package containing the bootloader ('movesense_dfu_w_bootloader.zip') is applied two times when firmware update is performed using Movesense Sample App on mobile, i.e. the update process is splitted into two stages  
+    - Note: After the firmware update process is complete, we recommend to either reset Bluetooth on mobile or reboot the mobile device to avoid reconnection problems with the updated sensor. This applies to both iOS and Android    
 - Update: Component/LED is using new API
 - Update: Portable-python update
 - Fix: Wrong SBEM version
@@ -29,19 +29,19 @@
 - Fix: HR doesn't send RR value after long delay
 
 ###Known Bugs:###
-- Please, check issues on bitbucket.
-- The first package of Acc/Magn/Gyro can be corrupted for high sample rates
+- The first package of Acc/Magn/Gyro can be corrupted at high sample rates
 - HR stops sending data after Acc/Magn/Gyro subscription
+- be sure to also check Bitbucket for any additional reported issues: [device library](https://bitbucket.org/suunto/movesense-device-lib/issues?status=new&status=open) and [mobile library](https://bitbucket.org/suunto/movesense-mobile-lib/issues?status=new&status=open)
 
 ## Version 1.1.0.1058.32 ##
 
 ###Whats new:###
-- Movesense memory optimalizations
+- Movesense memory optimizations
 - ByPass service as additional module
 - Battery provider improvements
 - Low battery warning
-- New Ble optional modules BleStandardHRS BleNordicUART
-- Whiteboard update 3.9.0
+- New Ble optional modules: BleStandardHRS and BleNordicUART
+- Whiteboard update to version 3.9.0
 - New samples: custom_bleadv_app and ble_std_services
 
 ###Known Bugs:###
@@ -70,6 +70,7 @@
 ###Known Bugs:###
 - Please, check issues on bitbucket.
 - GET on */Logbook/byId/{ID}/Data* ASSERT's if the log is empty
+
 
 ## Version 1.0.0.855.25 ##
 
@@ -104,6 +105,7 @@
 - DataLogger does not record */Meas/IMU* -API's
 - GET on */Logbook/byId/{ID}/Data* ASSERT's if the log is empty
 
+
 ##Version 0.9.1.616 ##
 
 ###Whats new:###
@@ -116,8 +118,9 @@
 - REQUIRED: Use **GNU Toolchain for ARM v. 5.4 2016q3**
 - To create DFU package for OTA update, compile application with "ninja dfupkg"
 
+
 ##Version 0.9.0.602 ##
-DO NOT USE THIS ON THE C VERSION!!!
+DO NOT USE THIS ON THE C HARDWARE VARIANT!!!
 
 ###Whats new:###
 - Samples sens_output_test_app, hr_wakeup_app
@@ -143,6 +146,7 @@ DO NOT USE THIS ON THE C VERSION!!!
 - REQUIRED: Use **GNU Toolchain for ARM v. 5.4 2016q3**
 - To create DFU package for OTA update, compile application with "ninja dfupkg"
 
+
 ##Version 0.6.0.426 ##
 
 ###Whats new:###
@@ -158,6 +162,7 @@ DO NOT USE THIS ON THE C VERSION!!!
 - REQUIRED: Use **GNU Toolchain for ARM v. 5.4 2016q3**
 - To create DFU package for OTA update, compile application with "ninja dfupkg"
 
+
 ##Version 0.5.2.384 ##
 
 ###Whats new:###
@@ -171,6 +176,7 @@ DO NOT USE THIS ON THE C VERSION!!!
 ###Notes:###
 - REQUIRED: Use **GNU Toolchain for ARM v. 5.4 2016q3**
 - To create DFU package for OTA update, compile application with "ninja dfupkg"
+
 
 ##Version 0.5.1.372 ##
 
@@ -189,6 +195,7 @@ DO NOT USE THIS ON THE C VERSION!!!
 - REQUIRED: Use **GNU Toolchain for ARM v. 5.4 2016q3**
 - To create DFU package for OTA update, compile application with "ninja dfupkg"
 
+
 ##Version 0.5.0.341##
 
 ###Whats new:###
@@ -206,6 +213,7 @@ DO NOT USE THIS ON THE C VERSION!!!
 - REQUIRED: Use **GNU Toolchain for ARM v. 5.4 2016q3**
 - To create DFU package for OTA update, compile application with "ninja dfupkg"
 
+
 ##Version 0.4.1.184##
 
 ###Whats new:###
@@ -221,6 +229,7 @@ DO NOT USE THIS ON THE C VERSION!!!
 ###Notes:###
 - REQUIRED: Use **GNU Toolchain for ARM v. 5.4 2016q3** 
 - To create DFU package for OTA update, compile application with "ninja dfupkg"
+
 
 ##Version 0.4.0.148##
 
@@ -238,6 +247,7 @@ DO NOT USE THIS ON THE C VERSION!!!
 ###Notes:###
 - REQUIRED: Use **GNU Toolchain for ARM v. 5.4 2016q3** 
 - To create DFU package for OTA update, compile application with "ninja dfupkg"
+
 
 ##Version 0.3.1.105##
 
@@ -260,6 +270,7 @@ DO NOT USE THIS ON THE C VERSION!!!
 
 ##Version 0.3.0.86 / 2##
 - Added wbo files that were lost in the merge. This fix connectivity that was broken since 31.March
+
 
 ##Version 0.3.0.86##
 
@@ -292,7 +303,6 @@ DO NOT USE THIS ON THE C VERSION!!!
 ###Notes:###
 - REQUIRED: Update toolchain to **GNU Toolchain for ARM v. 5.4 2016q3** 
 - To create DFU package for OTA update, compile application with "ninja dfupkg"
-
 
 
 ##Version 0.2.0.42##

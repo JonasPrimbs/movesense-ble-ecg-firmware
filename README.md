@@ -1,6 +1,7 @@
-## Announcements ##
-**API changes**  
-Movesense API has been updated. Please review the latest [API definition](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/resources/movesense-api/) and modify your existing code accordingly, if needed.
+## Announcements
+
+**(Jan 24th 2018) Sensor firmware version 1.2.0 is released!**  
+This version contains a new bootloader and an update to Nordic Semiconductor's SoftDevice which implements the Bluetooth stack in Movesense sensor. Please follow the installation instructions in [CHANGES.md](CHANGES.md) carefully.  
 
 **Known issues**  
 Please refer to [CHANGES.md](CHANGES.md) for a list of known issues.
@@ -10,7 +11,7 @@ Starting from release 1.0.0, Movesense device library will internally be tested 
 
 If you're experiencing issues with any earlier hardware version and would like to upgrade to the newest sensor version available, please contact the Movesense team via [movesense.com](https://movesense.com).
 
-## Overview ##
+## Overview
 
 [Movesense sensor](https://www.movesense.com/developers/technology/#developers) is a programmable multi-purpose device comprising of accelerometer, gyroscope, magnetometer and thermometer together with optional heartrate/IBI (inter-beat interval) and intelligent gear ID APIs.  
 
@@ -20,7 +21,7 @@ You can order Movesense sensors and Movesense Developer Kit on our online [shop]
 
 Check also [Movesense mobile library](https://bitbucket.org/suunto/movesense-mobile-lib) for developing own Android and iOS applications to interact with the Movesense sensor.  
 
-## Documentation ##
+## Documentation
 
 Movesense developer documentation is divided in several documents:
 
@@ -30,7 +31,7 @@ Movesense developer documentation is divided in several documents:
 [FAQ.md](FAQ.md): list of frequently asked questions.  
 [Movesense developer guides](https://bitbucket.org/suunto/movesense-docs/wiki/Home) in movesense-docs repository on Bitbucket.  
 
-## Movesense APIs ##
+## Movesense APIs
 Resource | Description
 ---------|------------
 /Comm/Ble|API for managing BLE.  
@@ -60,7 +61,7 @@ to your system to get the environment properly set up, please let us know by [su
 
 There is an experimental installation procedure using Vagrant to set up an isolated environment for development ([check it out below](#markdown-header-automated-setup-on-all-oses-using-vagrant)), or you can follow the manual installation instructions below.
 
-### Manual setup on Windows ###
+### Manual setup on Windows
 Install the following tools: 
 
 * [GNU Toolchain for ARM Embedded 6-2017-q2](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
@@ -83,7 +84,7 @@ Optionally:
     * Nordic Semiconductor's [nRF5x-Command-Line-Tools-XXX](https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF52-DK)
 * In case you encounter `ImportError: No module named yaml`, try to install pyyaml package using pip.
 
-### Manual setup on OSX ###
+### Manual setup on OSX
 Install the following tools: 
 
 * [GNU Toolchain for ARM Embedded 6-2017-q2](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
@@ -111,7 +112,7 @@ Path configuration:
 
 * Remember to add ninja, CMake, GNU Toolchain for ARM, nrfjprog and mergehex (provided with nrfjprog) to system path by editing the PATH variable in .bash_profile.
 
-### Manual setup on Linux ###
+### Manual setup on Linux
 Installation steps for Ubuntu 17.10:
 
 * Install dependencies  
@@ -159,7 +160,7 @@ Optionally:
     
         `export PATH=$PATH:~/tools/mergehex:/opt/SEGGER/JLink/nrfjprog`  
     
-### Automated setup on all operating systems using Vagrant ###
+### Automated setup on all operating systems using Vagrant
 [Vagrant](https://www.vagrantup.com/) provides an easy, reproducable environment
 for setting up development environments. It provides an isolated environment with
 all the dependencies set up without any version clashes or corner case bugs.
@@ -174,7 +175,7 @@ To get up and running
 4. Once the box is up, run `vagrant ssh` in the directory. You will be taken to the fully set up environment and ready to start developing. A great place to go next is *Example application build flow* below
 
 
-## Example application build flow ##
+## Example application build flow
 
 ```
 #!python
@@ -182,20 +183,22 @@ To get up and running
 > cd movesense-device-lib
 > mkdir myBuild
 > cd myBuild
+```  
 
 To build a debug version of a selected sample application (hello_world app in this example):  
 
-> cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/hello_world_app  
+`> cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../samples/hello_world_app`  
 
 To build a release version:  
 
+```
 > cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake -DCMAKE_BUILD_TYPE=Release ../samples/hello_world_app  
 > ninja
-```
+```  
 
 **Note:** By default, the serial interface is enabled on Movesense sensor (see App.cpp file). Unless you need serial support (for programming JIG, for example), remember to keep it disabled to avoid excessive power consumption ([link to instructions](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/documentation/PowerOptimization.md?at=master&fileviewer=file-view-default)).
 
-### Updating sensor "over the air" ###
+### Updating sensor "over the air"
 
 If you want to create OTA firmware update package, run command:  
 
@@ -205,7 +208,7 @@ ninja dfupkg
 
 which places the OTA package named *movesense_dfu.zip* in the build folder. You can then use our [Android Sample App](https://bitbucket.org/suunto/movesense-mobile-lib) to update the firmware on your Movesense sensor over Bluetooth.
 
-### Updating sensor with programming JIG ###
+### Updating sensor with programming JIG
 
 if you are using a *Movesense programming JIG* you can flash the resulting .hex-file (and the nRF52 SoftDevice) with:  
 
@@ -215,14 +218,14 @@ ninja flash
 
 or you can use any other nRF52 compatible programming software such as *nRFGo Studio*. To acquire Movesense programming JIG, please contact us via [movesense.com](https://movesense.com).
 
-### Removing manufacturing/settings data from the sensor ###
+### Removing manufacturing/settings data from the sensor
 Command below updates the sensor firmware and additionally erases all settings in its memory. You should use it only if you want to replace default manufacturing/calibration data. Please don't use the command unless you know what you're doing!  
 
 `
 ninja flash_all
 `
 
-## Bug reports and other feedback ##
+## Bug reports and other feedback
 
 Always start by checking if our [FAQ.md](FAQ.md) already contains the answer you're looking for.   
 
@@ -233,10 +236,10 @@ please [post](http://stackoverflow.com/questions/ask) a new one, tagging it with
 
 All feedback is welcome and helps to improve our offering!  
 
-## Contributions to the source code ##
+## Contributions to the source code
 
 Your input is appreciated and we encourage you to post your contributions as pull requests to this repository.
 
-## License ##
+## License
 
 See [LICENSE.pdf](LICENSE.pdf) for details on Movesense license.
