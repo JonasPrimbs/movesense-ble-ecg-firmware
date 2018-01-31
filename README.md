@@ -49,6 +49,7 @@ Resource | Description
 /System/Energy|API for reading the battery state.
 /System/Mode|API for controlling the main system state (e.g. factory sleep).
 /System/Settings| Settings API for a Movesense device.
+/System/State|API for reading some states.
 /Time|API for accessing different time related services.
 /Ui/Ind|API for controlling the LED.
 
