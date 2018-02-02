@@ -1,12 +1,15 @@
 ## Announcements
 
+**(Feb 1st 2018) Sensor firmware version 1.3.0 is out!**  
+Improvements in this version include the ability to subscribe to gear connector state change events, as well as new 3.11 version of the Whiteboard communication stack. As usual, refer to [CHANGES.md](CHANGES.md) for more details. 
+
 **(Jan 24th 2018) Sensor firmware version 1.2.0 is released!**  
 This version contains a new bootloader and an update to Nordic Semiconductor's SoftDevice which implements the Bluetooth stack in Movesense sensor. Please follow the installation instructions in [CHANGES.md](CHANGES.md) carefully.  
 
 **Known issues**  
 Please refer to [CHANGES.md](CHANGES.md) for a list of known issues.
 
-**Testing coverage**  
+**Library testing coverage**  
 Starting from release 1.0.0, Movesense device library will internally be tested only on the latest Movesense sensor hardware version ("G1" variant) -- please refer to the [FAQ section](FAQ.md) for instructions on how to identify which hardware version you have.  
 
 If you're experiencing issues with any earlier hardware version and would like to upgrade to the newest sensor version available, please contact the Movesense team via [movesense.com](https://movesense.com).
