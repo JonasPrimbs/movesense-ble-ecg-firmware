@@ -1,5 +1,9 @@
 ## Version 1.3.0.1216.3d263fcc962d ##
 
+###Important
+Starting from firmware release 1.2.0 each sensor sample app now generates two DFU files (with and without bootloader and SoftDevice). If the sensor firmware is updated using the package that contains new bootloader and SoftDevice ('movesense_dfu_w_bootloader.zip'), we recommend to either reset Bluetooth on mobile device or reboot the mobile device to avoid reconnection problems with the updated sensor. This applies to both iOS and Android.
+Additionally, if the Movesense sensor has been paired in mobile device's Bluetooth settings, pairing will have to be redone on mobile device side.  
+
 ###Whats new:###
 - New: API System/States for connector (please, see the new sample app)
 - New: Sample "connection scanner app". [See full description](samples/README.md)
