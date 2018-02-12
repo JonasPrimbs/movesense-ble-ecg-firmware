@@ -1,3 +1,7 @@
+## Migration to 1.3.0 
+
+Version 1.3.0 contains the same updated bootloader and SoftDevice as version 1.2.0 - if you're updating from a version earlier than 1.2.0, please refer to section "Migration to 1.2.0" below as the same guidance applies to 1.3.0 as well.
+
 ## Migration to 1.2.0 
 
 ### Updating bootloader and SoftDevice
