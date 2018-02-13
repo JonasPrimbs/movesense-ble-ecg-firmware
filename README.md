@@ -62,7 +62,7 @@ Resource | Description
 This section gives platform specific instructions on how to set up Movesense development environment. If you run into problems or need to install additional components
 to your system to get the environment properly set up, please let us know by [submitting an issue](https://bitbucket.org/suunto/movesense-device-lib/issues/new).
 
-There is an experimental installation procedure using Vagrant to set up an isolated environment for development ([check it out below](#markdown-header-automated-setup-on-all-oses-using-vagrant)), or you can follow the manual installation instructions below.
+There is an experimental installation procedure using Vagrant to set up an isolated environment for development ([check it out below](#markdown-header-automated-setup-on-all-operating-systems-using-vagrant)), or you can follow the manual installation instructions below.
 
 ### Manual setup on Windows
 Install the following tools: 
