@@ -162,7 +162,7 @@ _adb logcat [option]...  [filter-spec]..._
 Example command (show logs with specific TAG's):
 ```$ adb logcat Komposti:* BleManager:* Mds:* *:S ```  
 
-### Can I use Standart Template Library (STL) with Movesense sensor? ###
+### Can I use Standard Template Library (STL) with Movesense sensor? ###
 
 STL is bypassing normal movesesnes memory handling and we are strongly recommend to not use it. There is also possibility that after using STL there will be not enought falsh memory to compile your application.  
 
