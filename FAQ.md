@@ -164,5 +164,5 @@ Example command (show logs with specific TAG's):
 
 ### Can I use Standard Template Library (STL) with Movesense sensor? ###
 
-STL is bypassing normal movesesnes memory handling and we are strongly recommend to not use it. There is also possibility that after using STL there will be not enought falsh memory to compile your application.  
+STL is bypassing normal Movesense memory handling and we are strongly recommend not to use it. There is also possibility that after using STL there will be not enought falsh memory to compile your application.  
 
