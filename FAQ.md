@@ -130,6 +130,10 @@ LED indicates that device is in DFU mode if stays turned on after boot (Device F
 There is possibility that firmware on device is broken due to lost BT connection during update or corrupted DFU package.
 Use your phone with Movesense application to flash latest firmware to your Movesense sensor. There is also posibility that firmware version is not coresponding to bootloader version. Please check _MIGRATION.md_ file for more instructions.
 
+### Why LED is continuously blinking? ###
+
+Besides custom application there is only one reason for such behavior. Movesense sensor is constantly resetting because of completely discharged battery. Please replace battery and try to turn on the Movesense sensor.
+
 ### I cannot connect to Movesense sensor with my Android phone. What to do? ###
 
 The issue is mainly caused by mobile phone Bluetooth stack cache.  
@@ -146,4 +150,19 @@ There are two ways to recover from this situation.
 
    - You can use jig and ST-Link to flash device with new application (Refer to _How to flash, i.e update the software (firmware) in sensor?_)  
    - You can use your phone and Movesense application to flash device with new firmware. Note that you can't connect to sensor using BT, and before you use phone you need to put sensor into DFU mode manually (Refer to _How to use DFU recovery mode?_)  
+
+### How to access logs/debug messages produced by mobile libraries (MDS)? ###
+
+Connect your Android phone using USB cable to the computer. In phone settings choos debug mode. You need to install ADB tool from Android SDK on your PC to collect logs.
+Please refer to: [ADB](https://developer.android.com/studio/command-line/adb.html) and [Logcat](https://developer.android.com/studio/command-line/logcat.html)
+
+MDS by default printing some log messages. You need to use _adb logcat_ command mentioned above to read full logs from Android.
+_adb logcat [option]...  [filter-spec]..._
+
+Example command (show logs with specific TAG's):
+```$ adb logcat Komposti:* BleManager:* Mds:* *:S ```  
+
+### Can I use Standard Template Library (STL) with Movesense sensor? ###
+
+STL is bypassing normal Movesense memory handling and we are strongly recommend not to use it. There is also possibility that after using STL there will be not enought falsh memory to compile your application.  
 
