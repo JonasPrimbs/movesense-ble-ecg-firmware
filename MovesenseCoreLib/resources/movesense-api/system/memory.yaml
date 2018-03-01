@@ -1,0 +1,66 @@
+swagger: '2.0'
+
+# Document metadata
+info:
+  version: NA
+  title: System Memory - Movesense-API
+  description: |
+      This file defines API for the system memory state.
+  x-api-state: experimental
+  x-api-required: false
+  x-api-type: public
+
+# Paths
+paths:
+  /System/Memory/Heap:
+    get:
+      description: Get information about heap.
+      responses:
+        200:
+          description: Operation completed successfully.
+          schema:
+            $ref: '#/definitions/Memory'
+
+definitions:
+  Memory:
+    required:
+      - Size
+      - Free
+    properties:
+      Size:
+        description: Available memory size in bytes
+        type: integer
+        format: uint64
+        # x-unit: byte
+      Free:
+        description: Free memory in bytes
+        type: integer
+        format: uint64
+        # x-unit: byte
+      Used:
+        description: Used memory in bytes
+        type: integer
+        format: uint64
+        # x-unit: byte
+      LowestFree:
+        description: Lowest memory observed in bytes during current run, if applicable
+        type: integer
+        format: uint64
+        # x-unit: byte
+      SufficiencyTestResult:
+        description: Results of an internal memory sufficiency test, if applicable
+        $ref: '#/definitions/MemorySufficiencyTestResult'
+
+  MemorySufficiencyTestResult:
+    type: integer
+    format: uint8
+    enum:
+      - name: 'NotTested'
+        description: Internal memory sufficiency test has not been run
+        value: 0
+      - name: 'Passed'
+        description: There is sufficient memory for common operations
+        value: 1
+      - name: 'Failed'
+        description: Free memory has gone below critical limit in the internal sufficiency test
+        value: 2

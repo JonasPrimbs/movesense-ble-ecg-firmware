@@ -1,4 +1,6 @@
 ## Announcements
+**(Mar 1st 2018) Sensor firmware version 1.4.0 is out!**  
+New version contains the new APIs for debugging. Improves the connection stability. As usual, refer to [CHANGES.md](CHANGES.md) for more details. 
 
 **(Feb 1st 2018) Sensor firmware version 1.3.0 is out!**  
 Improvements in this version include the ability to subscribe to gear connector state change events, as well as new 3.11 version of the Whiteboard communication stack. As usual, refer to [CHANGES.md](CHANGES.md) for more details. 
@@ -50,7 +52,9 @@ Resource | Description
 /Mem/DataLogger|Generic logger capable of logging max. 8 different resources.
 /Mem/Logbook|Generic Logbook from where the logged data can be read.
 /Misc/Gear| API to get the globally unique Movesense ID associated with the physical gear.
+/System/Debug|API for subscribing messages from device.
 /System/Energy|API for reading the battery state.
+/System/Memory|API for reading memory state.
 /System/Mode|API for controlling the main system state (e.g. factory sleep).
 /System/Settings| Settings API for a Movesense device.
 /System/State|API for reading some states.

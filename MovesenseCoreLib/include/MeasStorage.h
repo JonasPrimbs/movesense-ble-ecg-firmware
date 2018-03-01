@@ -12,8 +12,14 @@
     @file measStorage.h
     Measurement storage.
 
-    @todo
-    Recording masking should be implemented
+    This storage implementation stores any SBEM-serializable whiteboard type to chunkstorage
+    - chunk type: CT_WB_MEASUREMENT
+    - WB LocalResourceId is stored in the ChunkHeader.customField.short1
+    TODO: - Dynamic length is stored in ChunkHeader.customField.byte3 & 4
+
+    And also DEBUG messages
+    - chunk type: CT_DEBUG_DATA
+    TODO: Take into use in Movesense!
 */
 
 #include "common/core/debug.h"
@@ -28,38 +34,29 @@
 #include "whiteboard/Identifiers.h"
 #include "whiteboard/Value.h"
 
-enum MeasurementType
-{
-    MT_NONE,
-    MT_RR,
-    MT_BATTERY_LEVEL,
-    MT_ACCEL,
-    MT_MAGN,
-    COUNT_MeasurementType
-};
-
-#define MT_SHIFT    5
-#define MT_MASK        (7<<MT_SHIFT)
-STATIC_VERIFY( COUNT_MeasurementType <= 8, COUNT_MeasurementType_error );
-
 // custom chunk types
+// WB_MEASUREMENT has WB localResourceId in ChunkHeader.alternateField
 enum ChunkType
 {
     CT_DEBUG_DATA        = ChunkStorage::CT_CUSTOM_BASE + 0,
-    CT_WB_MEASUREMENT_BASE = ChunkStorage::CT_CUSTOM_BASE + 1
+    CT_WB_MEASUREMENT    = ChunkStorage::CT_CUSTOM_BASE + 1
 };
 
 enum ChunkFlag
 {
-    CH_FLAG_NONE = 0
+    CH_FLAG_NONE = 0,
+    CH_FLAG_CONTINUED = 1,
 };
 
 // define chunk sizes
 #ifndef MAX_WB_CHUNK_SIZE
-    #define MAX_WB_CHUNK_SIZE                128
+    #define MAX_WB_CHUNK_SIZE                MAX_CHUNK_SIZE
+    #define MAX_WB_CHUNK_DATA_LEN            (MAX_CHUNK_SIZE - sizeof(ChunkHeader))
 #endif
 
-#define SERIALIZATION_BUFFER_LENGTH 96
+// How long can we "continue" chunks to fit large measurements
+#define MAX_CHUNKS_PER_MEASUREMENT           4
+#define MAX_CONTINUATION_CHUNKS              (MAX_CHUNKS_PER_MEASUREMENT-1)
 
 class MeasStorage
 #ifdef CHUNKSTORAGE_USE_NOTIFIER
@@ -121,7 +118,7 @@ public:
     /**
         Flushes cached measurement-values. 
     */
-    void flushMeasurements(uint32_t measurementTypeID);
+    void flushMeasurements(uint32_t measurementTypeID, bool flushOthersIfNeeded = true);
 
     /**
         If no RR-chunks has yet been saved, discards the buffer measurement.
@@ -195,8 +192,9 @@ public:
     uint16_t getSessionId();
 
     whiteboard::LocalResourceId getChunkWBResource(const ChunkStorage::Iterator iter) const;
-    
-protected:
+
+    void cleanUp();
+    void prepMeasBuffer(uint16_t measBufferId);
 
 private:
     #ifdef CHUNKSTORAGE_USE_SYNC_NOTIFIER
@@ -211,7 +209,6 @@ private:
         static void onPostWrite( const void *userData, uint32_t address, const ChunkHeader *header );
         static void onPreDelete( const void *userData, uint32_t address );
     #endif
-    void cleanUp();
 
     ChunkStorage &chunkStorage;
     GetTimeFunc getTime;
@@ -228,18 +225,21 @@ private:
             uint16_t data_uint16[(size+1)/2];
         };
         uint32_t endTime_ms;
+        uint8_t continuationCount;
     };
 
     ChunkStorage::Iterator iter, lastAppendedMeas;
     
     typedef MeasBuffer<MAX_WB_CHUNK_SIZE-sizeof(ChunkHeader)> MeasurementBuffer;
     
-    const static int MAX_BUFFER_COUNT=16;
+    const static int MAX_BUFFER_COUNT=4;
     MeasurementBuffer measBuffers[MAX_BUFFER_COUNT];
     uint16_t measBufferIds[MAX_BUFFER_COUNT];
 
     MeasurementBuffer &getMeasBuffer(uint16_t measBufferId);
     int findMeasBuffer(uint16_t bufferId) const;
+    void flushChunkAndStartNew(uint16_t measurementID, MeasurementBuffer &meas, uint32_t timestamp_ms, bool continuation);
+    size_t getBuffersInUseCount() const;
 
     // rrChunkTbl keeps track of any single rr chunk located in each slice of ring buffer.
     // Using these "bookmarks" we can faster locate the rr chunk we are looking for.

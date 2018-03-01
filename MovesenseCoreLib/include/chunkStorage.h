@@ -41,18 +41,30 @@
 */
 struct ChunkHeader
 {
-    uint16_t   chunkType;       // 8 -> 16 so that WB ID's fit!
-    uint8_t   chunkLen;        // includes header. 8 bit enough since max size 128 bytes
-    uint8_t   flags;           
+    uint8_t   chunkType;        // 
+    uint8_t   chunkLen;         // includes header. 8 bit enough since max size 128 bytes
+    uint8_t   flags;
     uint32_t   timeStamp;
-    uint32_t   duration;
+    union CustomField {
+        uint32_t   dword;
+        struct {
+            uint16_t short1;
+            uint16_t short2;
+        };
+        struct {
+            uint8_t byte1;
+            uint8_t byte2;
+            uint8_t byte3;
+            uint8_t byte4;
+        };
+    } customField;
     uint16_t   sessionId;
     uint8_t    headerChecksum;    // ChunkStorage calculates and checks
-    uint8_t    dataChecksum;    // -"-
+    uint8_t    dataChecksum;      // -"-
 } PACKED;
 
 #ifndef MAX_CHUNK_SIZE
-    #define MAX_CHUNK_SIZE                    128
+    #define MAX_CHUNK_SIZE                    255
 #endif
 STATIC_VERIFY( MAX_CHUNK_SIZE >= sizeof(ChunkHeader) + sizeof( uint16_t ), MAX_CHUNK_SIZE_error );
 
@@ -99,7 +111,7 @@ public:
     enum ChunkType
     {
         CT_NONE,            // single byte padding
-        CT_PADDING,            // padding (length 3..65535 bytes)
+        CT_PADDING,           // padding (length 3..65535 bytes)
         CT_STORAGE_HEADER,    // permanent for storage status and settings etc. always @ 0x0000
         CT_CUSTOM_BASE        // base value for custom chunk types
     };
@@ -264,6 +276,14 @@ public:
         @return true if succeeded
     */
     virtual bool getFirstAddress( uint32_t *dest ) = 0;
+
+
+    /**
+        Wipe the storage.
+
+        @return true if succeeded
+    */
+    virtual bool eraseAll() = 0;
 
     virtual ~ChunkStorage() { }
 };

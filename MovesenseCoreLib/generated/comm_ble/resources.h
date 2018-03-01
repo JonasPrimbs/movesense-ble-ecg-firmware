@@ -40,9 +40,26 @@
 
 namespace WB_RES {
 
+struct PeerStateValues
+{
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14085;
+
+	enum Type
+	{
+		DISCONNECTED = 0U,
+		CONNECTED = 1U
+	};
+};
+typedef whiteboard::TypedEnum<PeerStateValues, PeerStateValues::Type, uint8> PeerState;
+
 struct WB_ALIGN(4) AdvParams;
 struct WB_ALIGN(4) AdvState;
 struct WB_ALIGN(4) AdvSettings;
+struct WB_ALIGN(4) PeerEntry;
+struct WB_ALIGN(4) PeerList;
+struct WB_ALIGN(4) PeerChange;
+struct WB_ALIGN(2) ScanParams;
+struct WB_ALIGN(4) ScanResult;
 
 struct WB_ALIGN(4) AdvParams
 {
@@ -73,6 +90,60 @@ struct WB_ALIGN(4) AdvSettings
 	WB_ALIGN(4) whiteboard::Optional< whiteboard::Array< uint8 > > scanRespPacket;
 	WB_ALIGN(2) uint16 interval;
 	WB_ALIGN(2) uint16 timeout;
+};
+
+struct WB_ALIGN(4) PeerEntry
+{
+	// Structure type identification and serialization
+	typedef int Structure;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14083;
+
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> address;
+	WB_ALIGN(4) whiteboard::Optional< whiteboard::WrapperFor32BitPointer<const char> > name;
+	WB_ALIGN(4) whiteboard::Optional< uint32 > handle;
+};
+
+struct WB_ALIGN(4) PeerList
+{
+	// Structure type identification and serialization
+	typedef int Structure;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14084;
+
+	WB_ALIGN(4) whiteboard::Array< PeerEntry > connectedPeers;
+};
+
+struct WB_ALIGN(4) PeerChange
+{
+	// Structure type identification and serialization
+	typedef int Structure;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14086;
+
+	WB_ALIGN(4) PeerEntry peer;
+	WB_ALIGN(1) PeerState state;
+};
+
+struct WB_ALIGN(2) ScanParams
+{
+	// Structure type identification and serialization
+	typedef int Structure;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14087;
+
+	WB_ALIGN(1) bool active;
+	WB_ALIGN(2) uint16 timeout;
+	WB_ALIGN(2) uint16 window;
+	WB_ALIGN(2) uint16 interval;
+};
+
+struct WB_ALIGN(4) ScanResult
+{
+	// Structure type identification and serialization
+	typedef int Structure;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14088;
+
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> address;
+	WB_ALIGN(4) whiteboard::Optional< whiteboard::WrapperFor32BitPointer<const char> > name;
+	WB_ALIGN(1) bool isScanResponse;
+	WB_ALIGN(4) whiteboard::Array< uint8 > dataPacket;
 };
 
 namespace LOCAL
@@ -302,6 +373,261 @@ struct COMM_BLE_ADV_SETTINGS
 		/** Compile time type checking */
 		inline static void typeCheck(
 			Parameters::NEWSETTINGS::ConstReferenceType)
+		{
+		}
+	};
+};
+
+struct COMM_BLE_PEERS
+{
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 14083, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 14083;
+
+	struct GET
+	{
+		typedef whiteboard::StronglyTypedResult<const PeerList&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
+	};
+
+	struct SUBSCRIBE
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
+	};
+
+	struct EVENT
+	{
+		typedef PeerChange NotificationType;
+		typedef const NotificationType& ConstReferenceNotificationType;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			const whiteboard::Api::OptionalParameter<ConstReferenceNotificationType>&)
+		{
+		}
+	};
+
+	struct UNSUBSCRIBE
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
+	};
+};
+
+struct COMM_BLE_PEERS_CONNHANDLE
+{
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 14084, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 14084;
+
+	struct DELETE
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			struct CONNHANDLE
+			{
+				static const whiteboard::ParameterIndex Index = 0;
+
+				typedef int32 Type;
+				typedef Type ConstReferenceType;
+			};
+
+			typedef CONNHANDLE Parameter1;
+
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
+		};
+
+		/** Reference wrapper for strongly typed parameter list for /Comm/Ble/Peers/{ConnHandle} */
+		class ParameterListRef
+		{
+		private:
+			/** Prevent use of default constructor */
+			ParameterListRef() DELETED;
+
+			/** Prevent use of copy constructor */
+			ParameterListRef(const ParameterListRef&) DELETED;
+
+			/** Prevent use of assignment operator */
+			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
+
+		public:
+			/** Constructor that initializes this class from existing parameter list
+			*
+			* @param rParameterList Reference to parameter list that contains untyped parameters
+			*/
+			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
+				: mrParameterList(rParameterList)
+			{
+			}
+
+			/** Gets CONNHANDLE parameter value
+			*
+			* @return Current parameter value
+			*/
+			inline Parameters::CONNHANDLE::ConstReferenceType getConnHandle() const
+			{
+				return mrParameterList[Parameters::CONNHANDLE::Index].convertTo<Parameters::CONNHANDLE::ConstReferenceType>();
+			}
+
+		private:
+			/** Reference to actual parameter list */
+			const whiteboard::ParameterList& mrParameterList;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::CONNHANDLE::ConstReferenceType)
+		{
+		}
+	};
+};
+
+struct COMM_BLE_SCAN
+{
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 14085, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 14085;
+
+	struct SUBSCRIBE
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			struct PARAMS
+			{
+				static const whiteboard::ParameterIndex Index = 0;
+
+				typedef ScanParams Type;
+				typedef const Type& ConstReferenceType;
+			};
+
+			typedef PARAMS Parameter1;
+
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
+		};
+
+		/** Reference wrapper for strongly typed parameter list for /Comm/Ble/Scan */
+		class ParameterListRef
+		{
+		private:
+			/** Prevent use of default constructor */
+			ParameterListRef() DELETED;
+
+			/** Prevent use of copy constructor */
+			ParameterListRef(const ParameterListRef&) DELETED;
+
+			/** Prevent use of assignment operator */
+			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
+
+		public:
+			/** Constructor that initializes this class from existing parameter list
+			*
+			* @param rParameterList Reference to parameter list that contains untyped parameters
+			*/
+			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
+				: mrParameterList(rParameterList)
+			{
+			}
+
+			/** Checks whether optional parameter PARAMS has a value
+			*
+			* @return A value indicating whether the parameter has a value
+			*/
+			inline bool hasParams() const
+			{
+				if (mrParameterList.getNumberOfParameters() <= Parameters::PARAMS::Index)
+				{
+					return false;
+				}
+
+				return mrParameterList[Parameters::PARAMS::Index].getType() != whiteboard::WB_TYPE_NONE;
+			}
+
+			/** Gets PARAMS parameter value
+			*
+			* @return Current parameter value
+			*/
+			inline Parameters::PARAMS::ConstReferenceType getParams() const
+			{
+				return mrParameterList[Parameters::PARAMS::Index].convertTo<Parameters::PARAMS::ConstReferenceType>();
+			}
+
+		private:
+			/** Reference to actual parameter list */
+			const whiteboard::ParameterList& mrParameterList;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			const whiteboard::Api::OptionalParameter<Parameters::PARAMS::ConstReferenceType>& = whiteboard::NoType::NoValue)
+		{
+		}
+	};
+
+	struct EVENT
+	{
+		typedef ScanResult NotificationType;
+		typedef const NotificationType& ConstReferenceNotificationType;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			const whiteboard::Api::OptionalParameter<ConstReferenceNotificationType>&)
+		{
+		}
+	};
+
+	struct UNSUBSCRIBE
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
 		{
 		}
 	};

@@ -3,6 +3,7 @@
 #include "HelloWorldService.h"
 #include "common/core/debug.h"
 
+#include "DebugLogger.hpp"
 #include "app-resources/resources.h"
 #include "whiteboard/builtinTypes/UnknownStructure.h"
 #include <float.h>
@@ -69,6 +70,7 @@ void HelloWorldService::onGetRequest(const whiteboard::Request& request,
     {
         WB_RES::HelloWorldValue hello;
         hello.greeting = "Hello World!";
+        DebugLogger::info(hello.greeting);
         return returnResult(request, whiteboard::HTTP_CODE_OK, ResponseOptions::Empty, hello);
     }
 
@@ -103,6 +105,7 @@ void HelloWorldService::onTimer(whiteboard::TimerId timerId)
     WB_RES::HelloWorldValue hello;
     hello.greeting = buf;
 
+    DebugLogger::info(buf);
     // and update the resources/resources
     updateResource(WB_RES::LOCAL::SAMPLE_HELLOWORLD(),
                    ResponseOptions::Empty, hello);

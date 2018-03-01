@@ -7,4 +7,7 @@
 static const unsigned short COMM_BLE_ADDR_LID = 14080;
 static const unsigned short COMM_BLE_ADV_LID = 14081;
 static const unsigned short COMM_BLE_ADV_SETTINGS_LID = 14082;
+static const unsigned short COMM_BLE_PEERS_LID = 14083;
+static const unsigned short COMM_BLE_PEERS_CONNHANDLE_LID = 14084;
+static const unsigned short COMM_BLE_SCAN_LID = 14085;
 

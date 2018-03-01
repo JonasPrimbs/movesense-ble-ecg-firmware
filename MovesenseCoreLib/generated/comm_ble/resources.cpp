@@ -16,5 +16,20 @@ WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(AdvState) == 4, AlignmentOfStructure_AdvState
 WB_STATIC_VERIFY(sizeof(AdvSettings) == 28, SizeOfStructure_AdvSettings_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(AdvSettings) == 4, AlignmentOfStructure_AdvSettings_IsNotWhatExpected);
 
+WB_STATIC_VERIFY(sizeof(PeerEntry) == 20, SizeOfStructure_PeerEntry_IsNotWhatExpected);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(PeerEntry) == 4, AlignmentOfStructure_PeerEntry_IsNotWhatExpected);
+
+WB_STATIC_VERIFY(sizeof(PeerList) == 8, SizeOfStructure_PeerList_IsNotWhatExpected);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(PeerList) == 4, AlignmentOfStructure_PeerList_IsNotWhatExpected);
+
+WB_STATIC_VERIFY(sizeof(PeerChange) == 24, SizeOfStructure_PeerChange_IsNotWhatExpected);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(PeerChange) == 4, AlignmentOfStructure_PeerChange_IsNotWhatExpected);
+
+WB_STATIC_VERIFY(sizeof(ScanParams) == 8, SizeOfStructure_ScanParams_IsNotWhatExpected);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ScanParams) == 2, AlignmentOfStructure_ScanParams_IsNotWhatExpected);
+
+WB_STATIC_VERIFY(sizeof(ScanResult) == 24, SizeOfStructure_ScanResult_IsNotWhatExpected);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ScanResult) == 4, AlignmentOfStructure_ScanResult_IsNotWhatExpected);
+
 
 } // namespace WB_RES
