@@ -5,6 +5,7 @@
 ******************************************************************************/
 #include <stdint.h>
 #include <stdbool.h>
+#include "common/compiler/genDef.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,6 +31,15 @@ void debugOut(bool appendLineFeed, const char* format, ...);
 * @note Not to be called directly.
 */
 void debugOutRaw(uint8_t paramCount, bool firstParamIsString, const char* message, ...);
+
+/** Configurable hook that allows debug logs to be passed to external debugging interfaces.
+ * It is declared as 'weak' function and can be overriden, depending on use case.
+ *
+ * @param str Formatted debug message
+ * @note No DEBUGLOGs or debugOut(...) calls should be used in this function's implementation,
+ * in order to prevent infinite recursion.
+ */
+void WEAK debugOutHook(const char* str);
 
 #ifdef DISABLE_DEBUGLOG
 #define DEBUGLOG(...)                                                                                                            \

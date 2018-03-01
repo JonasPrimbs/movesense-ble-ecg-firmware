@@ -22,6 +22,10 @@ OPTIONAL_CORE_MODULE(IndicationService, true)
 OPTIONAL_CORE_MODULE(BleService, true)
 OPTIONAL_CORE_MODULE(EepromService, false)
 OPTIONAL_CORE_MODULE(BypassService, false)
+OPTIONAL_CORE_MODULE(SystemMemoryService, false)
+OPTIONAL_CORE_MODULE(DebugService, false)
+OPTIONAL_CORE_MODULE(BleStandardHRS, false)
+OPTIONAL_CORE_MODULE(BleNordicUART, false)
 
 APPINFO_NAME("Sample BLE Conformance Test");
 APPINFO_VERSION("1.0.0");

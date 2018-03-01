@@ -1,0 +1,110 @@
+swagger: '2.0'
+
+info:
+  version: NA
+  title: System debug - Movesense-API
+  description: |
+    TBD.
+  x-api-state: experimental
+  x-api-type: public
+  x-api-required: false
+
+paths:
+  /System/Debug/Config:
+    get:
+      description: |
+        Get current messages configuration.
+      responses:
+        200:
+          description: Returns message configurations.
+          schema:
+            $ref: '#/definitions/DebugMessageConfig'
+    put:
+      description: |
+        Set message configuration.
+      parameters:
+        - name: config
+          in: body
+          description: New configurations for the debug messages.
+          required: true
+          schema:
+            $ref: '#/definitions/DebugMessageConfig'
+      responses:
+        200:
+          description: Operation completed successfully
+
+  /System/Debug/{Level}/Subscription:
+    parameters:
+        - name: Level
+          in: path
+          description: Debug level
+          required: true
+          schema:
+            $ref: '#/definitions/DebugLevel'
+    post:
+      description: |
+        Subscribe device's debug output stream.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-notification:
+          description: |
+            Notification of new debug stream data.
+          schema:
+            $ref: '#/definitions/DebugMessage'
+    delete:
+      description: |
+        Unsubscribe from device's debug output stream.
+      responses:
+        200:
+          description: Operation completed successfully
+
+definitions:
+  DebugMessageConfig:
+    properties:
+      SystemMessages:
+        description: |
+          Show system messages.
+        type: boolean
+        default: false
+      UserMessages:
+        description: |
+          Show user messages.
+        type: boolean
+        default: false
+
+  DebugLevel:
+    type: integer
+    format: int32
+    enum:
+      - name: 'Fatal'
+        value: 0
+      - name: 'Error'
+        value: 1
+      - name: 'Warning'
+        value: 2
+      - name: 'Info'
+        value: 3
+      - name: 'Verbose'
+        value: 4
+
+  DebugMessage:
+    required:
+      - Timestamp
+      - Level
+      - Tag
+      - Message
+    properties:
+      Timestamp:
+        description: Local timestamp of first measurement.
+        type: integer
+        format: uint32
+        x-unit: millisecond
+      Level:
+        $ref: '#/definitions/DebugLevel'
+      Tag:
+        description: Tag of the message.
+        type: string
+      Message:
+        description: Debug message.
+        type: string

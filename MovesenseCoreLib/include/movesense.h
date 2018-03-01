@@ -87,7 +87,7 @@ extern const char* g_appInfo_name;
 extern const char* g_appInfo_version;
 extern const char* g_appInfo_company;
 
-#define MAX_OPTIONAL_CORE_MODULES 8
+#define MAX_OPTIONAL_CORE_MODULES 11
 
 #define MOVESENSE_FEATURES_BEGIN()
 

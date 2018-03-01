@@ -9,7 +9,7 @@ import glob, os
 oldDir = os.getcwd()
 
 loopNumber = 1
-MAX_CHUNKSTORAGE_LENGTH = 112
+MAX_CHUNKSTORAGE_LENGTH = 112*4
 MAX_NET_CHUNKSTORAGE_LENGTH = MAX_CHUNKSTORAGE_LENGTH - 2
 
 # In case we run this code in IDLE, set some useful command line parameters
@@ -343,8 +343,8 @@ def generateWriteMethodCodeForItem(item, writeCodeArr, recursionLevel=1):
         writeMethodCode += indent+'{\n'
         writeMethodCode += indent+'    auto value = ' + valExpr + ";\n"
         writeMethodCode += indent+'    const uint8_t *src = reinterpret_cast<const uint8_t*>(&value);\n'
-        writeMethodCode += indent+'    for(size_t i=0; i<sizeof(value); i++, pos++, src++)\n'
-        writeMethodCode += indent+'        *pos = *src;\n'
+        writeMethodCode += indent+'    for(size_t i=0; i<sizeof(value); i++, src++, bytesRead++)\n'
+        writeMethodCode += indent+'        if ((bytesRead >= startOffset) && (bytesWritten < bufferLen)) byteBuf[bytesWritten++] = *src;\n'
         writeMethodCode += indent+'}\n'
 
     elif 'subgroups' in item and item['subgroups']:
@@ -1074,9 +1074,11 @@ with open("sbem_definitions.h", 'wb') as f_h:
             # reset loop index numbering
             loopNumber = 1
 
-            writeMethodCode = '\nsize_t writeToSbemBuffer_' +cppNameFromResName(k) + '(void *buffer, const WB_RES::LOCAL::' + cppNameFromResName(k) + '::EVENT::NotificationType &data)'
+            writeMethodCode = '\nsize_t writeToSbemBuffer_' +cppNameFromResName(k) + '(void *buffer, size_t bufferLen, size_t startOffset, const WB_RES::LOCAL::' + cppNameFromResName(k) + '::EVENT::NotificationType &data)'
             writeMethodCode += '{\n'
-            writeMethodCode += '    uint8_t *pos = static_cast<uint8_t*>(buffer);\n'
+            writeMethodCode += '    size_t bytesRead = 0;\n'
+            writeMethodCode += '    size_t bytesWritten = 0;\n'
+            writeMethodCode += '    uint8_t *byteBuf = static_cast<uint8_t*>(buffer);\n'
 
             # handle each item entry in resource value
             codeOk = True
@@ -1090,12 +1092,12 @@ with open("sbem_definitions.h", 'wb') as f_h:
                 writeMethodCode += '    // UNIMPLEMENTED FEATURE in codegen, so we assert;\n'
                 writeMethodCode += '    ASSERT(0);\n'
 
-            writeMethodCode += '    return pos - reinterpret_cast<const uint8_t*>(buffer);\n'
+            writeMethodCode += '    return bytesWritten;\n'
             writeMethodCode += '}\n\n'
 
             print(writeMethodCode, file=f_cpp)
 
-            print('\nsize_t writeToSbemBuffer_' +cppNameFromResName(k) + '(void *buffer, const WB_RES::LOCAL::' + cppNameFromResName(k) + '::EVENT::NotificationType &data);', file=f_h)
+            print('\nsize_t writeToSbemBuffer_' +cppNameFromResName(k) + '(void *buffer, size_t bufferLen, size_t startOffset, const WB_RES::LOCAL::' + cppNameFromResName(k) + '::EVENT::NotificationType &data);', file=f_h)
 
 
         # Generate function to calculate sbem packet length for given resource & data
@@ -1172,14 +1174,14 @@ with open("sbem_definitions.h", 'wb') as f_h:
 
 
         # Generate generic write bwobject method
-        writeMethodCode = '\nsize_t writeToSbemBuffer(void *buffer, whiteboard::LocalResourceId localResId, const whiteboard::Value &data)\n'
+        writeMethodCode = '\nsize_t writeToSbemBuffer(void *buffer, size_t bufferLen, size_t startOffset, whiteboard::LocalResourceId localResId, const whiteboard::Value &data)\n'
         writeMethodCode += '{\n'
         writeMethodCode += '    switch(localResId)\n'
         writeMethodCode += '    {\n'
 
         for k,v in sorted(resourcesThatNeedSbemMethods.iteritems()):
             writeMethodCode += '    case WB_RES::LOCAL::' + cppNameFromResName(k) + '::LID:\n'
-            writeMethodCode += '        return writeToSbemBuffer_' +cppNameFromResName(k) + '(buffer, data.convertTo<WB_RES::LOCAL::' + cppNameFromResName(k) + '::EVENT::NotificationType>());\n'
+            writeMethodCode += '        return writeToSbemBuffer_' +cppNameFromResName(k) + '(buffer, bufferLen, startOffset, data.convertTo<WB_RES::LOCAL::' + cppNameFromResName(k) + '::EVENT::NotificationType>());\n'
 
 
         writeMethodCode += '    }\n'        

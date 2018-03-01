@@ -15,6 +15,10 @@ OPTIONAL_CORE_MODULE(IndicationService, true)
 OPTIONAL_CORE_MODULE(BleService, true)
 OPTIONAL_CORE_MODULE(EepromService, true)
 OPTIONAL_CORE_MODULE(BypassService, false)
+OPTIONAL_CORE_MODULE(SystemMemoryService, true)
+OPTIONAL_CORE_MODULE(DebugService, false)
+OPTIONAL_CORE_MODULE(BleStandardHRS, false)
+OPTIONAL_CORE_MODULE(BleNordicUART, false)
 
 // NOTE: It is inadvisable to enable both Logbook/DataLogger and EepromService without 
 // explicit definition of Logbook memory are (see LOGBOOK_MEMORY_AREA macro in movesense.h and eeprom_logbook_app).
@@ -22,9 +26,9 @@ OPTIONAL_CORE_MODULE(BypassService, false)
 // LOGBOOK_MEMORY_AREA(offset, size);
 
 APPINFO_NAME("Sample Plain");
-APPINFO_VERSION("1.0.0");
+APPINFO_VERSION("1.1.0");
 APPINFO_COMPANY("Movesense");
 
-SERIAL_COMMUNICATION(false) // Warning: enabling this feature will increase power consumption
+SERIAL_COMMUNICATION(true) // Warning: enabling this feature will increase power consumption
 BLE_COMMUNICATION(true)
 MOVESENSE_FEATURES_END()

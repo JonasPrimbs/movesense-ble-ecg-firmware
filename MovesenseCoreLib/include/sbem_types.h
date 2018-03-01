@@ -50,7 +50,7 @@ uint16_t getSbemDescriptorIdFromResource(whiteboard::LocalResourceId localResour
 size_t getSbemLength(whiteboard::LocalResourceId localResId, const whiteboard::Value &data);
 int16_t getSbemLengthConst(whiteboard::LocalResourceId localResId);
 
-size_t writeToSbemBuffer(void *buffer, whiteboard::LocalResourceId localResId, const whiteboard::Value &data);
+size_t writeToSbemBuffer(void *buffer, size_t bufferLen, size_t startOffset, whiteboard::LocalResourceId localResId, const whiteboard::Value &data);
 
 size_t writeSbemItemDescriptor(uint16_t itemId, void *buffer);
 size_t writeSbemGroupDescriptor(uint16_t grpId, void *buffer);
@@ -59,3 +59,4 @@ uint16_t getSbemItemsCount();
 uint16_t getSbemGroupsCount();
 uint16_t getFirstSbemGroupId();
 
+#define BUFFER_INDEX (pos - buffer)
