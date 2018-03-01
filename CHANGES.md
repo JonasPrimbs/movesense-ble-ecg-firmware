@@ -3,7 +3,7 @@
 ###Whats new:###
 - New: /System/Memory API provider
 - New: /System/Debug API provider (experimental)
-- New: Peer provider (experimental)
+- New: BLE Peer and Scan API (experimental)
 - Datalogger and logbook improvements
 - Fix: Connectivity problems
 - Fix: HR stops sending data after Acc/Magn/Gyro subscription
