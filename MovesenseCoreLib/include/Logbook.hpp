@@ -20,6 +20,9 @@ All rights reserved.
 
 void getLogbookMemoryArea(uint32_t &offset, uint32_t &size);
 
+#define _LOGBOOK_BYTESTREAM_OVERHEAD_MAX (10)
+#define _LOGBOOK_STREAM_PART_SIZE (256)
+
 /** Class to provide log file names to loggers. */
 class Logbook : 
     private whiteboard::ResourceClient,
@@ -97,6 +100,10 @@ private:
     *   Close open, but unused logbookDb and open logbookDb when it is in use.
     */
     void updateLogbookState();
+    bool eraseFilesystem();
+
+    void handleGetDescriptors(const wb::Request& request, const wb::ParameterList& parameterList);
+    void handleGetData(const wb::Request& request, const wb::ParameterList& parameterList);
 
     LogbookDb &mLogbookDb;
 
@@ -114,6 +121,13 @@ private:
 
     uint32_t mCurrentDataChunkAddress;
     uint32_t mCurrentDataChunkOffset;
+    uint32_t mCurrentDataLength;
+    uint32_t mCurrentDataRead;
+
+    inline size_t freeBytesInBuffer(size_t currentPosInStm) const {return _LOGBOOK_STREAM_PART_SIZE - currentPosInStm;}
+    inline uint32_t dataBytesLeftToRead() const {return mCurrentDataLength - mCurrentDataRead;}
+    bool selectNextChunkInSession(uint16_t sessionId, ChunkStorage::Iterator &iter);
+
     uint16_t mDescriptorizedResourceIds[16];
 
     bool isResourceDescriptorized(wb::LocalResourceId resourceId, uint16_t & nextFreeIndex) const;

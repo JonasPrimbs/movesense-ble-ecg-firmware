@@ -1,3 +1,21 @@
+## Version 1.4.0.1312.8e3f8c14e60a ##
+
+###Whats new:###
+- New: /System/Memory API provider
+- New: /System/Debug API provider (experimental)
+- New: BLE Peer and Scan API (experimental)
+- Datalogger and logbook improvements
+- Fix: Connectivity problems
+- Fix: HR stops sending data after Acc/Magn/Gyro subscription
+- Fix: DataLogger does not record */Meas/IMU* -API's
+- Fix: Clock inaccuracy
+- Fix: Missing modules in /Info/App provider
+- Fix: Battery level is not changing long time
+
+###Known Bugs:###
+- The first package of Acc/Magn/Gyro can be corrupted for high sample rates
+- be sure to also check Bitbucket for any additional reported issues: [device library](https://bitbucket.org/suunto/movesense-device-lib/issues?status=new&status=open) and [mobile library](https://bitbucket.org/suunto/movesense-mobile-lib/issues?status=new&status=open)
+
 ## Version 1.3.0.1216.3d263fcc962d ##
 
 ###Important
