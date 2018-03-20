@@ -1,7 +1,7 @@
 ## Version 1.4.1.1355.e503f45eed71 ##
 
 ###Whats new:###
-- Fix: 
+- Fix: Hard fault handler failing due to wrong linker settings
 
 ###Known Bugs:###
 - The first package of Acc/Magn/Gyro can be corrupted for high sample rates
