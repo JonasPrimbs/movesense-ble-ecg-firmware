@@ -1,3 +1,15 @@
+## Version 1.4.1.1355.42 ##
+
+###Whats new:###
+- TBD
+
+###Known Bugs:###
+- TBD
+
+###Notes:###
+- REQUIRED: Use **GNU Toolchain for ARM v. 5.4 2016q3**
+- To create DFU package for OTA update, compile application with "ninja dfupkg"
+
 ## Version 1.4.0.1312.8e3f8c14e60a ##
 
 ###Whats new:###
