@@ -1,14 +1,11 @@
-## Version 1.4.1.1355.42 ##
+## Version 1.4.1.1355.e503f45eed71 ##
 
 ###Whats new:###
-- TBD
+- Fix: 
 
 ###Known Bugs:###
-- TBD
-
-###Notes:###
-- REQUIRED: Use **GNU Toolchain for ARM v. 5.4 2016q3**
-- To create DFU package for OTA update, compile application with "ninja dfupkg"
+- The first package of Acc/Magn/Gyro can be corrupted for high sample rates
+- be sure to also check Bitbucket for any additional reported issues: [device library](https://bitbucket.org/suunto/movesense-device-lib/issues?status=new&status=open) and [mobile library](https://bitbucket.org/suunto/movesense-mobile-lib/issues?status=new&status=open)
 
 ## Version 1.4.0.1312.8e3f8c14e60a ##
 
