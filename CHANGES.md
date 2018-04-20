@@ -28,10 +28,10 @@
 - Datalogger and logbook improvements
 - Fix: Connectivity problems
 - Fix: HR stops sending data after Acc/Magn/Gyro subscription
-- Fix: DataLogger does not record */Meas/IMU* -API's
+- Fix: DataLogger does not record */Meas/IMU* API's
 - Fix: Clock inaccuracy
 - Fix: Missing modules in /Info/App provider
-- Fix: Battery level is not changing long time
+- Fix: Battery level got stuck to lowest reported value
 
 ###Known Bugs:###
 - The first package of Acc/Magn/Gyro can be corrupted for high sample rates
