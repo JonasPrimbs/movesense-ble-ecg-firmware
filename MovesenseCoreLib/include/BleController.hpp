@@ -7,6 +7,8 @@
 #define DEFAULT_FAST_ADVERTISING_INTERVAL 40    // * 0.625ms
 #define DEFAULT_SLOW_ADVERTISING_INTERVAL 160   // * 0.625ms
 
+#define BLE_PASSKEY_LEN 6
+
 
 class BleController
 {
@@ -14,6 +16,15 @@ friend class BleGapService;
 friend class BleGattService;
 
 public:
+
+    typedef enum
+    {
+        BONDING_POLICY_ENABLED = 1,
+        BONDING_POLICY_DISABLED = 2,
+        BONDING_POLICY_ONCE = 3,
+        BONDING_POLICY_SAME_MAC = 4
+    } BondingPolicy;
+
     static BleController* spInstance;
     BleController();
 
@@ -22,6 +33,12 @@ public:
         const uint8_t * data, uint8_t size);
     const char * GetDeviceIdentifier();
     uint32_t GetCPUIdentifier();
+
+    // BLE security control
+    bool SetPassKey(const char * aPassKey);
+    void SetBondingSettings(BondingPolicy policy, uint16_t recovery_time);
+    BondingPolicy GetBondingPolicy();
+    uint16_t GetBondingRecoveryTime();
 
 protected:
     virtual void onBleInit() {};

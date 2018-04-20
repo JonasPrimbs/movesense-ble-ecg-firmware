@@ -1,3 +1,43 @@
+## Migration to 1.5.0
+
+### asyncSubscribe workaround
+
+Whiteboard is currently not caching parameters for the paths. If you are using:  
+
+```
+wb::Result result = asyncSubscribe(WB_RES::LOCAL::MEAS_ACC_SAMPLERATE::ID, AsyncRequestOptions(&remoteRequestId, 0, true), ACC_SAMPLERATE);
+```
+
+then you will receive all data from Accelerometer (also for higher freqences). To avoid this situation new method of subscribcion can be implemented:  
+
+```
+class ...{
+   ...
+   whiteboard::ResourceId	mMeasAccResourceId;
+}
+
+//-------------
+
+wb::Result result = getResource("Meas/Acc/104", mMeasAccResourceId);
+if (!wb::RETURN_OKC(result))
+{
+    return whiteboard::HTTP_CODE_BAD_REQUEST;
+}
+result = asyncSubscribe(mMeasAccResourceId, AsyncRequestOptions(&remoteRequestId, 0, true));
+```
+
+When resource is not longer used, resources should be released:
+
+```
+wb::Result result = asyncUnsubscribe(mMeasAccResourceId, NULL);
+if (!wb::RETURN_OKC(result))
+{
+	//Do something
+}
+isRunning = false;
+releaseResource(mMeasAccResourceId);
+```
+
 ## Migration to 1.3.0 - 1.4.0
 
 These versions contain the same updated bootloader and SoftDevice as version 1.2.0 - if you're updating from a version earlier than 1.2.0, please refer to section "Migration to 1.2.0" below as the same guidance applies to these versions as well.

@@ -9,7 +9,6 @@
 #include <math.h>
 
 #define ASSERT WB_DEBUG_ASSERT
-#define ACC_SAMPLERATE 104
 
 const char* const JumpCounterService::LAUNCHABLE_NAME = "JumpC";
 
@@ -125,39 +124,45 @@ whiteboard::Result JumpCounterService::startRunning(whiteboard::RequestId& remot
     mSamplesSince0GStart = 0;
 
     // Subscribe to LinearAcceleration resource (updates at ACC_SAMPLERATE Hz), when subscribe is done, we get callback
-    wb::Result result = asyncSubscribe(WB_RES::LOCAL::MEAS_ACC_SAMPLERATE::ID, AsyncRequestOptions(&remoteRequestId, 0, true), ACC_SAMPLERATE);
+    wb::Result result = getResource("Meas/Acc/104", mMeasAccResourceId);
+    if (!wb::RETURN_OKC(result))
+    {
+        return whiteboard::HTTP_CODE_BAD_REQUEST;
+    }
+    result = asyncSubscribe(mMeasAccResourceId, AsyncRequestOptions(&remoteRequestId, 0, true));
+
     if (!wb::RETURN_OKC(result))
     {
         DEBUGLOG("asyncSubscribe threw error: %u", result);
         return whiteboard::HTTP_CODE_BAD_REQUEST;
     }
     isRunning = true;
-
-    return whiteboard::HTTP_CODE_OK;
+    return whiteboard::HTTP_CODE_ACCEPTED;
 }
 
 whiteboard::Result JumpCounterService::stopRunning()
 {
     if (!isRunning) {
-        return whiteboard::HTTP_CODE_OK;
+        return whiteboard::HTTP_CODE_ACCEPTED;
     }
 
     DEBUGLOG("JumpCounterService::stopRunning()");
     if (isResourceSubscribed(WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_JUMPCOUNT::ID) == wb::HTTP_CODE_OK ||
         isResourceSubscribed(WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_LASTJUMPHEIGHT::ID) == wb::HTTP_CODE_OK) {
             DEBUGLOG("JumpCounterService::stopRunning() skipping. Subscribers still exist.");
-            return whiteboard::HTTP_CODE_OK;
+            return whiteboard::HTTP_CODE_ACCEPTED;
     }
 
     // Unsubscribe the LinearAcceleration resource, when unsubscribe is done, we get callback
-    wb::Result result = asyncUnsubscribe(WB_RES::LOCAL::MEAS_ACC_SAMPLERATE::ID, NULL, ACC_SAMPLERATE);
+    wb::Result result = asyncUnsubscribe(mMeasAccResourceId, NULL);
     if (!wb::RETURN_OKC(result))
     {
         DEBUGLOG("asyncUnsubscribe threw error: %u", result);
     }
     isRunning = false;
+    releaseResource(mMeasAccResourceId);
 
-    return whiteboard::HTTP_CODE_OK;
+    return whiteboard::HTTP_CODE_ACCEPTED;
 }
 
 void JumpCounterService::jumpFound(size_t nJumpSamples)
@@ -166,7 +171,7 @@ void JumpCounterService::jumpFound(size_t nJumpSamples)
 
     // Calc jump length
     // TODO: Add support for flexible samplerate
-    const float ONE_PER_SAMPLE_RATE = 1.0f / (float)ACC_SAMPLERATE;
+    const float ONE_PER_SAMPLE_RATE = 1.0f / (float)104;
     const float EARTH_G = 9.81f;
 
     float jumpDuration = (float)nJumpSamples * ONE_PER_SAMPLE_RATE;
@@ -191,9 +196,9 @@ void JumpCounterService::onNotify(whiteboard::ResourceId resourceId, const white
                                   const whiteboard::ParameterList& parameters)
 {
     // Confirm that it is the correct resource
-    switch (resourceId.getConstId())
+    switch (resourceId.localResourceId)
     {
-    case WB_RES::LOCAL::MEAS_ACC_SAMPLERATE::ID:
+    case WB_RES::LOCAL::MEAS_ACC_SAMPLERATE::LID:
     {
         const WB_RES::AccData& linearAccelerationValue =
             value.convertTo<const WB_RES::AccData&>();
@@ -259,13 +264,16 @@ void JumpCounterService::onSubscribe(const whiteboard::Request& request,
             whiteboard::RequestId remoteRequestId;
             whiteboard::Result result = startRunning(remoteRequestId);
 
-            if (!whiteboard::RETURN_OK(result))
+            if (result == whiteboard::HTTP_CODE_ACCEPTED)
             {
-                return returnResult(request, result);
+                bool queueResult = mOngoingRequests.put(remoteRequestId, request);
+                WB_ASSERT(queueResult);
+            }
+            else
+            {
+                return returnResult(request, whiteboard::HTTP_CODE_BAD_REQUEST);
             }
 
-            bool queueResult = mOngoingRequests.put(remoteRequestId, request);
-            WB_ASSERT(queueResult);
         }
         else{
             return returnResult(request, whiteboard::HTTP_CODE_OK);

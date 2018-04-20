@@ -113,6 +113,8 @@ private:
     whiteboard::Result startRunning(whiteboard::RequestId& remoteRequestId);
     whiteboard::Result stopRunning();
 
+    whiteboard::ResourceId	mMeasAccResourceId;
+
     whiteboard::RequestMap<2, void> mOngoingRequests; // For storing relations of incoming & outgoing requests
 
     bool isRunning;

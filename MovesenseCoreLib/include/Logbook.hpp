@@ -89,6 +89,8 @@ private:
 
     void onTimer(wb::TimerId timerId) OVERRIDE;
 
+    /** @see whiteboard::ResourceProvider::onRemoteWhiteboardDisconnected */
+    virtual void onRemoteWhiteboardDisconnected(whiteboard::WhiteboardId whiteboardId) OVERRIDE;
 private:
 
     ExtflashChunkStorage &mChunkStorage;
@@ -118,11 +120,13 @@ private:
 
     uint16_t mCurrentDescriptorItemIndex;
     uint16_t mCurrentDescriptorGroupIndex;
+    uint32_t mLastDescriptorReadPos;
 
     uint32_t mCurrentDataChunkAddress;
     uint32_t mCurrentDataChunkOffset;
     uint32_t mCurrentDataLength;
     uint32_t mCurrentDataRead;
+    uint32_t mLastDataReadPos;
 
     inline size_t freeBytesInBuffer(size_t currentPosInStm) const {return _LOGBOOK_STREAM_PART_SIZE - currentPosInStm;}
     inline uint32_t dataBytesLeftToRead() const {return mCurrentDataLength - mCurrentDataRead;}

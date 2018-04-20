@@ -22,10 +22,11 @@ struct StateChangeParams
 class StateSlot
 {
 public:
+    StateId id;
     StateOwner* owner;
     bool isActive;
 
-    StateSlot() : owner(nullptr), isActive(false) {}
+    StateSlot(StateId id) : id(id), owner(nullptr), isActive(false) {}
 };
 
 
@@ -65,51 +66,20 @@ public:
 
 private:
 
-    /** List of available event slots.
-        Slots defined here should match API spec from system/states.yaml
-        and be in sync with method getStateSlot() and forEachSlot().
-
-        When a new StateId item is defined in states.yaml, these steps should be made:
-        - add new entry in struct slots,
-        - add new case to switch inside getStateSlot(),
-        - add new function() call inside forEachSlot(). */
-    struct
-    {
-        StateSlot movement;
-        StateSlot batteryStatus;
-        StateSlot connector;
-
-    } slots;
-
+    StateSlot* const slots;
+    const uint8_t slotsCount;
 
     StateSlot* getStateSlot(const StateId& stateId)
     {
-        switch (stateId)
+        for (uint8_t i = 0; i < slotsCount; ++i)
         {
-        case StateId::MOVEMENT:
-            return &slots.movement;
-
-        case StateId::BATTERYSTATUS:
-            return &slots.batteryStatus;
-
-        case StateId::CONNECTOR:
-            return &slots.connector;
-
-        default:
-            return nullptr;
+            if (slots[i].id == stateId)
+            {
+                return &slots[i];
+            }
         }
+        return nullptr;
     }
-
-    typedef void (*StateSlotFunctor)(StateSlot* slot, const StateId& sid);
-
-    /** Used to perform action on every available slot. */
-    void forEachSlot(StateSlotFunctor function)
-    {
-        function(&slots.movement, StateId::MOVEMENT);
-        function(&slots.batteryStatus, StateId::BATTERYSTATUS);
-        function(&slots.connector, StateId::CONNECTOR);
-    }
-
 
     // singleton instance to allow loose coupling with StateOwners
     static StatesService* spInstance;
@@ -139,5 +109,4 @@ private:
     virtual void onClientUnavailable(whiteboard::ClientId clientId) OVERRIDE;
 
     void checkAndDeactivateSlots();
-
 };
