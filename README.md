@@ -1,12 +1,9 @@
 ## Announcements
+**(Mar 20th 2018) Important hotfix update 1.4.1 released**  
+We have fixed a critical error in sensor firmware which caused the sensor to get stuck in endless loop until battery was removed. Updating to this version is highly recommended!  
+
 **(Mar 1st 2018) Sensor firmware version 1.4.0 is out!**  
-New version contains the new APIs for debugging. Improves the connection stability. As usual, refer to [CHANGES.md](CHANGES.md) for more details. 
-
-**(Feb 1st 2018) Sensor firmware version 1.3.0 is out!**  
-Improvements in this version include the ability to subscribe to gear connector state change events, as well as new 3.11 version of the Whiteboard communication stack. As usual, refer to [CHANGES.md](CHANGES.md) for more details. 
-
-**(Jan 24th 2018) Sensor firmware version 1.2.0 is released!**  
-This version contains a new bootloader and an update to Nordic Semiconductor's SoftDevice which implements the Bluetooth stack in Movesense sensor. Please follow the installation instructions in [CHANGES.md](CHANGES.md) carefully.  
+Among other things, this version provides new APIs for sensor-side debugging and improvements to connection stability. As usual, refer to [CHANGES.md](CHANGES.md) for more details. 
 
 **Known issues**  
 Please refer to [CHANGES.md](CHANGES.md) for a list of known issues.
