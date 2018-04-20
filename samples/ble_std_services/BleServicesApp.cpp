@@ -93,7 +93,7 @@ void BleServicesApp::onNotify(whiteboard::ResourceId resourceId, const whiteboar
                                    const whiteboard::ParameterList& parameters)
 {
     // Heart rate notification
-    if (whiteboard::ResourceId::Value(resourceId) == WB_RES::LOCAL::MEAS_HR::ID)
+    if (resourceId.localResourceId == WB_RES::LOCAL::MEAS_HR::LID)
     {
         // Get average heart rate data
         uint16_t data = value.convertTo<const WB_RES::HRData&>().average;
@@ -104,7 +104,7 @@ void BleServicesApp::onNotify(whiteboard::ResourceId resourceId, const whiteboar
     }
 
     // WB routing table notification
-    if (whiteboard::ResourceId::Value(resourceId) == WB_RES::LOCAL::NET::ID)
+    if (resourceId.localResourceId == WB_RES::LOCAL::NET::LID)
     {
         // Get whiteborad routing table notification
         uint8_t data = WB_RES::LOCAL::NET::EVENT::ParameterListRef(parameters)

@@ -92,3 +92,10 @@ definitions:
     type: integer
     format: uint64
     x-unit: millisecond
+
+  MacAddress48:
+    type: string
+    description: IEEE 802 48-bit device MAC address
+    example: 00:14:22:01:23:45
+    minLength: 17
+    maxLength: 17

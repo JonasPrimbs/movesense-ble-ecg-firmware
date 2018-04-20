@@ -7,7 +7,7 @@
 
 namespace WB_RES {
 
-WB_STATIC_VERIFY(sizeof(Energy) == 6, SizeOfStructure_Energy_IsNotWhatExpected);
+WB_STATIC_VERIFY(sizeof(Energy) == 8, SizeOfStructure_Energy_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(Energy) == 2, AlignmentOfStructure_Energy_IsNotWhatExpected);
 
 

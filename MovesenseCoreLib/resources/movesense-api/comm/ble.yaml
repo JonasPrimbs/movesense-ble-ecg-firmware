@@ -17,11 +17,7 @@ paths:
       responses:
         200:
           description: Operation completed successfully.
-          schema:
-            type: string
-            example: 00-14-22-01-23-45
-            minLength: 17
-            maxLength: 17
+          $ref: 'types.yaml#/definitions/MacAddress48'
 
   /Comm/Ble/Adv:
     post:
@@ -123,6 +119,81 @@ paths:
         200:
           description: Operation completed successfully.
 
+  /Comm/Ble/Security/Bonds:
+    get:
+      description: |
+        Read the list of bonded BLE devices
+      responses:
+        200:
+          description: Operation completed successfully.
+          schema:
+            $ref: '#/definitions/BondList'
+    delete:
+      parameters:
+        - name: macAddr
+          description: |
+            MAC address of device to delete.
+          required: false
+          in: body
+          schema:
+            $ref: 'types.yaml#/definitions/MacAddress48'
+      responses:
+        200:
+          description: Operation completed successfully.
+        400:
+          description: Bad request - no device found.
+
+  /Comm/Ble/Security/Pin:
+    put:
+      description: |
+        Sets new pincode to authorise new bondings
+      parameters:
+        - name: pincode
+          description: |
+            6 char of pincode (usually only digits)
+          required: true
+          type: string
+          in: body
+          example: 123456
+          minLength: 6
+          maxLength: 6
+      responses:
+        200:
+          description: Operation completed successfully.
+          schema:
+            $ref: '#/definitions/BondList'
+    delete:
+      description: |
+        Turns of pin validation and enable just works pairing
+      responses:
+        200:
+          description: Operation completed successfully.
+
+  /Comm/Ble/Security/Settings:
+    put:
+      description: |
+        Request a change bonding policy
+      parameters:
+        - name: newSettings
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/BondingSettings'
+      responses:
+        200:
+          description: Settings changed successfully.
+        400:
+          description: Requested settings was not valid. Request was ignored.
+        501:
+          description: Requested settings are not implemented by the device.
+    get:
+      description: |
+        Read the current bonding settings
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/BondingSettings'
+
   /Comm/Ble/Scan/Subscription:
     post:
       description: |
@@ -168,10 +239,7 @@ definitions:
     properties:
       PeerAddr:
         description: Address of the peer in directed advertising. If not set, do broadcast advertising.
-        type: string
-        example: 00-14-22-01-23-45
-        minLength: 17
-        maxLength: 17
+        $ref: 'types.yaml#/definitions/MacAddress48'
 
   AdvState:
     type: object
@@ -183,10 +251,7 @@ definitions:
         type: boolean
       PeerAddr:
         description: Address of the peer in directed advertising. If not set, broadcast advertising active.
-        type: string
-        example: 00-14-22-01-23-45
-        minLength: 17
-        maxLength: 17
+        $ref: 'types.yaml#/definitions/MacAddress48'
 
   AdvSettings:
     type: object
@@ -231,10 +296,7 @@ definitions:
     properties:
       Address:
         description: Address of the peer
-        type: string
-        example: 00-14-22-01-23-45
-        minLength: 17
-        maxLength: 17
+        $ref: 'types.yaml#/definitions/MacAddress48'
       Name:
         description: Name of the peer
         type: string
@@ -285,7 +347,7 @@ definitions:
     properties:
       active:
         description: |
-          Whether to do an active scan. Active scan sends ScanRequest packet to discovered peers 
+          Whether to do an active scan. Active scan sends ScanRequest packet to discovered peers
           and receives ScanResponse packets. Passive scan only listens to Advertise packets.
         type: boolean
       timeout:
@@ -314,10 +376,7 @@ definitions:
     properties:
       address:
         description: Address of the peer
-        type: string
-        example: 00-14-22-01-23-45
-        minLength: 17
-        maxLength: 17
+        $ref: 'types.yaml#/definitions/MacAddress48'
       name:
         description: Name of the peer if found in the packet
         type: string
@@ -334,3 +393,67 @@ definitions:
           format: uint8
         minLength: 0
         maxLength: 31
+
+  BondEntry:
+    required:
+    - Address
+    properties:
+      Address:
+        description: MAC address of the bonded device
+        $ref: 'types.yaml#/definitions/MacAddress48'
+
+  PeerList:
+    required:
+    - ConnectedPeers
+    properties:
+      ConnectedPeers:
+        type: array
+        items:
+          $ref: '#/definitions/PeerEntry'
+
+  BondList:
+    required:
+    - BondedDevices
+    properties:
+      BondedDevices:
+        type: array
+        items:
+          $ref: '#/definitions/BondEntry'
+
+  BondingSettings:
+    type: object
+    required:
+    - Policy
+    - RecoveryTime
+    properties:
+      Policy:
+        $ref: '#/definitions/BondingPolicy'
+      RecoveryTime:
+        type: integer
+        format: int8
+        minimum: 0
+        maximum: 180
+        description: Time in seconds after restart when bonding is always enabled
+
+  BondingPolicy:
+    type: integer
+    format: uint8
+    enum:
+      - name: 'BondingEnabled'
+        description: |
+          Allow bonding with new device. New bondings delete old if necessary.
+          (Default value)
+        value: 0
+      - name: 'BondingDisabled'
+        description: |
+          Do not allow bond any devices other than those already bonded
+        value: 1
+      - name: 'BondingOnce'
+        description: |
+          Allow bonding with only one device. After bonding, the next devices
+          are blocked until the current bond is deleted or the recovery mode is entered.
+        value: 2
+      - name: 'BondingSameMac'
+        description: |
+          Like BondingOnce, but rebonding to device with same MAC address is allowed.
+        value: 3

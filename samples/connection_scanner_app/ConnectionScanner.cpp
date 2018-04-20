@@ -82,10 +82,10 @@ void ConnectionScanner::onNotify(whiteboard::ResourceId resourceId, const whiteb
     DEBUGLOG("ConnectionScanner::onNotify");
 
     // Confirm that it is the correct resource
-    switch (resourceId.getConstId())
+    switch (resourceId.localResourceId)
     {
 
-    case WB_RES::LOCAL::SYSTEM_STATES_STATEID::ID:
+    case WB_RES::LOCAL::SYSTEM_STATES_STATEID::LID:
     {
         const WB_RES::StateChange& stateChange = value.convertTo<const WB_RES::StateChange&>();
         if (stateChange.newState == 0)
@@ -99,7 +99,7 @@ void ConnectionScanner::onNotify(whiteboard::ResourceId resourceId, const whiteb
     }
     break;
 
-    case WB_RES::LOCAL::MEAS_HR::ID:
+    case WB_RES::LOCAL::MEAS_HR::LID:
     {
         mSamplesCounter++;
         DEBUGLOG("ConnectionScanner::onNotify, HRBelt connected (or noise)");
@@ -156,7 +156,26 @@ void ConnectionScanner::startRunning(void)
 {
     DEBUGLOG("ConnectionScanner::startRunning");
 
-    asyncSubscribe(WB_RES::LOCAL::SYSTEM_STATES_STATEID(), NULL, (int32_t)2); // 2 = Connector
+    whiteboard::Result result = getResource("System/States/2", mSystemStateResourceId); // 2 = Connector
+    if (result == wb::HTTP_CODE_OK)
+    {
+        asyncSubscribe(mSystemStateResourceId, NULL);
+    }
+    else {
+        DEBUGLOG("ConnectionScanner::startRunning ERROR");
+    }
+}
+
+void ConnectionScanner::stopRunning(void)
+{
+    DEBUGLOG("ConnectionScanner::stopRunning");
+
+    asyncUnsubscribe(mSystemStateResourceId, NULL);
+    whiteboard::Result result = releaseResource(mSystemStateResourceId); // 2 = Connector
+    if (result != wb::HTTP_CODE_OK)
+    {
+        DEBUGLOG("ConnectionScanner::stopRunning ERROR");
+    }
 }
 
 void ConnectionScanner::updateDetectionState(DetectionState newState)

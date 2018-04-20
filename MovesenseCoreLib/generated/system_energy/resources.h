@@ -50,6 +50,7 @@ struct WB_ALIGN(2) Energy
 
 	WB_ALIGN(1) uint8 percent;
 	WB_ALIGN(2) whiteboard::Optional< uint16 > milliVoltages;
+	WB_ALIGN(1) whiteboard::Optional< uint8 > internalResistance;
 };
 
 namespace LOCAL
