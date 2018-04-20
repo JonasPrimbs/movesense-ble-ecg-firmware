@@ -45,6 +45,7 @@ struct WB_ALIGN(4) AddressInfo;
 struct WB_ALIGN(4) HRData;
 
 typedef uint64 TimestampFromStartup;
+typedef const char* MacAddress48;
 
 struct WB_ALIGN(4) VersionInfo
 {

@@ -67,3 +67,7 @@ definitions:
         type: integer
         format: uint16
         x-unit: mV
+      InternalResistance:
+        description: Battery internal resistance in ohms.
+        type: integer
+        format: uint8

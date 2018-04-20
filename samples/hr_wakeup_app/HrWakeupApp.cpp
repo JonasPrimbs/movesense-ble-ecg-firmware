@@ -82,7 +82,7 @@ void HrWakeupApp::onNotify(whiteboard::ResourceId resourceId, const whiteboard::
                                    const whiteboard::ParameterList& parameters)
 {
     // Confirm that it is the correct resource
-    if (whiteboard::ResourceId::Value(resourceId) != WB_RES::LOCAL::NET::ID)
+    if (resourceId.localResourceId != WB_RES::LOCAL::NET::LID)
         return;
 
     // Get whiteborad routing table notification

@@ -93,8 +93,14 @@ whiteboard::Result AccelerometerSampleService::startRunning(whiteboard::RequestI
     mMaxAccelerationSq = FLT_MIN;
     mSamplesIncluded = 0;
 
-    // Subscribe to LinearAcceleration resource (updates at 13Hz), when subscribe is done, we get callback
-    wb::Result result = asyncSubscribe(WB_RES::LOCAL::MEAS_ACC_SAMPLERATE::ID, AsyncRequestOptions(&remoteRequestId, 0, true), SAMPLE_RATE);
+    wb::Result result = getResource("Meas/Acc/13", mMeasAccResourceId);
+    if (!wb::RETURN_OKC(result))
+    {
+        return result;
+    }
+
+    result = asyncSubscribe(mMeasAccResourceId, AsyncRequestOptions(&remoteRequestId, 0, true));
+
     if (!wb::RETURN_OKC(result))
     {
         DEBUGLOG("asyncSubscribe threw error: %u", result);
@@ -121,12 +127,14 @@ whiteboard::Result AccelerometerSampleService::stopRunning()
     DEBUGLOG("AccelerometerSampleService::stopRunning()");
 
     // Unsubscribe the LinearAcceleration resource, when unsubscribe is done, we get callback
-    wb::Result result = asyncUnsubscribe(WB_RES::LOCAL::MEAS_ACC_SAMPLERATE::ID, NULL, SAMPLE_RATE);
+    wb::Result result = asyncUnsubscribe(mMeasAccResourceId, NULL);
     if (!wb::RETURN_OKC(result))
     {
         DEBUGLOG("asyncUnsubscribe threw error: %u", result);
     }
     isRunning = false;
+    releaseResource(mMeasAccResourceId);
+
     return whiteboard::HTTP_CODE_OK;
 }
 
@@ -137,9 +145,9 @@ void AccelerometerSampleService::onNotify(whiteboard::ResourceId resourceId, con
     DEBUGLOG("onNotify() called.");
 
     // Confirm that it is the correct resource
-    switch (resourceId.getConstId())
+    switch (resourceId.localResourceId)
     {
-    case WB_RES::LOCAL::MEAS_ACC_SAMPLERATE::ID:
+    case WB_RES::LOCAL::MEAS_ACC_SAMPLERATE::LID:
     {
         const WB_RES::AccData& linearAccelerationValue =
             value.convertTo<const WB_RES::AccData&>();

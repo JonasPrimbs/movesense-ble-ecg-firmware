@@ -267,9 +267,9 @@ void SensorOutputService::onNotify(whiteboard::ResourceId resourceId,
                                    const whiteboard::ParameterList& parameters)
 {
     // Decide which sensor needs to be handled and verify its output
-    switch (resourceId.getConstId())
+    switch (resourceId.localResourceId)
     {
-    case WB_RES::LOCAL::MEAS_ACC_SAMPLERATE::ID:
+    case WB_RES::LOCAL::MEAS_ACC_SAMPLERATE::LID:
     {
         const WB_RES::AccData& currentSensorValue = value.convertTo<const WB_RES::AccData&>();
 
@@ -282,7 +282,7 @@ void SensorOutputService::onNotify(whiteboard::ResourceId resourceId,
     }
     break;
 
-    case WB_RES::LOCAL::MEAS_GYRO_SAMPLERATE::ID:
+    case WB_RES::LOCAL::MEAS_GYRO_SAMPLERATE::LID:
     {
         const WB_RES::GyroData& currentSensorValue = value.convertTo<const WB_RES::GyroData&>();
 
@@ -295,7 +295,7 @@ void SensorOutputService::onNotify(whiteboard::ResourceId resourceId,
     }
     break;
 
-    case WB_RES::LOCAL::MEAS_MAGN_SAMPLERATE::ID:
+    case WB_RES::LOCAL::MEAS_MAGN_SAMPLERATE::LID:
     {
         const WB_RES::MagnData& currentSensorValue = value.convertTo<const WB_RES::MagnData&>();
 

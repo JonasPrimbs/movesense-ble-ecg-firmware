@@ -88,7 +88,10 @@ private:
     virtual bool startModule() OVERRIDE;
 
     /** @see whiteboard::ILaunchableModule::stopModule */
-    virtual void stopModule() OVERRIDE { mModuleState = WB_RES::ModuleStateValues::STOPPED; }
+    virtual void stopModule() OVERRIDE { 
+        stopRunning();
+        mModuleState = WB_RES::ModuleStateValues::STOPPED;
+    }
 
 
     /**
@@ -120,6 +123,11 @@ private:
     void startRunning(void);
 
     /**
+     *  Init function
+     */
+    void stopRunning(void);
+
+    /**
     *	Function used to simplify the flow of the states and keep it in one place.
     *
     *	@param newState
@@ -135,6 +143,8 @@ private:
         mBlinkCount = times;
         mLedBlinkTimer = startTimer(BLINK_DELAY, false);
     }
+
+    whiteboard::ResourceId	mSystemStateResourceId;
 
     whiteboard::TimerId mLedBlinkTimer;
     whiteboard::TimerId mHRCheckOffTimer;

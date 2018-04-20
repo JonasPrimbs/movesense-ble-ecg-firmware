@@ -156,6 +156,15 @@ paths:
     get:
       description: |
         Read training log descriptors and stream the descriptor file.
+      parameters:
+        -
+          name: offset
+          in: query
+          description: |
+            The offset of the logbook data file where to continue reading.
+          required: false
+          type: integer
+          format: int32
       responses:
         100:
           description: |
@@ -179,6 +188,15 @@ paths:
         Read SBEM data from a log entry and stream it. The SBEM data
         may be either be uncompressed or compressed with Heatshrink.
         Uncompressed data can be detected by FOURCC 'SBEM' at beginning of data.
+      parameters:
+        -
+          name: offset
+          in: query
+          description: |
+            The offset of the logbook data file where to continue reading.
+          required: false
+          type: integer
+          format: int32
       responses:
         100:
           description: |

@@ -8,6 +8,7 @@
 #include <whiteboard/Initialization.h>
 #include "whiteboard/LaunchableModule.h"
 #include "common/compiler/genDef.h"
+#include "DebugMessageBuffer.hpp"
 
 #if __cplusplus
 extern "C" {
@@ -38,6 +39,7 @@ typedef void (*PreLaunchCallback)(void);
 extern PreLaunchCallback __preLaunchCallback;
 extern void WEAK __initAppInfoFields();
 extern void WEAK __logbookMemoryAreaOverride(uint32_t &offset, uint32_t &size);
+extern DebugMessageBuffer* WEAK __getDebugMessageBuffer();
 
 extern void getLogbookMemoryArea(uint32_t &offset, uint32_t &size);
 
@@ -98,10 +100,21 @@ extern const char* g_appInfo_company;
 // Movesense Communication types (must be defined in App.cpp)
 #define SERIAL_COMMUNICATION(enable) const bool g_enableSerialComm = (enable);
 #define BLE_COMMUNICATION(enable) const bool g_enableBLEComm = (enable);
+#define BLE_REQUIRE_BONDING(enable) const bool __requireBonding() { return (enable); }
 #define LOGBOOK_MEMORY_AREA(offset, size) \
 STATIC_VERIFY(((offset) & 0xff) == 0, Logbook_offset_must_be_multiple_of_256); \
 STATIC_VERIFY(((size) & 0xff) == 0, Logbook_size_must_be_multiple_of_256); \
 void __logbookMemoryAreaOverride(uint32_t &rOffset, uint32_t &rSize) {rOffset = (offset);rSize = (size);}
+
+template <size_t H, size_t B>
+DebugMessageBuffer* __allocateDebugMessageBuffer() {
+    DebugMessageBuffer* buf = static_cast<DebugMessageBuffer*>(memalloc(sizeof(StaticDebugMessageBuffer<H, B>)));
+    new (buf) StaticDebugMessageBuffer<H, B>;
+    return buf;
+}
+
+#define DEBUGSERVICE_BUFFER_SIZE(headers, bytes) \
+DebugMessageBuffer* __getDebugMessageBuffer() { return __allocateDebugMessageBuffer<headers, bytes>(); }
 
 // Movesense application info
 #define APPINFO_NAME(name) void __initAppInfoFields() {\

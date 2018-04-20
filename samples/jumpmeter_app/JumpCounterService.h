@@ -125,6 +125,7 @@ private:
     whiteboard::Result stopRunning();
 
     void jumpFound(size_t nJumpSamples);
+    whiteboard::ResourceId	mMeasAccResourceId;
 
     whiteboard::RequestMap<2, void> mOngoingRequests; // For storing relations of incoming & outgoing requests
 

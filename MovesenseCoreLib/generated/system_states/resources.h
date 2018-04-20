@@ -79,7 +79,7 @@ struct SYSTEM_STATES;
 
 struct SYSTEM_STATES_STATEID
 {
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 17664, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 17664;
 

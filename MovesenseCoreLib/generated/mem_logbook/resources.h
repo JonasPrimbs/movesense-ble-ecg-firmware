@@ -501,7 +501,17 @@ struct MEM_LOGBOOK_BYID_LOGID_DATA
 
 			typedef LOGID Parameter1;
 
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
+			struct OFFSET
+			{
+				static const whiteboard::ParameterIndex Index = 1;
+
+				typedef int32 Type;
+				typedef Type ConstReferenceType;
+			};
+
+			typedef OFFSET Parameter2;
+
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 2;
 		};
 
 		/** Reference wrapper for strongly typed parameter list for /Mem/Logbook/byId/{LogId}/Data */
@@ -536,6 +546,29 @@ struct MEM_LOGBOOK_BYID_LOGID_DATA
 				return mrParameterList[Parameters::LOGID::Index].convertTo<Parameters::LOGID::ConstReferenceType>();
 			}
 
+			/** Checks whether optional parameter OFFSET has a value
+			*
+			* @return A value indicating whether the parameter has a value
+			*/
+			inline bool hasOffset() const
+			{
+				if (mrParameterList.getNumberOfParameters() <= Parameters::OFFSET::Index)
+				{
+					return false;
+				}
+
+				return mrParameterList[Parameters::OFFSET::Index].getType() != whiteboard::WB_TYPE_NONE;
+			}
+
+			/** Gets OFFSET parameter value
+			*
+			* @return Current parameter value
+			*/
+			inline Parameters::OFFSET::ConstReferenceType getOffset() const
+			{
+				return mrParameterList[Parameters::OFFSET::Index].convertTo<Parameters::OFFSET::ConstReferenceType>();
+			}
+
 		private:
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
@@ -543,7 +576,8 @@ struct MEM_LOGBOOK_BYID_LOGID_DATA
 
 		/** Compile time type checking */
 		inline static void typeCheck(
-			Parameters::LOGID::ConstReferenceType)
+			Parameters::LOGID::ConstReferenceType,
+			const whiteboard::Api::OptionalParameter<Parameters::OFFSET::ConstReferenceType>& = whiteboard::NoType::NoValue)
 		{
 		}
 	};
@@ -572,7 +606,17 @@ struct MEM_LOGBOOK_BYID_LOGID_DESCRIPTORS
 
 			typedef LOGID Parameter1;
 
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
+			struct OFFSET
+			{
+				static const whiteboard::ParameterIndex Index = 1;
+
+				typedef int32 Type;
+				typedef Type ConstReferenceType;
+			};
+
+			typedef OFFSET Parameter2;
+
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 2;
 		};
 
 		/** Reference wrapper for strongly typed parameter list for /Mem/Logbook/byId/{LogId}/Descriptors */
@@ -607,6 +651,29 @@ struct MEM_LOGBOOK_BYID_LOGID_DESCRIPTORS
 				return mrParameterList[Parameters::LOGID::Index].convertTo<Parameters::LOGID::ConstReferenceType>();
 			}
 
+			/** Checks whether optional parameter OFFSET has a value
+			*
+			* @return A value indicating whether the parameter has a value
+			*/
+			inline bool hasOffset() const
+			{
+				if (mrParameterList.getNumberOfParameters() <= Parameters::OFFSET::Index)
+				{
+					return false;
+				}
+
+				return mrParameterList[Parameters::OFFSET::Index].getType() != whiteboard::WB_TYPE_NONE;
+			}
+
+			/** Gets OFFSET parameter value
+			*
+			* @return Current parameter value
+			*/
+			inline Parameters::OFFSET::ConstReferenceType getOffset() const
+			{
+				return mrParameterList[Parameters::OFFSET::Index].convertTo<Parameters::OFFSET::ConstReferenceType>();
+			}
+
 		private:
 			/** Reference to actual parameter list */
 			const whiteboard::ParameterList& mrParameterList;
@@ -614,7 +681,8 @@ struct MEM_LOGBOOK_BYID_LOGID_DESCRIPTORS
 
 		/** Compile time type checking */
 		inline static void typeCheck(
-			Parameters::LOGID::ConstReferenceType)
+			Parameters::LOGID::ConstReferenceType,
+			const whiteboard::Api::OptionalParameter<Parameters::OFFSET::ConstReferenceType>& = whiteboard::NoType::NoValue)
 		{
 		}
 	};

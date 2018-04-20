@@ -25,7 +25,7 @@ OPTIONAL_CORE_MODULE(BleStandardHRS, false)
 OPTIONAL_CORE_MODULE(BleNordicUART, false)
 
 APPINFO_NAME("Sample Connection Scanner");
-APPINFO_VERSION("1.0.0");
+APPINFO_VERSION("1.1.0");
 APPINFO_COMPANY("Movesense");
 
 SERIAL_COMMUNICATION(true) // Warning: enabling this feature will increase power consumption

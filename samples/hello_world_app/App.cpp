@@ -21,6 +21,7 @@ OPTIONAL_CORE_MODULE(EepromService, true)
 OPTIONAL_CORE_MODULE(BypassService, false)
 OPTIONAL_CORE_MODULE(SystemMemoryService, false)
 OPTIONAL_CORE_MODULE(DebugService, true)
+DEBUGSERVICE_BUFFER_SIZE(6, 120); // 6 lines, 120 characters total
 OPTIONAL_CORE_MODULE(BleStandardHRS, false)
 OPTIONAL_CORE_MODULE(BleNordicUART, false)
 
