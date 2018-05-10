@@ -1,3 +1,18 @@
+## Version 1.5.1.1516.59da9cbf7fca ##
+
+###Whats new:###
+- Bugfix: Increased power consumption after BLE disconnect
+- Bugfix: GearID subscription asserts on disconnect
+- Bugfix: Avoid AFE shutdown on Whiteboard disconnect when AFE is used as 1-Wire detector
+- Bugfix: DS24L65 is active after GET
+- Bugfix: Gear id cannot be read
+
+###Known Bugs:###
+- The first package of Acc/Magn/Gyro can be corrupted for high sample rates
+- Battery measurement returns wrong value
+- asyncSubscriptions with parameters get all data without filtration (Check migration file)
+- be sure to also check Bitbucket for any additional reported issues: [device library](https://bitbucket.org/suunto/movesense-device-lib/issues?status=new&status=open) and [mobile library](https://bitbucket.org/suunto/movesense-mobile-lib/issues?status=new&status=open)
+
 ## Version 1.5.0.1422.0e9d9cde6126 ##
 
 ###Whats new:###
@@ -7,6 +22,7 @@
 - Movesense logbook streams with offset param
 - New solution for battery measurement.
 - State movement based on the interrupt.
+- Experimental: Secure BLE
 - Bugfix: Second subscription for Meas/Hr not working
 - Bugfix: Recovery mode is not working
 - Bugfix: NRF port - fixed delayed and dropped BLE sends when multiple sends were attempted at the same time. 
