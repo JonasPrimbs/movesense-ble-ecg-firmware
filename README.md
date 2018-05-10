@@ -1,4 +1,7 @@
 ## Announcements
+**(May 10th 2018) Sensor firmware version 1.5.1 is out!**  
+The new version of the firmware has come with stability updates and power optimizations. 
+
 **(Apr 20th 2018) Sensor firmware version 1.5.0 is out!**  
 The new version of the firmware has come with new features and bug fixes. Updating to this version is highly recommended because of previus problems with rescue mode!
 
