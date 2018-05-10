@@ -13,11 +13,6 @@
 - asyncSubscriptions with parameters get all data without filtration (Check migration file)
 - be sure to also check Bitbucket for any additional reported issues: [device library](https://bitbucket.org/suunto/movesense-device-lib/issues?status=new&status=open) and [mobile library](https://bitbucket.org/suunto/movesense-mobile-lib/issues?status=new&status=open)
 
-
-###Notes:###
-- REQUIRED: Use **GNU Toolchain for ARM v. 5.4 2016q3**
-- To create DFU package for OTA update, compile application with "ninja dfupkg"
-
 ## Version 1.5.0.1422.0e9d9cde6126 ##
 
 ###Whats new:###
