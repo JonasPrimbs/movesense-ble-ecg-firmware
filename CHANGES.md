@@ -6,10 +6,12 @@
 - 20kB extra flash
 - HR filtering
 - Battery measurement improvements
+- Timestamp added to ECG data
 - Experimental: Custom GATT service
 - Experimental: DebugService storage (EEPROM)
 - Experimental: New system states (Free fall/Double tap/Tap)
-- BugFix: Battery and HRS BLE profile donâ€™t pass Bluetooth SIG tests
+- Bugfix: Leak of the GearID subscription
+- BugFix: Battery and HRS BLE profile don’t pass Bluetooth SIG tests
 - Bugfix: BLE scan does not return rssi
  
 ###Known Bugs:###
