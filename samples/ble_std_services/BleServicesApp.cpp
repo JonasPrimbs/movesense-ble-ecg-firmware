@@ -7,6 +7,7 @@
 #include "component_led/resources.h"
 #include "meas_hr/resources.h"
 #include "ui_ind/resources.h"
+#include "comm_ble/resources.h"
 #include "component_max3000x/resources.h"
 #include "system_mode/resources.h"
 #include "whiteboard/builtinTypes/UnknownStructure.h"
@@ -73,8 +74,8 @@ bool BleServicesApp::startModule()
 
     startShutdownTimer();
 
-    // Subscribe to Whiteboard routing table changes
-    asyncSubscribe(WB_RES::LOCAL::NET());
+    // Subscribe to BLE peers list changes
+    asyncSubscribe(WB_RES::LOCAL::COMM_BLE_PEERS());
 
     return true;
 }
@@ -96,22 +97,24 @@ void BleServicesApp::onNotify(whiteboard::ResourceId resourceId, const whiteboar
     if (resourceId.localResourceId == WB_RES::LOCAL::MEAS_HR::LID)
     {
         // Get average heart rate data
-        uint16_t data = value.convertTo<const WB_RES::HRData&>().average;
+        const WB_RES::HRData& hrdata = value.convertTo<const WB_RES::HRData&>();
+        uint16_t hr = hrdata.average;
 
-        DEBUGLOG("HRS update: %d", data);
-        send_ble_hr_measurement(data);
+        DEBUGLOG("HRS update: %d, rr_count: %d", hr, hrdata.rrData.size());
+        send_ble_hr_measurement(hr, &(hrdata.rrData[0]), hrdata.rrData.size());
         return;
     }
 
     // WB routing table notification
-    if (resourceId.localResourceId == WB_RES::LOCAL::NET::LID)
+    if (resourceId.localResourceId == WB_RES::LOCAL::COMM_BLE_PEERS::LID)
     {
         // Get whiteborad routing table notification
-        uint8_t data = WB_RES::LOCAL::NET::EVENT::ParameterListRef(parameters)
-            .getNotificationType();
+        uint8_t peerState = value.convertTo<const WB_RES::PeerChange&>()
+            .state;
+        DEBUGLOG("COMM_BLE_PEERS: peerState: %d", peerState);
 
-        // if there is whiteboard connection, stop timer
-        if (data == WB_RES::RoutingTableNotificationTypeValues::ROUTE_NOTIFICATION_NEW)
+        // if there is BLE connection, stop timer
+        if (peerState == WB_RES::PeerStateValues::CONNECTED)
         {
             stopShutdownTimer();
             mWbConnected = true;
@@ -119,7 +122,7 @@ void BleServicesApp::onNotify(whiteboard::ResourceId resourceId, const whiteboar
         }
 
         // if whiteboard connection lost, prepare to shutdown
-        if (data == WB_RES::RoutingTableNotificationTypeValues::ROUTE_NOTIFICATION_LOST)
+        if (peerState == WB_RES::PeerStateValues::DISCONNECTED)
         {
             mWbConnected = false;
             if (!mHrsEnabled)

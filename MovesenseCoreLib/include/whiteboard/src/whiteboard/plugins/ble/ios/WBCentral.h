@@ -86,7 +86,7 @@ typedef void (^WBCentralDidNotifyDisconnectPeripheralCallback)(NSUUID* uuid, BOO
  */
 - (void)writeData:(NSData*)data toPeripheralWithUUID:(NSUUID*)uuid completion:(WBPeripheralWriteOperationCallback)completion;
 
-- (NSArray *)retrieveCurrentlyPairedDevices;
+- (NSArray *)retrieveCurrentlyConnectedDevices;
 
 - (NSString *)parseDeviceSerialFromLocalName:(NSString*)localName;
 

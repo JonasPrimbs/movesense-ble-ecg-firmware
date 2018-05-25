@@ -29,8 +29,6 @@
         (static_cast<uint32>(executionContextId) << 4) | \
         (static_cast<uint32>(whiteboard::ID_INVALID_RESOURCE_INSTANCE)))
 
-#define WB_CALLER_CONTEXT whiteboard::ID_INVALID_EXECUTION_CONTEXT
-
 
 #include "../wb-resources/resources.h"
 #include "../movesense_types/resources.h"
@@ -158,9 +156,10 @@ struct WB_ALIGN(4) ScanResult
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14088;
 
 	WB_ALIGN(4) MacAddress48 address;
-	WB_ALIGN(4) whiteboard::Optional< whiteboard::WrapperFor32BitPointer<const char> > name;
 	WB_ALIGN(1) bool isScanResponse;
+	WB_ALIGN(1) int8 rssi;
 	WB_ALIGN(4) whiteboard::Array< uint8 > dataPacket;
+	WB_ALIGN(4) whiteboard::Optional< whiteboard::WrapperFor32BitPointer<const char> > name;
 };
 
 struct WB_ALIGN(4) BondEntry
@@ -191,7 +190,7 @@ struct WB_ALIGN(1) BondingSettings
 	WB_ALIGN(1) int8 recoveryTime;
 };
 
-namespace LOCAL
+namespace LOCAL 
 {
 
 struct ROOT;
@@ -953,6 +952,7 @@ struct COMM_BLE_SECURITY_SETTINGS
 };
 
 
-} // namespace LOCAL
+
+} // namespace LOCAL 
 
 } // namespace WB_RES

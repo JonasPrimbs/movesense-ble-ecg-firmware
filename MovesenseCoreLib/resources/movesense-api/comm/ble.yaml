@@ -372,18 +372,19 @@ definitions:
     required:
     - address
     - isScanResponse
+    - rssi
     - dataPacket
     properties:
       address:
         description: Address of the peer
         $ref: 'types.yaml#/definitions/MacAddress48'
-      name:
-        description: Name of the peer if found in the packet
-        type: string
-        example: Movesense 123456789
       isScanResponse:
         description: What kind of scan packet this is, Advertise [false] or ScanResponse [true]
         type: boolean
+      rssi:
+        type: integer
+        format: int8
+        description: RSSI (Signal strength) in dBm
       dataPacket:
         description: Advertising or ScanResponse packet content as byte array.
           See e.g. https://www.pubnub.com/blog/2015-04-14-building-android-beacon-android-ibeacon-tutorial-overview/
@@ -393,6 +394,10 @@ definitions:
           format: uint8
         minLength: 0
         maxLength: 31
+      name:
+        description: Name of the peer if found in the packet
+        type: string
+        example: Movesense 123456789
 
   BondEntry:
     required:

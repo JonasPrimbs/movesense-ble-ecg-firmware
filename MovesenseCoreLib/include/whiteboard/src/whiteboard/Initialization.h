@@ -57,6 +57,9 @@ struct Config
     /** Size of timer pool */
     Size timerPoolSize;
 
+    /** Size of timed DPC pool */
+    Size timedDpcPoolSize;
+
     /** Size of stream pool */
     PoolSize streamPoolSize;
 
@@ -140,6 +143,16 @@ WB_API void initialize(
 /** Shuts down whiteboard library
 */
 WB_API void shutdown();
+
+#ifdef WB_HAVE_CRASH_DUMP
+/** Log whiteboard state in system events when fatal assert or errorneous state is detected.
+ *
+ * @note Will disable interrupt handling and no scheduling occur while the operation is in progress.
+ * @note The operation is irreversible and will empty all event queues.
+ * @note Will NOT exit the application (needs to be done by the caller after crashDump returns).
+*/
+WB_API void crashDump();
+#endif
 
 /** Gets Whiteboard singleton instance. This is used by unit test helper classes
  * to access Whiteboard singleton without exposing its internal implementation.

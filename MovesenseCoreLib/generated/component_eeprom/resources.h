@@ -29,8 +29,6 @@
         (static_cast<uint32>(executionContextId) << 4) | \
         (static_cast<uint32>(whiteboard::ID_INVALID_RESOURCE_INSTANCE)))
 
-#define WB_CALLER_CONTEXT whiteboard::ID_INVALID_EXECUTION_CONTEXT
-
 
 #include "../wb-resources/resources.h"
 #include "../movesense_types/resources.h"
@@ -62,7 +60,7 @@ struct WB_ALIGN(4) EepromInfo
 	WB_ALIGN(4) uint32 size;
 };
 
-namespace LOCAL
+namespace LOCAL 
 {
 
 struct ROOT;
@@ -360,6 +358,7 @@ struct COMPONENT_EEPROM_EEPROMINDEX_INFO
 };
 
 
-} // namespace LOCAL
+
+} // namespace LOCAL 
 
 } // namespace WB_RES

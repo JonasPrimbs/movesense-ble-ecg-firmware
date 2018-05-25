@@ -30,7 +30,7 @@ inline void WbDebugSetThreadName(const char*) {}
 
 #if !defined(NDEBUG) || defined(WB_HAVE_DEBUGLOG_IN_RELEASE)
 #define WB_DEBUGLOG(format, ...) WbDebugOut(format, ##__VA_ARGS__)
-#define WB_DEBUGLOG_SIZE() WB_DEBUGLOG("[this]:%s: %uB", __FUNCTION__, sizeof(*this))
+#define WB_DEBUGLOG_SIZE() WB_DEBUGLOG("[this]:%s: %zuB", __FUNCTION__, sizeof(*this))
 
 #else
 #define WB_DEBUGLOG(format, ...) ((void)0)
@@ -38,11 +38,11 @@ inline void WbDebugSetThreadName(const char*) {}
 #endif
 
 // Assert implementation. Do not use this directly.
-#define _WB_ASSERT_IMPL(cond)                                                 \
-    if (!(cond))                                                              \
-    {                                                                         \
-        WbDebugOut("%s(%i): ASSERT FAILED! [%s]", __FILE__, __LINE__, #cond); \
-        WbAssertBreak();                                                      \
+#define _WB_ASSERT_IMPL(cond)                                                           \
+    if (!(cond))                                                                        \
+    {                                                                                   \
+        WbDebugOut("%s(%i): ASSERT FAILED! [%s]", WB_SOURCE_FILENAME, __LINE__, #cond); \
+        WbAssertBreak();                                                                \
     }
 
 // WB_DEBUG_ASSERTs will be removed from release builds
@@ -59,4 +59,4 @@ inline void WbDebugSetThreadName(const char*) {}
 #define WB_ASSERT(cond) ((void)0) 
 #endif
 
-#define WB_VERIFY(cond) ((cond) ? true : (WbDebugOut("%s(%i): VERIFY FAILED! [%s]", __FILE__, __LINE__, #cond), false))
+#define WB_VERIFY(cond) ((cond) ? true : (WbDebugOut("%s(%i): VERIFY FAILED! [%s]", WB_SOURCE_FILENAME, __LINE__, #cond), false))

@@ -36,10 +36,13 @@ paths:
     x-get
       
 definitions:
+
+#ifdef WB_HAVE_DEPRECATED_BYTE_STREAM
   ByteStream:
     x-fixedId: 13
     type: object
     x-builtin: true
+#endif
       
   Date:
     x-fixedId: 24

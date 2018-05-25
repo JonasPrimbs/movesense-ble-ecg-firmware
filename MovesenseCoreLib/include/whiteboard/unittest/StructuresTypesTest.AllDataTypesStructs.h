@@ -52,3 +52,12 @@ whiteboard::IStructureDataVisitor* getDynamicDeserializationValidator(const WB_R
 #ifdef WB_HAVE_ALIEN_STRUCTURES
 whiteboard::IStructureDataAccessor* getDynamicSerializationDataAccessor(const WB_RES::AllOptionalArrayPrimitiveAndBuiltinTypesInAStructure& rReferenceData);
 #endif
+
+void fillStructure(WB_RES::StructureWithHashString& rStructure);
+whiteboard::IDataTypeMetadataContainer* getMetadataContainer(const WB_RES::StructureWithHashString*);
+#ifdef WB_HAVE_UNKNOWN_STRUCTURES
+whiteboard::IStructureDataVisitor* getDynamicDeserializationValidator(const WB_RES::StructureWithHashString& rReferenceData);
+#endif
+#ifdef WB_HAVE_ALIEN_STRUCTURES
+whiteboard::IStructureDataAccessor* getDynamicSerializationDataAccessor(const WB_RES::StructureWithHashString& rReferenceData);
+#endif

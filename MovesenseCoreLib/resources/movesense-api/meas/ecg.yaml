@@ -80,9 +80,15 @@ definitions:
   ECGData:
     required:
       - Samples
+      - Timestamp
     properties:
       Samples:
         type: array
         items:
           type: integer
           format: int32
+      Timestamp:
+        description: Local relative timestamp of measurement.
+        type: integer
+        format: uint32
+        x-unit: millisecond

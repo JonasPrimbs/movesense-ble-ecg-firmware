@@ -359,7 +359,7 @@ public:
     * @param executionContextId Id of resource's execution context
     * @param parentId ID of the parent resource
     * @param operations List of operations
-    * @param pathParameterCount Number of path variables in the path
+    * @param pathParameterCount Number of path parameters in the path
     * @param pathParameterId Id of path parameter of current resource
     * @return Id of the added resource
     */

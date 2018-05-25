@@ -114,6 +114,9 @@ public:
     virtual Result addRoute(
         const char* address, const char* serialNumber, bool buddy, RoutingTableEntryHandle& rRouteHandle) = 0;
 
+    /** Constant that indicates infinite route lifetime */
+    static const WbTimestamp INFINITE_LIFETIME = 0;
+
     /** Adds new route to the routing table
     *
     * @param serialNumber Serial number of destination whiteboard

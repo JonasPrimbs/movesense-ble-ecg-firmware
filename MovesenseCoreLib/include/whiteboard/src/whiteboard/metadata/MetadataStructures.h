@@ -18,11 +18,8 @@ struct ResourceId;
 /** Type that can be used to identify resources of single whiteboard. */
 typedef uint16 LocalResourceId;
 
-/** Type that is used to identify clients of single whiteboard. */
-typedef uint16 LocalClientId;
-
-/** Type that is used to identify providers of single whiteboard. */
-typedef uint16 LocalProviderId;
+/** Type that is used to identify local clients and providers of single whiteboard. */
+typedef uint16 LocalEntityId;
 
 /** Type that is used to identify subscriptions of single whiteboard. */
 typedef uint16 LocalSubscriptionId;
@@ -75,6 +72,8 @@ enum ValueType
     WB_TYPE_STRING,
 
     WB_TYPE_BYTE_STREAM,
+    WB_TYPE_HASH_STRING,
+
     WB_TYPE_STRUCTURE,
 
     // Some book keeping
@@ -83,14 +82,11 @@ enum ValueType
 };
 
 /** Array of scalar type sizes */
-extern const uint8 SCALAR_VALUE_DATA_SIZE[(WB_TYPE_DOUBLE - WB_TYPE_NONE) + 1];
-
-const uint8 VALUE_DATA_SIZE[] =
-{
-    0, sizeof(bool), sizeof(int8), sizeof(uint8),
-    sizeof(int16), sizeof(uint16), sizeof(int32), sizeof(uint32),
-    sizeof(int64), sizeof(uint64), sizeof(float), sizeof(double)
-};
+#ifdef WB_HAVE_HASH_STRING
+extern const uint8 SCALAR_VALUE_DATA_SIZE[WB_TYPE_HASH_STRING + 1];
+#else
+extern const uint8 SCALAR_VALUE_DATA_SIZE[WB_TYPE_DOUBLE - WB_TYPE_NONE + 1];
+#endif
 
 /** Type of a request */
 enum RequestType
@@ -808,7 +804,7 @@ struct Path
     /** Execution context id */
     ExecutionContextId executionContextId : 4;
 
-    /** Number of path variables */
+    /** Number of path parameters */
     uint8 pathParameterCount : 3;
 
     /** Reserved for alignment */

@@ -29,8 +29,6 @@
         (static_cast<uint32>(executionContextId) << 4) | \
         (static_cast<uint32>(whiteboard::ID_INVALID_RESOURCE_INSTANCE)))
 
-#define WB_CALLER_CONTEXT whiteboard::ID_INVALID_EXECUTION_CONTEXT
-
 
 #include "../wb-resources/resources.h"
 
@@ -50,7 +48,7 @@ struct WB_ALIGN(4) FilterData
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> filterString;
 };
 
-namespace LOCAL
+namespace LOCAL 
 {
 
 struct ROOT;
@@ -212,6 +210,7 @@ struct DEVICE_SYSTEM_DEBUG_TAIL
 };
 
 
-} // namespace LOCAL
+
+} // namespace LOCAL 
 
 } // namespace WB_RES

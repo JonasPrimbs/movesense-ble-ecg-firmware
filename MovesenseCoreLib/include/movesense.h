@@ -8,7 +8,6 @@
 #include <whiteboard/Initialization.h>
 #include "whiteboard/LaunchableModule.h"
 #include "common/compiler/genDef.h"
-#include "DebugMessageBuffer.hpp"
 
 #if __cplusplus
 extern "C" {
@@ -39,7 +38,8 @@ typedef void (*PreLaunchCallback)(void);
 extern PreLaunchCallback __preLaunchCallback;
 extern void WEAK __initAppInfoFields();
 extern void WEAK __logbookMemoryAreaOverride(uint32_t &offset, uint32_t &size);
-extern DebugMessageBuffer* WEAK __getDebugMessageBuffer();
+extern void WEAK __debugStorageAreaOverride(bool &enable, uint32_t &offset, uint32_t &size);
+extern void WEAK __debugBufferConfigOverride(uint32_t &rHeaders, uint32_t &rBytes);
 
 extern void getLogbookMemoryArea(uint32_t &offset, uint32_t &size);
 
@@ -106,15 +106,16 @@ STATIC_VERIFY(((offset) & 0xff) == 0, Logbook_offset_must_be_multiple_of_256); \
 STATIC_VERIFY(((size) & 0xff) == 0, Logbook_size_must_be_multiple_of_256); \
 void __logbookMemoryAreaOverride(uint32_t &rOffset, uint32_t &rSize) {rOffset = (offset);rSize = (size);}
 
-template <size_t H, size_t B>
-DebugMessageBuffer* __allocateDebugMessageBuffer() {
-    DebugMessageBuffer* buf = static_cast<DebugMessageBuffer*>(memalloc(sizeof(StaticDebugMessageBuffer<H, B>)));
-    new (buf) StaticDebugMessageBuffer<H, B>;
-    return buf;
-}
+#define DEBUG_EEPROM_MEMORY_AREA(enable, offset, size) \
+STATIC_VERIFY(!(enable) || (((offset) & 0xff) == 0), Debug_storage_offset_must_be_multiple_of_256); \
+STATIC_VERIFY(!(enable) || ((size) >= 0x100), Debug_storage_size_must_be_at_least_256); \
+STATIC_VERIFY(!(enable) || ((size) < 0x10000), Debug_storage_size_must_be_less_than_65536); \
+void __debugStorageAreaOverride(bool& rEnable, uint32_t &rOffset, uint32_t &rSize) {rEnable = (enable);rOffset = (offset);rSize = (size);}
 
 #define DEBUGSERVICE_BUFFER_SIZE(headers, bytes) \
-DebugMessageBuffer* __getDebugMessageBuffer() { return __allocateDebugMessageBuffer<headers, bytes>(); }
+STATIC_VERIFY((headers) > 0, Debug_headers_storage_size_must_be_non_zero); \
+STATIC_VERIFY((bytes) > 0, Debug_messages_storage_size_must_be_non_zero); \
+void __debugBufferConfigOverride(uint32_t &rHeaders, uint32_t &rBytes) {rHeaders = (headers); rBytes = (bytes);}
 
 // Movesense application info
 #define APPINFO_NAME(name) void __initAppInfoFields() {\

@@ -174,34 +174,34 @@ public:
     typedef ResourceClient_AsyncRequestOptions AsyncRequestOptions;
 
     /**
-    *	Initializes a new instance of the ResourceClient class
+    * Initializes a new instance of the ResourceClient class
     *
-    *	@param pClientName Name of the client
-    *	@param executionContextId ID of client's execution context
+    * @param pClientName Name of the client
+    * @param executionContextId ID of client's execution context
     */
     ResourceClient(const char* pClientName, ExecutionContextId executionContextId);
 
     /**
-    *	Destructor
+    * Destructor
     */
     virtual ~ResourceClient();
 
     /**
-    *	Gets name of the client
+    * Gets name of the client
     */
     const char* getName() const;
 
     /**
-    *	Gets ID of the client
+    * Gets ID of the client
     *
-    *	@return ID of the registered client or ID_INVALID_CLIENT if client has not been registered
+    * @return ID of the registered client or ID_INVALID_CLIENT if client has not been registered
     */
     ClientId getId() const;
 
     /**
-    *	Gets local client ID of the client
+    * Gets local client ID of the client
     *
-    *	@return Local ID of the registered client or ID_INVALID_LOCAL_CLIENT if client has not been registered
+    * @return Local ID of the registered client or ID_INVALID_LOCAL_CLIENT if client has not been registered
     */
     LocalClientId getLocalClientId() const;
 
@@ -212,57 +212,69 @@ public:
     ExecutionContextId getExecutionContextId() const;
 
     /**
-    *	Resolves resource path. Only for local paths. Use asyncGetResource to resolve external paths.
-    *	@see whiteboard::ResourceClient::asyncGetResource .
+    * Resolves resource path. Only for local paths. Use asyncGetResource to resolve external paths.
     *
-    *	@param pFullPath Path of the resource
-    *	@param rResourceId On successful output contains the resource identifier
-    *	@param rOptions Optional. The options for the request
-    *	@return Result of the operation
+    * @see whiteboard::ResourceClient::asyncGetResource (check examples!).
+    *
+    * @param pFullPath Path of the resource
+    * @param rResourceId On successful output contains the resource identifier
+    * @param rOptions Optional. The options for the request
+    * @return Result of the operation
     */
     Result getResource(const char* pFullPath,
                        ResourceId& rResourceId,
                        const RequestOptions& rOptions = RequestOptions::Empty);
 
     /**
-    *	Performs asynchronous resource resolving
+    * Performs asynchronous resource resolving.
     *
-    *	@param pFullPath Path of the resource
-    *	@param rOptions Optional. The options for the request
-    *	@return Result of the operation
+    * Examples:
+    *
+    * "/MyPath/SubPath" (standard path)
+    * "/mypath/subpath" (path in lower case)
+    * "/Log/-1/Summary" (Path containing path parameter "/Log/{Index}/Summary" )
+    * "/Activity/AutoLap/Count" (Path containing enum path parameter "Activity/{Window}/Count")
+    * "/Activity/2/Count" (Path containing enum path parameter "Activity/{Window}/Count" - enum value used instead of the name)
+    * "/app/weatherapp/version" (Path containing HashString path parameter /App/{AppName}/Version - the string used)
+    * "/app/0x275a3a38/version" (Path containing HashString path parameter /App/{AppName}/Version - the hex hash value used)
+    * "/app/660224568/version" (Path containing HashString path parameter /App/{AppName}/Version - the dec hash value used)
+    *
+    * @param pFullPath Path of the resource
+    * @param rOptions Optional. The options for the request
+    * @return Result of the operation
     */
     Result asyncGetResource(const char* pFullPath, const AsyncRequestOptions& rOptions = AsyncRequestOptions::Empty);
 
     /**
-    *	Performs resource release. Release is intented to indicate to the provider's whiteboard, that this client does not use the
-    *	resource anymore. Only for local paths, use asyncReleaseResource for external resourceIds. 
-    *	@see whiteboard::ResourceClient::asyncReleaseResource
+    * Performs resource release. Release is intented to indicate to the provider's whiteboard, that this client does not use the
+    * resource anymore. Only for local paths, use asyncReleaseResource for external resourceIds. 
+    * @see whiteboard::ResourceClient::asyncReleaseResource
     *
-    *	@param resourceId ID of the associated resource
-    *	@param rOptions Optional. The options for the request
-    *	@return Result of the operation
+    * @param resourceId ID of the associated resource
+    * @param rOptions Optional. The options for the request
+    * @return Result of the operation
     */
     Result releaseResource(ResourceId resourceId, const RequestOptions& rOptions = RequestOptions::Empty);
 
     /**
-    *	Performs asynchronous resource release. Release is intented to indicate to the provider's whiteboard, that this
+    * Performs asynchronous resource release. Release is intented to indicate to the provider's whiteboard, that this
     *   client does not use the resource anymore.
     *
-    *	@param resourceId ID of the associated resource
-    *	@param rOptions Optional. The options for the request
-    *	@return Result of the operation
+    * @param resourceId ID of the associated resource
+    * @param rOptions Optional. The options for the request
+    * @return Result of the operation
     */
     Result asyncReleaseResource(ResourceId resourceId, const AsyncRequestOptions& rOptions = AsyncRequestOptions::Empty);
 
     /**
-    *	Performs asynchronous GET request.
+    * Performs asynchronous GET request.
     *
-    *	@tparam P1 .. P8 Optional. Request parameter native types
+    * @tparam P1 .. P8 Optional. Request parameter native types
     *
-    *	@param resourceId ID of the associated resource
-    *	@param rOptions Optional. The options for the request
-    *	@param rP1 .. rP8 Optional. List of request parameters
-    *	@return Result of the operation
+    * @param resourceId ID of the associated resource
+    * @param rOptions Optional. The options for the request
+    * @param rP1 .. rP8 Optional. List of request parameters
+    * @return Result of the operation
     */
     template <typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
     inline Result asyncGet(
@@ -278,14 +290,14 @@ public:
         const P8& rP8);
 
     /**
-    *	Performs asynchronous PUT request.
+    * Performs asynchronous PUT request.
     *
-    *	@tparam P1 .. P8 Optional. Request parameter native types
+    * @tparam P1 .. P8 Optional. Request parameter native types
     *
-    *	@param resourceId ID of the associated resource
-    *	@param rOptions Optional. The options for the request
-    *	@param rP1 .. rP8 Optional. List of request parameters
-    *	@return Result of the operation
+    * @param resourceId ID of the associated resource
+    * @param rOptions Optional. The options for the request
+    * @param rP1 .. rP8 Optional. List of request parameters
+    * @return Result of the operation
     */
     template <typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
     inline Result asyncPut(
@@ -301,14 +313,14 @@ public:
         const P8& rP8);
 
     /**
-    *	Performs asynchronous POST request.
+    * Performs asynchronous POST request.
     *
-    *	@tparam P1 .. P8 Optional. Request parameter native types
+    * @tparam P1 .. P8 Optional. Request parameter native types
     *
-    *	@param resourceId ID of the associated resource
-    *	@param rOptions Optional. The options for the request
-    *	@param rP1 .. rP8 Optional. List of request parameters
-    *	@return Result of the operation
+    * @param resourceId ID of the associated resource
+    * @param rOptions Optional. The options for the request
+    * @param rP1 .. rP8 Optional. List of request parameters
+    * @return Result of the operation
     */
     template <typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
     inline Result asyncPost(
@@ -324,14 +336,14 @@ public:
         const P8& rP8);
 
     /**
-    *	Performs asynchronous DELETE request.
+    * Performs asynchronous DELETE request.
     *
-    *	@tparam P1 .. P8 Optional. Request parameter native types
+    * @tparam P1 .. P8 Optional. Request parameter native types
     *
-    *	@param resourceId ID of the associated resource
-    *	@param rOptions Optional. The options for the request
-    *	@param rP1 .. rP8 Optional. List of request parameters
-    *	@return Result of the operation
+    * @param resourceId ID of the associated resource
+    * @param rOptions Optional. The options for the request
+    * @param rP1 .. rP8 Optional. List of request parameters
+    * @return Result of the operation
     */
     template <typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
     inline Result asyncDelete(
@@ -347,14 +359,71 @@ public:
         const P8& rP8);
 
     /**
-    *	Performs asynchronous SUBSCRIBE request.
+    * Performs asynchronous SUBSCRIBE request.
     *
-    *	@tparam P1 .. P8 Optional. Request parameter native types
+    * @tparam P1 .. P8 Optional. Request parameter native types
+    * 
+    * @param resourceId ID of the associated resource
+    * @param rOptions Optional. The options for the request
+    * @param rP1 .. rP8 Optional. List of request parameters
+    * @return Result of the operation
+    * 
+    * @note: If resource path has path parameters, there are two ways to work with the path parameters:
+    * 1) Through calling asyncGetResource and acquiring a resource instance that is passed to this call.
+    * This way the path parameters can be omitted from this call. However after use the client shall call 
+    * asyncReleaseResource to release the resource instance from Whiteboard. 
+    * @see whiteboard::ResourceClient::asyncGetResource
+    * @see whiteboard::ResourceClient::asyncReleaseResource
     *
-    *	@param resourceId ID of the associated resource
-    *	@param rOptions Optional. The options for the request
-    *	@param rP1 .. rP8 Optional. List of request parameters
-    *	@return Result of the operation
+    * 2) Adding the path parameters to the parameter list of this call. Then the resource instance is automatically
+    * allocated during this call and released when client unsubscribes. The path parameters shall be before the
+    * request parameters, in the order they appear in the path.
+    *
+    * @note: Resource path that contains path parameters has special charasteristics:
+    * If path parameters are specified to asyncSubscribe directly or getResource has been used to get resourceID, 
+    * client will receive notifications only for those path parameters. Otherwise (asyncSubscribe with zero path 
+    * parameters) client will receive all notifications.
+    *
+    * @note: If there is path parameter and optional normal int parameter and asyncSubscribe is called with one int 
+    * parameter (resourceId does not have instance), the parameter is assumed to be the path parameter.
+    *
+    * @code:
+    *    //  ***** Subscribe / unsubscribe with getResource / releaseResource  *****
+    *
+    *    wb::ResourceId acc50HzResourceId;
+    *    if (getResource("Meas/Acc/50", acc50HzResourceId) == wb::HTTP_CODE_OK)
+    *    {
+    *        asyncSubscribe(acc50HzResourceId);
+    *        //...
+    *        asyncUnsubscribe(acc50HzResourceId);
+    *        releaseResource(acc50HzResourceId);
+    *    }
+    *
+    *    // ***** Subscribe / unsubscribe implicitly: *****
+    *
+    *    //  ***** Option1:
+    *
+    *    // The path parameter given in parameterlist --> implicitly added to path parameter cache
+    *    asyncSubscribe(WB_RES::LOCAL::MEAS_ACC_SAMPLINGRATE::ID, wb::ResourceClient::AsyncRequestOptions::Empty, 50);
+    *
+    *    // The path parameter given in parameterlist --> implicitly removed from cache
+    *    asyncUnsubscribe(WB_RES::LOCAL::MEAS_ACC_SAMPLINGRATE::ID, wb::ResourceClient::AsyncRequestOptions::Empty, 50);
+    *
+    *    //  ***** Option2:
+    *
+    *    // The path parameter given in parameterlist --> implicitly added to path parameter cache
+    *    asyncSubscribe(WB_RES::LOCAL::MEAS_ACC_SAMPLINGRATE::ID, wb::ResourceClient::AsyncRequestOptions::Empty, 50);
+    *
+    *    // Also using the returned resourceId with cache instance Id possible, removed from cache
+    *    asyncUnsubscribe(returnedResourceId);
+    *
+    *    // ***** Option3, removing all path subscriptions with single call:
+    *
+    *    asyncSubscribe(WB_RES::LOCAL::MEAS_ACC_SAMPLINGRATE::ID, wb::ResourceClient::AsyncRequestOptions::Empty, 50);
+    *    asyncSubscribe(WB_RES::LOCAL::MEAS_ACC_SAMPLINGRATE::ID, wb::ResourceClient::AsyncRequestOptions::Empty, 100);
+    *    // No path parameters or cache instance in ID removes all
+    *    asyncUnsubscribe(WB_RES::LOCAL::MEAS_ACC_SAMPLINGRATE::ID);
+    * @endcode:
     */
     template <typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
     inline Result asyncSubscribe(
@@ -370,14 +439,19 @@ public:
         const P8& rP8);
 
     /**
-    *	Performs asynchronous UNSUBSCRIBE request.
+    * Performs asynchronous UNSUBSCRIBE request.
     *
-    *	@tparam P1 .. P8 Optional. Request parameter native types
+    * @tparam P1 .. P8 Optional. Request parameter native types
     *
-    *	@param resourceId ID of the associated resource
-    *	@param rOptions Optional. The options for the request
-    *	@param rP1 .. rP8 Optional. List of request parameters
-    *	@return Result of the operation
+    * @param resourceId ID of the associated resource
+    * @param rOptions Optional. The options for the request
+    * @param rP1 .. rP8 Optional. List of request parameters
+    * @return Result of the operation
+    *
+    * @note: If unsubscribe to path parameter path is done using the generated resourceID only ( WB_RES::LOCAL::Path::ID
+    * no parameters), all subscriptions for that path parameter path are unsubscribed.
+    *
+    * @see documentation of whiteboard::ResourceClient::asyncSubscribe to see alternative ways to perform subscribe / unsubscribe
     */
     template <typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
     inline Result asyncUnsubscribe(
@@ -401,6 +475,8 @@ public:
     *   @note This function asserts if asynchronous dispatch fails or
     *         if any synchronous (same event thread) subscriptions fail.
     *
+    *  @note This function cannot be used to subscribe a path that contains path parameters.
+    *
     *   @param numberOfResources Number of resources to subscribe
     *   @param pResourceIds Array of resources to subscribe
     *   @param isCriticalSubscription A value indicating whether subscriptions are critical
@@ -414,6 +490,8 @@ public:
     *
     *   @note This function asserts if asynchronous dispatch fails or
     *         if any synchronous (same event thread) subscriptions fail.
+    *
+    *   @note This function cannot be used to subscribe a path that contains path parameters.
     *
     *   @param rResourceIds Array of resources to subscribe
     *   @param isCriticalSubscription A value indicating whether subscriptions are critical
@@ -431,6 +509,8 @@ public:
     *
     *   @note This function asserts if asynchronous dispatch fails or
     *         if any synchronous (same event thread) subscriptions fail.
+    *
+    *   @note This function cannot be used to subscribe a path that contains path parameters.
     *
     *   @param localResourceId Resources to subscribe
     *   @param isCriticalSubscription A value indicating whether subscriptions are critical
@@ -486,7 +566,7 @@ public:
     }
 
     /**
-    *	Starts a continuous timer with given period. Override whiteboard::ResourceClient::onTimer to handle timer notifications.
+    * Starts a continuous timer with given period. Override whiteboard::ResourceClient::onTimer to handle timer notifications.
     *
     *   Note: If previous timer message has not been processed, for example due to execution context blocking on long operation -
     *   and short interval continuous timer is in use, the timer messages might be filtered out to prevent flooding the message 
@@ -494,13 +574,13 @@ public:
     *
     *   Note: Starting a timer from interrupt is not supported.
     *
-    *	@param periodMs Period in milliseconds how often the timer should fire.
-    *	@param isContinous If true, continuous timer, else single shot.
+    * @param periodMs Period in milliseconds how often the timer should fire.
+    * @param isContinous If true, continuous timer, else single shot.
     *
-    *	@return ID of the started timer or ID_INVALID_TIMER, if starting a new timer fails (WB_MAX_NUMBER_OF_CLIENT_TIMERS is
+    * @return ID of the started timer or ID_INVALID_TIMER, if starting a new timer fails (WB_MAX_NUMBER_OF_CLIENT_TIMERS is
     *   exceeded).
     *
-    *	@see whiteboard::ResourceClient::onTimer
+    * @see whiteboard::ResourceClient::onTimer
     */
     TimerId startTimer(size_t periodMs, bool isContinuous = false);
 
@@ -511,38 +591,38 @@ public:
     *   and hence the first time might fire in period less than the new period.
     *
     *   @param timerId Id of the timer that is running
-    *	@param periodMs New period in milliseconds how often the timer should fire.
+    * @param periodMs New period in milliseconds how often the timer should fire.
     *
-    *	@see whiteboard::ResourceClient::onTimer
+    * @see whiteboard::ResourceClient::onTimer
     */
     bool rescheduleTimer(TimerId timerId, size_t periodMs);
 
     /**
-    *	Stops a timer started with startTimer. No notifications of the given timer are received after this call returns.
+    * Stops a timer started with startTimer. No notifications of the given timer are received after this call returns.
     *
     *   Note: In case of continuous timer, a notification might be received after the stop if the stop is called from
     *   another thread than the clients execution context. Hence using timer start / stop from another thread is discouraged.
     *
     *   Note: Stopping a timer from interrupt is not supported.
     *
-    *	@param timerId Id of the timer to stop
+    * @param timerId Id of the timer to stop
     *
-    *	@return true on success, false if timer was already stopped or this provider did not own the timer, or if id was illegal.
+    * @return true on success, false if timer was already stopped or this provider did not own the timer, or if id was illegal.
     *
-    *	@see whiteboard::ResourceClient::startTimer
+    * @see whiteboard::ResourceClient::startTimer
     */
     bool stopTimer(TimerId timerId);
 
     /**
     *   This unsafe method is only for adapting other interfaces on top of Whiteboard!
     *
-    *	Performs asynchronous request.
+    * Performs asynchronous request.
     *
-    *	@param resourceId ID of the associated resource
-    *	@param requestType Type of the request
-    *	@param rOptions Options for this async operation, @see whiteboard::ResourceClient::AsyncRequestOptions
-    *	@param rParameters List of request parameters
-    *	@return Result of the operation
+    * @param resourceId ID of the associated resource
+    * @param requestType Type of the request
+    * @param rOptions Options for this async operation, @see whiteboard::ResourceClient::AsyncRequestOptions
+    * @param rParameters List of request parameters
+    * @return Result of the operation
     */
     WB_FORCE_INLINE
     Result WB_FORCE_INLINE_ATTRIBUTE asyncRequestVariant(
@@ -567,7 +647,7 @@ public:
     *   @param pWhiteboard Optional parameter to select mockup WB instance instead of default WB
     *   @return HTTP_CODE_NOT_FOUND returned if client not found, otherwise HTTP_CODE_OK
     */
-    static Result setRequestHooks(const LocalClientId& rClientId,
+    static Result setRequestHooks(const LocalClientId rClientId,
                                   const RequestHookDef* pRequestHooks,
                                   const Whiteboard* pWhiteboard = NULL);
 
@@ -606,8 +686,11 @@ protected:
 protected:
     /** These functions are called only by Whiteboard */
     friend class Whiteboard;
+    friend class TimerPool;
 
 #if WB_UNITTEST_BUILD
+    friend class TestClientBase;
+
     /** Gets the associated whiteboard instance
     *
     * @return Whiteboard instance
@@ -622,81 +705,122 @@ protected:
 #endif
 
     /**
-    *	Callback for asynchronous resource requests
+    * Callback for asynchronous resource requests
     *
-    *	@param requestId ID of the request
-    *	@param resourceId Successful request contains ID of the resource
-    *	@param resultCode Result code of the request
+    * @param requestId ID of the request
+    * @param resourceId Successful request contains ID of the resource
+    * @param resultCode Result code of the request
     */
     virtual void onGetResourceResult(RequestId requestId, ResourceId resourceId, Result resultCode);
 
     /**
-    *	Callback for asynchronous resource requests
+    * Callback for asynchronous resource requests
     *
-    *	@param requestId ID of the request
-    *	@param resourceId Successful request contains ID of the resource
-    *	@param resultCode Result code of the request
+    * @param requestId ID of the request
+    * @param resourceId Successful request contains ID of the resource
+    * @param resultCode Result code of the request
     */
     virtual void onReleaseResourceResult(RequestId requestId, ResourceId resourceId, Result resultCode);
 
     /**
-    *	Callback for asynchronous resource GET requests
+    * Callback for asynchronous resource GET requests
     *
-    *	@param requestId ID of the request
-    *	@param resourceId Successful request contains ID of the resource
-    *	@param resultCode Result code of the request
-    *	@param rResultData Successful result contains the request result
+    * @param requestId ID of the request
+    * @param resourceId Successful request contains ID of the resource
+    * @param resultCode Result code of the request
+    * @param rResultData Successful result contains the request result
     */
     virtual void onGetResult(RequestId requestId, ResourceId resourceId, Result resultCode, const Value& rResultData);
 
     /**
-    *	Callback for asynchronous resource PUT requests
+    * Callback for asynchronous resource PUT requests
     *
-    *	@param requestId ID of the request
-    *	@param resourceId Successful request contains ID of the resource
-    *	@param resultCode Result code of the request
-    *	@param rResultData Successful result contains the request result
+    * @param requestId ID of the request
+    * @param resourceId Successful request contains ID of the resource
+    * @param resultCode Result code of the request
+    * @param rResultData Successful result contains the request result
     */
     virtual void onPutResult(RequestId requestId, ResourceId resourceId, Result resultCode, const Value& rResultData);
 
     /**
-    *	Callback for asynchronous SUBSCRIBE requests
+    * Callback for asynchronous SUBSCRIBE requests
     *
-    *	@param requestId ID of the request
-    *	@param resourceId Successful request contains ID of the resource
-    *	@param resultCode Result code of the request
-    *	@param rResultData Successful result contains the request result
+    * @param requestId ID of the request
+    * @param resourceId Successful request contains ID of the resource
+    * @param resultCode Result code of the request
+    * @param rResultData Successful result contains the request result
     */
     virtual void onSubscribeResult(RequestId requestId, ResourceId resourceId, Result resultCode, const Value& rResultData);
 
     /**
-    *	Callback for asynchronous UNSUBSCRIBE requests
+    * Callback for asynchronous UNSUBSCRIBE requests
     *
-    *	@param requestId ID of the request
-    *	@param resourceId Successful request contains ID of the resource
-    *	@param resultCode Result code of the request
-    *	@param rResultData Successful result contains the request result
+    * @param requestId ID of the request
+    * @param resourceId Successful request contains ID of the resource
+    * @param resultCode Result code of the request
+    * @param rResultData Successful result contains the request result
     */
     virtual void onUnsubscribeResult(RequestId requestId, ResourceId resourceId, Result resultCode, const Value& rResultData);
 
     /**
-    *	Callback for resource notifications.
+    * Callback for resource notifications.
     *
-    *	@param resourceId Resource id associated with the update
-    *	@param rValue Current value of the resource
-    *	@param rParameters Notification parameters
+    * @param resourceId Resource id associated with the update
+    * @param rValue Current value of the resource
+    * @param rParameters Notification parameters
     */
     virtual void onNotify(ResourceId resourceId, const Value& rValue, const ParameterList& rParameters);
 
     /**
-    *	Callback for timer notifications.
+    * Callback for timer notifications.
     *
-    *	@param timerId ID of the timer that has expired.
+    * @param timerId ID of the timer that has expired.
     *
-    *	@see whiteboard::ResourceClient::startTimer
-    *	@see whiteboard::ResourceClient::stopTimer
+    * @see whiteboard::ResourceClient::startTimer
+    * @see whiteboard::ResourceClient::stopTimer
     */
     virtual void onTimer(TimerId timerId);
+
+#ifdef WB_HAVE_TIMED_DPC
+    /**
+    *   Queue an low priority timed DPC for the given timestamp. A timed DPC is freed upon callback execution
+    *   if the onTimedDpc(...) implementation returns false, in this case no cancellation is necessary.
+    *
+    *   @param dueTime The time when the ::onTimedDpc callback is to be executed. Used as identification.
+    *   @param isIsr True is this method is called from an interrupt service routine.
+    *   @return A valid TimedDpcId value if successful, ID_INVALID_TIMED_DPC if unsuccessful.
+    */
+    TimedDpcId queueTimedDpc(WbTimestamp dueTime, bool isIsr = false);
+
+    /**
+    *   Cancel a timed DPC.
+    *
+    *   @param timedDpcId ID of the timed DPC.
+    *   @param isIsr True is this method is called from an interrupt service routine.
+    *   @return HTTP_CODE_OK if successful.
+    *           HTTP_CODE_NOT_FOUND if a DPC with given stamp was not found for the entity ID.
+    *           HTTP_CODE_RANGE_NOT_SATISFIABLE if given timed DPC id is out of bounds.
+    */
+    Result cancelTimedDpc(const TimedDpcId timedDpcId, bool isIsr = false);
+
+    /**
+    *   Cancel all timed DPCs queued by the resource client.
+    *
+    *   @param isIsr True is this method is called from an interrupt service routine.
+    *   @return Returns the amount of DPCs that were active and cancelled.
+    */
+    uint32 cancelAllTimedDpcs(bool isIsr = false);
+
+    /**
+    *   Callback for timed DPCs (low priority).
+    *
+    *   @param timedDpcId ID of the timed DPC given by queueTimedDcp(...).
+    *   @param dueTime The exact time stamp that was given into queueTimedDpc (for identification).
+    *   @param newTime Implementation may write new timestamp here and return true to indicate reschedule. Input value is undefined.
+    *   @return False if no reschedule required, true if a reschedule stamp is written to newTime.
+    */
+    virtual bool onTimedDpc(TimedDpcId timedDpcId, WbTimestamp dueTime, WbTimestamp& newTime);
+#endif
 
     /***
     * Callback for POST operation result
@@ -726,7 +850,7 @@ protected:
     *  Remote whiteboard disconnect notification handler.
     *
     *  This can be used for example to cleanup possible subscription related state in the client-end. 
-    *  Whiteboard automatically cleans subscriptions and path variable allocations related to the disconnected whiteboard,
+    *  Whiteboard automatically cleans subscriptions and path parameter allocations related to the disconnected whiteboard,
     *  so the client will not get further notifications and does not need to call unsubscribe or releaseResource either.
     *
     *  @param whiteboardId ID of the whiteboard that has been disconnected.
@@ -740,7 +864,7 @@ protected:
     * Local resource unavailability handler.
     *
     *  This can be used for example to cleanup possible subscription related state in the client-end.
-    *  Whiteboard automatically cleans subscriptions and path variable allocations related to the removed resource,
+    *  Whiteboard automatically cleans subscriptions and path parameter allocations related to the removed resource,
     *  so the client will not get further notifications and does not need to call unsubscribe or releaseResource either.
     *
     *  @param resourceId ID of the resource that is no longer available
@@ -752,22 +876,22 @@ protected:
 
 private:
     /**
-    *	Sets ID of the client
+    * Sets ID of the client
     *
-    *	@param clientId New ID for the client
+    * @param clientId New ID for the client
     */
-    void setLocalClientId(LocalClientId clientId);
+    void setLocalClientId(const LocalClientId clientId);
 
     /**
     *   This unsafe method is for internal use only - or for porting Whiteboard to specific environment!
     *
-    *	Performs asynchronous request.
+    * Performs asynchronous request.
     *
-    *	@param resourceId ID of the associated resource
-    *	@param requestType Type of the request
-    *	@param rOptions Options for this async operation, @see whiteboard::ResourceClient::AsyncRequestOptions
-    *	@param rParameters List of request parameters
-    *	@return Result of the operation
+    * @param resourceId ID of the associated resource
+    * @param requestType Type of the request
+    * @param rOptions Options for this async operation, @see whiteboard::ResourceClient::AsyncRequestOptions
+    * @param rParameters List of request parameters
+    * @return Result of the operation
     */
     Result asyncRequestInternal(
         ResourceId resourceId,
@@ -775,13 +899,15 @@ private:
         const AsyncRequestOptions& rOptions,
         const ParameterList& rParameters);
 
+#ifdef WB_HAVE_DEPRECATED_BYTE_STREAM
+
     /**
-    *	Performs asynchronous PUT of a stream.
+    * Performs asynchronous PUT of a stream.
     *
-    *	@param rRequest Request information
-    *	@param rParameters List of request parameters
-    *	@param rOptions Options for this async operation, @see whiteboard::ResourceClient::AsyncRequestOptions
-    *	@return Result of the operation
+    * @param rRequest Request information
+    * @param rParameters List of request parameters
+    * @param rOptions Options for this async operation, @see whiteboard::ResourceClient::AsyncRequestOptions
+    * @return Result of the operation
     */
     Result asyncPutInternalStream(
         Request& rRequest,
@@ -789,21 +915,22 @@ private:
         const AsyncRequestOptions& rOptions);
 
     /**
-    *	System callback for asynchronous PUT requests
+    * System callback for asynchronous PUT requests
     *
-    *	@param requestId ID of the request
-    *	@param resourceId Successful request contains ID of the resource
-    *	@param resultCode Result code of the request
-    *	@param rResultData Successful result contains the request result
+    * @param requestId ID of the request
+    * @param resourceId Successful request contains ID of the resource
+    * @param resultCode Result code of the request
+    * @param rResultData Successful result contains the request result
     */
     void onPutResultSys(RequestId requestId, ResourceId resourceId, Result resultCode, const Value& rResultData);
+#endif
 
     /**
-    *	System callback for asynchronous SUBSCRIBE requests
+    * System callback for asynchronous SUBSCRIBE requests
     *
-    *	@param The request object
-    *	@param resultCode Result code of the request
-    *	@param rResultData Successful result contains the request result
+    * @param The request object
+    * @param resultCode Result code of the request
+    * @param rResultData Successful result contains the request result
     */
     void onSubscribeResultSys(const Request& rRequest, Result resultCode, const Value& rResultData);
 
@@ -837,8 +964,10 @@ WB_PUBLIC_IN_UNITTESTS(private):
     /** Flag to enable / disable broadcast events during unbind */
     bool mHasSubscriptions;
 
+#ifdef WB_HAVE_DEPRECATED_BYTE_STREAM
     /** Stream handle that is used for splitting large PUT streams into multiple smaller requests */
     StreamHandle mInternalStreamId;
+#endif
 
     /** Flag that is used internally to piggy back information about compile time type check */
     static const uint8 TYPE_CHECKED = 0x80;

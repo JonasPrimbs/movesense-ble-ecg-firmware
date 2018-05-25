@@ -55,7 +55,11 @@ public:
         return mResourceId;
     }
 
-    /** Gets constant part of the resource ID that should service this request */
+    /** DEPRECATED: This function will be removed in future Whiteboard versions. Use getResourceId().localResourceId for 
+    * comparisons instead, because it produces more optimal code. For more information see Whiteboard best practices.
+    *
+    * Gets constant part of the resource ID that should service this request
+    */
     inline ResourceId::Value getResourceConstId() const
     {
         return mResourceId.getConstId();

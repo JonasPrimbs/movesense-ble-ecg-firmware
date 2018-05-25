@@ -94,6 +94,27 @@ definitions:
           1 = Connection
           2 = Unknown
         value: 2
+      - name: 'DoubleTap'
+        description: |
+          DoubleTap detection (e.g. using accelerometer). This is a transient state i.e. it will return immediately back to 0
+          0 = No doubleTap
+          1 = DoubleTap detected
+          2 = Unknown (this happens when device cannot determine if double tap is done)
+        value: 3
+      - name: 'Tap'
+        description: |
+          "Single"-Tap detection (e.g. using accelerometer). This is a transient state i.e. it will return immediately back to 0
+          0 = No Tap
+          1 = Tap detected
+          2 = Unknown (this happens when device cannot determine if double tap is done)
+        value: 4
+      - name: 'Freefall'
+        description: |
+          "Freefall detection (e.g. using accelerometer).
+          0 = Not in freefall
+          1 = In freefall
+          2 = Unknown (this happens when device cannot determine if it is in freefall or not)
+        value: 5
 
   State:
     type: integer

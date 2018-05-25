@@ -6,9 +6,6 @@
 /** Type of timestamp */
 typedef uint32_t WbTimestamp;
 
-/** Constant that indicates invalid timestamp */
-static const WbTimestamp WB_INVALID_TIMESTAMP = 0;
-
 /** Gets current timestamp
 *
 * @note: Timestamp is not in any specific units, but should not wrap for at least a day

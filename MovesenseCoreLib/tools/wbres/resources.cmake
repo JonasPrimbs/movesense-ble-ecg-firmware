@@ -31,9 +31,11 @@ endif()
 #   Name OutputVar
 #   [INCLUDE_DIRECTORIES [dir1 ...]]
 #   [[SOURCE_GROUP Name [source1 ...] ...]
+#   [REMOTE alias[:ID]]
 #   GENERATE [C] [CPP] [LIB] [METADATA [AS name]] [METADATA_BIN]
-#   [CPP_DEPENDS [dependency1 ...]]
-#   [EXPORT_SYMBOL SymbolName])
+#   [CPP_DEPENDS [dependency1 ...]] [CPP_NAMESPACE namespace]
+#   [EXPORT_SYMBOL SymbolName]
+#   [PREPROCESSOR Flags])
 #
 #   Name specifies unique name for the generated output. This name is
 #   used in constructing output file names. OutputVar specifies name 
@@ -45,7 +47,7 @@ endif()
 #   filter for Visual Studio builds and can contain '/' characters
 #   that delimit subfilters from their parents. Sources are either
 #   Whiteboard YAML files or prebuilt WBO library files.
-#   With GENERATE you can specify which output files are genered. When 
+#   With GENERATE you can specify which output files are generated. When 
 #   C is specified a C header with all resource identifiers is generated.
 #   When CPP is specified a full header with all IDs and helper classes 
 #   are generated. When LIB is specified resource metadata is saved in
@@ -57,7 +59,9 @@ endif()
 #   With CPP_DEPENDS you can specify a list of additional headers that
 #   are required for building CPP generated headers. EXPORT_SYMBOL defines
 #   name of preprocessor symbol that should be used to export symbols from
-#   dynamically linked libraries or shared libraries. 
+#   dynamically linked libraries or shared libraries. PREPROCESSOR defines
+#   resource compiler preprocessor definitions to be used in generating the 
+#   code.
 #
 #   Instead of GENERATE, one can also use BUILD_GENERATED to signal that the
 #   input files are not files that might exist in the system at the time that
@@ -67,8 +71,8 @@ endif()
 #   Note that without BUILD_GENERATED, any file-pattern that the cmake GLOB
 #   cannot expand will lead into a visible WARNING message. These are then
 #   signals about unmaintained code/build files or wrong path casing. Previous
-#   behaviour was that wb_res was fed with no yaml at all, and the resulting
-#   generated files were syntatically valid, but didn't declare any resources.
+#   behavior was that wb_res was fed with no yaml at all, and the resulting
+#   generated files were syntactically valid, but didn't declare any resources.
 #
 function (generate_wb_resources Name OutputVar)
   set(WBRES_OUTPUT_HEADER ${PATH_GENERATED_ROOT}/${Name}/resources.h)
@@ -148,16 +152,28 @@ function (generate_wb_resources Name OutputVar)
       set(STATE 2)
       _add_wb_resources_source_group(SOURCE_GROUP_NAME SOURCE_GROUP_SOURCES)
       continue()
-    elseif ("${arg}" STREQUAL "GENERATE")
+    elseif ("${arg}" STREQUAL "REMOTE")
       set(STATE 4)
       _add_wb_resources_source_group(SOURCE_GROUP_NAME SOURCE_GROUP_SOURCES)
       continue()
+    elseif ("${arg}" STREQUAL "GENERATE")
+      set(STATE 5)
+      _add_wb_resources_source_group(SOURCE_GROUP_NAME SOURCE_GROUP_SOURCES)
+      continue()
     elseif ("${arg}" STREQUAL "CPP_DEPENDS")
-      set(STATE 7)
+      set(STATE 8)
+      _add_wb_resources_source_group(SOURCE_GROUP_NAME SOURCE_GROUP_SOURCES)
+      continue()
+    elseif ("${arg}" STREQUAL "CPP_NAMESPACE")
+      set(STATE 9)
       _add_wb_resources_source_group(SOURCE_GROUP_NAME SOURCE_GROUP_SOURCES)
       continue()
     elseif ("${arg}" STREQUAL "EXPORT_SYMBOL")
-      set(STATE 8)
+      set(STATE 10)
+      _add_wb_resources_source_group(SOURCE_GROUP_NAME SOURCE_GROUP_SOURCES)
+      continue()
+    elseif ("${arg}" STREQUAL "PREPROCESSOR")
+      set(STATE 11)
       _add_wb_resources_source_group(SOURCE_GROUP_NAME SOURCE_GROUP_SOURCES)
       continue()
     endif()
@@ -172,47 +188,56 @@ function (generate_wb_resources Name OutputVar)
       set(STATE 3)
     elseif (STATE EQUAL 3)
       list(APPEND SOURCE_GROUP_SOURCES ${arg})
-    elseif ((STATE EQUAL 4) OR (STATE EQUAL 5))
+    elseif (STATE EQUAL 4)
+      list(APPEND CMDLINE --remote ${arg})
+      set(STATE 0)
+    elseif ((STATE EQUAL 5) OR (STATE EQUAL 6))
       if (${arg} STREQUAL "C")
         list(APPEND OUTPUTS ${WBRES_OUTPUT_CHEADER})
         list(APPEND CMDLINE --cheaderFile "${WBRES_OUTPUT_CHEADER}")
-        set(STATE 4)
+        set(STATE 5)
       elseif (${arg} STREQUAL "CPP")
         file(MAKE_DIRECTORY ${PATH_GENERATED_ROOT}/${Name})
         list(APPEND OUTPUTS ${WBRES_OUTPUT_HEADER})
         list(APPEND OUTPUTS ${WBRES_OUTPUT_SOURCE})
         list(APPEND CMDLINE --headerFile "${WBRES_OUTPUT_HEADER}" --sourceFile "${WBRES_OUTPUT_SOURCE}")
-        set(STATE 4)
+        set(STATE 5)
       elseif (${arg} STREQUAL "LIB")
         list(APPEND HIDDEN_OUTPUTS ${WBRES_OUTPUT_LIB})
         list(APPEND CMDLINE --libFile "${WBRES_OUTPUT_LIB}")
-        set(STATE 4)
+        set(STATE 5)
       elseif (${arg} STREQUAL "METADATA")
         file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/${Name})
         list(APPEND OUTPUTS ${WBRES_OUTPUT_METADATA})
         list(APPEND CMDLINE --metadataSourceFile "${WBRES_OUTPUT_METADATA}")
-        set(STATE 5)
+        set(STATE 6)
       elseif (${arg} STREQUAL "METADATA_BIN")
         file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/${Name})
         list(APPEND OUTPUTS ${WBRES_OUTPUT_METADATA_BIN})
         list(APPEND CMDLINE --metadataBinaryFile "${WBRES_OUTPUT_METADATA_BIN}")
-        set(STATE 4)
-      elseif ((STATE EQUAL 5) AND (${arg} STREQUAL "AS"))
-        set(STATE 6)        
+        set(STATE 5)
+      elseif ((STATE EQUAL 6) AND (${arg} STREQUAL "AS"))
+        set(STATE 7)
       else()
         message(FATAL_ERROR "Invalid parameter '${arg}'")
       endif()
-    elseif (STATE EQUAL 6)
-        set(STATE 4)
-        list(APPEND CMDLINE --metadataVarName "${arg}")
     elseif (STATE EQUAL 7)
+        set(STATE 5)
+        list(APPEND CMDLINE --metadataVarName "${arg}")
+    elseif (STATE EQUAL 8)
       if (${arg} MATCHES "^.*\\..*$") # *.*
         list(APPEND CMDLINE --cppDepends ${arg})
       else()
         list(APPEND CMDLINE --cppDepends ../${arg}/resources.h)
       endif()
-    elseif (STATE EQUAL 8)
+    elseif ((STATE EQUAL 9) AND NOT (${arg} STREQUAL ""))
+      list(APPEND CMDLINE --cppNamespace ${arg})
+      set(STATE 0)
+    elseif (STATE EQUAL 10)
       list(APPEND CMDLINE --exportSymbol ${arg})
+      set(STATE 0)
+    elseif (STATE EQUAL 11)
+      list(APPEND CMDLINE ${arg})
     endif()
   endforeach()
   _add_wb_resources_source_group(SOURCE_GROUP_NAME SOURCE_GROUP_SOURCES)
