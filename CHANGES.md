@@ -1,3 +1,26 @@
+## Version 1.6.0.1582.25d038d702bd99 ##
+ 
+###Whats new:###
+ 
+- Update: Whiteboard 3.15
+- 20kB extra flash
+- HR filtering
+- Battery measurement improvements
+- Timestamp added to ECG data
+- Experimental: Custom GATT service
+- Experimental: DebugService storage (EEPROM)
+- Experimental: New system states (Free fall/Double tap/Tap)
+- Bugfix: Leak of the GearID subscription
+- BugFix: Battery and HRS BLE profile don’t pass Bluetooth SIG tests
+- Bugfix: BLE scan does not return rssi
+ 
+###Known Bugs:###
+
+- HR/RR/ECG service sometimes stops sending data
+- Standard BLE battery profile does not send new values
+- The first package of Acc/Magn/Gyro can be corrupted for high sample rates
+- be sure to also check Bitbucket for any additional reported issues: [device library](https://bitbucket.org/suunto/movesense-device-lib/issues?status=new&status=open) and [mobile library](https://bitbucket.org/suunto/movesense-mobile-lib/issues?status=new&status=open)
+ 
 ## Version 1.5.1.1516.59da9cbf7fca ##
 
 ###Whats new:###

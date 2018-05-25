@@ -249,7 +249,7 @@ public:
     *	@param resourceId ID of the associated resource
     *	@param rOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions
     *	@param rValue Current value of the resource
-    *	@param rP1 .. rP8 If path variables are used, add the path variables as a parameter. Path variable closest to the
+    *	@param rP1 .. rP8 If path parameters are used, add the path parameter as a parameter. Path parameter closest to the
     *   root shall be given first
     */
     template <typename V, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
@@ -395,7 +395,7 @@ public:
     *	@param localResourceId ID of the associated resource
     *   @param rOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions
     *	@param rValue Current value of the resource
-    *	@param rParameterList If path variables are used, add the path variables to the parameter list. Path variable closest to
+    *	@param rParameterList If path parameters are used, add the path parameters to the parameter list. Path parameter closest to
     *   the root is first in the list.
     *	@return Result of the operation
     */
@@ -409,8 +409,11 @@ public:
 protected:
     /** These functions are called only by Whiteboard */
     friend class Whiteboard;
+    friend class TimerPool;
 
 #if WB_UNITTEST_BUILD
+    friend class TestProviderBase;
+
     /** Gets the associated whiteboard instance
     *
     * @return Whiteboard instance
@@ -423,14 +426,14 @@ protected:
     *
     *	@param providerId New ID for the provider
     */
-    void setLocalProviderId(LocalProviderId providerId);
+    void setLocalProviderId(const LocalProviderId providerId);
 
     /**
     *	GET request handler.
     *
     *	@param rRequest Request information
-    *	@param rParameters List of parameters for the request, if resource path contains path variables,
-    *			the path variables are added to the beginning of the parameter list.
+    *	@param rParameters List of parameters for the request, if resource path contains path parameters,
+    *			the path parameters are added to the beginning of the parameter list.
     *	@return Result of the operation
     */
     virtual void onGetRequest(const Request& rRequest, const ParameterList& rParameters);
@@ -439,12 +442,13 @@ protected:
     *	PUT request handler.
     *
     *	@param rRequest Request information
-    *	@param rParameters List of parameters for the request, if resource path contains path variables,
-    *			the path variables are added to the beginning of the parameter list.
+    *	@param rParameters List of parameters for the request, if resource path contains path parameters,
+    *			the path parameters are added to the beginning of the parameter list.
     *	@return Result of the operation
     */
     virtual void onPutRequest(const Request& rRequest, const ParameterList& rParameters);
 
+#ifdef WB_HAVE_DEPRECATED_BYTE_STREAM
     /**
     *   PUT stream handler.
     *   This is invoked when a client posts a PUT request with a stream parameter as one of the parameters.
@@ -453,13 +457,14 @@ protected:
     *   @param rStreamValue Reference to the Value pointing to the stream type itself
     */
     virtual void onPutStream(const Request& rRequest, const Value& rStreamValue);
+#endif
 
     /**
     *	POST request handler.
     *
     *	@param rRequest Request information
-    *	@param rParameters List of parameters for the request, if resource path contains path variables,
-    *			the path variables are added to the beginning of the parameter list.
+    *	@param rParameters List of parameters for the request, if resource path contains path parameters,
+    *			the path parameters are added to the beginning of the parameter list.
     *	@return Result of the operation
     */
     virtual void onPostRequest(const Request& rRequest, const ParameterList& rParameters);
@@ -468,8 +473,8 @@ protected:
     *	DELETE request handler.
     *
     *	@param rRequest Request information
-    *	@param rParameters List of parameters for the request, if resource path contains path variables,
-    *			the path variables are added to the beginning of the parameter list.
+    *	@param rParameters List of parameters for the request, if resource path contains path parameters,
+    *			the path parameters are added to the beginning of the parameter list.
     *	@return Result of the operation
     */
     virtual void onDeleteRequest(const Request& rRequest, const ParameterList& rParameters);
@@ -482,8 +487,8 @@ protected:
     *	even if provider later returns error code in returnResult.
     *
     *	@param rRequest Request information
-    *	@param rParameters List of parameters for the request, if resource path contains path variables,
-    *			the path variables are added to the beginning of the parameter list.
+    *	@param rParameters List of parameters for the request, if resource path contains path parameters,
+    *			the path parameters are added to the beginning of the parameter list.
     *	@return Result of the operation
     */
     virtual void onSubscribe(const Request& rRequest, const ParameterList& rParameters);
@@ -492,8 +497,8 @@ protected:
     *	Unsubscribe notification callback.
     *
     *	@param rRequest Request information
-    *	@param rParameters List of parameters for the request, if resource path contains path variables,
-    *			the path variables are added to the beginning of the parameter list.
+    *	@param rParameters List of parameters for the request, if resource path contains path parameters,
+    *			the path parameters are added to the beginning of the parameter list.
     *	@return Result of the operation.
     */
     virtual void onUnsubscribe(const Request& rRequest, const ParameterList& rParameters);
@@ -507,6 +512,47 @@ protected:
     *	@see whiteboard::ResourceProvider::stopTimer
     */
     virtual void onTimer(TimerId timerId);
+
+#ifdef WB_HAVE_TIMED_DPC
+    /**
+    *   Queue an low priority timed DPC for the given timestamp. A timed DPC is freed upon callback execution
+    *   if the onTimedDpc(...) implementation returns false, in this case no cancellation is necessary.
+    *
+    *   @param dueTime The time when the ::onTimedDpc callback is to be executed. Used as identification.
+    *   @param isIsr True is this method is called from an interrupt service routine.
+    *   @return A valid TimedDpcId value if successful, ID_INVALID_TIMED_DPC if unsuccessful.
+    */
+    TimedDpcId queueTimedDpc(WbTimestamp dueTime, bool isIsr = false);
+
+    /**
+    *   Cancel a timed DPC.
+    *
+    *   @param timedDpcId ID of the timed DPC.
+    *   @param isIsr True is this method is called from an interrupt service routine.
+    *   @return HTTP_CODE_OK if successful.
+    *           HTTP_CODE_NOT_FOUND if a DPC with given stamp was not found for the entity ID.
+    *           HTTP_CODE_RANGE_NOT_SATISFIABLE if given timed DPC id is out of bounds.
+    */
+    Result cancelTimedDpc(const TimedDpcId timedDpcId, bool isIsr = false);
+
+    /**
+    *   Cancel all timed DPCs queued by the resource provider.
+    *
+    *   @param isIsr True is this method is called from an interrupt service routine.
+    *   @return Returns the amount of DPCs that were active and cancelled.
+    */
+    uint32 cancelAllTimedDpcs(bool isIsr = false);
+
+    /**
+    *   Callback for timed DPCs (low priority).
+    *
+    *   @param timedDpcId ID of the timed DPC given by queueTimedDcp(...).
+    *   @param dueTime The exact time stamp that was given into queueTimedDpc (for identification).
+    *   @param newTime Implementation may write new timestamp here and return true to indicate reschedule. Input value is undefined.
+    *   @return False if no reschedule required, true if a reschedule stamp is written to newTime.
+    */
+    virtual bool onTimedDpc(TimedDpcId timedDpcId, WbTimestamp dueTime, WbTimestamp& newTime);
+#endif
 
     /**
     *  Whiteboard disconnect notification handler.
@@ -574,21 +620,23 @@ private:
     *	@param localResourceId ID of the associated resource piggy backed with type check info
     *   @param rOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions
     *	@param rValue Current value of the resource
-    *	@param rParameterList If path variables are used, add the path variables to the parameter list. Path variable closest to
+    *	@param rParameterList If path parameters are used, add the path parameters to the parameter list. Path parameter closest to
     *   the root is first in the list.
     *	@return Result of the operation
     */
     Result updateResourceInternal(
         uint32 localResourceId, const ResponseOptions& rOptions, const Value& value, const ParameterList& rParameterList);
 
+#ifdef WB_HAVE_DEPRECATED_BYTE_STREAM
     /**
     *   System part of PUT handler. Depending on data will call onPutRequest or onPutStream
     *
     *	@param rRequest Request information
-    *	@param rParameters List of parameters for the request, if resource path contains path variables,
-    *			the path variables are added to the beginning of the parameter list.
+    *	@param rParameters List of parameters for the request, if resource path contains path parameters,
+    *			the path parameters are added to the beginning of the parameter list.
     */
     void onPutSys(const Request& rRequest, const ParameterList& rParameters);
+#endif
 
 private:
 

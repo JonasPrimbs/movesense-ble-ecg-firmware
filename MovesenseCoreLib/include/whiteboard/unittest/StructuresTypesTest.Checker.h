@@ -84,4 +84,9 @@ public:
     static void checkEqual(
         const WB_RES::AllOptionalArrayPrimitiveAndBuiltinTypesInAStructure& rReference,
         const WB_RES::AllOptionalArrayPrimitiveAndBuiltinTypesInAStructure& rActual);
+
+    static void checkEqual(
+        const WB_RES::StructureWithHashString& rReference,
+        const WB_RES::StructureWithHashString& rActual
+    );
 };

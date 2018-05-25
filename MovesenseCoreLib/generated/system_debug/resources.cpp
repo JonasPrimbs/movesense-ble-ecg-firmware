@@ -13,5 +13,14 @@ WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(DebugMessageConfig) == 1, AlignmentOfStructur
 WB_STATIC_VERIFY(sizeof(DebugMessage) == 16, SizeOfStructure_DebugMessage_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(DebugMessage) == 4, AlignmentOfStructure_DebugMessage_IsNotWhatExpected);
 
+WB_STATIC_VERIFY(sizeof(DebugLogQuery) == 8, SizeOfStructure_DebugLogQuery_IsNotWhatExpected);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(DebugLogQuery) == 4, AlignmentOfStructure_DebugLogQuery_IsNotWhatExpected);
+
+WB_STATIC_VERIFY(sizeof(DebugLogConfig) == 4, SizeOfStructure_DebugLogConfig_IsNotWhatExpected);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(DebugLogConfig) == 4, AlignmentOfStructure_DebugLogConfig_IsNotWhatExpected);
+
+WB_STATIC_VERIFY(sizeof(DebugLogResult) == 8, SizeOfStructure_DebugLogResult_IsNotWhatExpected);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(DebugLogResult) == 4, AlignmentOfStructure_DebugLogResult_IsNotWhatExpected);
+
 
 } // namespace WB_RES

@@ -49,5 +49,5 @@ protected:
     virtual void OnUartData(uint8_t * p_data, uint16_t length) {}
 };
 
-void send_ble_hr_measurement(uint16_t heart_rate);
+void send_ble_hr_measurement(uint16_t heart_rate, const uint16_t *rr_intervals=NULL, size_t rr_count=0);
 void send_ble_nus_data(uint8_t * p_data, uint16_t length);

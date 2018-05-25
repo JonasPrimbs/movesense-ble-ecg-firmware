@@ -720,7 +720,7 @@ private:
         return getResource(wrapper.mrParam1, mpResult->mResourceId);
     }
 
-    Result releaseResourceDpcHandler(OpWrapper<NoType, NoType, NoType>& wrapper)
+    Result releaseResourceDpcHandler(OpWrapper<NoType, NoType, NoType>& /*wrapper*/)
     {
         return releaseResource(mResourceId);
     }

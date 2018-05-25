@@ -128,8 +128,11 @@ static const RequestId ID_INVALID_REQUEST = 0;
  * Unique for local application / whiteboard. Shorthand for using actual whiteboard serial number. */
 typedef uint8 WhiteboardId;
 
-/** ID of local whiteboard */
+/** ID of local Whiteboard */
 static const WhiteboardId LOCAL_WHITEBOARD_ID = 0;
+
+/** ID of used to mark invalid Whiteboard */
+static const WhiteboardId INVALID_WHITEBOARD_ID = 255;
 
 /** Type that is used to identify resource instances. Unique for one requesting client, that access multiple instances of the same
  * resource */
@@ -138,7 +141,7 @@ typedef uint8 ResourceInstanceId;
 /** Maximum number of cached resource instances per client. Note packed structures below. */
 #define WB_MAX_RESOURCE_INSTANCES 15
 
-/** Resource Instance ID that is used to uniquely identify path variable for a client. */
+/** Resource Instance ID that is used to uniquely identify path parameter for a client. */
 static const ResourceInstanceId ID_INVALID_RESOURCE_INSTANCE = WB_MAX_RESOURCE_INSTANCES;
 
 /** Type that is used to identify resources in whiteboard network.
@@ -158,7 +161,7 @@ struct WB_API ResourceId
 #endif
         struct
         {
-            /** Used by the path variables implementation */
+            /** Used by the path parameters implementation */
             ResourceInstanceId instanceId : 4;
 
             /** ID of the execution context */
@@ -229,11 +232,14 @@ struct WB_API ResourceId
     */
     inline bool operator!=(const ResourceId::Value other) const { return !(*this == other); }
 
-    /** @return true if this resourceId contains path variable allocation reference */
+    /** @return true if this resourceId contains path parameter allocation reference */
     inline bool isPathParameterRef() const { return instanceId != ID_INVALID_RESOURCE_INSTANCE; }
 
-    /** @return the raw id without the instanceId; can be used in the provider-end to compare the
-    *  ID to generated ID without path variable allocation reference.
+    /** DEPRECATED: This function will be removed in future Whiteboard versions. Use localResourceId for comparisons instead,
+    * because it produces more optimal code. For more information see Whiteboard best practices.
+    *
+    * @return the raw id without the instanceId; can be used in the provider-end to compare the
+    *  ID to generated ID without path parameter allocation reference.
     *
     *  For example:
     *
@@ -247,6 +253,24 @@ struct WB_API ResourceId
 };
 
 WB_STATIC_VERIFY(sizeof(ResourceId) == sizeof(uint32), SizeOfResourceIdNotFourBytes);
+
+/** Local client ID type wrapper into local entity ID */
+typedef LocalEntityId LocalClientId;
+
+// Forward declare internal clientId flags
+struct ClientIdFlags;
+
+/** Local provider ID type wrapper into local entity ID */
+typedef LocalEntityId LocalProviderId;
+
+/** Local client ID that is used to indicate invalid client. */
+static const LocalClientId ID_INVALID_LOCAL_CLIENT = 0xffff;
+
+/** Local provider ID that is used to indicate invalid provider. */
+static const LocalProviderId ID_INVALID_LOCAL_PROVIDER = 0xffff;
+
+/** Local client and provider IDs are from the same ID value range separated by one indicator bit */
+static const LocalEntityId ID_LOCAL_CLIENT_MASK_BIT = 0x8000;
 
 /** Type that is used to identify clients in whiteboard network. */
 struct WB_API ClientId
@@ -262,26 +286,26 @@ struct WB_API ClientId
 #endif
         struct
         {
-            /** Does client consider subscription notifications not critical, i.e is it allowed to drop data on congestion */
-            uint8 nonCriticalSubscription : 1;
+            union
+            {
+                struct
+                {
+                    /** For internal use */
+                    uint8 flags : 4;
 
-            /** Is the request type checked at client's end. */
-            uint8 typeChecked : 1;
+                    /** ID of the execution context */
+                    ExecutionContextId executionContextId : 4;
+                };
 
-            /** Does client require a result for the request (1) or not (0) */
-            uint8 noRequestResponse : 1;
-
-            /** Reserved for future use */
-            uint8 reserved : 1;
-
-            /** ID of the execution context */
-            ExecutionContextId executionContextId : 4;
+                /** Combined execution context ID and flags value */
+                uint8 executionContextIdAndFlags;
+            };
 
             /** ID of the whiteboard instance */
             WhiteboardId whiteboardId;
 
             /** Client ID of the resource in that whiteboard instance */
-            LocalClientId localClientId;
+            LocalEntityId localClientId;
         };
 #if _MSC_VER
 #pragma warning(pop)
@@ -304,10 +328,7 @@ struct WB_API ClientId
     inline ClientId(const ExecutionContextId _executionContextId,
                     const WhiteboardId _whiteboardId,
                     const LocalClientId _localClientId)
-        : nonCriticalSubscription(0),
-          typeChecked(0),
-          noRequestResponse(0),
-          reserved(0),
+        : flags(0),
           executionContextId(_executionContextId),
           whiteboardId(_whiteboardId),
           localClientId(_localClientId)
@@ -343,14 +364,26 @@ struct WB_API ClientId
     * @return A value indicating whether this client ID is inequal with specified id value
     */
     inline bool operator!=(const ClientId::Value other) const { return !(*this == other); }
+
+    /// @return reference to internal flags of the ID - for internal use only.
+    const ClientIdFlags& getFlags() const;
+
+    /// @return reference (modifiable) to internal flags of the ID - for internal use only.
+    ClientIdFlags& getFlags();
+
+    /// @return true if client id contains nonCriticalSubscription-flag set
+    bool isNonCriticalSubscription() const;
 };
 
 WB_STATIC_VERIFY(sizeof(ClientId) == sizeof(uint32), SizeOfClientIdNotFourBytes);
 
+// Forward declare internal ProviderId flags
+struct ProviderIdFlags;
+
 /** Type that is used to identify providers in whiteboard network. */
 struct WB_API ProviderId
 {
-    /** Value of client ID packed to a single unsigned 32-bit integer. */
+    /** Value of provider ID packed to a single unsigned 32-bit integer. */
     typedef uint32 Value;
 
     union
@@ -361,20 +394,26 @@ struct WB_API ProviderId
 #endif
         struct
         {
-            /** Is the response type checked at provider's end. */
-            uint8 typeChecked : 1;
+            union
+            {
+                struct
+                {
+                    /* Flags for internal use */
+                    uint8 flags : 4;
 
-            /** Reserved for future use */
-            uint8 reserved : 3;
+                    /** ID of the execution context */
+                    ExecutionContextId executionContextId : 4;
+                };
 
-            /** ID of the execution context */
-            ExecutionContextId executionContextId : 4;
+                /** Combined execution context ID and flags value */
+                uint8 executionContextIdAndFlags;
+            };
 
             /** Reserved for future use */
             uint8 reserved2;
 
             /** Provider ID of the resource in that whiteboard instance */
-            LocalProviderId localProviderId;
+            LocalEntityId localProviderId;
         };
 #if _MSC_VER
 #pragma warning(pop)
@@ -395,8 +434,7 @@ struct WB_API ProviderId
     */
     inline ProviderId(const ExecutionContextId _executionContextId,
                       const LocalProviderId _localProviderId)
-        : typeChecked(0), 
-          reserved(0),
+        : flags(0),
           executionContextId(_executionContextId),
           reserved2(0),
           localProviderId(_localProviderId)
@@ -432,6 +470,12 @@ struct WB_API ProviderId
     * @return A value indicating whether this client ID is inequal with specified id value
     */
     inline bool operator!=(const ProviderId::Value other) const { return !(*this == other); }
+
+    /// @return reference to internal flags of the ID - for internal use only.
+    const ProviderIdFlags& getFlags() const;
+
+    /// @return reference (modifiable) to internal flags of the ID - for internal use only.
+    ProviderIdFlags& getFlags();
 };
 
 WB_STATIC_VERIFY(sizeof(ProviderId) == sizeof(uint32), SizeOfProviderIdNotFourBytes);
@@ -448,14 +492,11 @@ WB_API extern const ResourceId::Value ID_ROOT_RESOURCE;
 /** Resource ID that is used to indicate invalid resource. */
 WB_API extern const ResourceId::Value ID_INVALID_RESOURCE;
 
-/** Local client ID that is used to indicate invalid client. */
-static const LocalClientId ID_INVALID_LOCAL_CLIENT = 0xffff;
+/** Local entity ID that is used to indicate invalid entity. */
+static const LocalEntityId ID_INVALID_LOCAL_ENTITY = 0xffff;
 
 /** Client ID that is used to indicate invalid client. */
 WB_API extern const ClientId::Value ID_INVALID_CLIENT;
-
-/** Local provider ID that is used to indicate invalid provider. */
-static const LocalProviderId ID_INVALID_LOCAL_PROVIDER = 0xffff;
 
 /** Provider ID that is used to indicate invalid provider. */
 WB_API extern const ProviderId::Value ID_INVALID_PROVIDER;
@@ -534,6 +575,12 @@ typedef uint16 TimerId;
 
 /** TimerId that is used to indicate invalid timerId */
 static const TimerId ID_INVALID_TIMER = 0xffff;
+
+/** Type that is used to identify timers */
+typedef uint16 TimedDpcId;
+
+/** TimedDpcId that is used to indicate invalid timedDpcId */
+static const TimedDpcId ID_INVALID_TIMED_DPC = 0xffff;
 
 /** Protocol version type */
 typedef uint8 ProtocolVersion;

@@ -29,8 +29,6 @@
         (static_cast<uint32>(executionContextId) << 4) | \
         (static_cast<uint32>(whiteboard::ID_INVALID_RESOURCE_INSTANCE)))
 
-#define WB_CALLER_CONTEXT whiteboard::ID_INVALID_EXECUTION_CONTEXT
-
 
 #include "../wb-resources/resources.h"
 #include "../movesense_types/resources.h"
@@ -57,6 +55,9 @@ typedef whiteboard::TypedEnum<DebugLevelValues, DebugLevelValues::Type, int32> D
 
 struct WB_ALIGN(1) DebugMessageConfig;
 struct WB_ALIGN(4) DebugMessage;
+struct WB_ALIGN(4) DebugLogQuery;
+struct WB_ALIGN(4) DebugLogConfig;
+struct WB_ALIGN(4) DebugLogResult;
 
 struct WB_ALIGN(1) DebugMessageConfig
 {
@@ -80,7 +81,35 @@ struct WB_ALIGN(4) DebugMessage
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> message;
 };
 
-namespace LOCAL
+struct WB_ALIGN(4) DebugLogQuery
+{
+	// Structure type identification and serialization
+	typedef int Structure;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18435;
+
+	WB_ALIGN(4) uint32 timestamp;
+	WB_ALIGN(2) uint16 count;
+};
+
+struct WB_ALIGN(4) DebugLogConfig
+{
+	// Structure type identification and serialization
+	typedef int Structure;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18436;
+
+	WB_ALIGN(4) DebugLevel minimalLevel;
+};
+
+struct WB_ALIGN(4) DebugLogResult
+{
+	// Structure type identification and serialization
+	typedef int Structure;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18437;
+
+	WB_ALIGN(4) whiteboard::Array< DebugMessage > messages;
+};
+
+namespace LOCAL 
 {
 
 struct ROOT;
@@ -174,11 +203,167 @@ struct SYSTEM_DEBUG_CONFIG
 	};
 };
 
-struct SYSTEM_DEBUG_LEVEL
+struct SYSTEM_DEBUG_LOG
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 18433, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 18433;
+
+	struct GET
+	{
+		typedef whiteboard::StronglyTypedResult<const DebugLogResult&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NO_CONTENT> HTTP_CODE_NO_CONTENT;
+
+		struct Parameters
+		{
+			struct PARAMS
+			{
+				static const whiteboard::ParameterIndex Index = 0;
+
+				typedef DebugLogQuery Type;
+				typedef const Type& ConstReferenceType;
+			};
+
+			typedef PARAMS Parameter1;
+
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
+		};
+
+		/** Reference wrapper for strongly typed parameter list for /System/Debug/Log */
+		class ParameterListRef
+		{
+		private:
+			/** Prevent use of default constructor */
+			ParameterListRef() DELETED;
+
+			/** Prevent use of copy constructor */
+			ParameterListRef(const ParameterListRef&) DELETED;
+
+			/** Prevent use of assignment operator */
+			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
+
+		public:
+			/** Constructor that initializes this class from existing parameter list
+			*
+			* @param rParameterList Reference to parameter list that contains untyped parameters
+			*/
+			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
+				: mrParameterList(rParameterList)
+			{
+			}
+
+			/** Gets PARAMS parameter value
+			*
+			* @return Current parameter value
+			*/
+			inline Parameters::PARAMS::ConstReferenceType getParams() const
+			{
+				return mrParameterList[Parameters::PARAMS::Index].convertTo<Parameters::PARAMS::ConstReferenceType>();
+			}
+
+		private:
+			/** Reference to actual parameter list */
+			const whiteboard::ParameterList& mrParameterList;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::PARAMS::ConstReferenceType)
+		{
+		}
+	};
+};
+
+struct SYSTEM_DEBUG_LOG_CONFIG
+{
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 18434, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 18434;
+
+	struct GET
+	{
+		typedef whiteboard::StronglyTypedResult<const DebugMessageConfig&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
+	};
+
+	struct PUT
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			struct CONFIG
+			{
+				static const whiteboard::ParameterIndex Index = 0;
+
+				typedef DebugLogConfig Type;
+				typedef const Type& ConstReferenceType;
+			};
+
+			typedef CONFIG Parameter1;
+
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
+		};
+
+		/** Reference wrapper for strongly typed parameter list for /System/Debug/Log/Config */
+		class ParameterListRef
+		{
+		private:
+			/** Prevent use of default constructor */
+			ParameterListRef() DELETED;
+
+			/** Prevent use of copy constructor */
+			ParameterListRef(const ParameterListRef&) DELETED;
+
+			/** Prevent use of assignment operator */
+			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
+
+		public:
+			/** Constructor that initializes this class from existing parameter list
+			*
+			* @param rParameterList Reference to parameter list that contains untyped parameters
+			*/
+			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
+				: mrParameterList(rParameterList)
+			{
+			}
+
+			/** Gets CONFIG parameter value
+			*
+			* @return Current parameter value
+			*/
+			inline Parameters::CONFIG::ConstReferenceType getConfig() const
+			{
+				return mrParameterList[Parameters::CONFIG::Index].convertTo<Parameters::CONFIG::ConstReferenceType>();
+			}
+
+		private:
+			/** Reference to actual parameter list */
+			const whiteboard::ParameterList& mrParameterList;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::CONFIG::ConstReferenceType)
+		{
+		}
+	};
+};
+
+struct SYSTEM_DEBUG_LEVEL
+{
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 18435, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 18435;
 
 	struct SUBSCRIBE
 	{
@@ -387,6 +572,7 @@ struct SYSTEM_DEBUG_LEVEL
 };
 
 
-} // namespace LOCAL
+
+} // namespace LOCAL 
 
 } // namespace WB_RES

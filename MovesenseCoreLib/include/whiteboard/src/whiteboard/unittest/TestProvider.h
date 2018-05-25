@@ -21,6 +21,7 @@ private:
     T mValue;
 
 public:
+    TestValue(const T& rValue) : mValue(rValue) {}
     TestValue() {}
     ~TestValue() {}
 
