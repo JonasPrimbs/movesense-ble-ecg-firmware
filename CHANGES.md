@@ -4,18 +4,18 @@
  
 - Update: Whiteboard 3.15
 - 20kB extra flash
-- Custom GATT service
 - HR filtering
 - Battery measurement improvements
+- Experimental: Custom GATT service
 - Experimental: DebugService storage (EEPROM)
 - Experimental: New system states (Free fall/Double tap/Tap)
-- BugFix: Battery and HRS BLE profile
+- BugFix: Battery and HRS BLE profile don’t pass Bluetooth SIG tests
 - Bugfix: BLE scan does not return rssi
  
 ###Known Bugs:###
- 
-- System states: Double tap does not send 0
-- Battery profile does not send new values
+
+- HR/RR/ECG service sometimes stops sending data
+- Standard BLE battery profile does not send new values
 - The first package of Acc/Magn/Gyro can be corrupted for high sample rates
 - be sure to also check Bitbucket for any additional reported issues: [device library](https://bitbucket.org/suunto/movesense-device-lib/issues?status=new&status=open) and [mobile library](https://bitbucket.org/suunto/movesense-mobile-lib/issues?status=new&status=open)
  
