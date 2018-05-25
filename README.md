@@ -1,15 +1,6 @@
 ## Announcements
-**(May 10th 2018) Sensor firmware version 1.5.1 is out!**  
-The new version of the firmware has come with stability updates and power optimizations. 
-
-**(Apr 20th 2018) Sensor firmware version 1.5.0 is out!**  
-The new version of the firmware has come with new features and bug fixes. Updating to this version is highly recommended because of previus problems with rescue mode!
-
-**(Mar 20th 2018) Important hotfix update 1.4.1 released**  
-We have fixed a critical error in sensor firmware which caused the sensor to get stuck in endless loop until battery was removed. Updating to this version is highly recommended!  
-
-**(Mar 1st 2018) Sensor firmware version 1.4.0 is out!**  
-Among other things, this version provides new APIs for sensor-side debugging and improvements to connection stability. As usual, refer to [CHANGES.md](CHANGES.md) for more details. 
+**(May 25th 2018) Sensor firmware version 1.6.0 is out!**  
+The new version of the firmware has come with more flash space for applications and new features. 
 
 **Known issues**  
 Please refer to [CHANGES.md](CHANGES.md) for a list of known issues.
