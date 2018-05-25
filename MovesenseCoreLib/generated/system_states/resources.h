@@ -29,8 +29,6 @@
         (static_cast<uint32>(executionContextId) << 4) | \
         (static_cast<uint32>(whiteboard::ID_INVALID_RESOURCE_INSTANCE)))
 
-#define WB_CALLER_CONTEXT whiteboard::ID_INVALID_EXECUTION_CONTEXT
-
 
 #include "../wb-resources/resources.h"
 #include "../movesense_types/resources.h"
@@ -48,7 +46,10 @@ struct StateIdValues
 	{
 		MOVEMENT = 0,
 		BATTERYSTATUS = 1,
-		CONNECTOR = 2
+		CONNECTOR = 2,
+		DOUBLETAP = 3,
+		TAP = 4,
+		FREEFALL = 5
 	};
 };
 typedef whiteboard::TypedEnum<StateIdValues, StateIdValues::Type, int32> StateId;
@@ -68,7 +69,7 @@ struct WB_ALIGN(8) StateChange
 	WB_ALIGN(4) State newState;
 };
 
-namespace LOCAL
+namespace LOCAL 
 {
 
 struct ROOT;
@@ -355,6 +356,7 @@ struct SYSTEM_STATES_STATEID
 };
 
 
-} // namespace LOCAL
+
+} // namespace LOCAL 
 
 } // namespace WB_RES

@@ -30,8 +30,6 @@
         (static_cast<uint32>(executionContextId) << 4) | \
         (static_cast<uint32>(whiteboard::ID_INVALID_RESOURCE_INSTANCE)))
 
-#define WB_CALLER_CONTEXT whiteboard::ID_INVALID_EXECUTION_CONTEXT
-
 
 #define WB_EXEC_CTX_APPLICATION                  static_cast<whiteboard::ExecutionContextId>(0)
 
@@ -558,7 +556,7 @@ struct WB_ALIGN(4) LaunchableList
 	WB_ALIGN(4) whiteboard::Array< LaunchableModule > modules;
 };
 
-namespace LOCAL
+namespace LOCAL 
 {
 
 struct ROOT;
@@ -3726,7 +3724,8 @@ struct WHITEBOARD_TEST_ZERO
 };
 
 
-} // namespace LOCAL
+
+} // namespace LOCAL 
 
 } // namespace WB_RES
 #elif defined(RELEASE) 
@@ -3760,8 +3759,6 @@ struct WHITEBOARD_TEST_ZERO
         (static_cast<uint32>(whiteboardId) << 8) | \
         (static_cast<uint32>(executionContextId) << 4) | \
         (static_cast<uint32>(whiteboard::ID_INVALID_RESOURCE_INSTANCE)))
-
-#define WB_CALLER_CONTEXT whiteboard::ID_INVALID_EXECUTION_CONTEXT
 
 
 #define WB_EXEC_CTX_APPLICATION                  static_cast<whiteboard::ExecutionContextId>(0)
@@ -4177,7 +4174,7 @@ struct WB_ALIGN(4) LaunchableList
 	WB_ALIGN(4) whiteboard::Array< LaunchableModule > modules;
 };
 
-namespace LOCAL
+namespace LOCAL 
 {
 
 struct ROOT;
@@ -6436,7 +6433,8 @@ struct WHITEBOARD_TEST_BYPASS
 };
 
 
-} // namespace LOCAL
+
+} // namespace LOCAL 
 
 } // namespace WB_RES
 #endif 

@@ -13,6 +13,7 @@
 #include "whiteboard/builtinTypes/Date.h"
 #include "whiteboard/builtinTypes/DateTime.h"
 #include "whiteboard/builtinTypes/ByteStream.h"
+#include "whiteboard/builtinTypes/HashString.h"
 #include "whiteboard/builtinTypes/Time.h"
 #include "whiteboard/builtinTypes/Timestamp.h"
 #include "whiteboard/builtinTypes/Vector2D.h"
@@ -418,10 +419,19 @@ template <> struct Value::NativeValueType<char*>
     static const ValueType value = WB_TYPE_STRING;
 };
 
+#ifdef WB_HAVE_DEPRECATED_BYTE_STREAM
 template <> struct Value::NativeValueType<ByteStream>
 {
     static const ValueType value = WB_TYPE_BYTE_STREAM;
 };
+#endif
+
+#ifdef WB_HAVE_HASH_STRING
+template <> struct Value::NativeValueType<HashString>
+{
+    static const ValueType value = WB_TYPE_HASH_STRING;
+};
+#endif
 
 #ifdef WB_HAVE_UNKNOWN_STRUCTURES
 template <> struct Value::NativeValueType<UnknownStructure>
@@ -511,6 +521,14 @@ template <> struct Value::ResultType<UnknownStructure>
 };
 #endif
 
+#ifdef WB_HAVE_HASH_STRING
+template <> struct Value::ResultType<HashString>
+{
+    // HashString is passed by value
+    typedef HashString type;
+};
+#endif
+
 // Enumerations
 template <typename Definition, typename DefitionType, typename ScalarBaseType>
 struct Value::ResultType<TypedEnum<Definition, DefitionType, ScalarBaseType> >
@@ -573,10 +591,12 @@ template <> struct WB_API Value::ConversionHelper<char*, false>
     static const char* convertTo(const Value& rValue);
 };
 
+#ifdef WB_HAVE_DEPRECATED_BYTE_STREAM
 template <> struct WB_API Value::ConversionHelper<ByteStream, false>
 {
     static const ByteStream& convertTo(const Value& rValue);
 };
+#endif
 
 #ifdef WB_HAVE_UNKNOWN_STRUCTURES
 template <> struct WB_API Value::ConversionHelper<UnknownStructure, false>
@@ -584,6 +604,14 @@ template <> struct WB_API Value::ConversionHelper<UnknownStructure, false>
     static UnknownStructure convertTo(const Value& rValue);
 };
 #endif
+
+#ifdef WB_HAVE_HASH_STRING
+template <> struct WB_API Value::ConversionHelper<HashString, false>
+{
+    static HashString convertTo(const Value& rValue);
+};
+#endif
+
 
 /* Structure conversion */
 template <typename StructureType> struct Value::ConversionHelper<StructureType, true>

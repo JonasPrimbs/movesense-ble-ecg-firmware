@@ -22,8 +22,10 @@
 #include "internal/AppInfoProvider.hpp"
 #include "internal/ConnectorSwitch.hpp"
 
+#include "BleGattService.hpp"
 
-class SmartSensor2Application : public whiteboard::ResourceClient
+class SmartSensor2Application : public whiteboard::ResourceClient, 
+                                public BleGattService::IBatteryServiceEventCb
 {
 public:
     SmartSensor2Application();
@@ -33,7 +35,10 @@ public:
     virtual void onNotify(wb::ResourceId resourceId, const wb::Value& value, const wb::ParameterList& parameters) OVERRIDE;
 
     virtual void onTimer(whiteboard::TimerId timerId) OVERRIDE FINAL;
-    
+
+    // BleGattService::IBatteryServiceEventCb interface
+    void onBatteryServiceEvt(bool bNotificationEnabled);
+
 private:
     void runStartupClients();
     void stopHWServices();
@@ -66,4 +71,8 @@ private:
     whiteboard::TimerId mShutdownTimerId;
 
     whiteboard::services::MetricsServices mWbMetricsServices;
+
+    whiteboard::DpcFunctor mBASDpc;
+    volatile bool mIsBASNotifEnabled;
+    void basDpcHandler();
 };

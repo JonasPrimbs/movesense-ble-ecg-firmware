@@ -17,6 +17,7 @@
 #include "whiteboard/integration/bsp/alignedAlloc.h"
 #include "whiteboard/integration/bsp/newOperator.h"
 
+#include "whiteboard/integration/bsp/crashDump.h"
 #include "whiteboard/integration/bsp/ipstack.h"
 #include "whiteboard/integration/bsp/serial.h"
 #include "whiteboard/integration/bsp/time.h"

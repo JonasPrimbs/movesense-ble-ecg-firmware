@@ -381,7 +381,12 @@ public:
     * @return Number of pools which data were retrieved
     */
     static size_t getStatistics(WB_RES::PoolStats* pStats, size_t maxNumberOfPools, size_t startIndex, size_t& totalNumberOfPools);
-#endif
+
+#ifdef WB_HAVE_CRASH_DUMP
+    /** Log all pool statistics as system event errors for the crash dump */
+    static void crashDump();
+#endif // #ifdef WB_HAVE_CRASH_DUMP
+#endif // #ifdef WB_HAVE_POOL_STATISTICS
 
 private:
     /**

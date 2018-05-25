@@ -4,7 +4,7 @@ info:
   version: NA
   title: System debug - Movesense-API
   description: |
-    TBD.
+    This file defines the debugging and diagnostics API.
   x-api-state: experimental
   x-api-type: public
   x-api-required: false
@@ -59,6 +59,49 @@ paths:
         200:
           description: Operation completed successfully
 
+  /System/Debug/Log:
+    get:
+      description: |
+        Get debug messages from a non-volatile storage.
+      parameters:
+        - name: params
+          in: body
+          description: Range of messages to be selected.
+          required: true
+          schema:
+            $ref: '#/definitions/DebugLogQuery'
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            $ref: '#/definitions/DebugLogResult'
+        204:
+          description: No messages found in a given range.
+
+  /System/Debug/Log/Config:
+    get:
+      description: |
+        Get current log configuration.
+      responses:
+        200:
+          description: Returns log configurations.
+          schema:
+            $ref: '#/definitions/DebugMessageConfig'
+    put:
+      description: |
+        Set log configuration.
+      parameters:
+        - name: config
+          in: body
+          description: New configurations for the debug logging.
+          required: true
+          schema:
+            $ref: '#/definitions/DebugLogConfig'
+      responses:
+        200:
+          description: Operation completed successfully
+
+
 definitions:
   DebugMessageConfig:
     properties:
@@ -96,7 +139,7 @@ definitions:
       - Message
     properties:
       Timestamp:
-        description: Local timestamp of first measurement.
+        description: Local timestamp in seconds since epoch 1.1.1970 (UTC).
         type: integer
         format: uint32
         x-unit: millisecond
@@ -108,3 +151,37 @@ definitions:
       Message:
         description: Debug message.
         type: string
+
+  DebugLogQuery:
+    required:
+      - Timestamp
+      - Count
+    properties:
+      Timestamp:
+        description: Timestamp defining the range of debug messages (messages with older timestamps are selected).
+        type: integer
+        format: uint32
+        x-unit: millisecond
+      Count:
+        description: Number of messages to be selected.
+        type: integer
+        format: uint16
+
+  DebugLogConfig:
+    required:
+      - MinimalLevel
+    properties:
+      MinimalLevel:
+        description: |
+          Minimal level of debug messages to be saved in log.
+        $ref: '#/definitions/DebugLevel'
+
+  DebugLogResult:
+    required:
+      - Messages
+    properties:
+      Messages:
+        description: List of debug messages.
+        type: array
+        items:
+          $ref: '#/definitions/DebugMessage'

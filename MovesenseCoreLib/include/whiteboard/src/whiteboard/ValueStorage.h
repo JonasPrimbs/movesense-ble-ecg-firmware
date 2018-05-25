@@ -2,6 +2,7 @@
 // Copyright (c) Suunto Oy 2016. All rights reserved.
 
 #include "whiteboard/Value.h"
+#include "whiteboard/builtinTypes/HashString.h"
 
 namespace whiteboard
 {
@@ -75,7 +76,9 @@ public:
     ValueStorage(uint64 data);
     ValueStorage(float data);
     ValueStorage(double data);
-
+#ifdef WB_HAVE_HASH_STRING
+    ValueStorage(HashString data);
+#endif
     /** Constructor for initializing value storage with string literal (or const char array)
     *
     * @tparam N Length of the string literal including zero terminator
@@ -120,7 +123,9 @@ public:
     ValueStorage& operator=(uint64 data);
     ValueStorage& operator=(float data);
     ValueStorage& operator=(double data);
-
+#ifdef WB_HAVE_HASH_STRING
+    ValueStorage& operator=(HashString data);
+#endif
     /** Assignment operator that stores string literal (or const char array) in this value storage
     *
     * @tparam N Length of the string literal including zero terminator
@@ -198,6 +203,9 @@ private:
         float mFloat;
         double mDouble;
         char* mString;
+#ifdef WB_HAVE_HASH_STRING
+        HashString::ValueType mHash;
+#endif
     } mValue;
 
     /// The extra storage for strings

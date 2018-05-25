@@ -1,8 +1,11 @@
 #pragma once
 // Copyright (c) Suunto Oy 2015. All rights reserved.
 
+#ifdef WB_HAVE_DEPRECATED_BYTE_STREAM
+
 #include "whiteboard/integration/port.h"
 #include "whiteboard/Identifiers.h"
+
 
 namespace whiteboard
 {
@@ -293,3 +296,5 @@ public:
 WB_PACK_END()
 
 } // namespace whiteboard
+
+#endif

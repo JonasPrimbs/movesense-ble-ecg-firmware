@@ -167,10 +167,10 @@ private:
     volatile uint32 mFirstFreeWithUniquefier;
 
     /** Helper constant for uniquefier increment */
-    static const uint32 UNIQUEFIER_INCREMENT = 1ul << (8ul * sizeof(KeyType));
+    static const uint32 UNIQUEFIER_INCREMENT = 1u << (8u * sizeof(KeyType));
 
     /** Helper constant for getting uniquefier value from mFirstFreeWithUniquefier */
-    static const uint32 UNIQUEFIER_MASK = ~(UNIQUEFIER_INCREMENT - 1ul);
+    static const uint32 UNIQUEFIER_MASK = ~(UNIQUEFIER_INCREMENT - 1u);
 };
 
 } // namespace whiteboard

@@ -1,0 +1,245 @@
+swagger: '2.0'
+
+info:
+  version: NA
+  title: BLE GATT service - Movesense-API
+  description: |
+    API for creating BLE GATT services.
+  x-api-type: public
+  x-api-required: false
+  x-api-state: experimental
+
+paths:
+
+  /Comm/Ble/GattSvc:
+    get:
+      description: |
+        Read the list of enabled GATT services.
+      responses:
+        200:
+          description: Operation completed successfully.
+          schema:
+            $ref: '#/definitions/GattSvcList'
+
+    post:
+      description: |
+        Add & enable a new GATT service
+      parameters:
+        - name: data
+          in: body
+          description: GattService definition for the new service
+          required: true
+          schema:
+            $ref: '#/definitions/GattSvc'
+      responses:
+        201:
+          description: Operation completed successfully
+          schema:
+            $ref: '#/definitions/GattSvcHandle'
+        507:
+          description: There is no more space for adding new GATT services
+
+  /Comm/Ble/GattSvc/{SvcHandle}:
+    get:
+      description: |
+        Get information of the gatt service
+      responses:
+        200:
+          description: Operation completed successfully.
+          schema:
+            $ref: '#/definitions/GattSvc'
+        404:
+          description: No such GATT service
+
+    delete:
+      description: |
+        Remove given GATT service
+      responses:
+        200:
+          description: Operation completed successfully
+        404:
+          description: No such GATT service
+        501:
+          description: Not Implemented (not all implementations support removing GATT services)
+    parameters:
+       - $ref: '#/parameters/SvcHandle'
+
+  /Comm/Ble/GattSvc/{SvcHandle}/{CharHandle}:
+    get:
+      description: |
+        Get the current value of the characteristic.
+      responses:
+        200:
+          description: Boolean true if raw mode is enabled
+          schema:
+            $ref: '#/definitions/Characteristic'
+    put:
+      description: |
+        Write a new value to characteristic. 
+      parameters:
+        - name: value
+          in: query
+          description: New characteristic value. 
+          required: true
+          schema:
+            $ref: '#/definitions/Characteristic'
+      responses:
+        200:
+          description: Operation completed successfully
+        413:
+          description: Value too big for the characteristics
+        412:
+          description: characteristic does not have INDICATE or NOTIFY properties
+
+  /Comm/Ble/GattSvc/{SvcHandle}/{CharHandle}/Subscription:
+    parameters:
+       - $ref: '#/parameters/SvcHandle'
+       - $ref: '#/parameters/CharHandle'
+    post:
+      description: |
+        Subscribe to characteristic changes.
+      responses:
+        200:
+          description: Operation completed successfully
+        412:
+          description: Only valid if the characteristic has WRITE or WRITE_WO_RESP properties
+        x-notification:
+          description: new characteristic value
+          schema:
+            $ref: '#/definitions/Characteristic'
+
+    delete:
+      description: |
+        Unsubscribe from characteristic changes.
+      responses:
+        200:
+          description: Operation completed successfully
+
+definitions:
+  GattSvcList:
+    type: object
+    required:
+      - services
+    properties:
+      services:
+        type: array
+        items:
+          $ref: '#/definitions/GattSvc'
+
+  GattSvc:
+    type: object
+    required:
+      - uuid
+      - chars
+    properties:
+      uuid:
+        description: UUID of the GATT service. 2 byte registered Service UUID or full 128bit custom UUID
+        type: array
+        items:
+          type: integer
+          format: uint8
+        minLength: 2
+        maxLength: 16
+      chars:
+        description: Characteristics available in the GATT service
+        type: array
+        items:
+          $ref: '#/definitions/GattChar'
+      handle:
+        description: handle of the GATT service. Can be used as URL parameter to access specific service
+        type: integer
+        format: uint16
+
+  GattChar:
+    type: object
+    required:
+      - uuid
+      - props
+    properties:
+      uuid:
+        description: UUID of the GATT service. 2 byte registered Service UUID or full 128bit custom UUID
+        type: array
+        items:
+          type: integer
+          format: uint8
+        minLength: 2
+        maxLength: 16
+      props:
+        description: UUID of the GATT service. 2 byte registered Service UUID or full 128bit custom UUID
+        type: array
+        items:
+          $ref: '#/definitions/GattProperty'
+      handle:
+        description: handle of the GATT characteristic. Can be used as URL parameter to access specific characteristic
+        type: integer
+        format: uint16
+      initial_value:
+        description: Initial value of the characteristic. Max length can be MTU - 3 bytes.
+        type: array
+        items:
+          type: integer
+          format: uint8
+        minLength: 0
+        maxLength: 510
+
+
+
+  Characteristic:
+    type: object
+    required:
+      - bytes
+    properties:
+      bytes:
+        description: Value of the characteristic. Max length can be MAX MTU - 3 bytes. Max possible MTU = 513 bytes (??? Check this!)
+        type: array
+        items:
+          type: integer
+          format: uint8
+        minLength: 0
+        maxLength: 510
+      notifications:
+        description: Optional boolean that tells if NOTIFY or INDICATE type characteristic has been enabled by client.
+        type: boolean
+
+  GattProperty:
+    description: |
+      List of possible properties for GATT characteristic
+    type: integer
+    format: uint8
+    enum:
+      - name: 'AUTH_SIGNED_WR'
+        value: 1
+      - name: 'BROADCAST'
+        value: 2
+      - name: 'INDICATE'
+        value: 3
+      - name: 'NOTIFY'
+        value: 4
+      - name: 'READ'
+        value: 5
+      - name: 'WRITE'
+        value: 6
+      - name: 'WRITE_WO_RESP'
+        value: 7
+
+  GattSvcHandle:
+    name: GattSvcHandle
+    in: path
+    required: true
+    type: integer
+    format: int32
+
+parameters:
+  SvcHandle:
+    name: SvcHandle
+    in: path
+    required: true
+    type: integer
+    format: int32
+
+  CharHandle:
+    name: CharHandle
+    in: path
+    required: true
+    type: integer
+    format: int32

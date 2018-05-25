@@ -228,7 +228,12 @@ http://www.exploringbinary.com/ten-ways-to-check-if-an-integer-is-a-power-of-two
     #define EXPLICIT explicit
   #endif
 
-  #else // WB_HAVE_CPLUSPLUS_11
+  /** C++11 constexpr specifier to specify possible compile time function / variable */
+  #ifndef CONSTEXPR
+    #define CONSTEXPR constexpr
+  #endif
+
+#else // WB_HAVE_CPLUSPLUS_11
 
   #ifndef OVERRIDE
     #define OVERRIDE /**/
@@ -246,6 +251,10 @@ http://www.exploringbinary.com/ten-ways-to-check-if-an-integer-is-a-power-of-two
     #define EXPLICIT /**/
   #endif
 
+  #ifndef CONSTEXPR
+    #define CONSTEXPR /**/
+  #endif
+
 #endif // WB_HAVE_CPLUSPLUS_11
 
 /** Macro for creating compiler friend multichar literals in big endian format
@@ -256,6 +265,14 @@ http://www.exploringbinary.com/ten-ways-to-check-if-an-integer-is-a-power-of-two
   #define WBDEBUG_NAME(name) name
 #else
   #define WBDEBUG_NAME(name) NULL
+#endif
+
+// If build environment passed a short name to use for tracing, use that, and
+// otherwise use the regular cpp/toolchain provided one
+#ifdef TRACE_FILENAME
+  #define WB_SOURCE_FILENAME TRACE_FILENAME
+#else
+  #define WB_SOURCE_FILENAME __FILE__
 #endif
 
 #if WB_UNITTEST_BUILD
