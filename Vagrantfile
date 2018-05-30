@@ -1,5 +1,5 @@
 Vagrant.configure('2') do |config|
-  config.vm.box = 'ubuntu/zesty64'
+  config.vm.box = 'ubuntu/artful64'
 
   config.ssh.forward_agent = true
 
@@ -17,9 +17,9 @@ Vagrant.configure('2') do |config|
     pip install nrfutil pyyaml
 
     # make the bash go into /vagrant dir when logging in
-    if ! cat /home/ubuntu/.bash_profile > /dev/null 2>&1 | grep 'cd /vagrant' > /dev/null 2>&1; then
-      touch /home/ubuntu/.bash_profile || echo .bash_profile exists
-      echo 'cd /vagrant' >> /home/ubuntu/.bash_profile
+    if ! cat /home/vagrant/.bash_profile > /dev/null 2>&1 | grep 'cd /vagrant' > /dev/null 2>&1; then
+      touch /home/vagrant/.bash_profile || echo .bash_profile exists
+      echo 'cd /vagrant' >> /home/vagrant/.bash_profile
     fi
   SHELL
 end
