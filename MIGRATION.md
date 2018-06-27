@@ -1,3 +1,32 @@
+## Migration to 1.6.1
+
+**NOTE:** Both of the new features listed below require the use of latest *./samples/\_build* folder from the release.
+
+### Reset reason string
+
+If you want to receive information from the sensor about what caused the last reset, you can add following code to your sensor application:
+
+```
+// Read last reset reason and log it using DebugLogger
+  char buf[60];
+  if (faultcom_GetLastFaultStr(false, buf, sizeof(buf))) {
+      DebugLogger::info("Last reset reason: %s", buf);
+	  // ... Do something else with the reason ...
+  }
+```
+
+The function fills the buffer and returns *true* if there was an error in last reset (e.g. ASSERT) or just returns *false* if not. 
+It is possible to read the reason for example in the startup and store it (add *buf[40]* as your *Provider class* member), 
+but one can save a bit of RAM by just calling the function when the reason is needed 
+(e.g. when returning the info from your own service).
+
+### UTC stays over reset ###
+
+A new feature in 1.6.1 is the keeping of the UTC clock over resets (if the sensor is set to FULL_POWER_OFF, the time is lost). 
+The accuracy of the clock suffers when reset occurs, and the error incurred is typically around +- 1 second. If you rely on more accurate
+UTC time, make sure that you detect the reset (when your code runs *startModule()*) instead of relying on clock resetting to Jan 1st 2015.
+
+
 ## Migration to 1.5.0
 
 ### asyncSubscribe workaround
