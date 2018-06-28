@@ -24,6 +24,6 @@ APPINFO_NAME("Sample CustomGATTSvc");
 APPINFO_VERSION("1.0.0");
 APPINFO_COMPANY("Movesense");
 
-SERIAL_COMMUNICATION(true) // Warning: enabling this may increase power consumption (depends on UART setting)
+// NOTE: SERIAL_COMMUNICATION macro has been DEPRECATED
 BLE_COMMUNICATION(true)
 MOVESENSE_FEATURES_END()

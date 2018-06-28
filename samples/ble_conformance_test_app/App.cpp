@@ -32,6 +32,6 @@ APPINFO_VERSION("1.0.0");
 APPINFO_COMPANY("Movesense");
 
 // Serial communication must be disabled so that the battery has enough power for running the tests
-SERIAL_COMMUNICATION(false)
+// NOTE: SERIAL_COMMUNICATION macro has been DEPRECATED
 BLE_COMMUNICATION(true)
 MOVESENSE_FEATURES_END()

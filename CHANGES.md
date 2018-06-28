@@ -1,3 +1,27 @@
+## Version 1.6.1.1655.ec1bba61bb8493 ##
+
+
+###Whats new:###
+
+- Feature: Store RTC over reset (accuracy about +-1 second after reset)
+- Feature: Added function faultcom_GetLastFaultStr() (See: *movesense.h*) to receive string to describe error/reason of last reset
+- Bugfix: HR & ECG signal stops coming after a while
+- Bugfix: consecutive ECG subscriptions fail with NOT_IMPLEMENTED
+- Bugfix: Sometimes onUnsubscribe fails for /Meas/ECG
+- Bugfix: accumulated RR-time drifts if ECG is subscribed on some samplerates 
+- Bugfix: Issue in tickless implementation which lead to busy loop
+- Bugfix: /Mem/Logbook/Entries only returns 4 entries
+- Bugfix: /Mem/Logbook/Entries contain weird timestamps
+- Deprecated: SERIAL_COMMUNICATION macro is no longer needed
+
+
+###Known Bugs:###
+
+- Standard BLE battery profile does not send new values
+- The first package of Acc/Magn/Gyro can be corrupted for high sample rates
+- be sure to also check Bitbucket for any additional reported issues: [device library](https://bitbucket.org/suunto/movesense-device-lib/issues?status=new&status=open) and [mobile library](https://bitbucket.org/suunto/movesense-mobile-lib/issues?status=new&status=open)
+
+
 ## Version 1.6.0.1582.25d038d702bd99 ##
  
 ###Whats new:###
@@ -11,7 +35,7 @@
 - Experimental: DebugService storage (EEPROM)
 - Experimental: New system states (Free fall/Double tap/Tap)
 - Bugfix: Leak of the GearID subscription
-- BugFix: Battery and HRS BLE profile don’t pass Bluetooth SIG tests
+- BugFix: Battery and HRS BLE profile donï¿½t pass Bluetooth SIG tests
 - Bugfix: BLE scan does not return rssi
  
 ###Known Bugs:###

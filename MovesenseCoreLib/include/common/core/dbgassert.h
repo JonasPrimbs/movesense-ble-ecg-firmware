@@ -4,6 +4,7 @@
 extern "C" {
 #endif
 
+#include "buildconfig/bsp/config.h"
 #include <common/compiler/genDef.h>
 #include <stdbool.h> // bool
 #include <stddef.h>  // size_t
@@ -30,7 +31,7 @@ bool verifyFailed(const char* file, const size_t lineNumber);
 #undef ASSERT
 #endif //ASSERT
 
-#ifdef NDEBUG
+#if defined(NDEBUG) && !defined(BUILD_BSP_ENABLE_ASSERT_IN_RELEASE)
 // NDEBUG is from stdlib(C) and will disable stdlib assert which is used by
 // KSDK and others. If it is passed as additional flag, disable ASSERTs as well
 // NOTE: To test, set the CFLAGS and CXXFLAGS in cmake-gui (-DNDEBUG)
@@ -41,12 +42,12 @@ bool verifyFailed(const char* file, const size_t lineNumber);
     do                                                                                                                           \
     {                                                                                                                            \
         (void)(cond);                                                                                                            \
-    } while (0)
+    } while (0);
 #define ASSERT_NO_SYSTEMEVENT(cond)                                                                                              \
     do                                                                                                                           \
     {                                                                                                                            \
         (void)(cond);                                                                                                            \
-    } while (0)
+    } while (0);
 
 #else // no NDEBUG
 
@@ -57,7 +58,7 @@ bool verifyFailed(const char* file, const size_t lineNumber);
         {                                                                                                                        \
             assertFailed(TRACE_FILENAME, __LINE__, true);                                                                        \
         }                                                                                                                        \
-    } while (0)
+    } while (0);
 
 #define ASSERT_NO_SYSTEMEVENT(cond)                                                                                              \
     do                                                                                                                           \
@@ -66,7 +67,7 @@ bool verifyFailed(const char* file, const size_t lineNumber);
         {                                                                                                                        \
             assertFailed(TRACE_FILENAME, __LINE__, false);                                                                       \
         }                                                                                                                        \
-    } while (0)
+    } while (0);
 
 #endif // no NDEBUG
 
@@ -74,8 +75,10 @@ bool verifyFailed(const char* file, const size_t lineNumber);
 #define DEBUG_ASSERT(cond) ASSERT(cond)
 #else
 #define DEBUG_ASSERT(cond)
+#define DEBUGLOG_SIZE()
 #endif
 
 #define SYSTEM_VERIFY(cond) ((cond) ? true : (verifyFailed(TRACE_FILENAME, __LINE__), false))
+#define VERIFY_WITH_RETVAL(cond) SYSTEM_VERIFY(cond)
 
 #define VERIFY SYSTEM_VERIFY

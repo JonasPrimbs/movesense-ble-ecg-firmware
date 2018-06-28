@@ -28,7 +28,7 @@ APPINFO_NAME("Secure BLE connection sample");
 APPINFO_VERSION("1.0.0");
 APPINFO_COMPANY("Movesense");
 
-SERIAL_COMMUNICATION(false) // Warning: enabling this feature will increase power consumption
+// NOTE: SERIAL_COMMUNICATION macro has been DEPRECATED
 BLE_COMMUNICATION(true)
 //BLE_REQUIRE_BONDING(true)
 MOVESENSE_FEATURES_END()
