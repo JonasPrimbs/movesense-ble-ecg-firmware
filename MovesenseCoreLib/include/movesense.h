@@ -50,6 +50,18 @@ extern const char * const*__MOVESENSE_APP_SPECIFIC_MODULES;
 extern uint16_t g_WB_EXEC_CTX_APPLICATION_STACKSIZE;
 // and macro to set it
 
+// This function writes a string explaining the last reset reason to the given buffer
+// returns true, if there was a failure (ASSERT or HF-fault etc.), false if not
+// To use just call from code:
+//
+//    // Read last reset reason and log it using DebugLogger
+//    char buf[40];
+//    if (faultcom_GetLastFaultStr(false, buf, sizeof(buf))) {
+//        DebugLogger::info("Last reset reason: %s", buf);
+//    }
+extern "C" {
+    bool faultcom_GetLastFaultStr(bool abbreviated, char *outBuf, size_t bufLen);
+}
 
 #define MOVESENSE_APPLICATION_STACKSIZE(stackSizeInWords) uint16_t g_WB_EXEC_CTX_APPLICATION_STACKSIZE = (stackSizeInWords);
 
@@ -82,7 +94,6 @@ public:\
 __MovesenseAppModuleHolder __launchableModuleHolder; const char * __MovesenseAppModuleHolder::__moduleNames[NumModules+1]; whiteboard::LaunchableModule* __MovesenseAppModuleHolder::__moduleObjs[NumModules+1];\
 const char *const *__MOVESENSE_APP_SPECIFIC_MODULES = __MovesenseAppModuleHolder::__moduleNames;
 
-extern const bool g_enableSerialComm;
 extern const bool g_enableBLEComm;
 
 extern const char* g_appInfo_name;
@@ -98,7 +109,9 @@ extern const char* g_appInfo_company;
 
 
 // Movesense Communication types (must be defined in App.cpp)
-#define SERIAL_COMMUNICATION(enable) const bool g_enableSerialComm = (enable);
+#define SERIAL_COMMUNICATION(enable) \
+    _Pragma("message \"DEPRECATED: SERIAL_COMMUNICATION macro is now deprecated.\"")
+
 #define BLE_COMMUNICATION(enable) const bool g_enableBLEComm = (enable);
 #define BLE_REQUIRE_BONDING(enable) const bool __requireBonding() { return (enable); }
 #define LOGBOOK_MEMORY_AREA(offset, size) \

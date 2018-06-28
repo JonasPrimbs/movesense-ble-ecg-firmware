@@ -28,6 +28,6 @@ APPINFO_NAME("Sample Custom BLEAdv");
 APPINFO_VERSION("1.0.0");
 APPINFO_COMPANY("Movesense");
 
-SERIAL_COMMUNICATION(false) // Warning: enabling this feature will increase power consumption
+// NOTE: SERIAL_COMMUNICATION macro has been DEPRECATED
 BLE_COMMUNICATION(true)
 MOVESENSE_FEATURES_END()

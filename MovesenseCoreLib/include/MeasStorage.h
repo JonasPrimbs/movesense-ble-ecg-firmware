@@ -108,12 +108,12 @@ public:
     /**
         Appends any WB measurement value to storage.
 
-        @param timestamp_ms    Timestamp in ms
+        @param unixTimeSeconds    Unix time in seconds
         @param measurement        WB measurement to store
         @note
         Appends Whiteboard measurement struct to storage.
     */
-    void appendWBMeasurement( uint32_t timestamp_ms, whiteboard::ResourceId resourceId, const whiteboard::Value &measurement );
+    void appendWBMeasurement( uint32_t unixTimeSeconds, whiteboard::ResourceId resourceId, const whiteboard::Value &measurement );
 
     /**
         Flushes cached measurement-values. 
@@ -238,7 +238,7 @@ private:
 
     MeasurementBuffer &getMeasBuffer(uint16_t measBufferId);
     int findMeasBuffer(uint16_t bufferId) const;
-    void flushChunkAndStartNew(uint16_t measurementID, MeasurementBuffer &meas, uint32_t timestamp_ms, bool continuation);
+    void flushChunkAndStartNew(uint16_t measurementID, MeasurementBuffer &meas, uint32_t unixTimeSeconds, bool continuation);
     size_t getBuffersInUseCount() const;
 
     // rrChunkTbl keeps track of any single rr chunk located in each slice of ring buffer.

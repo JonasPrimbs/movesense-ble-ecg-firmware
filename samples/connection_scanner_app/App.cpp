@@ -28,6 +28,6 @@ APPINFO_NAME("Sample Connection Scanner");
 APPINFO_VERSION("1.1.0");
 APPINFO_COMPANY("Movesense");
 
-SERIAL_COMMUNICATION(true) // Warning: enabling this feature will increase power consumption
+// NOTE: SERIAL_COMMUNICATION macro has been DEPRECATED
 BLE_COMMUNICATION(true)
 MOVESENSE_FEATURES_END()
