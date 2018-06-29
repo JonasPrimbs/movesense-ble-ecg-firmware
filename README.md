@@ -1,6 +1,6 @@
 ## Announcements
-**(May 25th 2018) Sensor firmware version 1.6.0 is out!**  
-The new version of the firmware has come with more flash space for applications and new features. 
+**(June 29th 2018) Sensor firmware version 1.6.2 is out!**  
+The new version contains a fix for ECG on high datarates
 
 **Known issues**  
 Please refer to [CHANGES.md](CHANGES.md) for a list of known issues.
