@@ -1,3 +1,18 @@
+## Version 1.6.2.1664.34ea980127698d ##
+
+###Whats new:###
+- Bugfix: ECG stuck in high sample-rates over BLE
+
+###Known Bugs:###
+
+- Standard BLE battery profile does not send new values
+- The first package of Acc/Magn/Gyro can be corrupted for high sample rates
+- be sure to also check Bitbucket for any additional reported issues: [device library](https://bitbucket.org/suunto/movesense-device-lib/issues?status=new&status=open) and [mobile library](https://bitbucket.org/suunto/movesense-mobile-lib/issues?status=new&status=open)
+
+###Notes:###
+- ECG over BLE datarate is close to max data bandwidth when subscribing samplerates 500 & 512. This can lead to loss of data due to small on chip FIFO on AFE chip. 
+
+
 ## Version 1.6.1.1655.ec1bba61bb8493 ##
 
 
