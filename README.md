@@ -1,6 +1,6 @@
 ## Announcements
-**(June 28th 2018) Sensor firmware version 1.6.1 is out!**  
-The new version of the firmware has come with bugfixes and new features. 
+**(May 25th 2018) Sensor firmware version 1.6.0 is out!**  
+The new version of the firmware has come with more flash space for applications and new features. 
 
 **Known issues**  
 Please refer to [CHANGES.md](CHANGES.md) for a list of known issues.
