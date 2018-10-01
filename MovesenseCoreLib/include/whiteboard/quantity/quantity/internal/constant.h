@@ -19,7 +19,7 @@ const Value BASE_UNIT = Value(1);
 // Acceleration
 const Value GRAVITY_OF_EARTH_IN_METERS_PER_SECOND_SQUARED = Value(9.80665);
 
-//SPEED 
+// Speed 
 const Value FEET_PER_MINUTES_IN_METERS_PER_SECOND = Value(0.0050800001);
 const Value FEET_PER_HOUR_IN_METERS_PER_SECOND = Value(8.4667e-5);
 const Value KNOTS = Value(0.51444563339);
@@ -46,6 +46,8 @@ const Value PSI_IN_PASCAL = Value(6894.75729);
 const Value MILLIBAR_IN_PASCAL = Value(100);
 const Value INHG_IN_PASCAL = Value(3386.3886667);
 
+// Electric charge
+const Value AMPERE_HOUR_IN_COULOMBS = Value(3600.0);
 
 // Energy
 const Value KCALS_IN_JOULE = Value(4183.99538087);

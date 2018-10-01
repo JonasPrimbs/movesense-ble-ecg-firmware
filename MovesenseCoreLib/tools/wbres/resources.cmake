@@ -78,6 +78,7 @@ function (generate_wb_resources Name OutputVar)
   set(WBRES_OUTPUT_HEADER ${PATH_GENERATED_ROOT}/${Name}/resources.h)
   set(WBRES_OUTPUT_CHEADER ${PATH_GENERATED_ROOT}/${Name}/resources.c.h)
   set(WBRES_OUTPUT_SOURCE ${PATH_GENERATED_ROOT}/${Name}/resources.cpp)
+  set(WBRES_RESPONSE_FILE ${CMAKE_BINARY_DIR}/${Name}.wbo.rsp)
   set(WBRES_OUTPUT_LIB ${CMAKE_BINARY_DIR}/${Name}.wbo)
   set(WBRES_OUTPUT_METADATA ${CMAKE_BINARY_DIR}/${Name}/metadata.cpp)
   set(WBRES_OUTPUT_METADATA_BIN ${CMAKE_BINARY_DIR}/${Name}.wbr)
@@ -138,7 +139,7 @@ function (generate_wb_resources Name OutputVar)
       list(APPEND INPUTS ${SOURCE_GROUP_FILES})
     endif()
     set(SOURCE_GROUP_NAME)
-    set(SOURCE_GROUP_SOURCES)    
+    set(SOURCE_GROUP_SOURCES)
   endmacro()
   
   # Parse arguments
@@ -243,10 +244,12 @@ function (generate_wb_resources Name OutputVar)
   _add_wb_resources_source_group(SOURCE_GROUP_NAME SOURCE_GROUP_SOURCES)
 
   # Add command to generate outputs
+  string(REPLACE ";" " " RESPONSE_FILE_CONTENTS "${CMDLINE} ${INPUTS}")
+  file(WRITE "${WBRES_RESPONSE_FILE}" "${RESPONSE_FILE_CONTENTS}")
   add_custom_command(
-	OUTPUT ${OUTPUTS} ${HIDDEN_OUTPUTS}
-	COMMAND "${WBRES_TOOL}" ${CMDLINE} ${INPUTS}
-	DEPENDS ${INPUTS} "${WBRES_TOOL}"
+    OUTPUT ${OUTPUTS} ${HIDDEN_OUTPUTS}
+    COMMAND "${WBRES_TOOL}" "@${WBRES_RESPONSE_FILE}"
+    DEPENDS ${INPUTS} "${WBRES_TOOL}" "${WBRES_RESPONSE_FILE}"
     VERBATIM
   )
 

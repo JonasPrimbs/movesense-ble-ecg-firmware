@@ -62,21 +62,17 @@ definitions:
     properties:
       average:
         description: |
-            Heart rate value that is averaged and filtered and presented in Hz.
+            Heart rate value that is averaged and filtered and presented in bpm.
             Invalid heart rate is presented by 0.0f.
         type: number
         format: float
-        x-unit: Hz
-        minimum: 0.0    # equals in HR 0 bpm
-        maximum: 4.2    # equals in HR 252 bpm
+        x-unit: bpm
+        minimum: 0.0
+        maximum: 250.0
       rrData:
         description: |
             RR-interval returns all the intervals in milliseconds. By default,
-            single rr-interval value is returned after each heart beat. If for
-            some reason the rr-interval becomes longer than 60 sec (60000ms),
-            then max values and remainder are added to array, until the real
-            interval time is met. For example, rr-interval becomes
-            2min 12 sec 310ms, then returned rrData array is [60000,60000,12310].
+            single rr-interval value is returned after each heart beat.
         type: array
         minItems: 1
         maxItems: 60
@@ -85,7 +81,7 @@ definitions:
           format: uint16
           x-unit: ms
           minimum: 240    # equals in HR 250 bpm
-          maximum: 60000  # equals in HR 1 bpm
+          maximum: 4000   # equals in HR 15 bpm
 
   TimestampFromStartup:
     description: Milliseconds since the startup (e.g. like reset or so).

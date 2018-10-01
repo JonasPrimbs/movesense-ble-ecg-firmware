@@ -86,7 +86,7 @@ paths:
         200:
           description: Returns log configurations.
           schema:
-            $ref: '#/definitions/DebugMessageConfig'
+            $ref: '#/definitions/DebugLogConfig'
     put:
       description: |
         Set log configuration.

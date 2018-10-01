@@ -1,6 +1,7 @@
 // Copyright (c) Suunto Oy 2016. All rights reserved.
 #pragma once
 #include "buildconfig/hal/features.h"
+#include "hwconfig.h"
 
 #ifdef BUILD_HAL_WANT_GPS
 #include "hal/gps/nextgen-driver/gps-driver.hpp"
@@ -11,7 +12,6 @@
 #endif // def BUILD_HAL_WANT_BUTTONS
 
 #include "hal/sensor/accelerometer/AccelerometerProvider.hpp"
-#include "hal/sensor/AFE/MAX30001/RrProvider.hpp"
 
 #ifdef HAL_WANT_MAGNETOMETER
 #include "hal/sensor/magnetometer/ak09912/MagnetometerProvider.hpp"
@@ -22,11 +22,19 @@
 #endif // def HAL_WANT_PRESSURE
 
 #ifdef BUILD_HAL_WANT_TMP112
+#ifndef HWCONFIG_SIMU
 #include "hal/sensor/temperature/tmp112/TemperatureProvider.hpp"
+#else
+#include "hal/sensor/temperature/simulator/TemperatureProvider.hpp"
+#endif
 #endif // def BUILD_HAL_WANT_TMP112
 
 #ifdef BUILD_HAL_WANT_HEARTRATE
-#include "hal/sensor/AFE/MAX3000x/MAX30004_provider.hpp"
+#ifndef HWCONFIG_SIMU
+#include "hal/sensor/AFE/MAX3000X/MAX30004_provider.hpp"
+#else
+#include "hal/sensor/AFE/MAX3000X_simu/MAX30004_provider.hpp"
+#endif
 #endif // def BUILD_HAL_WANT_HEARTRATE
 
 #ifdef BUILD_HAL_WANT_1WIRE
@@ -47,8 +55,11 @@
 #include "hal/pmic/PmicProvider.hpp"
 #endif
 
+#ifdef HWCONFIG_SIMU
+#include "hal/sensor/batteryGauge/simu/BatteryChargeProvider.hpp"
+#else
 #include "hal/sensor/batteryGauge/SS2/BatteryChargeProvider.hpp"
-
+#endif // SIMU
 
 // include hwconfig specific restrictions (not all hardware is present in all
 // designs)
@@ -56,7 +67,7 @@
 
 #ifdef BUILD_HAL_WANT_ACCELEROMETER
 // if we cannot satisfy the wish, break the build here
-#if !defined(HWCONFIG_PERF16_SIMU) && !defined(BSP_HACK_ENABLE_SPI_EXPERIMENT)
+#if !defined(HWCONFIG_PERF16_SIMU) && !defined(HWCONFIG_SS2_SIMU) && !defined(BSP_HACK_ENABLE_SPI_EXPERIMENT)
 #warning "Cannot enable accelerometer since SPIE is disabled (or not building for SIMU)"
 #endif
 #endif

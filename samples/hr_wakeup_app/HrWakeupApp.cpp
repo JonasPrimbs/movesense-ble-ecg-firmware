@@ -74,7 +74,7 @@ void HrWakeupApp::stopModule()
 {
     // Stop LED timer
     stopTimer(mTimer);
-    mTimer == whiteboard::ID_INVALID_TIMER;
+    mTimer = whiteboard::ID_INVALID_TIMER;
 }
 
 
@@ -93,7 +93,7 @@ void HrWakeupApp::onNotify(whiteboard::ResourceId resourceId, const whiteboard::
     if (data == WB_RES::RoutingTableNotificationTypeValues::ROUTE_NOTIFICATION_NEW)
     {
         stopTimer(mTimer);
-        mTimer == whiteboard::ID_INVALID_TIMER;
+        mTimer = whiteboard::ID_INVALID_TIMER;
         return;
     }
 

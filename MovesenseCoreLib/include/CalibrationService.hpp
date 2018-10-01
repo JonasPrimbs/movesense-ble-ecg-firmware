@@ -141,8 +141,7 @@ private:
     // Measurement matrices
     nea::Matrix u;
     nea::Matrix gm;
-    // Bias vector
-    float vecBias[3];
+
     // number of measurements for angular velocity bias
     int mBiasCount;
     // Previous values to calculate the integral using midpoint rule

@@ -5,7 +5,6 @@
 #include <float.h>
 #include <math.h>
 
-#define ASSERT WB_DEBUG_ASSERT
 #define PACKET_INTERVAL_MS 100
 
 const char* const ConnectionReliabilityService::LAUNCHABLE_NAME = "ConnRel";

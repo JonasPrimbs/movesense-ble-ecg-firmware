@@ -75,10 +75,6 @@ private:
     virtual void onUnsubscribe(const wb::Request& request,
                                const wb::ParameterList& parameters) OVERRIDE;
 
-    /** @see whiteboard::ResourceClient::onNotify */
-    virtual void onNotify(wb::ResourceId resourceId, const wb::Value& value,
-                          const wb::ParameterList& parameters) OVERRIDE;
-
     /** @see whiteboard::ResourceProvider::onDeleteRequest */
     virtual void onDeleteRequest(const whiteboard::Request& rRequest,
                          const whiteboard::ParameterList& parameters) OVERRIDE;

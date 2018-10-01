@@ -79,15 +79,13 @@ uint32_t CustomBleController::PrepareScanResponseData(uint8_t * buffer, uint32_t
 
 void CustomBleController::OnHrsNotificationEnabled()
 {
-    BleServicesApp::spInstance->mHrsEnableReq = true;
-    BleServicesApp::queueDpc();
+    BleServicesApp::setNotificationRequest(true);
 }
 
 
 void CustomBleController::OnHrsNotificationDisabled()
 {
-    BleServicesApp::spInstance->mHrsEnableReq = false;
-    BleServicesApp::queueDpc();
+    BleServicesApp::setNotificationRequest(false);
 }
 
 

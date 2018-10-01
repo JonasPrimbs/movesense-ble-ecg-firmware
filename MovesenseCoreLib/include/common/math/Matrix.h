@@ -10,7 +10,7 @@
 
         Matrix implementation.
 */
-#include <stdio.h>
+#include "oswrapper/hostOs.h"
 
 namespace nea
 {

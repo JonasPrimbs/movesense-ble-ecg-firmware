@@ -75,7 +75,6 @@ bool verifyFailed(const char* file, const size_t lineNumber);
 #define DEBUG_ASSERT(cond) ASSERT(cond)
 #else
 #define DEBUG_ASSERT(cond)
-#define DEBUGLOG_SIZE()
 #endif
 
 #define SYSTEM_VERIFY(cond) ((cond) ? true : (verifyFailed(TRACE_FILENAME, __LINE__), false))

@@ -15,6 +15,7 @@
 #include "quantity/angle.h"
 #include "quantity/angular_velocity.h"
 #include "quantity/distance.h"
+#include "quantity/electric_charge.h"
 #include "quantity/electric_current.h"
 #include "quantity/electric_potential.h"
 #include "quantity/energy.h"

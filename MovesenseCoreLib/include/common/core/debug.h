@@ -50,21 +50,19 @@ void WEAK debugOutHook(const char* str);
     do                                                                                                                           \
     {                                                                                                                            \
     } while (0)
+#define DEBUGLOG_SIZE()
 #elif defined(__IAR_SYSTEMS_ICC__) || defined(__GNUC__)
 #define DEBUGLOG(...) debugOut(true, __VA_ARGS__)
 #define DEBUGLOGNOENDL(...) debugOut(false, __VA_ARGS__)
-#define DEBUGLOGRAW(...) debugOutRaw(ARGCOUNT(__VA_ARGS__) - 1, false, __VA_ARGS__)
-#define DEBUGLOGRAWSTR(...) debugOutRaw(ARGCOUNT(__VA_ARGS__) - 1, true, __VA_ARGS__)
+#define DEBUGLOG_SIZE() DEBUGLOG("[this]:%s: %u B", __FUNCTION__, sizeof(*this))
 #elif defined(__clang__)
 #define DEBUGLOG(format, ...) debugOut(true, format, ##__VA_ARGS__)
 #define DEBUGLOGNOENDL(format, ...) debugOut(false, format, ##__VA_ARGS__)
-#define DEBUGLOGRAW(message, ...) debugOutRaw(ARGCOUNT(__VA_ARGS__), false, message, ##__VA_ARGS__)
-#define DEBUGLOGRAWSTR(message, str, ...) debugOutRaw(ARGCOUNT(__VA_ARGS__) + 1, true, message, ##__VA_ARGS__)
+#define DEBUGLOG_SIZE() DEBUGLOG("[this]:%s: %uB", __FUNCTION__, sizeof(*this))
 #else
 #define DEBUGLOG(...) debugOut(true, ##__VA_ARGS__)
 #define DEBUGLOGNOENDL(...) debugOut(false, ##__VA_ARGS__)
-#define DEBUGLOGRAW(...) debugOutRaw(ARGCOUNT(__VA_ARGS__) - 1, false, ##__VA_ARGS__)
-#define DEBUGLOGRAWSTR(...) debugOutRaw(ARGCOUNT(__VA_ARGS__) - 1, true, ##__VA_ARGS__)
+#define DEBUGLOG_SIZE() DEBUGLOG("[this]:%s: %uB", __FUNCTION__, sizeof(*this))
 #endif
 
 /** Sets name of current thread to attached debugger

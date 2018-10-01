@@ -48,7 +48,7 @@ void BlinkyClient::stopModule()
 {
     // Stop LED timer
     stopTimer(mTimer);
-    mTimer == whiteboard::ID_INVALID_TIMER;
+    mTimer = whiteboard::ID_INVALID_TIMER;
 }
 
 void BlinkyClient::onTimer(whiteboard::TimerId timerId)

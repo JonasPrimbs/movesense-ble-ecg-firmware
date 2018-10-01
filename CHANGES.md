@@ -1,3 +1,24 @@
+## Version 1.7.0.1820.f1520cad7c8107 ##
+
+###Whats new:###
+
+- Update: Whiteboard 3.16
+- Feature: PC Simulator support (see: README.md)
+- Feature: Framework for including 3rd party modules
+- Feature: New /Time/Detailed resource for getting UTC and RelativeTime
+- Bugfix: BLE Advertise name and GAP device name mismatch
+- Bugfix: Shutdown fails sometimes
+- Bugfix: Accel values becomes invalid after range change
+- Bugfix: Fixed RR-description in hr.yaml API
+- Bugfix: Some SystemStates issues
+
+###Known Bugs:###
+- In heavy BLE traffic accelerometer timestamps may have jitter
+
+###Notes:###
+- ECG over BLE datarate is close to max data bandwidth when subscribing samplerates 500 & 512. This can lead to loss of data due to small on chip FIFO on AFE chip.
+- Build system has been changed quite a bit so please copy the new style CMakeLists.txt-file from one of the sample apps to your own project folder!
+
 ## Version 1.6.2.1664.34ea980127698d ##
 
 ###Whats new:###

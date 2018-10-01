@@ -14,8 +14,7 @@ namespace whiteboard
 // Forward declarations
 class WhiteboardMockup;
 
-template <typename T>
-class TestValue
+template <typename T> class TestValue
 {
 private:
     T mValue;
@@ -25,10 +24,7 @@ public:
     TestValue() {}
     ~TestValue() {}
 
-    operator const T&() const
-    {
-        return mValue;
-    }
+    operator const T&() const { return mValue; }
 
     T& operator=(const T& rOther)
     {
@@ -43,19 +39,11 @@ private:
     char* mValue;
 
 public:
-    TestValue()
-        : mValue(NULL)
-    {}
+    TestValue() : mValue(NULL) {}
 
-    ~TestValue()
-    {
-        WbMemFree(mValue);
-    }
+    ~TestValue() { WbMemFree(mValue); }
 
-    operator char* const&() const
-    {
-        return mValue;
-    }
+    operator char* const&() const { return mValue; }
 
     char*& operator=(const char* other)
     {
@@ -73,25 +61,20 @@ class TestProviderBase : public ResourceProvider
 {
 public:
     /**
-    *	Constructor
-    *	@param pName Name of the resource.
-    *	@param executionContextId Providers execution context.
-    *   @param rWhiteboard Whiteboard instance to use
-    */
-    TestProviderBase(
-        const char* pName,
-        ExecutionContextId executionContextId,
-        Whiteboard& rWhiteboard);
+     *	Constructor
+     *	@param pName Name of the resource.
+     *	@param executionContextId Providers execution context.
+     *   @param rWhiteboard Whiteboard instance to use
+     */
+    TestProviderBase(const char* pName, ExecutionContextId executionContextId, Whiteboard& rWhiteboard);
 
     /**
-    * Constructor
-    *
-    * @param pName Name of the resource.
-    * @param rWhiteboard Whiteboard instance to use
-    */
-    TestProviderBase(
-        const char* pName,
-        WhiteboardMockup& rWhiteboard);
+     * Constructor
+     *
+     * @param pName Name of the resource.
+     * @param rWhiteboard Whiteboard instance to use
+     */
+    TestProviderBase(const char* pName, WhiteboardMockup& rWhiteboard);
 
     /** Desctructor */
     virtual ~TestProviderBase();
@@ -112,73 +95,66 @@ public:
 
 protected:
     /** Gets the associated whiteboard instance
-    *
-    * @return Whiteboard instance
-    */
-    virtual Whiteboard& getWhiteboard() OVERRIDE FINAL
-    {
-        return mrWhiteboard;
-    }
+     *
+     * @return Whiteboard instance
+     */
+    virtual Whiteboard& getWhiteboard() OVERRIDE FINAL { return mrWhiteboard; }
 
     /**
-    *	GET request handler.
-    *
-    *	@param rRequest Request information
-    *	@param rParameters List of parameters for the request
-    *	@return Result of the operation
-    */
-    virtual void onGetRequest(
-        const Request& rRequest, const ParameterList& /*rParameters*/) OVERRIDE
+     *	GET request handler.
+     *
+     *	@param rRequest Request information
+     *	@param rParameters List of parameters for the request
+     *	@return Result of the operation
+     */
+    virtual void onGetRequest(const Request& rRequest, const ParameterList& /*rParameters*/) OVERRIDE
     {
         return returnResult(rRequest, HTTP_CODE_OK);
     }
 
     /**
-    *	PUT request handler.
-    *
-    *	@param rRequest Request information
-    *	@param rParameters List of parameters for the request
-    *	@return Result of the operation
-    */
-    virtual void onPutRequest(
-        const Request& rRequest, const ParameterList& /*rParameters*/) OVERRIDE
+     *	PUT request handler.
+     *
+     *	@param rRequest Request information
+     *	@param rParameters List of parameters for the request
+     *	@return Result of the operation
+     */
+    virtual void onPutRequest(const Request& rRequest, const ParameterList& /*rParameters*/) OVERRIDE
     {
         return returnResult(rRequest, HTTP_CODE_OK);
     }
 
     /**
-    *	POST request handler.
-    *
-    *	@param rRequest Request information
-    *	@param rParameters List of parameters for the request
-    *	@return Result of the operation
-    */
-    virtual void onPostRequest(
-        const Request& rRequest, const ParameterList& /*rParameters*/) OVERRIDE
+     *	POST request handler.
+     *
+     *	@param rRequest Request information
+     *	@param rParameters List of parameters for the request
+     *	@return Result of the operation
+     */
+    virtual void onPostRequest(const Request& rRequest, const ParameterList& /*rParameters*/) OVERRIDE
     {
         return returnResult(rRequest, HTTP_CODE_OK);
     }
 
     /**
-    *	DELETE request handler.
-    *
-    *	@param rRequest Request information
-    *	@param rParameters List of parameters for the request
-    *	@return Result of the operation
-    */
-    virtual void onDeleteRequest(
-        const Request& rRequest, const ParameterList& /*rParameters*/) OVERRIDE
+     *	DELETE request handler.
+     *
+     *	@param rRequest Request information
+     *	@param rParameters List of parameters for the request
+     *	@return Result of the operation
+     */
+    virtual void onDeleteRequest(const Request& rRequest, const ParameterList& /*rParameters*/) OVERRIDE
     {
         return returnResult(rRequest, HTTP_CODE_OK);
     }
 
 private:
     /** Because ResourceProvider constructor binds to whiteboard before virtual table has been fully
-    *  initialized, we need to fix the binding to our whiteboard */
+     *  initialized, we need to fix the binding to our whiteboard */
     void fixBinding();
 
     /** ResourceProvider's destructor's unbinding will fail if we have not restored
-    *   original binding */
+     *   original binding */
     void unfixBinding();
 
 protected:
@@ -186,29 +162,31 @@ protected:
     bool mBindingFixed;
 };
 
-template <typename T, typename METADATA_CREATOR = MetadataCreator>
-class TestProvider : public TestProviderBase
+template <typename T, typename METADATA_CREATOR = MetadataCreator> class TestProvider : public TestProviderBase
 {
 public:
     /**
-    *	Constructor
-    *	@param name Name of the resource.
-    *	@param executionContextId Providers execution context.
-    *	@param registerProvider Flag to enable registration of provider resource. Default true.
-    *   @param rWhiteboard Whiteboard instance to use
-    */
-    TestProvider(
-        const char* name,
-        ExecutionContextId executionContextId,
-        bool registerProvider = true,
-        Whiteboard& rWhiteboard = getWhiteboardInstance())
+     *	Constructor
+     *	@param name Name of the resource.
+     *	@param executionContextId Providers execution context.
+     *	@param registerProvider Flag to enable registration of provider resource. Default true.
+     *   @param rWhiteboard Whiteboard instance to use
+     */
+    TestProvider(const char* name,
+                 ExecutionContextId executionContextId,
+                 bool registerProvider = true,
+                 Whiteboard& rWhiteboard = getWhiteboardInstance())
         : TestProviderBase(name, executionContextId, rWhiteboard),
           mResourceImpl(ID_INVALID_EXECUTION_CONTEXT, ID_INVALID_LOCAL_RESOURCE, rWhiteboard),
           mResource(name, executionContextId, 0, rWhiteboard),
           mpResource(&mResource),
           mRegisterProvider(registerProvider),
           mGetRequestCounter(0),
-          mPutRequestCounter(0)
+          mPutRequestCounter(0),
+          mPostRequestCounter(0),
+          mDeleteRequestCounter(0),
+          mSubscribeRequestCounter(0),
+          mUnsubscribeRequestCounter(0)
     {
         if (mRegisterProvider)
         {
@@ -217,26 +195,29 @@ public:
     }
 
     /**
-    *	Constructor
-    *	@param name Name of the resource.
-    *	@param localResourceId Local resource ID to register.
-    *	@param executionContextId Providers execution context.
-    *	@param registerProvider Flag to enable registration of provider resource. Default true.
-    *   @param rWhiteboard Whiteboard instance to use
-    */
-    TestProvider(
-        const char* name,
-        LocalResourceId localResourceId,
-        ExecutionContextId executionContextId,
-        bool registerProvider = true,
-        Whiteboard& rWhiteboard = getWhiteboardInstance())
+     *	Constructor
+     *	@param name Name of the resource.
+     *	@param localResourceId Local resource ID to register.
+     *	@param executionContextId Providers execution context.
+     *	@param registerProvider Flag to enable registration of provider resource. Default true.
+     *   @param rWhiteboard Whiteboard instance to use
+     */
+    TestProvider(const char* name,
+                 LocalResourceId localResourceId,
+                 ExecutionContextId executionContextId,
+                 bool registerProvider = true,
+                 Whiteboard& rWhiteboard = getWhiteboardInstance())
         : TestProviderBase(name, executionContextId, rWhiteboard),
           mResourceImpl(executionContextId, localResourceId, rWhiteboard),
           mResource("N/A", executionContextId, 0, rWhiteboard),
           mpResource(&mResourceImpl),
           mRegisterProvider(registerProvider),
           mGetRequestCounter(0),
-          mPutRequestCounter(0)
+          mPutRequestCounter(0),
+          mPostRequestCounter(0),
+          mDeleteRequestCounter(0),
+          mSubscribeRequestCounter(0),
+          mUnsubscribeRequestCounter(0)
     {
         if (mRegisterProvider)
         {
@@ -245,26 +226,29 @@ public:
     }
 
     /**
-    *	Constructor
-    *	@param name Name of the resource.
-    *	@param executionContextId Providers execution context.
-    *	@param registerProvider Flag to enable registration of provider resource.
-    *   @param rInitialValue Initial value
-    *   @param rWhiteboard Whiteboard instance to use
-    */
-    TestProvider(
-        const char* name,
-        ExecutionContextId executionContextId,
-        bool registerProvider,
-        const T& rInitialValue,
-        Whiteboard& rWhiteboard = getWhiteboardInstance())
+     *	Constructor
+     *	@param name Name of the resource.
+     *	@param executionContextId Providers execution context.
+     *	@param registerProvider Flag to enable registration of provider resource.
+     *   @param rInitialValue Initial value
+     *   @param rWhiteboard Whiteboard instance to use
+     */
+    TestProvider(const char* name,
+                 ExecutionContextId executionContextId,
+                 bool registerProvider,
+                 const T& rInitialValue,
+                 Whiteboard& rWhiteboard = getWhiteboardInstance())
         : TestProviderBase(name, executionContextId, rWhiteboard),
           mResourceImpl(ID_INVALID_EXECUTION_CONTEXT, ID_INVALID_LOCAL_RESOURCE, rWhiteboard),
           mResource(name, executionContextId, 0, rWhiteboard),
           mpResource(&mResource),
           mRegisterProvider(registerProvider),
           mGetRequestCounter(0),
-          mPutRequestCounter(0)
+          mPutRequestCounter(0),
+          mPostRequestCounter(0),
+          mDeleteRequestCounter(0),
+          mSubscribeRequestCounter(0),
+          mUnsubscribeRequestCounter(0)
     {
         setValue(rInitialValue);
         if (mRegisterProvider)
@@ -274,22 +258,23 @@ public:
     }
 
     /**
-    *	Constructor
-    *	@param name Name of the resource.
-    *	@param registerProvider Flag to enable registration of provider resource. Default true.
-    *   @param rWhiteboard Whiteboard instance to use
-    */
-    TestProvider(
-        const char* name,
-        bool registerProvider,
-        WhiteboardMockup& rWhiteboard)
+     *	Constructor
+     *	@param name Name of the resource.
+     *	@param registerProvider Flag to enable registration of provider resource. Default true.
+     *   @param rWhiteboard Whiteboard instance to use
+     */
+    TestProvider(const char* name, bool registerProvider, WhiteboardMockup& rWhiteboard)
         : TestProviderBase(name, rWhiteboard),
           mResourceImpl(ID_INVALID_EXECUTION_CONTEXT, ID_INVALID_LOCAL_RESOURCE, rWhiteboard),
           mResource(name, 0, rWhiteboard),
           mpResource(&mResource),
           mRegisterProvider(registerProvider),
           mGetRequestCounter(0),
-          mPutRequestCounter(0)
+          mPutRequestCounter(0),
+          mPostRequestCounter(0),
+          mDeleteRequestCounter(0),
+          mSubscribeRequestCounter(0),
+          mUnsubscribeRequestCounter(0)
     {
         if (mRegisterProvider)
         {
@@ -298,25 +283,25 @@ public:
     }
 
     /**
-    *	Constructor
-    *	@param name Name of the resource.
-    *	@param executionContextId Providers execution context.
-    *	@param registerProvider Flag to enable registration of provider resource.
-    *   @param rInitialValue Initial value
-    *   @param rWhiteboard Whiteboard instance to use
-    */
-    TestProvider(
-        const char* name,
-        bool registerProvider,
-        const T& rInitialValue,
-        WhiteboardMockup& rWhiteboard)
+     *	Constructor
+     *	@param name Name of the resource.
+     *	@param executionContextId Providers execution context.
+     *	@param registerProvider Flag to enable registration of provider resource.
+     *   @param rInitialValue Initial value
+     *   @param rWhiteboard Whiteboard instance to use
+     */
+    TestProvider(const char* name, bool registerProvider, const T& rInitialValue, WhiteboardMockup& rWhiteboard)
         : TestProviderBase(name, rWhiteboard),
           mResourceImpl(ID_INVALID_EXECUTION_CONTEXT, ID_INVALID_LOCAL_RESOURCE, rWhiteboard),
           mResource(name, 0, rWhiteboard),
           mpResource(&mResource),
           mRegisterProvider(registerProvider),
           mGetRequestCounter(0),
-          mPutRequestCounter(0)
+          mPutRequestCounter(0),
+          mPostRequestCounter(0),
+          mDeleteRequestCounter(0),
+          mSubscribeRequestCounter(0),
+          mUnsubscribeRequestCounter(0)
     {
         setValue(rInitialValue);
         if (mRegisterProvider)
@@ -336,12 +321,13 @@ public:
 
     /**
      * Performs resource registration inside correct execution context
-    */
+     */
     void registerTestResourceInWbContext()
     {
         if (!ExecutionContext::isCurrentThread(getExecutionContextId(), mrWhiteboard))
         {
-            DpcFunctor::syncQueueOnce(getExecutionContextId(), mrWhiteboard, this, &TestProvider::registerTestResourceInWbContext);
+            DpcFunctor::syncQueueOnce(
+                getExecutionContextId(), mrWhiteboard, this, &TestProvider::registerTestResourceInWbContext);
         }
         else
         {
@@ -350,13 +336,14 @@ public:
     }
 
     /**
-    * Performs resource unregistration inside correct execution context
-    */
+     * Performs resource unregistration inside correct execution context
+     */
     void unregisterTestResourceInWbContext()
     {
         if (!ExecutionContext::isCurrentThread(getExecutionContextId(), mrWhiteboard))
         {
-            DpcFunctor::syncQueueOnce(getExecutionContextId(), mrWhiteboard, this, &TestProvider::unregisterTestResourceInWbContext);
+            DpcFunctor::syncQueueOnce(
+                getExecutionContextId(), mrWhiteboard, this, &TestProvider::unregisterTestResourceInWbContext);
         }
         else
         {
@@ -365,26 +352,26 @@ public:
     }
 
     /**
-    *	Function to set member value mValue used for get, put and notify.
-    *	@param rValue Value to be set.
-    */
+     *	Function to set member value mValue used for get, put and notify.
+     *	@param rValue Value to be set.
+     */
     void setValue(const T& rValue) { mValue = rValue; }
 
     /**
-    *	Function to read member variable mValue.
-    *	@return mValue Value used in provider operations.
-    */
+     *	Function to read member variable mValue.
+     *	@return mValue Value used in provider operations.
+     */
     const T getValue() const { return mValue; }
 
     /**
-    *	Function to get resource ID of the provider.
-    *	@return Resource ID of the provider.
-    */
+     *	Function to get resource ID of the provider.
+     *	@return Resource ID of the provider.
+     */
     const ResourceId getResourceId() const { return mpResource->getId(); }
 
     /**
-    *	Function to notify subscribers. Will pass value of member variable mValue.
-    */
+     *	Function to notify subscribers. Will pass value of member variable mValue.
+     */
     void notifySubscribers()
     {
         NotifyStatus status(*this, mpResource->getId(), mValue);
@@ -393,73 +380,177 @@ public:
     }
 
     /**
-    *  Test helper for waiting GET requests.
-    *
-    *  @param requests How many requests TestProvider should have had received before returning
-    *  @param timeout How many milliseconds to wait for requests (internally 10 ms resolution)
-    *  @return Result of the operation, true if all requests were received withing the timeout
-    */
+     *  Test helper for waiting GET requests.
+     *
+     *  @param requests How many requests TestProvider should have had received before returning
+     *  @param timeout How many milliseconds to wait for requests (internally 10 ms resolution)
+     *  @return Result of the operation, true if all requests were received withing the timeout
+     */
     virtual bool waitUntilReceivedGetRequests(const int32 requests, const int32 timeout = 1000)
     {
         return waitUntilReceivedRequests(mGetRequestCounter, requests, timeout);
     }
 
     /**
-    *	GET request handler.
-    *
-    *	@param rRequest Request information
-    *	@param rParameters List of parameters for the request
-    *	@return Result of the operation
-    */
-    virtual void onGetRequest(
-        const Request& rRequest, const ParameterList& /* rParameters */) OVERRIDE
+     *	GET request handler.
+     *
+     *	@param rRequest Request information
+     *	@param rParameters List of parameters for the request
+     *	@return Result of the operation
+     */
+    virtual void onGetRequest(const Request& rRequest, const ParameterList& /* rParameters */) OVERRIDE
     {
-        WB_ASSERT(rRequest.getResourceId() == mpResource->getId());
+        if (rRequest.getResourceId() == mpResource->getId())
+        {
+            returnResult(rRequest, HTTP_CODE_OK, ResourceProvider::ResponseOptions::Empty, static_cast<T>(mValue));
+        }
+        else
+        {
+            returnResult(rRequest, HTTP_CODE_OK);
+        }
 
-        returnResult(
-            rRequest, HTTP_CODE_OK, ResourceProvider::ResponseOptions::Empty, static_cast<T>(mValue));
         ++mGetRequestCounter;
     }
 
     /**
-    *  Test helper for waiting PUT requests.
-    *
-    *  @param requests How many requests TestProvider should have had received before returning
-    *  @param timeout How many milliseconds to wait for requests (internally 10 ms resolution)
-    *  @return Result of the operation, true if all requests were received withing the timeout
-    */
+     *  Test helper for waiting PUT requests.
+     *
+     *  @param requests How many requests TestProvider should have had received before returning
+     *  @param timeout How many milliseconds to wait for requests (internally 10 ms resolution)
+     *  @return Result of the operation, true if all requests were received withing the timeout
+     */
     virtual bool waitUntilReceivedPutRequests(const int32 requests, const int32 timeout = 1000)
     {
         return waitUntilReceivedRequests(mPutRequestCounter, requests, timeout);
     }
 
     /**
-    *	PUT request handler.
-    *
-    *	@param rRequest Request information
-    *	@param rParameters List of parameters for the request
-    *	@return Result of the operation
-    */
-    virtual void onPutRequest(
-        const Request& rRequest, const ParameterList& rParameters) OVERRIDE
+     *	PUT request handler.
+     *
+     *	@param rRequest Request information
+     *	@param rParameters List of parameters for the request
+     *	@return Result of the operation
+     */
+    virtual void onPutRequest(const Request& rRequest, const ParameterList& rParameters) OVERRIDE
     {
-        WB_ASSERT(rRequest.getResourceId() == mpResource->getId());
+        if (rRequest.getResourceId() == mpResource->getId())
+        {
+            mValue = rParameters[0].convertTo<T>();
+        }
 
-        this->mValue = rParameters[0].convertTo<T>();
         returnResult(rRequest, HTTP_CODE_OK);
         ++mPutRequestCounter;
     }
 
-private:
+    /**
+     *  Test helper for waiting POST requests.
+     *
+     *  @param requests How many requests TestProvider should have had received before returning
+     *  @param timeout How many milliseconds to wait for requests (internally 10 ms resolution)
+     *  @return Result of the operation, true if all requests were received withing the timeout
+     */
+    virtual bool waitUntilReceivedPostRequests(const int32 requests, const int32 timeout = 1000)
+    {
+        return waitUntilReceivedRequests(mPostRequestCounter, requests, timeout);
+    }
 
+    /**
+     *	POST request handler.
+     *
+     *	@param rRequest Request information
+     *	@param rParameters List of parameters for the request
+     *	@return Result of the operation
+     */
+    virtual void onPostRequest(const Request& rRequest, const ParameterList& /* rParameters */) OVERRIDE
+    {
+        returnResult(rRequest, HTTP_CODE_OK);
+        ++mPostRequestCounter;
+    }
+
+    /**
+     *  Test helper for waiting DELETE requests.
+     *
+     *  @param requests How many requests TestProvider should have had received before returning
+     *  @param timeout How many milliseconds to wait for requests (internally 10 ms resolution)
+     *  @return Result of the operation, true if all requests were received withing the timeout
+     */
+    virtual bool waitUntilReceivedDeleteRequests(const int32 requests, const int32 timeout = 1000)
+    {
+        return waitUntilReceivedRequests(mDeleteRequestCounter, requests, timeout);
+    }
+
+    /**
+     *	DELETE request handler.
+     *
+     *	@param rRequest Request information
+     *	@param rParameters List of parameters for the request
+     *	@return Result of the operation
+     */
+    virtual void onDeleteRequest(const Request& rRequest, const ParameterList& /*rParameters*/) OVERRIDE
+    {
+        returnResult(rRequest, HTTP_CODE_OK);
+        ++mDeleteRequestCounter;
+    }
+
+    /**
+     *  Test helper for waiting SUBSCRIBE requests.
+     *
+     *  @param requests How many requests TestProvider should have had received before returning
+     *  @param timeout How many milliseconds to wait for requests (internally 10 ms resolution)
+     *  @return Result of the operation, true if all requests were received withing the timeout
+     */
+    virtual bool waitUntilReceivedSubscribeRequests(const int32 requests, const int32 timeout = 1000)
+    {
+        return waitUntilReceivedRequests(mSubscribeRequestCounter, requests, timeout);
+    }
+
+    /**
+     *	SUBSCRIBE request handler.
+     *
+     *	@param rRequest Request information
+     *	@param rParameters List of parameters for the request
+     *	@return Result of the operation
+     */
+    virtual void onSubscribe(const Request& rRequest, const ParameterList& /* rParameters */) OVERRIDE
+    {
+        returnResult(rRequest, HTTP_CODE_OK);
+        ++mSubscribeRequestCounter;
+    }
+
+    /**
+     *  Test helper for waiting UNSUBSCRIBE requests.
+     *
+     *  @param requests How many requests TestProvider should have had received before returning
+     *  @param timeout How many milliseconds to wait for requests (internally 10 ms resolution)
+     *  @return Result of the operation, true if all requests were received withing the timeout
+     */
+    virtual bool waitUntilReceivedUnsubscribeRequests(const int32 requests, const int32 timeout = 1000)
+    {
+        return waitUntilReceivedRequests(mUnsubscribeRequestCounter, requests, timeout);
+    }
+
+    /**
+     *	UNSUBSCRIBE request handler.
+     *
+     *	@param rRequest Request information
+     *	@param rParameters List of parameters for the request
+     *	@return Result of the operation
+     */
+    virtual void onUnsubscribe(const Request& rRequest, const ParameterList& /*rParameters*/) OVERRIDE
+    {
+        returnResult(rRequest, HTTP_CODE_OK);
+        ++mUnsubscribeRequestCounter;
+    }
+
+private:
     /** Helper function for waiting requests to be received */
-    bool waitUntilReceivedRequests(volatile int32& counter, const int32 requests, const int32 timeout)
+    bool waitUntilReceivedRequests(volatile int32& counter, const int32 requests, const int32 timeoutMs)
     {
         WB_ASSERT(requests);
         WB_ASSERT(!ExecutionContext::isCurrentThread(getExecutionContextId(), mrWhiteboard));
 
         const int32 timerResolution = 10;
-        const int32 maxSleeps = timeout < timerResolution ? 1 : timeout / timerResolution;
+        const int32 maxSleeps = timeoutMs < timerResolution ? 1 : timeoutMs / timerResolution;
         int32 sleepCounter = 0;
 
         while (1)
@@ -507,6 +598,18 @@ protected:
     /** Counter for incoming PUT requests */
     volatile int32 mPutRequestCounter;
 
+    /** Counter for incoming POST requests */
+    volatile int32 mPostRequestCounter;
+
+    /** Counter for incoming DELETE requests */
+    volatile int32 mDeleteRequestCounter;
+
+    /** Counter for incoming SUBSCRIBE requests */
+    volatile int32 mSubscribeRequestCounter;
+
+    /** Counter for incoming UNSUBSCRIBE requests */
+    volatile int32 mUnsubscribeRequestCounter;
+
     class NotifyStatus
     {
     public:
@@ -524,7 +627,8 @@ protected:
 
     static void notifyDpcHandler(NotifyStatus* status)
     {
-        status->mProvider.updateResource(status->mResourceId.localResourceId, ResourceProvider::ResponseOptions::Empty, status->mrValue);
+        status->mProvider.updateResource(
+            status->mResourceId.localResourceId, ResourceProvider::ResponseOptions::Empty, status->mrValue);
         WbSemaphoreRelease(status->mComplete);
     }
 };

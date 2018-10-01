@@ -1,7 +1,5 @@
 #include "ConnectionScanner.h"
 #include "common/core/debug.h"
-#include "whiteboard/builtinTypes/UnknownStructure.h"
-#include "whiteboard/integration/bsp/shared/debug.h"
 
 #include "meas_hr/resources.h"
 #include "misc_gear/resources.h"

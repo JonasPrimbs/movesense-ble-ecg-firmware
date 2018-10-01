@@ -51,6 +51,12 @@ template <class TProvider> bool WaitUntilRegistered(TProvider& provider)
     return false;
 }
 
+/** Waits until execution context queue has been processed. Note that queue might still
+ * have messages when this call exits. This function only guarantees that there are no messages
+ * that have been sent before this function is called. 
+ */
+void WaitUntilExecutionContextQueueIsProcessed(ExecutionContextId executionContextId);
+
 /** Helper value to indicate that TestClientWithDefaults should use resource ID that was resolved with previous
  * callGetResource or callAsyncGetResourceAndWait
  */

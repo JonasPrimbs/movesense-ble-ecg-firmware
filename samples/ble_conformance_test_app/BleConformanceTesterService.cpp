@@ -4,12 +4,10 @@
 #include "component_nrf52/resources.h"
 #include "device_system_shutdown/resources.h"
 #include "whiteboard/builtinTypes/UnknownStructure.h"
-#include "whiteboard/integration/bsp/shared/debug.h"
 
 #include <float.h>
 #include <math.h>
 
-#define ASSERT WB_DEBUG_ASSERT
 #define TEST_START_TIMEOUT_MS 1000
 
 const char* const BleConformanceTesterService::LAUNCHABLE_NAME = "BleConformanceTest";

@@ -30,21 +30,19 @@ const char* const BleServicesApp::LAUNCHABLE_NAME = "BleServicesApp";
 #define LED_BLINKING_PERIOD 5000
 
 
-BleServicesApp * BleServicesApp::spInstance = NULL;
+BleServicesApp* BleServicesApp::spInstance = NULL;
 CustomBleController Ctrl;
 
 
 BleServicesApp::BleServicesApp()
     : ResourceClient(WBDEBUG_NAME(__FUNCTION__), WB_EXEC_CTX_APPLICATION),
       LaunchableModule(LAUNCHABLE_NAME, WB_EXEC_CTX_APPLICATION),
-
       mDpc(WB_EXEC_CTX_APPLICATION, this, &BleServicesApp::dpcHandler),
-      mTimer(whiteboard::ID_INVALID_TIMER),
-      mHrsEnabled(false),
-      mHrsEnableReq(false),
-      mWbConnected(false),
+      mTimer(wb::ID_INVALID_TIMER),
+      mStates{0},
       mCounter(0)
 {
+    ASSERT(NULL == spInstance);
     spInstance = this;
 }
 
@@ -53,6 +51,12 @@ BleServicesApp::~BleServicesApp()
 {
 }
 
+// static method
+void BleServicesApp::setNotificationRequest(bool state)
+{
+    spInstance->mStates.HrsEnableReq = state ? 1:0;
+    spInstance->mDpc.queue(false);
+}
 
 bool BleServicesApp::initModule()
 {
@@ -86,12 +90,11 @@ void BleServicesApp::stopModule()
 {
     // Stop LED timer
     stopTimer(mTimer);
-    mTimer == whiteboard::ID_INVALID_TIMER;
+    mTimer = wb::ID_INVALID_TIMER;
 }
 
 
-void BleServicesApp::onNotify(whiteboard::ResourceId resourceId, const whiteboard::Value& value,
-                                   const whiteboard::ParameterList& parameters)
+void BleServicesApp::onNotify(wb::ResourceId resourceId, const wb::Value& value, const wb::ParameterList& parameters)
 {
     // Heart rate notification
     if (resourceId.localResourceId == WB_RES::LOCAL::MEAS_HR::LID)
@@ -109,27 +112,27 @@ void BleServicesApp::onNotify(whiteboard::ResourceId resourceId, const whiteboar
     if (resourceId.localResourceId == WB_RES::LOCAL::COMM_BLE_PEERS::LID)
     {
         // Get whiteborad routing table notification
-        uint8_t peerState = value.convertTo<const WB_RES::PeerChange&>()
-            .state;
+        uint8_t peerState = value.convertTo<const WB_RES::PeerChange&>().state;
         DEBUGLOG("COMM_BLE_PEERS: peerState: %d", peerState);
 
-        // if there is BLE connection, stop timer
-        if (peerState == WB_RES::PeerStateValues::CONNECTED)
+        switch (peerState)
         {
+        case WB_RES::PeerStateValues::CONNECTED:
+            // if there is BLE connection, stop timer
             stopShutdownTimer();
-            mWbConnected = true;
-            return;
-        }
+            mStates.PeerConnected = 1;
+            break;
 
-        // if whiteboard connection lost, prepare to shutdown
-        if (peerState == WB_RES::PeerStateValues::DISCONNECTED)
-        {
-            mWbConnected = false;
-            if (!mHrsEnabled)
-                startShutdownTimer();
-        }
+        case WB_RES::PeerStateValues::DISCONNECTED:
+            // if BLE connection is lost, prepare to shutdown
+            // start the shut down process even if HrsEnabled is true, connection may be dropped
+            startShutdownTimer();
+            mStates.PeerConnected = 0;
+            break;
 
-        return;
+        default:
+            ASSERT(0);
+        }
     }
 }
 
@@ -138,8 +141,10 @@ void BleServicesApp::startShutdownTimer()
 {
     DEBUGLOG("Start shutdown timer");
 
-    if (mTimer != whiteboard::ID_INVALID_TIMER)
+    if (mTimer != wb::ID_INVALID_TIMER)
+    {
         stopTimer(mTimer);
+    }
 
     // Start timer
     mTimer = startTimer(LED_BLINKING_PERIOD, true);
@@ -151,61 +156,58 @@ void BleServicesApp::startShutdownTimer()
 
 void BleServicesApp::stopShutdownTimer()
 {
+    if (mTimer == wb::ID_INVALID_TIMER) return;
     DEBUGLOG("Stop shutdown timer");
 
-    if (mTimer == whiteboard::ID_INVALID_TIMER)
-        return;
-
     stopTimer(mTimer);
-    mTimer = whiteboard::ID_INVALID_TIMER;
+    mTimer = wb::ID_INVALID_TIMER;
 }
 
 
-void BleServicesApp::onTimer(whiteboard::TimerId timerId)
+void BleServicesApp::onTimer(wb::TimerId timerId)
 {
     mCounter = mCounter + LED_BLINKING_PERIOD;
 
     if (mCounter < AVAILABILITY_TIME)
     {
-        asyncPut(WB_RES::LOCAL::UI_IND_VISUAL::ID,
-            AsyncRequestOptions::Empty, (uint16_t)2); // SHORT_VISUAL_INDICATION
+        asyncPut(WB_RES::LOCAL::UI_IND_VISUAL(), AsyncRequestOptions::Empty, (uint16_t) 2u); // SHORT_VISUAL_INDICATION
         return;
     }
+
+    const AsyncRequestOptions reqOptsForceAsync(NULL, 0, true);
 
     if (mCounter < AVAILABILITY_TIME + WAKE_PREPARATION_TIME)
     {
         // Prepare AFE to wake-up mode
-        asyncPut(WB_RES::LOCAL::COMPONENT_MAX3000X_WAKEUP::ID,
-            AsyncRequestOptions(NULL, 0, true), (uint8_t) 1);
+        asyncPut(WB_RES::LOCAL::COMPONENT_MAX3000X_WAKEUP(), reqOptsForceAsync, (uint8_t) 1u);
         return;
     }
 
     // Make PUT request to switch LED on
-    asyncPut(WB_RES::LOCAL::COMPONENT_LED::ID, AsyncRequestOptions::Empty, true);
+    asyncPut(WB_RES::LOCAL::COMPONENT_LED(), AsyncRequestOptions::Empty, true);
 
     // Make PUT request to eneter power off mode
-    asyncPut(WB_RES::LOCAL::SYSTEM_MODE::ID,
-        AsyncRequestOptions(NULL, 0, true), // Force async
-        (uint8_t)1U);                       // WB_RES::SystemMode::FULLPOWEROFF
+    asyncPut(WB_RES::LOCAL::SYSTEM_MODE(), reqOptsForceAsync, WB_RES::SystemMode::FULLPOWEROFF);
 }
 
 
 void BleServicesApp::dpcHandler()
 {
-    if (mHrsEnableReq == mHrsEnabled)
-        return;
+    if (mStates.HrsEnableReq == mStates.HrsEnabled) return;
 
-    if (mHrsEnableReq)
+    if (mStates.HrsEnableReq)
     {
-        this->stopShutdownTimer();
+        stopShutdownTimer();
         asyncSubscribe(WB_RES::LOCAL::MEAS_HR());
     }
     else
     {
         asyncUnsubscribe(WB_RES::LOCAL::MEAS_HR());
-        if (!mWbConnected)
+        if (!mStates.PeerConnected)
+        {
             startShutdownTimer();
+        }
     }
 
-    mHrsEnabled = mHrsEnableReq;
+    mStates.HrsEnabled = mStates.HrsEnableReq;
 }

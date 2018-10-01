@@ -565,6 +565,7 @@ public:
         asyncUnsubscribeLocalResources(1, &localResourceId, noResponseExpected);
     }
 
+#ifdef WB_HAVE_TIMERS
     /**
     * Starts a continuous timer with given period. Override whiteboard::ResourceClient::onTimer to handle timer notifications.
     *
@@ -612,6 +613,7 @@ public:
     * @see whiteboard::ResourceClient::startTimer
     */
     bool stopTimer(TimerId timerId);
+#endif
 
     /**
     *   This unsafe method is only for adapting other interfaces on top of Whiteboard!
@@ -771,6 +773,7 @@ protected:
     */
     virtual void onNotify(ResourceId resourceId, const Value& rValue, const ParameterList& rParameters);
 
+#ifdef WB_HAVE_TIMERS
     /**
     * Callback for timer notifications.
     *
@@ -780,28 +783,29 @@ protected:
     * @see whiteboard::ResourceClient::stopTimer
     */
     virtual void onTimer(TimerId timerId);
+#endif
 
 #ifdef WB_HAVE_TIMED_DPC
     /**
-    *   Queue an low priority timed DPC for the given timestamp. A timed DPC is freed upon callback execution
+    *   Queue an low priority timed DPC to be run after deltaTime. A timed DPC is freed upon callback execution
     *   if the onTimedDpc(...) implementation returns false, in this case no cancellation is necessary.
     *
-    *   @param dueTime The time when the ::onTimedDpc callback is to be executed. Used as identification.
+    *   @param deltaTimeMs Delta in ms to the time when the ::onTimedDpc callback is to be executed.
     *   @param isIsr True is this method is called from an interrupt service routine.
     *   @return A valid TimedDpcId value if successful, ID_INVALID_TIMED_DPC if unsuccessful.
     */
-    TimedDpcId queueTimedDpc(WbTimestamp dueTime, bool isIsr = false);
+    TimedDpcId queueTimedDpc(size_t deltaTimeMs, bool isIsr = false);
 
     /**
     *   Cancel a timed DPC.
     *
-    *   @param timedDpcId ID of the timed DPC.
+    *   @param timedDpcId Reference to the ID of the timed DPC. Will be invalidated.
     *   @param isIsr True is this method is called from an interrupt service routine.
     *   @return HTTP_CODE_OK if successful.
     *           HTTP_CODE_NOT_FOUND if a DPC with given stamp was not found for the entity ID.
     *           HTTP_CODE_RANGE_NOT_SATISFIABLE if given timed DPC id is out of bounds.
     */
-    Result cancelTimedDpc(const TimedDpcId timedDpcId, bool isIsr = false);
+    Result cancelTimedDpc(TimedDpcId& timedDpcId, bool isIsr = false);
 
     /**
     *   Cancel all timed DPCs queued by the resource client.
@@ -815,11 +819,9 @@ protected:
     *   Callback for timed DPCs (low priority).
     *
     *   @param timedDpcId ID of the timed DPC given by queueTimedDcp(...).
-    *   @param dueTime The exact time stamp that was given into queueTimedDpc (for identification).
-    *   @param newTime Implementation may write new timestamp here and return true to indicate reschedule. Input value is undefined.
-    *   @return False if no reschedule required, true if a reschedule stamp is written to newTime.
+    *   @return ZERO if no reschedule required, a value in milliseconds to indicate time to next reschedule.
     */
-    virtual bool onTimedDpc(TimedDpcId timedDpcId, WbTimestamp dueTime, WbTimestamp& newTime);
+    virtual size_t onTimedDpc(TimedDpcId timedDpcId);
 #endif
 
     /***

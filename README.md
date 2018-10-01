@@ -1,14 +1,10 @@
 ## Announcements
-**(June 29th 2018) Sensor firmware version 1.6.2 is out!**  
-The new version contains a fix for ECG on high datarates
+**(Oct 1st 2018) Sensor firmware version 1.7.0 is out!**  
+The new version contains a way to [debug your sensor application on PC simulator](https://bitbucket.org/suunto/movesense-docs/wiki/EmbeddedSoftware/PC%20Simulator), new [3rd party module framework](https://bitbucket.org/suunto/movesense-docs/wiki/EmbeddedSoftware/3rd%20Party%20Modules) as well as a lot of bug fixes. These changes mandated re-working the build system quite a bit so please copy the new style *CMakeLists.txt*-file from one of the sample apps to your own project folder! (You'll be happy to notice it is *much* simpler than it used to be).
 
 **Known issues**  
 Please refer to [CHANGES.md](CHANGES.md) for a list of known issues.
 
-**Library testing coverage**  
-Starting from release 1.0.0, Movesense device library will internally be tested only on the latest Movesense sensor hardware version ("G1" variant) -- please refer to the [FAQ section](FAQ.md) for instructions on how to identify which hardware version you have.  
-
-If you're experiencing issues with any earlier hardware version and would like to upgrade to the newest sensor version available, please contact the Movesense team via [movesense.com](https://movesense.com).
 
 ## Overview
 

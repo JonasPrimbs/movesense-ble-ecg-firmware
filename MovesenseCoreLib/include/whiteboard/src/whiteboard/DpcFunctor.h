@@ -375,7 +375,6 @@ private:
                 mSemaphore = WbSemaphoreCreate(0, 1);
                 mpDpc->queue(false);
                 WbSemaphoreWait(mSemaphore);
-                mpDpc->deallocate();
                 WbSemaphoreDelete(mSemaphore);
             }
         }
@@ -395,7 +394,6 @@ private:
                 mSemaphore = WbSemaphoreCreate(0, 1);
                 mpDpc->queue(false);
                 WbSemaphoreWait(mSemaphore);
-                mpDpc->deallocate();
                 WbSemaphoreDelete(mSemaphore);
             }
         }
@@ -409,6 +407,7 @@ private:
         {
             WB_DEBUG_ASSERT(mpDpc->isThisThread(WbThreadGetCurrent()));
             mrFunctionCall();
+            mpDpc->deallocate();
             WbSemaphoreRelease(mSemaphore);
         }
     };

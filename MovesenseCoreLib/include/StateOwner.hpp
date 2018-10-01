@@ -58,6 +58,8 @@ public:
         if (IS_TRANSIENT || mCurrentState != newState)
         {
             mCurrentState = newState;
+            DEBUGLOG("updateState [%u]: %u", getStateId(), mCurrentState);
+            
             StateChangeParams params = {this, STATE_ID, newState};
 
             StatesService* ss = StatesService::getInstance();

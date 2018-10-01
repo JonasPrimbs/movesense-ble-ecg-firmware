@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include <stddef.h>
 
 #define DEFAULT_FAST_ADVERTISING_TIME 60        // 60 seconds
 #define DEFAULT_SLOW_ADVERTISING_TIME 0         // 0 = Infinite
@@ -49,5 +49,5 @@ protected:
     virtual void OnUartData(uint8_t * p_data, uint16_t length) {}
 };
 
-void send_ble_hr_measurement(uint16_t heart_rate, const uint16_t *rr_intervals=NULL, size_t rr_count=0);
+void send_ble_hr_measurement(uint16_t heart_rate, const uint16_t *rr_intervals=nullptr, size_t rr_count=0);
 void send_ble_nus_data(uint8_t * p_data, uint16_t length);

@@ -27,7 +27,7 @@ class PointerWrapperHelper
 {
 public:
     /** Invalid pointer ID */
-    static const WrappedPointerId INVALID_WRAPPER_ID = static_cast<WrappedPointerId>(-1);
+    static const WrappedPointerId INVALID_WRAPPER_ID = 0U; // use 0 for invalid ID to allow clear by memset
 
     /** Create internal allocations */
     static void create();

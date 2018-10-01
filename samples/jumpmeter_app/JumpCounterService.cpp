@@ -1,14 +1,13 @@
 #include "JumpCounterService.h"
 #include "app-resources/resources.h"
 #include "common/core/debug.h"
+#include "common/core/dbgassert.h"
 #include "meas_acc/resources.h"
 #include "whiteboard/builtinTypes/UnknownStructure.h"
-#include "whiteboard/integration/bsp/shared/debug.h"
 
 #include <float.h>
 #include <math.h>
 
-#define ASSERT WB_DEBUG_ASSERT
 
 const char* const JumpCounterService::LAUNCHABLE_NAME = "JumpC";
 
@@ -211,8 +210,6 @@ void JumpCounterService::onNotify(whiteboard::ResourceId resourceId, const white
 
         const whiteboard::Array<whiteboard::FloatVector3D>& arrayData = linearAccelerationValue.arrayAcc;
 
-        uint32_t relativeTime = linearAccelerationValue.timestamp;
-
         for (size_t i = 0; i < arrayData.size(); i++)
         {
             whiteboard::FloatVector3D accValue = arrayData[i];
@@ -267,6 +264,7 @@ void JumpCounterService::onSubscribe(const whiteboard::Request& request,
             if (result == whiteboard::HTTP_CODE_ACCEPTED)
             {
                 bool queueResult = mOngoingRequests.put(remoteRequestId, request);
+                (void)queueResult;
                 WB_ASSERT(queueResult);
             }
             else

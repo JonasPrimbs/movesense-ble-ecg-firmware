@@ -3,12 +3,9 @@
 #include "common/core/debug.h"
 #include "meas_acc/resources.h"
 #include "whiteboard/builtinTypes/UnknownStructure.h"
-#include "whiteboard/integration/bsp/shared/debug.h"
 
 #include <float.h>
 #include <math.h>
-
-#define ASSERT WB_DEBUG_ASSERT
 
 const char* const AccelerometerSampleService::LAUNCHABLE_NAME = "SampleA";
 #define SAMPLE_RATE 13
@@ -217,6 +214,7 @@ void AccelerometerSampleService::onSubscribe(const whiteboard::Request& request,
             return returnResult(request, result);
         }
         bool queueResult = mOngoingRequests.put(remoteRequestId, request);
+        (void)queueResult;
         WB_ASSERT(queueResult);
         break;
     }

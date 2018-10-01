@@ -7,8 +7,6 @@
 #include "meas_magn/resources.h"
 
 #include "common/core/debug.h"
-#include "whiteboard/builtinTypes/UnknownStructure.h"
-#include "whiteboard/integration/bsp/shared/debug.h"
 
 #define DEFAULT_ACC_SAMPLERATE (13)
 #define DEFAULT_PERIOD_MS (10000)

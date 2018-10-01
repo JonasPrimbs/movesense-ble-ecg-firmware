@@ -36,6 +36,7 @@ extern "C" {
 // Declaration of callback that gets called just before launchable modules are started
 typedef void (*PreLaunchCallback)(void);  
 extern PreLaunchCallback __preLaunchCallback;
+
 extern void WEAK __initAppInfoFields();
 extern void WEAK __logbookMemoryAreaOverride(uint32_t &offset, uint32_t &size);
 extern void WEAK __debugStorageAreaOverride(bool &enable, uint32_t &offset, uint32_t &size);
@@ -78,8 +79,8 @@ public:\
     static whiteboard::LaunchableModule* __moduleObjs[NumModules+1];\
     static const char * __moduleNames[NumModules+1];\
     __MovesenseAppModuleHolder() {for (int i=0;i<NumModules+1;i++) {__moduleNames[i]=NULL;__moduleObjs[i]=NULL;} __preLaunchCallback = __MovesenseAppModuleHolder::preLaunchHappened;}\
-    static void preLaunchHappened() {int __index = 0;\
-        if (__initAppInfoFields) __initAppInfoFields();
+    static void preLaunchHappened() {size_t __index=0;PARAM_NOTUSED(__index);\
+        if (__initAppInfoFields!=NULL) __initAppInfoFields();
 
 
 #define MOVESENSE_PROVIDER_DEF(ProviderClass) {\
@@ -114,6 +115,9 @@ extern const char* g_appInfo_company;
 
 #define BLE_COMMUNICATION(enable) const bool g_enableBLEComm = (enable);
 #define BLE_REQUIRE_BONDING(enable) const bool __requireBonding() { return (enable); }
+
+// Logbook memory area macro
+typedef void(*LogbookMemoryAreaOverride)(uint32_t &rOffset, uint32_t &rSize);
 #define LOGBOOK_MEMORY_AREA(offset, size) \
 STATIC_VERIFY(((offset) & 0xff) == 0, Logbook_offset_must_be_multiple_of_256); \
 STATIC_VERIFY(((size) & 0xff) == 0, Logbook_size_must_be_multiple_of_256); \

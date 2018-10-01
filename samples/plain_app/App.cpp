@@ -19,11 +19,16 @@ OPTIONAL_CORE_MODULE(SystemMemoryService, true)
 OPTIONAL_CORE_MODULE(DebugService, false)
 OPTIONAL_CORE_MODULE(BleStandardHRS, false)
 OPTIONAL_CORE_MODULE(BleNordicUART, false)
+OPTIONAL_CORE_MODULE(CustomGattService, false)
 
-// NOTE: It is inadvisable to enable both Logbook/DataLogger and EepromService without 
+// NOTE: It is inadvisable to enable both Logbook/DataLogger and EepromService without
 // explicit definition of Logbook memory are (see LOGBOOK_MEMORY_AREA macro in movesense.h and eeprom_logbook_app).
 // Default setting is for Logbook to use the whole EEPROM memory area.
-// LOGBOOK_MEMORY_AREA(offset, size);
+
+// NOTE: If building a simulator build, these macros are obligatory!
+DEBUGSERVICE_BUFFER_SIZE(6, 120); // 6 lines, 120 characters total
+DEBUG_EEPROM_MEMORY_AREA(false, 0, 0)
+LOGBOOK_MEMORY_AREA(0, 384*1024);
 
 APPINFO_NAME("Sample Plain");
 APPINFO_VERSION("1.1.0");

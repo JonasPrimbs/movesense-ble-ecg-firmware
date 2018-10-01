@@ -19,7 +19,8 @@ typedef uint8_t Size;
 */
 typedef Size Id;
 
-/** List of needed quantities.
+/** List of needed quantities. Add new ones to bottom of the
+* list to keep IDs backward compatible.
 */
 enum /* : Size */
 {
@@ -41,8 +42,9 @@ enum /* : Size */
     SPEED,
     TEMPERATURE,
     TIME,
-    QUANTITY_COUNT
+    ELECTRIC_CHARGE,
 
+    QUANTITY_COUNT
 };
 
 } // namespace quantity

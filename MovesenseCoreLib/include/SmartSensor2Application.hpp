@@ -7,10 +7,16 @@
 #include <whiteboard/services/CommServices.h>
 #include <whiteboard/services/MetricsServices.h>
 
+#include "hwconfig.h"
 #include "common/services/SystemServices.hpp"
 #include "common/services/StandardServices.hpp"
 #include "common/services/LowPriorityServices.hpp"
-#include "nea/hal/sensor/AFE/MAX3000x/MAX30004_provider.hpp"
+
+#ifndef HWCONFIG_SIMU
+#include "hal/sensor/AFE/MAX3000X/MAX30004_provider.hpp"
+#else
+#include "hal/sensor/AFE/MAX3000X_simu/MAX30004_provider.hpp"
+#endif
 
 #include "ApplicationServices.hpp"
 
@@ -22,10 +28,18 @@
 #include "internal/AppInfoProvider.hpp"
 #include "internal/ConnectorSwitch.hpp"
 
-#include "BleGattService.hpp"
+#ifndef HWCONFIG_SIMU
+#define ADD_BLE_CLASSES
+#endif
 
-class SmartSensor2Application : public whiteboard::ResourceClient, 
-                                public BleGattService::IBatteryServiceEventCb
+#ifdef ADD_BLE_CLASSES
+#include "BleGattService.hpp"
+#endif // def ADD_BLE_CLASSES
+
+class SmartSensor2Application : public whiteboard::ResourceClient 
+#ifdef ADD_BLE_CLASSES
+    ,public BleGattService::IBatteryServiceEventCb
+#endif // def ADD_BLE_CLASSES
 {
 public:
     SmartSensor2Application();

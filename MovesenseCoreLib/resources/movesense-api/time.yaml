@@ -53,3 +53,44 @@ paths:
       responses:
         200:
           description: Operation completed successfully
+
+  /Time/Detailed:
+    get:
+      description: |
+        Gets all current time related info in one go. This enables knowledge of RelativeTime 
+        and UTC time at the same instance, which is needed in multisensor use cases.
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            $ref: '#/definitions/DetailedTime'
+
+
+definitions:
+
+  DetailedTime:
+    required:
+      - utcTime
+      - relativeTime
+      - tickRate
+    properties:
+      utcTime:
+        description: UTC time of the device, number of microseconds since epoch 1.1.1970 (UTC).
+        type: integer
+        format: int64
+      relativeTime:
+        description: Local time of the device, milliseconds since device reset.
+        type: integer
+        format: uint32
+        x-unit: millisecond
+      tickRate:
+        description: Tick rate of the device clock in ticks per second (Hz). This specifies the real resolution of the device clock.
+        type: integer
+        format: uint32
+        x-unit: hertz
+      accuracy:
+        description: | 
+          The nominal accuracy of the device clock in parts per million (ppm). 
+          The actual accuracy depends on many things (device temperature, vibration environment etc.).
+        type: integer
+        format: uint32

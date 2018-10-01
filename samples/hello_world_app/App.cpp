@@ -21,13 +21,23 @@ OPTIONAL_CORE_MODULE(EepromService, true)
 OPTIONAL_CORE_MODULE(BypassService, false)
 OPTIONAL_CORE_MODULE(SystemMemoryService, false)
 OPTIONAL_CORE_MODULE(DebugService, true)
-DEBUGSERVICE_BUFFER_SIZE(6, 120); // 6 lines, 120 characters total
 OPTIONAL_CORE_MODULE(BleStandardHRS, false)
 OPTIONAL_CORE_MODULE(BleNordicUART, false)
+OPTIONAL_CORE_MODULE(CustomGattService, false)
+
+// NOTE: It is inadvisable to enable both Logbook/DataLogger and EepromService without
+// explicit definition of Logbook memory are (see LOGBOOK_MEMORY_AREA macro in movesense.h and eeprom_logbook_app).
+// Default setting is for Logbook to use the whole EEPROM memory area.
+
+// NOTE: If building a simulator build, these macros are obligatory!
+DEBUGSERVICE_BUFFER_SIZE(6, 120); // 6 lines, 120 characters total
+DEBUG_EEPROM_MEMORY_AREA(false, 0, 0)
+LOGBOOK_MEMORY_AREA(0, 384 * 1024);
 
 APPINFO_NAME("Sample HelloWorld");
 APPINFO_VERSION("1.0.0");
 APPINFO_COMPANY("Movesense");
+
 
 // NOTE: SERIAL_COMMUNICATION macro has been DEPRECATED
 BLE_COMMUNICATION(true)

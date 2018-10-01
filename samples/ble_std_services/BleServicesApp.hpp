@@ -4,31 +4,33 @@
 #include <whiteboard/ResourceClient.h>
 #include <whiteboard/DpcFunctor.h>
 
-class BleServicesApp FINAL : private whiteboard::ResourceClient,
-                           public whiteboard::LaunchableModule
+class BleServicesApp FINAL : private wb::ResourceClient, public wb::LaunchableModule
 {
-friend class CustomBleController;
-
 public:
     /** Name of this class. Used in StartupProvider list. */
     static const char* const LAUNCHABLE_NAME;
-    static BleServicesApp * spInstance;
-    static void queueDpc() { spInstance->mDpc.queue(false); }
 
+    /** Sets the HR service request active or inactive
+    *   @param state True if service activation requested, false if cancelled.
+    */
+    static void setNotificationRequest(bool state);
 
     BleServicesApp();
     ~BleServicesApp();
 
 protected:
-    whiteboard::TimerId mTimer;
-
-    whiteboard::DpcFunctor mDpc;
+    wb::DpcFunctor mDpc;
+    wb::TimerId mTimer;
 
     uint32_t mCounter;
-    bool mHrsEnabled;
-    bool mHrsEnableReq;
-    bool mWbConnected;
-
+    struct InternalStates
+    {
+        uint16_t HrsEnabled    : 1;
+        uint16_t HrsEnableReq  : 1;
+        uint16_t PeerConnected : 1;
+    };
+    InternalStates mStates;
+ 
     /** @see whiteboard::ILaunchableModule::initModule */
     virtual bool initModule() OVERRIDE;
 
@@ -50,13 +52,12 @@ protected:
     *	@param resourceId Resource id associated with the update
     *	@param value Current value of the resource
     */
-    virtual void onNotify(whiteboard::ResourceId resourceId, const whiteboard::Value& value,
-                          const whiteboard::ParameterList& parameters);
+    virtual void onNotify(wb::ResourceId resourceId, const wb::Value& value, const wb::ParameterList& parameters);
 
-    /**
-    *	Prepare to shutdown and set timer
-    */
+    /** Prepare to shutdown and set timer */
     void startShutdownTimer();
+
+    /** Cancel shutdown and the timer if active */
     void stopShutdownTimer();
 
     /**
@@ -64,12 +65,13 @@ protected:
     *
     *	@param timerId Id of timer that triggered
     */
-    virtual void onTimer(whiteboard::TimerId timerId) OVERRIDE;
+    virtual void onTimer(wb::TimerId timerId) OVERRIDE;
 
     /**
     *	DPS callback - events handler for HRS BLE events
     */
     void dpcHandler();
 
-
+private:
+    static BleServicesApp* spInstance;
 };

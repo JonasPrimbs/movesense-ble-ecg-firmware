@@ -108,7 +108,7 @@ namespace sbem
     *   @param dstSize max amount of copied data.
     *
     *   @return true if id found
-    */
+    
     bool findNextChunk(FileHandle f, uint16 searchId, void * dst, uint32 dstSize);
-
+*/
 } // namespace sbem

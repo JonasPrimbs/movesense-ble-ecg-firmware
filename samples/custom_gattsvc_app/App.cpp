@@ -18,7 +18,17 @@ OPTIONAL_CORE_MODULE(LedService, true)
 OPTIONAL_CORE_MODULE(IndicationService, true)
 OPTIONAL_CORE_MODULE(BleService, true)
 OPTIONAL_CORE_MODULE(EepromService, false)
+OPTIONAL_CORE_MODULE(BypassService, false)
+OPTIONAL_CORE_MODULE(SystemMemoryService, false)
+OPTIONAL_CORE_MODULE(DebugService, false)
+OPTIONAL_CORE_MODULE(BleStandardHRS, false)
+OPTIONAL_CORE_MODULE(BleNordicUART, false)
 OPTIONAL_CORE_MODULE(CustomGattService, true)
+
+// NOTE: If building a simulator build, these macros are obligatory!
+DEBUGSERVICE_BUFFER_SIZE(6, 120); // 6 lines, 120 characters total
+DEBUG_EEPROM_MEMORY_AREA(false, 0, 2048) // EEPROM storage disabled
+LOGBOOK_MEMORY_AREA(0, 384 * 1024);
 
 APPINFO_NAME("Sample CustomGATTSvc");
 APPINFO_VERSION("1.0.0");
