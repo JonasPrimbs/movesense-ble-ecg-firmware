@@ -1,6 +1,18 @@
-## Version 1.7.0.1820.f1520cad7c8107 ##
+## Version 1.7.1.1901.cd8cac83fb55d7
 
-###Whats new:###
+###Whats new:
+- Bugfix: Samsung S7-S9 cannot find sensor in scan after disconnect
+
+###Known Bugs:
+- In heavy BLE traffic accelerometer timestamps may have jitter
+
+###Notes:
+- ECG over BLE datarate is close to max data bandwidth when subscribing samplerates 500 & 512. This can lead to loss of data due to small on chip FIFO on AFE chip.
+- Build system has been changed quite a bit so please copy the new style CMakeLists.txt-file from one of the sample apps to your own project folder!
+
+## Version 1.7.0.1820.f1520cad7c8107
+
+###Whats new:
 
 - Update: Whiteboard 3.16
 - Feature: PC Simulator support (see: README.md)
@@ -12,14 +24,14 @@
 - Bugfix: Fixed RR-description in hr.yaml API
 - Bugfix: Some SystemStates issues
 
-###Known Bugs:###
+###Known Bugs:
 - In heavy BLE traffic accelerometer timestamps may have jitter
 
 ###Notes:###
 - ECG over BLE datarate is close to max data bandwidth when subscribing samplerates 500 & 512. This can lead to loss of data due to small on chip FIFO on AFE chip.
 - Build system has been changed quite a bit so please copy the new style CMakeLists.txt-file from one of the sample apps to your own project folder!
 
-## Version 1.6.2.1664.34ea980127698d ##
+## Version 1.6.2.1664.34ea980127698d
 
 ###Whats new:###
 - Bugfix: ECG stuck in high sample-rates over BLE

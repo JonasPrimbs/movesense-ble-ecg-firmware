@@ -1,6 +1,6 @@
 ## Announcements
-**(Oct 1st 2018) Sensor firmware version 1.7.0 is out!**  
-The new version contains a way to [debug your sensor application on PC simulator](https://bitbucket.org/suunto/movesense-docs/wiki/EmbeddedSoftware/PC%20Simulator), new [3rd party module framework](https://bitbucket.org/suunto/movesense-docs/wiki/EmbeddedSoftware/3rd%20Party%20Modules) as well as a lot of bug fixes. These changes mandated re-working the build system quite a bit so please copy the new style *CMakeLists.txt*-file from one of the sample apps to your own project folder! (You'll be happy to notice it is *much* simpler than it used to be).
+**(Oct 25th 2018) Sensor firmware hotfix 1.7.1 is out!**  
+The new version contains a fix for Samsung S7, S8 & S9 not finding sensors in scan after disconnecting from them.
 
 **Known issues**  
 Please refer to [CHANGES.md](CHANGES.md) for a list of known issues.
