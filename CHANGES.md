@@ -1,3 +1,12 @@
+## Version 1.7.2.1932.31fa1076f86ebc  
+
+###Whats new:  
+- Bugfix: /System/States:Movement doesn't work without accelerometer subscription  
+- Bugfix: /System/States:Connector doesn't work 100% (Issue #44)  
+
+###Known Bugs:  
+- In heavy BLE traffic accelerometer timestamps may have jitter  
+
 ## Version 1.7.1.1901.cd8cac83fb55d7
 
 ###Whats new:

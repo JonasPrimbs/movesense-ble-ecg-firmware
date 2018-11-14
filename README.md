@@ -1,6 +1,6 @@
 ## Announcements
-**(Oct 25th 2018) Sensor firmware hotfix 1.7.1 is out!**  
-The new version contains a fix for Samsung S7, S8 & S9 not finding sensors in scan after disconnecting from them.
+**(Nov 14th 2018) Sensor firmware hotfix 1.7.2 is out!**  
+The new version contains a fix Movement and Connector detections that broke in v.1.7.0
 
 **Known issues**  
 Please refer to [CHANGES.md](CHANGES.md) for a list of known issues.
