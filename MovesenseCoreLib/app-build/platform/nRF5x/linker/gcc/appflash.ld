@@ -12,7 +12,7 @@ MEMORY
   /**
    * Leave 80 bytes to the end of RAM for over reset info (NOINIT)
    */
-  RAM (rwx) :  ORIGIN = 0x20002608, LENGTH = 0xD978
+  RAM (rwx) :  ORIGIN = 0x20002638, LENGTH = 0xD948
 
   /** Location of non initialized RAM. Non initialized RAM is used for exchanging bond information
    *  from application to bootloader when using buttonluss DFU OTA.

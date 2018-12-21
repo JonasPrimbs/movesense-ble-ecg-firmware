@@ -21,6 +21,8 @@ paths:
             type: integer
             format: uint8
             x-unit: percent
+        503:
+            description: Measurement could not be started
 
   /System/Energy/Level/Subscription:
     post:
@@ -29,6 +31,8 @@ paths:
       responses:
         200:
           description: Operation completed successfully
+        503:
+            description: Measurement could not be started
         x-notification:
           description: New value
           schema:
@@ -50,6 +54,8 @@ paths:
           description: Get information about energy.
           schema:
             $ref: '#/definitions/Energy'
+        503:
+            description: Measurement could not be started
 
 definitions:
 

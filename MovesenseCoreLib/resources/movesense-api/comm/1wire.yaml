@@ -1,0 +1,150 @@
+swagger: '2.0'
+
+info:
+  version: NA
+  title: 1Wire - Movesense-API
+  description: |
+    API for managing 1Wire communication.
+  x-api-type: public
+  x-api-required: false
+
+paths:
+  /Comm/1Wire/Subscription:
+    post:
+      description: |
+        Subscribe to reserve the 1-wire bus. If you need to send commands that are composed of many
+        write-read pairs the bus must be reserved so that the bus is not powered down between commands.
+      responses:
+        200:
+          description: |
+            Subscription successful. The 1Wire bus is now powered on until unsubscribe is called.
+        x-notification:
+          description: |
+            This API does not send notifications. it's here only because wbres requires it
+          schema:
+            type: integer
+            format: uint64
+
+    delete:
+      description: |
+        Unsubscribe to free the the 1-wire bus.
+      responses:
+        200:
+          description: Unsubscribe was successfull and 1-wire is powered down if there are no other subscriptions
+
+  /Comm/1Wire/Peers:
+    get:
+      description: |
+        Read the list of connected 1-Wire devices
+      responses:
+        200:
+          description: Operation completed successfully.
+          schema:
+            $ref: '#/definitions/OWPeerList'
+
+  /Comm/1Wire/Peers/{ConnHandle}:
+    parameters:
+     - $ref: '#/parameters/ConnHandle'
+    put:
+      parameters:
+       - name: command
+         in: query
+         description: 1Wire command to send to device
+         required: true
+         schema:
+           $ref: '#/definitions/OWCommand'
+      description: |
+        Send a command to 1-wire device indicated by ConnHandle. Returns the data
+      responses:
+        200:
+          description: Operation completed successfully.
+          $ref: '#/definitions/OWCommandResult'
+
+parameters:
+  ConnHandle:
+    name: ConnHandle
+    in: path
+    required: true
+    type: integer
+    format: int32
+
+definitions:
+  OWPeerEntry:
+    required:
+    - Address
+    properties:
+      Address:
+        description: Address of the 1wire device
+        type: integer
+        format: uint64
+      handle:
+        description: handle of the peer connection.
+        type: integer
+        format: int32
+
+  OWPeerList:
+    required:
+    - ConnectedPeers
+    properties:
+      ConnectedPeers:
+        type: array
+        items:
+          $ref: '#/definitions/OWPeerEntry'
+
+  OWPeerChange:
+    required:
+    - Peer
+    - State
+    properties:
+      Peer:
+        $ref: '#/definitions/OWPeerEntry'
+      State:
+        $ref: '#/definitions/OWPeerState'
+
+  OWPeerState:
+    description: |
+      State of the peer.
+    type: integer
+    format: uint8
+    enum:
+      - name: 'DISCONNECTED'
+        description: Peer is disconnected.
+        value: 0
+      - name: 'CONNECTED'
+        description: Peer is connected.
+        value: 1
+
+  OWCommand:
+    description: |
+      Command for 1wire device communication. 
+    required:
+      - DataOut
+      - ReadCount
+    properties:
+      DataOut:
+        description: Bytes to write as a part of command
+        type: array
+        items:
+          type: integer
+          format: uint8
+      ReadCount:
+        description: Bytes to read from peer after writing
+        type: integer
+        format: uint8
+      ContPrev:
+        description: Tells 1wire master to continue previous command, so will not do RESET PULSE nor MATCH ROM. If not given, defaults to "false".
+        type: boolean
+  
+  OWCommandResult:
+    description: |
+      Command result
+    required:
+      - Data
+    properties:
+      Data:
+        description: Bytes read from peer
+        type: array
+        items:
+          type: integer
+          format: uint8
+  

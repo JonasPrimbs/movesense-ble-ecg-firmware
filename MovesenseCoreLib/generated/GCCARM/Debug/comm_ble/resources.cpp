@@ -7,6 +7,9 @@
 
 namespace WB_RES {
 
+WB_STATIC_VERIFY(sizeof(BleConfig) == 8, SizeOfStructure_BleConfig_IsNotWhatExpected);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(BleConfig) == 4, AlignmentOfStructure_BleConfig_IsNotWhatExpected);
+
 WB_STATIC_VERIFY(sizeof(AdvParams) == 8, SizeOfStructure_AdvParams_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(AdvParams) == 4, AlignmentOfStructure_AdvParams_IsNotWhatExpected);
 
