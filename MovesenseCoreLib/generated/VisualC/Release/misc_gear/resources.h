@@ -51,7 +51,7 @@ struct MISC_GEAR;
 
 struct MISC_GEAR_ID
 {
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 16640, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 16640;
 

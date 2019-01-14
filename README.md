@@ -1,9 +1,11 @@
 ## Announcements
-**(Nov 14th 2018) Sensor firmware hotfix 1.7.2 is out!**  
-The new version contains a fix Movement and Connector detections that broke in v.1.7.0
+** NOTE: WE HAVE DISCOVERED SOME ISSUES WITH BLE COMMUNICATION WITH LATEST 1.8.0 RELEASE. PLEASE TAKE THIS INTO ACCOUNT WHEN USING 1.8.0 WE ARE WORKING ON GETTING THE FIXED 1.8.1 OUT AS SOON AS POSSIBLE. SORRY FOR THE INCONVINIENCE CAUSED BY THIS.**  
+  
+**(Dec 11th 2018) Sensor firmware 1.8.0 is out!**  
+The new version contains improvements on BLE, 1-wire communication support and lot's of fixes
 
 **Known issues**  
-Please refer to [CHANGES.md](CHANGES.md) for a list of known issues.
+Please refer to [CHANGES.md](CHANGES.md) for a list of changes & known issues.
 
 
 ## Overview

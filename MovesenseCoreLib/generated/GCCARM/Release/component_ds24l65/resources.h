@@ -70,7 +70,7 @@ struct COMPONENT_DS24L65;
 
 struct COMPONENT_DS24L65_ACTIVE
 {
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3072, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 3072;
 
@@ -157,7 +157,7 @@ struct COMPONENT_DS24L65_ACTIVE
 
 struct COMPONENT_DS24L65_COMMAND
 {
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3073, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 3073;
 
@@ -228,7 +228,7 @@ struct COMPONENT_DS24L65_COMMAND
 
 struct COMPONENT_DS24L65_READROM
 {
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3074, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 3074;
 
@@ -251,7 +251,7 @@ struct COMPONENT_DS24L65_READROM
 
 struct COMPONENT_DS24L65_REGISTER
 {
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3075, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 3075;
 
@@ -406,7 +406,7 @@ struct COMPONENT_DS24L65_REGISTER
 
 struct COMPONENT_DS24L65_SCAN
 {
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3076, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 3076;
 
@@ -429,7 +429,7 @@ struct COMPONENT_DS24L65_SCAN
 
 struct COMPONENT_DS24L65_USERMEMORY
 {
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 3077, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 3077;
 

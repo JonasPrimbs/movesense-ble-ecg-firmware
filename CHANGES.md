@@ -1,3 +1,24 @@
+## NOTE: WE HAVE DISCOVERED SOME ISSUES WITH BLE COMMUNICATION WITH LATEST 1.8.0 RELEASE. PLEASE TAKE THIS INTO ACCOUNT WHEN USING 1.8.0 WE ARE WORKING ON GETTING THE FIXED 1.8.1 OUT AS SOON AS POSSIBLE. SORRY FOR THE INCONVINIENCE CAUSED BY THIS.  
+  
+## Version 1.8.0.1986.3e4686edc878fc  
+
+###Whats new  
+- Feature: BLE power consumption improvements 
+- Feature: BLE speed improvements for BLE 4.2 and newer phones 
+- Feature: Get /Algo/ECGRR when subscribing to /Meas/HR when rr_from_ecg module included in build
+- Feature: 1-Wire communication API (only overdrive-speed supported for now)
+- Feature: HR initial filtering
+- Bugfix: In heavy BLE traffic accelerometer timestamps may have jitter 
+- Bugfix: BLE deviceName does not match AdvName for customized ScanResp
+- Bugfix: Gear ID is not correct
+- Bugfix: Sensor goes sometimes to 5mA mode
+- Bugfix: SBEM code not generated for modules (Issue #46)
+- Bugfix: Connect after Disconnect fails sometimes
+- Sample: New *accel_int16_app* that provides accelerometer data as int16
+
+###Notes:  
+- Subscribing higher ECG samplerates (> 200) can lead to loss of data due to small on chip FIFO on AFE chip (especially when heavy BLE traffic)
+
 ## Version 1.7.2.1932.31fa1076f86ebc  
 
 ###Whats new:  

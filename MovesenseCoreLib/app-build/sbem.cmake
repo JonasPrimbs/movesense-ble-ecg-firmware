@@ -6,6 +6,12 @@ set(GENERATED_SBEM_SOURCES
 
 set(ALL_YAML_GLOBS ${MOVESENSE_CORE_LIBRARY}/resources/whiteboard/builtinTypes/*.yaml ${MOVESENSE_CORE_LIBRARY}/resources/whiteboard/services/*.yaml ${MOVESENSE_CORE_LIBRARY}/resources/core/*.yaml ${MOVESENSE_CORE_LIBRARY}/resources/movesense-api/*.yaml ${MOVESENSE_CORE_LIBRARY}/resources/movesense-api/meas/*.yaml ${CMAKE_CURRENT_SOURCE_DIR}/wbresources/*.yaml)
 set(RESOURCE_FILE_FOLDERS ${MOVESENSE_CORE_LIBRARY}/generated/${COMPILER}/${CMAKE_BUILD_TYPE})
+
+# Add module API folders to GLOBS
+foreach(MODULE_DIR ${MOVESENSE_MODULES})
+    set(ALL_YAML_GLOBS ${ALL_YAML_GLOBS} ${MODULE_DIR}/wbresources/*.yaml)
+endforeach()
+
 file(GLOB ALL_YAML_FILES ${ALL_YAML_GLOBS})
 
 add_custom_command(

@@ -39,6 +39,17 @@ paths:
             $ref: '#/definitions/ProductData'
         500:
           description: Data does not exist
+    delete:
+      description: |
+        Delete the existing product data.
+        Note: this can only be done in Factory Calibration Mode
+      responses:
+        200:
+          description: Product data deleted successfully
+        409:
+          description: No product data
+        500:
+          description: Failed. This operation is permitted only in Factory Calibration Mode.
 
   /Misc/Manufacturing/CalibrationData:
     post:

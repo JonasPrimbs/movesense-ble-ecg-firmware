@@ -67,6 +67,7 @@ struct SYSTEM_ENERGY
 	struct GET
 	{
 		typedef whiteboard::StronglyTypedResult<const Energy&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_SERVICE_UNAVAILABLE> HTTP_CODE_SERVICE_UNAVAILABLE;
 
 		struct Parameters
 		{
@@ -89,6 +90,7 @@ struct SYSTEM_ENERGY_LEVEL
 	struct GET
 	{
 		typedef whiteboard::StronglyTypedResult<uint8, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_SERVICE_UNAVAILABLE> HTTP_CODE_SERVICE_UNAVAILABLE;
 
 		struct Parameters
 		{
@@ -104,6 +106,7 @@ struct SYSTEM_ENERGY_LEVEL
 	struct SUBSCRIBE
 	{
 		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_SERVICE_UNAVAILABLE> HTTP_CODE_SERVICE_UNAVAILABLE;
 
 		struct Parameters
 		{

@@ -19,6 +19,29 @@ paths:
           description: Operation completed successfully.
           $ref: 'types.yaml#/definitions/MacAddress48'
 
+  /Comm/Ble/Config:
+    get:
+      description: |
+        Read the device BLE configuration
+      responses:
+        200:
+          description: Operation completed successfully.
+          $ref: '#/definitions/BleConfig'
+    put:
+      description: |
+        Set new BLE configuration
+      parameters:
+        - name: newConfig
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/BleConfig'
+      responses:
+        200:
+          description: Operation completed successfully.
+        400:
+          description: Error in parameters
+
   /Comm/Ble/Adv:
     post:
       description: |
@@ -234,6 +257,16 @@ parameters:
     format: int32
 
 definitions:
+  BleConfig:
+    type: object
+    properties:
+      DeviceName:
+        description: Name of the BLE device in GAP profile
+        type: string
+        example: "Movesense 1234567890"
+        minLength: 0
+        maxLength: 31
+
   AdvParams:
     type: object
     properties:

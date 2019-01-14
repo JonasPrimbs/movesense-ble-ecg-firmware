@@ -53,6 +53,70 @@ struct COMPONENT_MAX3000X_HEARTRATEDATA
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 2816, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 2816;
 
+	struct PUT
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_BAD_REQUEST> HTTP_CODE_BAD_REQUEST;
+
+		struct Parameters
+		{
+			struct ENABLED
+			{
+				static const whiteboard::ParameterIndex Index = 0;
+
+				typedef bool Type;
+				typedef Type ConstReferenceType;
+			};
+
+			typedef ENABLED Parameter1;
+
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
+		};
+
+		/** Reference wrapper for strongly typed parameter list for /Component/MAX3000x/HeartRateData */
+		class ParameterListRef
+		{
+		private:
+			/** Prevent use of default constructor */
+			ParameterListRef() DELETED;
+
+			/** Prevent use of copy constructor */
+			ParameterListRef(const ParameterListRef&) DELETED;
+
+			/** Prevent use of assignment operator */
+			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
+
+		public:
+			/** Constructor that initializes this class from existing parameter list
+			*
+			* @param rParameterList Reference to parameter list that contains untyped parameters
+			*/
+			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
+				: mrParameterList(rParameterList)
+			{
+			}
+
+			/** Gets ENABLED parameter value
+			*
+			* @return Current parameter value
+			*/
+			inline Parameters::ENABLED::ConstReferenceType getEnabled() const
+			{
+				return mrParameterList[Parameters::ENABLED::Index].convertTo<Parameters::ENABLED::ConstReferenceType>();
+			}
+
+		private:
+			/** Reference to actual parameter list */
+			const whiteboard::ParameterList& mrParameterList;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::ENABLED::ConstReferenceType)
+		{
+		}
+	};
+
 	struct SUBSCRIBE
 	{
 		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;

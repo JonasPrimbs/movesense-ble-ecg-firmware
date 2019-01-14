@@ -40,7 +40,7 @@ namespace WB_RES {
 
 struct PeerStateValues
 {
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14085;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14086;
 
 	enum Type
 	{
@@ -52,7 +52,7 @@ typedef whiteboard::TypedEnum<PeerStateValues, PeerStateValues::Type, uint8> Pee
 
 struct BondingPolicyValues
 {
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14091;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14092;
 
 	enum Type
 	{
@@ -64,6 +64,7 @@ struct BondingPolicyValues
 };
 typedef whiteboard::TypedEnum<BondingPolicyValues, BondingPolicyValues::Type, uint8> BondingPolicy;
 
+struct WB_ALIGN(4) BleConfig;
 struct WB_ALIGN(4) AdvParams;
 struct WB_ALIGN(4) AdvState;
 struct WB_ALIGN(4) AdvSettings;
@@ -76,11 +77,20 @@ struct WB_ALIGN(4) BondEntry;
 struct WB_ALIGN(4) BondList;
 struct WB_ALIGN(1) BondingSettings;
 
-struct WB_ALIGN(4) AdvParams
+struct WB_ALIGN(4) BleConfig
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14080;
+
+	WB_ALIGN(4) whiteboard::Optional< whiteboard::WrapperFor32BitPointer<const char> > deviceName;
+};
+
+struct WB_ALIGN(4) AdvParams
+{
+	// Structure type identification and serialization
+	typedef int Structure;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14081;
 
 	WB_ALIGN(4) whiteboard::Optional< MacAddress48 > peerAddr;
 };
@@ -89,7 +99,7 @@ struct WB_ALIGN(4) AdvState
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14081;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14082;
 
 	WB_ALIGN(1) bool isAdvertising;
 	WB_ALIGN(4) whiteboard::Optional< MacAddress48 > peerAddr;
@@ -99,7 +109,7 @@ struct WB_ALIGN(4) AdvSettings
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14082;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14083;
 
 	WB_ALIGN(4) whiteboard::Optional< whiteboard::Array< uint8 > > advPacket;
 	WB_ALIGN(4) whiteboard::Optional< whiteboard::Array< uint8 > > scanRespPacket;
@@ -111,7 +121,7 @@ struct WB_ALIGN(4) PeerEntry
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14083;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14084;
 
 	WB_ALIGN(4) MacAddress48 address;
 	WB_ALIGN(4) whiteboard::Optional< whiteboard::WrapperFor32BitPointer<const char> > name;
@@ -122,7 +132,7 @@ struct WB_ALIGN(4) PeerList
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14084;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14085;
 
 	WB_ALIGN(4) whiteboard::Array< PeerEntry > connectedPeers;
 };
@@ -131,7 +141,7 @@ struct WB_ALIGN(4) PeerChange
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14086;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14087;
 
 	WB_ALIGN(4) PeerEntry peer;
 	WB_ALIGN(1) PeerState state;
@@ -141,7 +151,7 @@ struct WB_ALIGN(2) ScanParams
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14087;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14088;
 
 	WB_ALIGN(1) bool active;
 	WB_ALIGN(2) uint16 timeout;
@@ -153,7 +163,7 @@ struct WB_ALIGN(4) ScanResult
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14088;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14089;
 
 	WB_ALIGN(4) MacAddress48 address;
 	WB_ALIGN(1) bool isScanResponse;
@@ -166,7 +176,7 @@ struct WB_ALIGN(4) BondEntry
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14089;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14090;
 
 	WB_ALIGN(4) MacAddress48 address;
 };
@@ -175,7 +185,7 @@ struct WB_ALIGN(4) BondList
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14090;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14091;
 
 	WB_ALIGN(4) whiteboard::Array< BondEntry > bondedDevices;
 };
@@ -184,7 +194,7 @@ struct WB_ALIGN(1) BondingSettings
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14092;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14093;
 
 	WB_ALIGN(1) BondingPolicy policy;
 	WB_ALIGN(1) int8 recoveryTime;
@@ -422,11 +432,97 @@ struct COMM_BLE_ADV_SETTINGS
 	};
 };
 
-struct COMM_BLE_PEERS
+struct COMM_BLE_CONFIG
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 14083, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 14083;
+
+	struct GET
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
+	};
+
+	struct PUT
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_BAD_REQUEST> HTTP_CODE_BAD_REQUEST;
+
+		struct Parameters
+		{
+			struct NEWCONFIG
+			{
+				static const whiteboard::ParameterIndex Index = 0;
+
+				typedef BleConfig Type;
+				typedef const Type& ConstReferenceType;
+			};
+
+			typedef NEWCONFIG Parameter1;
+
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
+		};
+
+		/** Reference wrapper for strongly typed parameter list for /Comm/Ble/Config */
+		class ParameterListRef
+		{
+		private:
+			/** Prevent use of default constructor */
+			ParameterListRef() DELETED;
+
+			/** Prevent use of copy constructor */
+			ParameterListRef(const ParameterListRef&) DELETED;
+
+			/** Prevent use of assignment operator */
+			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
+
+		public:
+			/** Constructor that initializes this class from existing parameter list
+			*
+			* @param rParameterList Reference to parameter list that contains untyped parameters
+			*/
+			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
+				: mrParameterList(rParameterList)
+			{
+			}
+
+			/** Gets NEWCONFIG parameter value
+			*
+			* @return Current parameter value
+			*/
+			inline Parameters::NEWCONFIG::ConstReferenceType getNewConfig() const
+			{
+				return mrParameterList[Parameters::NEWCONFIG::Index].convertTo<Parameters::NEWCONFIG::ConstReferenceType>();
+			}
+
+		private:
+			/** Reference to actual parameter list */
+			const whiteboard::ParameterList& mrParameterList;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::NEWCONFIG::ConstReferenceType)
+		{
+		}
+	};
+};
+
+struct COMM_BLE_PEERS
+{
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 14084, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 14084;
 
 	struct GET
 	{
@@ -494,8 +590,8 @@ struct COMM_BLE_PEERS
 struct COMM_BLE_PEERS_CONNHANDLE
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 14084, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 14084;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 14085, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 14085;
 
 	struct DELETE
 	{
@@ -564,8 +660,8 @@ struct COMM_BLE_PEERS_CONNHANDLE
 struct COMM_BLE_SCAN
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 14085, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 14085;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 14086, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 14086;
 
 	struct SUBSCRIBE
 	{
@@ -682,8 +778,8 @@ struct COMM_BLE_SECURITY;
 struct COMM_BLE_SECURITY_BONDS
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 14086, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 14086;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 14087, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 14087;
 
 	struct GET
 	{
@@ -782,8 +878,8 @@ struct COMM_BLE_SECURITY_BONDS
 struct COMM_BLE_SECURITY_PIN
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 14087, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 14087;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 14088, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 14088;
 
 	struct PUT
 	{
@@ -867,8 +963,8 @@ struct COMM_BLE_SECURITY_PIN
 struct COMM_BLE_SECURITY_SETTINGS
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 14088, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 14088;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 14089, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 14089;
 
 	struct GET
 	{

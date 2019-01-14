@@ -14,7 +14,7 @@ set(EXECUTABLE_NAME Movesense)
 add_definitions(-DAPP_SS2_APPLICATION=1)
 set(BUILD_CONFIG_PATH ${CMAKE_CURRENT_LIST_DIR}/app-build)
 
-if (NOT CMAKE_BUILD_TYPE)
+if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
     message(WARNING "Defaulting build type to 'Debug'")
 endif()
@@ -166,23 +166,48 @@ include(${BUILD_CONFIG_PATH}/modules.cmake)
 ################################
 
 # The first one contains real application yaml with execution context definitions
-generate_wb_resources(
-    app_execution_contexts app_execution_contexts_RESOURCE_SOURCES
-    SOURCE_GROUP app_execution_contexts  ${CMAKE_CURRENT_SOURCE_DIR}/*_root.yaml
-    GENERATE C CPP LIB
-    CPP_DEPENDS wb-resources)
+#generate_wb_resources(
+#    app_execution_contexts app_execution_contexts_RESOURCE_SOURCES
+#    SOURCE_GROUP app_execution_contexts  ${CMAKE_CURRENT_SOURCE_DIR}/*_root.yaml
+#    GENERATE C CPP LIB
+#    CPP_DEPENDS wb-resources)
 
-# find about application yaml files
-file(GLOB MOVESENSE_APP_YAML_FILES  ${CMAKE_CURRENT_SOURCE_DIR}/wbresources/*.yaml)
+# find all yaml files and collect them
+file(GLOB APP_YAML_FILES_MAIN ${CMAKE_CURRENT_SOURCE_DIR}/*.yaml)
+unset(APP_YAML_FILES_WB_RSC)
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/wbresources)
+    file(GLOB APP_YAML_FILES_WB_RSC ${CMAKE_CURRENT_SOURCE_DIR}/wbresources/*.yaml)
+endif()
+unset(APP_CUSTOM_PATH_YAML_FILES)
+# allow app developer to specify additional directories relative to module directory
+foreach(APP_CUSTOM_YAML_PATH ${CUSTOM_YAML_PATHS})
+    unset(YAML_FILES_TMP)
+    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${APP_CUSTOM_YAML_PATH})
+        file(GLOB YAML_FILES_TMP ${CMAKE_CURRENT_SOURCE_DIR}/${APP_CUSTOM_YAML_PATH}/*.yaml)
+    else()
+        message("Warning, specified custom yaml directory not found: " ${CMAKE_CURRENT_SOURCE_DIR}/${APP_CUSTOM_YAML_PATH})
+    endif()
+    set(APP_CUSTOM_PATH_YAML_FILES ${APP_CUSTOM_PATH_YAML_FILES} ${YAML_FILES_TMP})
+endforeach(APP_CUSTOM_YAML_PATH)
+
+set(MOVESENSE_APP_YAML_FILES ${APP_YAML_FILES_MAIN} ${APP_YAML_FILES_WB_RSC} ${APP_CUSTOM_PATH_YAML_FILES})
 
 # Generate application resources
-if (MOVESENSE_APP_YAML_FILES)
+if(MOVESENSE_APP_YAML_FILES)
     set(APP_RESOURCES ${CMAKE_BINARY_DIR}/app-resources.wbo)
     generate_wb_resources(
         app-resources APP_RESOURCE_SOURCES
-        INCLUDE_DIRECTORIES ${WB_DIRECTORY}/include/whiteboard/builtinTypes
-        SOURCE_GROUP app ${CMAKE_CURRENT_SOURCE_DIR}/wbresources/*.yaml ${CMAKE_CURRENT_SOURCE_DIR}/*_root.yaml
-        GENERATE CPP LIB
+        INCLUDE_DIRECTORIES ${MOVESENSE_CORE_LIBRARY}/resources/whiteboard/builtinTypes
+        INCLUDE_DIRECTORIES ${MOVESENSE_CORE_LIBRARY}/resources/movesense-api
+        INCLUDE_DIRECTORIES ${MOVESENSE_CORE_LIBRARY}/resources/movesense-api/comm
+        INCLUDE_DIRECTORIES ${MOVESENSE_CORE_LIBRARY}/resources/movesense-api/component
+        INCLUDE_DIRECTORIES ${MOVESENSE_CORE_LIBRARY}/resources/movesense-api/meas
+        INCLUDE_DIRECTORIES ${MOVESENSE_CORE_LIBRARY}/resources/movesense-api/mem
+        INCLUDE_DIRECTORIES ${MOVESENSE_CORE_LIBRARY}/resources/movesense-api/misc
+        INCLUDE_DIRECTORIES ${MOVESENSE_CORE_LIBRARY}/resources/movesense-api/system
+        INCLUDE_DIRECTORIES ${MOVESENSE_CORE_LIBRARY}/resources/movesense-api/ui
+        SOURCE_GROUP app ${MOVESENSE_APP_YAML_FILES}
+        GENERATE C CPP LIB
         CPP_DEPENDS wb-resources)
 endif()
 
@@ -204,7 +229,7 @@ list(APPEND MOVESENSE_CORE_WBO_FILES ${MOVESENSE_CORE_VARIANT_WBO_FILES})
 # Combine WB resource libraries from core, app and modules
 generate_wb_resources(
     app-metadata APP_METADATA_SOURCES
-    SOURCE_GROUP none GENERATED ${MOVESENSE_CORE_WBO_FILES} ${APP_RESOURCES} ${MODULES_RESOURCES} ${CMAKE_BINARY_DIR}/app_execution_contexts.wbo
+    SOURCE_GROUP none GENERATED ${MOVESENSE_CORE_WBO_FILES} ${APP_RESOURCES} ${MODULES_RESOURCES}
     GENERATE METADATA)
 
 ####################################
@@ -219,7 +244,7 @@ include(${BUILD_CONFIG_PATH}/sbem.cmake)
 # Source files
 ####################################
 
-# Application sources in current folder (ss2_app)
+# Application sources in current folder (app)
 aux_source_directory(. APP_SOURCES)
 set(APP_SOURCES ${APP_SOURCES} ${SOURCES})
 

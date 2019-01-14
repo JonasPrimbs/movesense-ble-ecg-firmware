@@ -9,7 +9,26 @@ info:
   x-api-required: false
     
 paths:
-
+  /Component/MAX3000x/HeartRateData:
+    put:
+      description: |
+        Setting to disable / re-enable /Meas/HR resource directly from MAX3000x chip. 
+        Used by ECGRR module that wants to override with better implementation
+      parameters:
+        - name: enabled
+          in: body
+          description: MAX3000x provider provides /Meas/HR 
+          required: true
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: |
+            HR resource is enabled or disabled
+        400:
+          description: |
+            Not able to set the wake-up trigger
+  
   /Component/MAX3000x/HeartRateData/Subscription:
     post:
       description: |
