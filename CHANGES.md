@@ -1,5 +1,17 @@
-## NOTE: WE HAVE DISCOVERED SOME ISSUES WITH BLE COMMUNICATION WITH LATEST 1.8.0 RELEASE. PLEASE TAKE THIS INTO ACCOUNT WHEN USING 1.8.0 WE ARE WORKING ON GETTING THE FIXED 1.8.1 OUT AS SOON AS POSSIBLE. SORRY FOR THE INCONVINIENCE CAUSED BY THIS.  
-  
+## Version 1.8.1.34a9fd4453016b
+
+###Whats new:
+- Bugfix: Fixed BLE issues with some phone models
+- Bugfix: Fixed slow metadata fetch on first connection
+- Bugfix: 1Wire command doesn't work from MDS
+- Bugfix: samples ble_std_services and secure_ble_app wont start (Issue #50)
+
+###Known Bugs:
+- OTA Firmware update fails if app size is over 339968 bytes
+
+###Notes:
+- To create DFU package for OTA update, compile application with "ninja dfupkg"
+
 ## Version 1.8.0.1986.3e4686edc878fc  
 
 ###Whats new  

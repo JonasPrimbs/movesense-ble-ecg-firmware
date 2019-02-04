@@ -196,7 +196,7 @@ struct COMM_1WIRE_PEERS_CONNHANDLE
 
 	struct PUT
 	{
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const OWCommandResult&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{
