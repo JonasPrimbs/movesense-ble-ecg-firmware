@@ -58,7 +58,8 @@ paths:
       responses:
         200:
           description: Operation completed successfully.
-          $ref: '#/definitions/OWCommandResult'
+          schema:
+            $ref: '#/definitions/OWCommandResult'
 
 parameters:
   ConnHandle:

@@ -1,8 +1,7 @@
 ## Announcements
-** NOTE: WE HAVE DISCOVERED SOME ISSUES WITH BLE COMMUNICATION WITH LATEST 1.8.0 RELEASE. PLEASE TAKE THIS INTO ACCOUNT WHEN USING 1.8.0 WE ARE WORKING ON GETTING THE FIXED 1.8.1 OUT AS SOON AS POSSIBLE. SORRY FOR THE INCONVINIENCE CAUSED BY THIS.**  
   
-**(Dec 11th 2018) Sensor firmware 1.8.0 is out!**  
-The new version contains improvements on BLE, 1-wire communication support and lot's of fixes
+**(Feb 4th 2019) Sensor firmware 1.8.1 is out!**  
+This bugfix version contains fixes for BLE communication, samples and 1-wire protocol
 
 **Known issues**  
 Please refer to [CHANGES.md](CHANGES.md) for a list of changes & known issues.

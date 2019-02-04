@@ -22,7 +22,7 @@ OPTIONAL_CORE_MODULE(BypassService, false)
 OPTIONAL_CORE_MODULE(SystemMemoryService, false)
 OPTIONAL_CORE_MODULE(DebugService, false)
 OPTIONAL_CORE_MODULE(BleStandardHRS, true)
-OPTIONAL_CORE_MODULE(BleNordicUART, true)
+OPTIONAL_CORE_MODULE(BleNordicUART, false)
 OPTIONAL_CORE_MODULE(CustomGattService, false)
 
 // NOTE: If building a simulator build, these macros are obligatory!
