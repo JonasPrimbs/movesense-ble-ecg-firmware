@@ -12,9 +12,9 @@ const char* const BlinkyClient::LAUNCHABLE_NAME = "Blinky";
 
 BlinkyClient::BlinkyClient()
     : ResourceClient(WBDEBUG_NAME(__FUNCTION__), WB_EXEC_CTX_APPLICATION),
-      LaunchableModule(LAUNCHABLE_NAME, WB_EXEC_CTX_APPLICATION)
+      LaunchableModule(LAUNCHABLE_NAME, WB_EXEC_CTX_APPLICATION),
+      mTimer(wb::ID_INVALID_TIMER)
 {
-    mTimer = whiteboard::ID_INVALID_TIMER;
 }
 
 BlinkyClient::~BlinkyClient()
@@ -32,34 +32,24 @@ void BlinkyClient::deinitModule()
     mModuleState = WB_RES::ModuleStateValues::UNINITIALIZED;
 }
 
-/** @see whiteboard::ILaunchableModule::startModule */
 bool BlinkyClient::startModule()
 {
     mModuleState = WB_RES::ModuleStateValues::STARTED;
-
-    // Start LED timer. true = trigger repeatedly
-    mTimer = startTimer(BLINK_PERIOD_MS, true);
-
+    mTimer = startTimer(BLINK_PERIOD_MS, true); // Start LED timer. true = trigger repeatedly
     return true;
 }
 
-/** @see whiteboard::ILaunchableModule::startModule */
 void BlinkyClient::stopModule()
 {
-    // Stop LED timer
-    stopTimer(mTimer);
-    mTimer = whiteboard::ID_INVALID_TIMER;
+    stopTimer(mTimer); // Stop LED timer
+    mTimer = wb::ID_INVALID_TIMER;
+    mModuleState = WB_RES::ModuleStateValues::STOPPED;
 }
 
-void BlinkyClient::onTimer(whiteboard::TimerId timerId)
+void BlinkyClient::onTimer(wb::TimerId /*timerId*/)
 {
-    if (timerId != mTimer)
-    {
-        return;
-    }
-
-    uint16_t indicationType = 2; // SHORT_VISUAL_INDICATION, defined in ui/ind.yaml
-
-    // Make PUT request to trigger led blink
-    asyncPut(WB_RES::LOCAL::UI_IND_VISUAL::ID, AsyncRequestOptions::Empty, indicationType);
+    // if only one timer started, no need to check the ID
+    const WB_RES::VisualIndType type = WB_RES::VisualIndTypeValues::SHORT_VISUAL_INDICATION; // defined in ui/ind.yaml
+    asyncPut(WB_RES::LOCAL::UI_IND_VISUAL(), AsyncRequestOptions::Empty, type); // PUT request to trigger led blink
+    // ignore the immediate and asynchronous Results as this is not critical
 }

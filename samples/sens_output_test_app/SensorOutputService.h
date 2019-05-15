@@ -5,9 +5,9 @@
 #include <whiteboard/ResourceClient.h>
 #include <whiteboard/ResourceProvider.h>
 
-class SensorOutputService FINAL : private whiteboard::ResourceProvider,
-                                  private whiteboard::ResourceClient,
-                                  public whiteboard::LaunchableModule
+class SensorOutputService FINAL : private wb::ResourceClient,
+                                  private wb::ResourceProvider,
+                                  public wb::LaunchableModule
 {
 public:
     /** Name of this class. Used in StartupProvider list. */
@@ -15,96 +15,51 @@ public:
     SensorOutputService();
     ~SensorOutputService();
 
-private:
+protected:
     /** @see whiteboard::ILaunchableModule::initModule */
     virtual bool initModule() OVERRIDE;
-
     /** @see whiteboard::ILaunchableModule::deinitModule */
     virtual void deinitModule() OVERRIDE;
-
     /** @see whiteboard::ILaunchableModule::startModule */
     virtual bool startModule() OVERRIDE;
-
     /** @see whiteboard::ILaunchableModule::stopModule */
-    virtual void stopModule() OVERRIDE { mModuleState = WB_RES::ModuleStateValues::STOPPED; }
+    virtual void stopModule() OVERRIDE;
 
-    /**
-    *	Subscribe notification callback.
-    *
-    *	@param request Request information
-    *	@param parameters List of parameters
-    */
-    virtual void onSubscribe(const whiteboard::Request& request,
-                             const whiteboard::ParameterList& parameters) OVERRIDE;
+    /** @see whiteboard::ResourceProvider::onSubscribe */
+    virtual void onSubscribe(const wb::Request& request,
+                             const wb::ParameterList& parameters) OVERRIDE;
 
-    /**
-    *	Unsubscribe notification callback.
-    *
-    *	@param request Request information
-    *	@param parameters List of parameters
-    */
-    virtual void onUnsubscribe(const whiteboard::Request& request,
-                               const whiteboard::ParameterList& parameters) OVERRIDE;
+    /** @see whiteboard::ResourceProvider::onUnsubscribe */
+    virtual void onUnsubscribe(const wb::Request& request,
+                               const wb::ParameterList& parameters) OVERRIDE;
 
-    /**
-    *	Callback for asynchronous UNSUBSCRIBE requests
-    *
-    *	@param requestId ID of the request
-    *	@param resourceId Successful request contains ID of the resource
-    *	@param resultCode Result code of the request
-    *	@param rResultData Successful result contains the request result
-    */
-    void onUnsubscribeResult(whiteboard::RequestId requestId,
-                             whiteboard::ResourceId resourceId,
-                             whiteboard::Result resultCode,
-                             const whiteboard::Value& rResultData);
+    /** @see whiteboard::ResourceProvider::onGetRequest */
+    void onGetRequest(const wb::Request& request,
+                      const wb::ParameterList& parameters) OVERRIDE;
 
-    /**
-    *	Callback for asynchronous SUBSCRIBE requests
-    *
-    *	@param requestId ID of the request
-    *	@param resourceId Successful request contains ID of the resource
-    *	@param resultCode Result code of the request
-    *	@param rResultData Successful result contains the request result
-    */
-    void onSubscribeResult(whiteboard::RequestId requestId,
-                           whiteboard::ResourceId resourceId,
-                           whiteboard::Result resultCode,
-                           const whiteboard::Value& rResultData);
+    /** @see whiteboard::ResourceProvider::onPutRequest */
+    void onPutRequest(const wb::Request& request,
+                      const wb::ParameterList& parameters) OVERRIDE;
 
-    /**
-    *	GET request handler for the config
-    *
-    *	@param request Request information
-    *	@param parameters List of parameters
-    */
-    void onGetRequest(const whiteboard::Request& request,
-                      const whiteboard::ParameterList& parameters) OVERRIDE;
+    /** @see whiteboard::ResourceClient::onUnsubscribeResult */
+    void onUnsubscribeResult(wb::RequestId requestId,
+                             wb::ResourceId resourceId,
+                             wb::Result resultCode,
+                             const wb::Value& rResultData);
 
-    /**
-    *	PUT request handler for the config
-    *
-    *	@param request Request information
-    *	@param parameters List of parameters
-    */
-    void onPutRequest(const whiteboard::Request& request,
-                      const whiteboard::ParameterList& parameters) OVERRIDE;
+    /** @see whiteboard::ResourceClient::onSubscribeResult */
+    void onSubscribeResult(wb::RequestId requestId,
+                           wb::ResourceId resourceId,
+                           wb::Result resultCode,
+                           const wb::Value& rResultData);
 
-    // Required TestResult variables - see SensorOutputSample.yaml
-    uint32_t mTimestampGaps;
-    uint32_t mBadSensorSamples;
-    uint32_t mGoodSensorSamples;
-    WB_RES::TestConfig mTestConfig;
+    /** @see whiteboard::ResourceProvider::onTimer */
+    virtual void onTimer(wb::TimerId timerId) OVERRIDE;
 
-    /**
-    *	This callback is called when the sensor resource notifies us of new data.
-    *
-    *	@param resourceId Resource id associated with the update
-    *	@param value Current value of the resource
-    */
-    void onNotify(whiteboard::ResourceId resourceId,
-                  const whiteboard::Value& value,
-                  const whiteboard::ParameterList& parameters);
+    /** @see whiteboard::ResourceClient::onNotify */
+    void onNotify(wb::ResourceId resourceId,
+                  const wb::Value& value,
+                  const wb::ParameterList& parameters);
 
     /**
     *	Checking the difference in the timestamp to search for the gaps
@@ -118,14 +73,7 @@ private:
     *
     *	@param arrayData received array of probes after the sensor notify
     */
-    void probesCheck(const whiteboard::Array<whiteboard::FloatVector3D>& arrayData);
-
-    /**
-    *	Timer callback.
-    *
-    *	@param timerId Id of timer that triggered
-    */
-    virtual void onTimer(whiteboard::TimerId timerId) OVERRIDE;
+    void probesCheck(const wb::Array<wb::FloatVector3D>& arrayData);
 
     /**
     *	Parse the input string and checks which sensor is selected by user
@@ -148,14 +96,21 @@ private:
     */
     void resetCurrentMeasurement(void);
 
+private:
     const uint32_t timerIntervalInMs = 1000;
 
+    // Required TestResult variables - see SensorOutputSample.yaml
+    uint32_t mTimestampGaps;
+    uint32_t mBadSensorSamples;
+    uint32_t mGoodSensorSamples;
+    WB_RES::TestConfig mTestConfig;
+
     // ID of sensor subscribed by the user
-    whiteboard::ResourceId subscribedSensor;
+    wb::ResourceId subscribedSensor;
 
     // Timestamp differences needed for gaps searching
     uint32_t lastTimestamp;
     uint32_t lastDiff;
 
-    whiteboard::TimerId mTestPeriodTimer; // Private timer for the samples gathering
+    wb::TimerId mTestPeriodTimer; // Private timer for the samples gathering
 };

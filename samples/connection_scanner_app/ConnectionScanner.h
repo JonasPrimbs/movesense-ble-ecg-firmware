@@ -11,9 +11,7 @@
 #define BLINK_TIME 1000
 #define HR_TIMEOUT 5000
 
-class ConnectionScanner FINAL : private whiteboard::ResourceClient,
-                                public whiteboard::LaunchableModule
-
+class ConnectionScanner FINAL : private wb::ResourceClient, public wb::LaunchableModule
 {
 public:
     /** Name of this class. Used in StartupProvider list. */
@@ -80,41 +78,26 @@ public:
 private:
     /** @see whiteboard::ILaunchableModule::initModule */
     virtual bool initModule() OVERRIDE;
-
     /** @see whiteboard::ILaunchableModule::deinitModule */
     virtual void deinitModule() OVERRIDE;
-
     /** @see whiteboard::ILaunchableModule::startModule */
     virtual bool startModule() OVERRIDE;
-
     /** @see whiteboard::ILaunchableModule::stopModule */
-    virtual void stopModule() OVERRIDE { 
-        stopRunning();
-        mModuleState = WB_RES::ModuleStateValues::STOPPED;
-    }
+    virtual void stopModule() OVERRIDE;
 
+    /** @see whiteboard::ResourceClient::onTimer */
+    virtual void onTimer(wb::TimerId timerId) OVERRIDE;
 
-    /**
-    *	Timer callback.
-    *
-    *	@param timerId Id of timer that triggered
-    */
-    virtual void onTimer(whiteboard::TimerId timerId) OVERRIDE;
+    /** @see whiteboard::ResourceClient::onNotify */
+    virtual void onNotify(wb::ResourceId resourceId,
+                          const wb::Value& value,
+                          const wb::ParameterList& parameters);
 
-    /**
-    *	Callback for resource notifications.
-    *   Note that this function will not be called for notifications that are
-    *   of types WB_RESOURCE_NOTIFICATION_TYPE_INSERT or WB_RESOURCE_NOTIFICATION_TYPE_DELETE,
-    *   just for notifications that are of type WB_RESOURCE_NOTIFICATION_TYPE_UPDATE.
-    *
-    *	@param resourceId Resource id associated with the update
-    *	@param rValue Current value of the resource
-    */
-    virtual void onNotify(whiteboard::ResourceId resourceId, const whiteboard::Value& value,
-                          const whiteboard::ParameterList& parameters);
-
-    /** Whiteboard callback function for asyncGet request. */
-    virtual void onGetResult(whiteboard::RequestId requestId, whiteboard::ResourceId resourceId, whiteboard::Result resultCode, const whiteboard::Value& result);
+    /** @see whiteboard::ResourceClient::onGetResult */
+    virtual void onGetResult(wb::RequestId requestId,
+                             wb::ResourceId resourceId,
+                             wb::Result resultCode,
+                             const wb::Value& result);
 
 private:
     /**
@@ -139,15 +122,16 @@ private:
     *
     *	@param times how many times LED will blink.
     */
-    inline void startBlinking(uint8_t times) {
+    inline void startBlinking(uint8_t times)
+    {
         mBlinkCount = times;
         mLedBlinkTimer = startTimer(BLINK_DELAY, false);
     }
 
-    whiteboard::ResourceId	mSystemStateResourceId;
+    wb::ResourceId mSystemStateResourceId;
 
-    whiteboard::TimerId mLedBlinkTimer;
-    whiteboard::TimerId mHRCheckOffTimer;
+    wb::TimerId mLedBlinkTimer;
+    wb::TimerId mHRCheckOffTimer;
     uint8_t mSamplesCounter;
     uint8_t mBlinkCount;
     DetectionState mDetectionState;

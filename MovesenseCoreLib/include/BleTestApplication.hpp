@@ -10,7 +10,6 @@ All rights reserved.
 #include <whiteboard/services/WhiteboardServices.h>
 #include <whiteboard/services/CommServices.h>
 #include "common/services/InfoProvider.hpp"
-#include "common/services/LowPriorityServices.hpp"
 #include "common/services/SystemServices.hpp"
 #include "buildconfig/hal/features.h"
 #include "HardwareServices.hpp"
@@ -35,7 +34,6 @@ private:
 
     nea::InfoProvider mInfoProvider;
     nea::SystemServices mSystemServices;
-    nea::LowPriorityServices mLowPriorityServices;
     
     // Launchables
     BleTestService mBleTestService;

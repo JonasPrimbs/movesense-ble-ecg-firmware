@@ -93,7 +93,7 @@ struct MEM_DATALOGGER;
 
 struct MEM_DATALOGGER_CONFIG
 {
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 13056, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 13056;
 
@@ -115,7 +115,7 @@ struct MEM_DATALOGGER_CONFIG
 
 	struct PUT
 	{
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const DataLoggerConfig&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_BAD_REQUEST> HTTP_CODE_BAD_REQUEST;
 
 		struct Parameters
@@ -180,7 +180,7 @@ struct MEM_DATALOGGER_CONFIG
 
 struct MEM_DATALOGGER_STATE
 {
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 13057, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 13057;
 

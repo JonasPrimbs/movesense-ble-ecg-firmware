@@ -38,28 +38,29 @@
 
 namespace WB_RES {
 
-struct LSM6DS3OperationModeValues
-{
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14592;
-
-	enum Type
-	{
-		PASSIVE = 0U,
-		ACTIVE = 1U
-	};
-};
-typedef whiteboard::TypedEnum<LSM6DS3OperationModeValues, LSM6DS3OperationModeValues::Type, uint8> LSM6DS3OperationMode;
-
 struct WB_ALIGN(1) WakeUpState;
+struct WB_ALIGN(1) TapParams;
 
 struct WB_ALIGN(1) WakeUpState
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14593;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14592;
 
 	WB_ALIGN(1) uint8 state;
 	WB_ALIGN(1) uint8 level;
+};
+
+struct WB_ALIGN(1) TapParams
+{
+	// Structure type identification and serialization
+	typedef int Structure;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14593;
+
+	WB_ALIGN(1) whiteboard::Optional< uint8 > doubleTapDur;
+	WB_ALIGN(1) whiteboard::Optional< uint8 > doubleTapQuiet;
+	WB_ALIGN(1) whiteboard::Optional< uint8 > tapThs;
+	WB_ALIGN(1) whiteboard::Optional< uint8 > axes;
 };
 
 namespace LOCAL 
@@ -71,7 +72,7 @@ struct COMPONENT;
 
 struct COMPONENT_LSM6DS3;
 
-struct COMPONENT_LSM6DS3_AUTOPASSIVEENABLED
+struct COMPONENT_LSM6DS3_TAPPARAMS
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 14592, EXECUTION_CONTEXT);
@@ -79,9 +80,8 @@ struct COMPONENT_LSM6DS3_AUTOPASSIVEENABLED
 
 	struct GET
 	{
-		typedef whiteboard::StronglyTypedResult<bool, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NO_CONTENT> HTTP_CODE_NO_CONTENT;
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_IMPLEMENTED> HTTP_CODE_NOT_IMPLEMENTED;
+		typedef whiteboard::StronglyTypedResult<const TapParams&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
 
 		struct Parameters
 		{
@@ -96,26 +96,26 @@ struct COMPONENT_LSM6DS3_AUTOPASSIVEENABLED
 
 	struct PUT
 	{
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NO_CONTENT> HTTP_CODE_NO_CONTENT;
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_IMPLEMENTED> HTTP_CODE_NOT_IMPLEMENTED;
+		typedef whiteboard::StronglyTypedResult<const TapParams&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_BAD_REQUEST> HTTP_CODE_BAD_REQUEST;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INTERNAL_SERVER_ERROR> HTTP_CODE_INTERNAL_SERVER_ERROR;
 
 		struct Parameters
 		{
-			struct VALUE
+			struct NEWPARAMS
 			{
 				static const whiteboard::ParameterIndex Index = 0;
 
-				typedef bool Type;
-				typedef Type ConstReferenceType;
+				typedef TapParams Type;
+				typedef const Type& ConstReferenceType;
 			};
 
-			typedef VALUE Parameter1;
+			typedef NEWPARAMS Parameter1;
 
 			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
 		};
 
-		/** Reference wrapper for strongly typed parameter list for /Component/LSM6DS3/AutoPassiveEnabled */
+		/** Reference wrapper for strongly typed parameter list for /Component/LSM6DS3/TapParams */
 		class ParameterListRef
 		{
 		private:
@@ -138,13 +138,13 @@ struct COMPONENT_LSM6DS3_AUTOPASSIVEENABLED
 			{
 			}
 
-			/** Gets VALUE parameter value
+			/** Gets NEWPARAMS parameter value
 			*
 			* @return Current parameter value
 			*/
-			inline Parameters::VALUE::ConstReferenceType getValue() const
+			inline Parameters::NEWPARAMS::ConstReferenceType getNewParams() const
 			{
-				return mrParameterList[Parameters::VALUE::Index].convertTo<Parameters::VALUE::ConstReferenceType>();
+				return mrParameterList[Parameters::NEWPARAMS::Index].convertTo<Parameters::NEWPARAMS::ConstReferenceType>();
 			}
 
 		private:
@@ -154,246 +154,7 @@ struct COMPONENT_LSM6DS3_AUTOPASSIVEENABLED
 
 		/** Compile time type checking */
 		inline static void typeCheck(
-			Parameters::VALUE::ConstReferenceType)
-		{
-		}
-	};
-};
-
-struct COMPONENT_LSM6DS3_MODE
-{
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 14593, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 14593;
-
-	struct GET
-	{
-		typedef whiteboard::StronglyTypedResult<LSM6DS3OperationMode, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
-
-		struct Parameters
-		{
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck()
-		{
-		}
-	};
-
-	struct SUBSCRIBE
-	{
-		typedef whiteboard::StronglyTypedResult<LSM6DS3OperationMode, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
-
-		struct Parameters
-		{
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck()
-		{
-		}
-	};
-
-	struct EVENT
-	{
-		typedef LSM6DS3OperationMode NotificationType;
-		typedef NotificationType ConstReferenceNotificationType;
-
-		struct Parameters
-		{
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck(
-			const whiteboard::Api::OptionalParameter<ConstReferenceNotificationType>&)
-		{
-		}
-	};
-
-	struct UNSUBSCRIBE
-	{
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
-
-		struct Parameters
-		{
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck()
-		{
-		}
-	};
-};
-
-struct COMPONENT_LSM6DS3_RAWENABLED
-{
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 14594, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 14594;
-
-	struct GET
-	{
-		typedef whiteboard::StronglyTypedResult<bool, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
-
-		struct Parameters
-		{
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck()
-		{
-		}
-	};
-
-	struct PUT
-	{
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
-
-		struct Parameters
-		{
-			struct VALUE
-			{
-				static const whiteboard::ParameterIndex Index = 0;
-
-				typedef bool Type;
-				typedef Type ConstReferenceType;
-			};
-
-			typedef VALUE Parameter1;
-
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
-		};
-
-		/** Reference wrapper for strongly typed parameter list for /Component/LSM6DS3/RawEnabled */
-		class ParameterListRef
-		{
-		private:
-			/** Prevent use of default constructor */
-			ParameterListRef() DELETED;
-
-			/** Prevent use of copy constructor */
-			ParameterListRef(const ParameterListRef&) DELETED;
-
-			/** Prevent use of assignment operator */
-			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
-
-		public:
-			/** Constructor that initializes this class from existing parameter list
-			*
-			* @param rParameterList Reference to parameter list that contains untyped parameters
-			*/
-			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
-				: mrParameterList(rParameterList)
-			{
-			}
-
-			/** Gets VALUE parameter value
-			*
-			* @return Current parameter value
-			*/
-			inline Parameters::VALUE::ConstReferenceType getValue() const
-			{
-				return mrParameterList[Parameters::VALUE::Index].convertTo<Parameters::VALUE::ConstReferenceType>();
-			}
-
-		private:
-			/** Reference to actual parameter list */
-			const whiteboard::ParameterList& mrParameterList;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck(
-			Parameters::VALUE::ConstReferenceType)
-		{
-		}
-	};
-};
-
-struct COMPONENT_LSM6DS3_TILTCOMPENSATIONENABLED
-{
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 14595, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 14595;
-
-	struct GET
-	{
-		typedef whiteboard::StronglyTypedResult<bool, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
-
-		struct Parameters
-		{
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck()
-		{
-		}
-	};
-
-	struct PUT
-	{
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
-
-		struct Parameters
-		{
-			struct VALUE
-			{
-				static const whiteboard::ParameterIndex Index = 0;
-
-				typedef bool Type;
-				typedef Type ConstReferenceType;
-			};
-
-			typedef VALUE Parameter1;
-
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
-		};
-
-		/** Reference wrapper for strongly typed parameter list for /Component/LSM6DS3/TiltCompensationEnabled */
-		class ParameterListRef
-		{
-		private:
-			/** Prevent use of default constructor */
-			ParameterListRef() DELETED;
-
-			/** Prevent use of copy constructor */
-			ParameterListRef(const ParameterListRef&) DELETED;
-
-			/** Prevent use of assignment operator */
-			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
-
-		public:
-			/** Constructor that initializes this class from existing parameter list
-			*
-			* @param rParameterList Reference to parameter list that contains untyped parameters
-			*/
-			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
-				: mrParameterList(rParameterList)
-			{
-			}
-
-			/** Gets VALUE parameter value
-			*
-			* @return Current parameter value
-			*/
-			inline Parameters::VALUE::ConstReferenceType getValue() const
-			{
-				return mrParameterList[Parameters::VALUE::Index].convertTo<Parameters::VALUE::ConstReferenceType>();
-			}
-
-		private:
-			/** Reference to actual parameter list */
-			const whiteboard::ParameterList& mrParameterList;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck(
-			Parameters::VALUE::ConstReferenceType)
+			Parameters::NEWPARAMS::ConstReferenceType)
 		{
 		}
 	};
@@ -402,8 +163,8 @@ struct COMPONENT_LSM6DS3_TILTCOMPENSATIONENABLED
 struct COMPONENT_LSM6DS3_WAKEUP
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 14596, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 14596;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 14593, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 14593;
 
 	struct GET
 	{
@@ -422,7 +183,7 @@ struct COMPONENT_LSM6DS3_WAKEUP
 
 	struct PUT
 	{
-		typedef whiteboard::StronglyTypedResult<const WakeUpState&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_BAD_REQUEST> HTTP_CODE_BAD_REQUEST;
 
 		struct Parameters

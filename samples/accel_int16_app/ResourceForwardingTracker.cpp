@@ -3,15 +3,18 @@
 #include "ResourceForwardingTracker.h"
 #include "app-resources/resources.h"
 
-ResourceForwardingTracker::ResourceForwardingTracker(wb::ResourceClient& clientApi, wb::ResourceProvider& providerApi) :
+ResourceForwardingTracker::ResourceForwardingTracker(wb::ResourceClient& clientApi, wb::ResourceProvider& providerApi):
     mClient(clientApi),
     mProvider(providerApi),
     mResourceMap{ { wb::ID_INVALID_RESOURCE, wb::ID_INVALID_RESOURCE, 0 },
-    { wb::ID_INVALID_RESOURCE, wb::ID_INVALID_RESOURCE, 0 },
-    { wb::ID_INVALID_RESOURCE, wb::ID_INVALID_RESOURCE, 0 },
-    { wb::ID_INVALID_RESOURCE, wb::ID_INVALID_RESOURCE, 0 },
-    { wb::ID_INVALID_RESOURCE, wb::ID_INVALID_RESOURCE, 0 },
-    { wb::ID_INVALID_RESOURCE, wb::ID_INVALID_RESOURCE, 0 }, }
+                  { wb::ID_INVALID_RESOURCE, wb::ID_INVALID_RESOURCE, 0 },
+                  { wb::ID_INVALID_RESOURCE, wb::ID_INVALID_RESOURCE, 0 },
+                  { wb::ID_INVALID_RESOURCE, wb::ID_INVALID_RESOURCE, 0 },
+                  { wb::ID_INVALID_RESOURCE, wb::ID_INVALID_RESOURCE, 0 },
+                  { wb::ID_INVALID_RESOURCE, wb::ID_INVALID_RESOURCE, 0 }, },
+    notSoNiceSyncTemporaryResourceId(wb::ID_INVALID_RESOURCE),
+    sampleRate(0),
+    outResult(wb::HTTP_CODE_INVALID)
 {
 }
 

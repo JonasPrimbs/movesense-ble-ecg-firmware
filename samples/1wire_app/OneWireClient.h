@@ -3,9 +3,7 @@
 #include <whiteboard/LaunchableModule.h>
 #include <whiteboard/ResourceClient.h>
 
-class OneWireClient FINAL : private whiteboard::ResourceClient,
-                           public whiteboard::LaunchableModule
-
+class OneWireClient FINAL : private wb::ResourceClient, public wb::LaunchableModule
 {
 public:
     /** Name of this class. Used in StartupProvider list. */
@@ -16,32 +14,40 @@ public:
 private:
     /** @see whiteboard::ILaunchableModule::initModule */
     virtual bool initModule() OVERRIDE;
-
     /** @see whiteboard::ILaunchableModule::deinitModule */
     virtual void deinitModule() OVERRIDE;
-
     /** @see whiteboard::ILaunchableModule::startModule */
     virtual bool startModule() OVERRIDE;
-
     /** @see whiteboard::ILaunchableModule::stopModule */
     virtual void stopModule() OVERRIDE;
 
 protected:
-    /**
-    *	Timer callback.
-    *
-    *	@param timerId Id of timer that triggered
-    */
-    virtual void onTimer(whiteboard::TimerId timerId) OVERRIDE;
-    virtual void onGetResult(whiteboard::RequestId requestId, whiteboard::ResourceId resourceId, whiteboard::Result resultCode, const whiteboard::Value& result) OVERRIDE;
-    virtual void onPutResult(whiteboard::RequestId requestId, whiteboard::ResourceId resourceId, whiteboard::Result resultCode, const whiteboard::Value& result) OVERRIDE;
-    virtual void onSubscribeResult(whiteboard::RequestId requestId, whiteboard::ResourceId resourceId, whiteboard::Result resultCode, const whiteboard::Value& result) OVERRIDE;
-    virtual void onNotify(whiteboard::ResourceId resourceId,const whiteboard::Value& value,const whiteboard::ParameterList& parameters) OVERRIDE;
+    /** @see whiteboard::ResourceClient::onTimer */
+    virtual void onTimer(wb::TimerId timerId) OVERRIDE;
+    /** @see whiteboard::ResourceClient::onGetResult */
+    virtual void onGetResult(wb::RequestId requestId,
+                             wb::ResourceId resourceId,
+                             wb::Result resultCode,
+                             const wb::Value& result) OVERRIDE;
+    /** @see whiteboard::ResourceClient::onPutResult */
+    virtual void onPutResult(wb::RequestId requestId,
+                             wb::ResourceId resourceId,
+                             wb::Result resultCode,
+                             const wb::Value& result) OVERRIDE;
+    /** @see whiteboard::ResourceClient::onSubscribeResult */
+    virtual void onSubscribeResult(wb::RequestId requestId,
+                                   wb::ResourceId resourceId,
+                                   wb::Result resultCode,
+                                   const wb::Value& result) OVERRIDE;
+    /** @see whiteboard::ResourceClient::onNotify */
+    virtual void onNotify(wb::ResourceId resourceId,
+                          const wb::Value& value,
+                          const wb::ParameterList& parameters) OVERRIDE;
+
 private:
-    whiteboard::TimerId mTimer;
     bool m1WireScanAndGetMemOngoing;
-    int32_t mSmartConnectorHandle;
     bool mDoubleTapSubscribed;
+    int32_t mSmartConnectorHandle;
     
     // WriteMemState
     enum WriteMemState {
@@ -52,5 +58,7 @@ private:
         WriteAA,
         ReadAAStatus
     } mWriteMemState;
-    whiteboard::TimerId mAAStatusReadTimer;
+
+    wb::TimerId mTimer;
+    wb::TimerId mAAStatusReadTimer;
 };

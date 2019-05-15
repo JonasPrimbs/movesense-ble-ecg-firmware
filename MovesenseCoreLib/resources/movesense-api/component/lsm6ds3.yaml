@@ -9,113 +9,6 @@ info:
   x-api-required: false
 
 paths:
-  /Component/LSM6DS3/Mode:
-    get:
-      description: Get the current LSM6DS3 operation mode.
-      responses:
-        200:
-          description: Current LSM6DS3 operation mode
-          schema:
-            $ref: '#/definitions/LSM6DS3OperationMode'
-
-  /Component/LSM6DS3/Mode/Subscription:
-    post:
-      description: |
-        Subscribe to changes in the LSM6DS3 operation mode.
-      responses:
-        200:
-          description: |
-            Subscription successful with current state. Changes in operation
-            mode will be delivered.
-          schema:
-            $ref: '#/definitions/LSM6DS3OperationMode'
-        x-notification:
-          description: Current operation mode after change
-          schema:
-            $ref: '#/definitions/LSM6DS3OperationMode'
-    delete:
-      description: |
-        Unsubscribe from changes in the LSM6DS3 operation mode.
-      responses:
-        200:
-          description: Unsubscribe was successfull
-
-  /Component/LSM6DS3/RawEnabled:
-    get:
-      description: |
-        Get the status of raw mode activation.
-      responses:
-        200:
-          description: Boolean true if raw mode is enabled
-          schema:
-            type: boolean
-    put:
-      description: |
-        Enable or disable raw mode for the component.
-        Measurements produced in raw mode are not affected by calibration.
-      parameters:
-        - name: value
-          in: query
-          description: New raw mode state
-          required: true
-          type: boolean
-      responses:
-        200:
-          description: Operation completed successfully
-
-  /Component/LSM6DS3/TiltCompensationEnabled:
-    get:
-      description: |
-        Get info if tilt compensation is enabled
-      responses:
-        200:
-          description: Boolean true if tilt compensation is enabled
-          schema:
-            type: boolean
-    put:
-      description: |
-        Enable or disable tilt compensation for the accelerometer values.
-      parameters:
-        - name: value
-          in: query
-          description: New tilt compensation state
-          required: true
-          type: boolean
-      responses:
-        200:
-          description: Operation completed successfully
-
-  /Component/LSM6DS3/AutoPassiveEnabled:
-    get:
-      description: |
-        Get indicator whether automatic active to passive PM mechanism is
-        enabled.
-      responses:
-        200:
-          description: Boolean true if auto active->passive is enabled
-          schema:
-            type: boolean
-        204:
-          description: Component is unavailable
-        501:
-          description: Not supported
-    put:
-      description: |
-        Enable or disable automatic active-to-passive mechanism.
-      parameters:
-        - name: value
-          in: query
-          description: Enable (if true) or disable active-to-passive transition
-          required: true
-          type: boolean
-      responses:
-        200:
-          description: Operation completed successfully
-        204:
-          description: Component is unavailable, request is ignored
-        501:
-          description: Not supported
-
   /Component/LSM6DS3/WakeUp:
     get:
       description: |
@@ -139,32 +32,46 @@ paths:
         200:
           description: |
             State updated successfully
-          schema:
-            $ref: '#/definitions/WakeUpState'
         400:
           description: |
             Not able to set the wake-up trigger
 
+  /Component/LSM6DS3/TapParams:
+    get:
+      description: |
+        Get the current tap parameters
+      responses:
+        200:
+          description: |
+            Current tap parameters
+          schema:
+            $ref: '#/definitions/TapParams'
+        500:
+          description: |
+            Error getting tap params
+    put:
+      description: |
+      parameters:
+        - name: newParams
+          in: body
+          description: New tap parameters
+          required: true
+          schema:
+            $ref: '#/definitions/TapParams'
+      responses:
+        200:
+          description: |
+            Tap parameters updated successfully
+          schema:
+            $ref: '#/definitions/TapParams'
+        400:
+          description: |
+            Invalid parameters given, not updated
+        500:
+          description: |
+            Error putting tap params
+
 definitions:
-  LSM6DS3OperationMode:
-    type: integer
-    format: uint8
-    enum:
-      # Operation modes
-      - name: 'Passive'
-        description: |
-          No subscribers for periodic measurement data, or no movement has been
-          detected and periodic measurements are paused. Will change
-          automatically to Active mode upon new periodic measurement
-          subscription (if there were no periodic measurement subscribers
-          previously) or movement detection.
-        value: 0
-      - name: 'Active'
-        description: |
-          Active measurement mode in which periodic measurements are sent to any
-          subscribers. After a specific period of time of no detected movement
-          will switch to Passive mode automatically.
-        value: 1
   WakeUpState:
     type: object
     required:
@@ -190,3 +97,45 @@ definitions:
           other = wake-up trigger level (see above)
         type: integer
         format: uint8
+
+  TapParams:
+    type: object
+    properties:
+      doubleTapDur:
+        description: |
+          Duration of maximum time gap for double tap recognition. Default:_ 0000
+          When double tap recognition is enabled, this register expresses the maximum time
+          between two consecutive detected taps to determine a double tap event. The
+          default value of these bits is 0000b which corresponds to 16*ODR_XL time. If the
+          DUR[3:0] bits are set to a different value, 1LSB corresponds to 32*ODR_XL time.
+        type: integer
+        format: uint8
+        minimum: 0
+        maximum: 15
+      doubleTapQuiet:
+        description: |
+          Expected quiet time after a tap detection. Default value:_ 00
+          Quiet time is the time after the first detected tap in which there must not be any
+          overthreshold event. The default value of these bits is 00b which corresponds to
+          2*ODR_XL time. If the QUIET[1:0] bits are set to a different value, 1LSB
+          corresponds to 4*ODR_XL time.
+        type: integer
+        format: uint8
+        minimum: 0
+        maximum: 3
+      tapThs:
+        description: |
+          Threshold for tap & double tap recognition. Default value:_ 00000
+          1 LSb corresponds to FS_XL/2^5
+        type: integer
+        format: uint8
+        minimum: 0
+        maximum: 31
+      axes:
+        description: |
+          Tap detection enabled axes as bitfield:_ x=8, y=4, z=2
+        type: integer
+        format: uint8
+        minimum: 0
+        maximum: 14
+

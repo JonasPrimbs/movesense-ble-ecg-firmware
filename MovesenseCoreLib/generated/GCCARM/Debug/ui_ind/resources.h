@@ -38,17 +38,28 @@
 
 namespace WB_RES {
 
-struct WB_ALIGN(2) VisualIndState;
+struct VisualIndTypeValues
+{
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 16896;
 
-typedef uint16 VisualIndType;
+	enum Type
+	{
+		NO_VISUAL_INDICATIONS = 0U,
+		CONTINUOUS_VISUAL_INDICATION = 1U,
+		SHORT_VISUAL_INDICATION = 2U
+	};
+};
+typedef whiteboard::TypedEnum<VisualIndTypeValues, VisualIndTypeValues::Type, uint8> VisualIndType;
 
-struct WB_ALIGN(2) VisualIndState
+struct WB_ALIGN(1) VisualIndState;
+
+struct WB_ALIGN(1) VisualIndState
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 16896;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 16897;
 
-	WB_ALIGN(2) VisualIndType state;
+	WB_ALIGN(1) VisualIndType state;
 };
 
 namespace LOCAL 

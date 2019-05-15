@@ -17,6 +17,7 @@ file(GLOB ALL_YAML_FILES ${ALL_YAML_GLOBS})
 add_custom_command(
     OUTPUT ${GENERATED_SBEM_SOURCES}
     DEPENDS ${ALL_YAML_FILES} ${TOOLS_PATH}/sbemCodeGenerator/sbemCodeGen.py
+    DEPENDS ${MOVESENSE_CORE_WBO_FILES} ${APP_RESOURCES} ${MODULES_RESOURCES}
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/generated/sbem-code"
     COMMENT "Generating SBEM serialization code"
     COMMAND ${PATH_TOOL_PYTHON} ${TOOLS_PATH}/sbemCodeGenerator/sbemCodeGen.py ${ALL_YAML_GLOBS} ${RESOURCE_FILE_FOLDERS}

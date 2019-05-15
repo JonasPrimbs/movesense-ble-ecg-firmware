@@ -1,4 +1,4 @@
-set(GCCARM_USE_LTO False CACHE BOOL "Enable link-time optimization in GCC build")
+set(GCCARM_USE_LTO True CACHE BOOL "Enable link-time optimization in GCC build")
 
 set(LINKER_SCRIPTS_PATH ${CMAKE_CURRENT_LIST_DIR}/../platform/${BSP}/linker/gcc )
 
@@ -14,7 +14,7 @@ endif()
 set(GCCARM_TYPEFIX "-U__INT32_TYPE__ -D__INT32_TYPE__=int \
 -U__UINT32_TYPE__ -D__UINT32_TYPE__=\"unsigned int\"")
 
-set(GCCARM_NRF5SDK_ERROR_DISABLES "-Wno-old-style-declaration -Wno-discarded-qualifiers -Wp,-w -Wno-write-strings")
+set(GCCARM_NRF5SDK_ERROR_DISABLES "-Wno-lto-type-mismatch -Wno-old-style-declaration -Wno-discarded-qualifiers -Wp,-w -Wno-write-strings")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
 -W -Wall -Werror -Wfatal-errors \
@@ -53,7 +53,11 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} \
 if(${GCCARM_USE_LTO})
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flto -fno-fat-lto-objects")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto -fno-fat-lto-objects")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-linker-plugin -flto")
+# fix lto in archives
+SET(CMAKE_C_ARCHIVE_CREATE "<CMAKE_AR> qcs <TARGET> <LINK_FLAGS> <OBJECTS>")
+SET(CMAKE_C_ARCHIVE_FINISH "echo")
+
 endif()
 
 # setup __FILENAME__ so that it won't include the file name prefix

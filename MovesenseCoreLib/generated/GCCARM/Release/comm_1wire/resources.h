@@ -40,7 +40,7 @@ namespace WB_RES {
 
 struct OWPeerStateValues
 {
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18946;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18947;
 
 	enum Type
 	{
@@ -49,6 +49,19 @@ struct OWPeerStateValues
 	};
 };
 typedef whiteboard::TypedEnum<OWPeerStateValues, OWPeerStateValues::Type, uint8> OWPeerState;
+
+struct OWPeerFlagsValues
+{
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18944;
+
+	enum Type
+	{
+		STANDARD_SPEED = 1U,
+		OVERDRIVE_SPEED = 2U,
+		BOTH_SPEEDS = 3U
+	};
+};
+typedef whiteboard::TypedEnum<OWPeerFlagsValues, OWPeerFlagsValues::Type, uint8> OWPeerFlags;
 
 struct WB_ALIGN(8) OWPeerEntry;
 struct WB_ALIGN(4) OWPeerList;
@@ -60,17 +73,18 @@ struct WB_ALIGN(8) OWPeerEntry
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18944;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18945;
 
 	WB_ALIGN(8) uint64 address;
 	WB_ALIGN(4) whiteboard::Optional< int32 > handle;
+	WB_ALIGN(1) OWPeerFlags flags;
 };
 
 struct WB_ALIGN(4) OWPeerList
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18945;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18946;
 
 	WB_ALIGN(4) whiteboard::Array< OWPeerEntry > connectedPeers;
 };
@@ -79,7 +93,7 @@ struct WB_ALIGN(8) OWPeerChange
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18947;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18948;
 
 	WB_ALIGN(8) OWPeerEntry peer;
 	WB_ALIGN(1) OWPeerState state;
@@ -89,7 +103,7 @@ struct WB_ALIGN(4) OWCommand
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18948;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18949;
 
 	WB_ALIGN(4) whiteboard::Array< uint8 > dataOut;
 	WB_ALIGN(1) uint8 readCount;
@@ -100,7 +114,7 @@ struct WB_ALIGN(4) OWCommandResult
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18949;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18950;
 
 	WB_ALIGN(4) whiteboard::Array< uint8 > data;
 };
@@ -197,6 +211,7 @@ struct COMM_1WIRE_PEERS_CONNHANDLE
 	struct PUT
 	{
 		typedef whiteboard::StronglyTypedResult<const OWCommandResult&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_FOUND> HTTP_CODE_NOT_FOUND;
 
 		struct Parameters
 		{

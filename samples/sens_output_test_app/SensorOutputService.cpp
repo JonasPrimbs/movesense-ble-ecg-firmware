@@ -19,22 +19,24 @@
 
 const char* const SensorOutputService::LAUNCHABLE_NAME = "SensOutput";
 
-static const whiteboard::LocalResourceId sProviderResources[] = {
+static const wb::LocalResourceId sProviderResources[] = {
     WB_RES::LOCAL::SAMPLE_SENSOROUTPUT::LID,
-    WB_RES::LOCAL::SAMPLE_SENSOROUTPUT_CONFIG::LID};
+    WB_RES::LOCAL::SAMPLE_SENSOROUTPUT_CONFIG::LID
+};
 
-SensorOutputService::SensorOutputService()
-    : ResourceClient(WBDEBUG_NAME(__FUNCTION__), WB_RES::LOCAL::SAMPLE_SENSOROUTPUT::EXECUTION_CONTEXT),
-      ResourceProvider(WBDEBUG_NAME(__FUNCTION__), WB_RES::LOCAL::SAMPLE_SENSOROUTPUT::EXECUTION_CONTEXT),
-      LaunchableModule(LAUNCHABLE_NAME, WB_RES::LOCAL::SAMPLE_SENSOROUTPUT::EXECUTION_CONTEXT)
+SensorOutputService::SensorOutputService():
+    ResourceClient(WBDEBUG_NAME(__FUNCTION__), WB_RES::LOCAL::SAMPLE_SENSOROUTPUT::EXECUTION_CONTEXT),
+    ResourceProvider(WBDEBUG_NAME(__FUNCTION__), WB_RES::LOCAL::SAMPLE_SENSOROUTPUT::EXECUTION_CONTEXT),
+    LaunchableModule(LAUNCHABLE_NAME, WB_RES::LOCAL::SAMPLE_SENSOROUTPUT::EXECUTION_CONTEXT),
+    mTimestampGaps(0),
+    mBadSensorSamples(0),
+    mGoodSensorSamples(0),
+    mTestConfig{DEFAULT_PATH, (DEFAULT_PERIOD_MS / timerIntervalInMs), DEFAULT_ACC_SAMPLERATE},
+    subscribedSensor(wb::ID_INVALID_RESOURCE),
+    lastTimestamp(0),
+    lastDiff(0),
+    mTestPeriodTimer(wb::ID_INVALID_TIMER) // Private timer for the samples gathering
 {
-    mTimestampGaps = 0;
-    mBadSensorSamples = 0;
-    mGoodSensorSamples = 0;
-    mTestConfig.period = (DEFAULT_PERIOD_MS / timerIntervalInMs);
-    mTestConfig.sampleRate = DEFAULT_ACC_SAMPLERATE;
-    mTestConfig.path = DEFAULT_PATH;
-    mTestPeriodTimer = whiteboard::ID_INVALID_TIMER;
 }
 
 SensorOutputService::~SensorOutputService()
@@ -43,7 +45,7 @@ SensorOutputService::~SensorOutputService()
 
 bool SensorOutputService::initModule()
 {
-    if (registerProviderResources(sProviderResources) != whiteboard::HTTP_CODE_OK)
+    if (registerProviderResources(sProviderResources) != wb::HTTP_CODE_OK)
     {
         return false;
     }
@@ -54,12 +56,6 @@ bool SensorOutputService::initModule()
 
 void SensorOutputService::deinitModule()
 {
-    // Make sure that timer is already stopped when module is being deinitialized
-    if (mTestPeriodTimer != whiteboard::ID_INVALID_TIMER)
-    {
-        mTestPeriodTimer = whiteboard::ID_INVALID_TIMER;
-    }
-
     unregisterProviderResources(sProviderResources);
     mModuleState = WB_RES::ModuleStateValues::UNINITIALIZED;
 }
@@ -67,43 +63,46 @@ void SensorOutputService::deinitModule()
 bool SensorOutputService::startModule()
 {
     mModuleState = WB_RES::ModuleStateValues::STARTED;
-
     return true;
 }
 
-void SensorOutputService::onGetRequest(const whiteboard::Request& request,
-                                       const whiteboard::ParameterList& parameters)
+void SensorOutputService::stopModule()
 {
-    switch (request.getResourceConstId())
+    ResourceProvider::stopTimer(mTestPeriodTimer);
+    mTestPeriodTimer = wb::ID_INVALID_TIMER;
+    mModuleState = WB_RES::ModuleStateValues::STOPPED;
+}
+
+void SensorOutputService::onGetRequest(const wb::Request& request,
+                                       const wb::ParameterList& parameters)
+{
+    switch (request.getResourceId().localResourceId)
     {
-    case WB_RES::LOCAL::SAMPLE_SENSOROUTPUT_CONFIG::ID:
+    case WB_RES::LOCAL::SAMPLE_SENSOROUTPUT_CONFIG::LID:
     {
         DEBUGLOG("SensorOutputService::onGetRequest() called.");
-        returnResult(request, whiteboard::HTTP_CODE_OK, ResponseOptions::Empty, mTestConfig);
+        returnResult(request, wb::HTTP_CODE_OK, ResponseOptions::Empty, mTestConfig);
+        break;
     }
-    break;
 
     default:
-    {
-        DEBUGLOG("ERROR: Resource not recognized!");
-    }
-    break;
+        ASSERT(0); // would be a system error if we got here, trust the system and save rom.
     }
 }
 
-void SensorOutputService::onPutRequest(const whiteboard::Request& request,
-                                       const whiteboard::ParameterList& parameters)
+void SensorOutputService::onPutRequest(const wb::Request& request,
+                                       const wb::ParameterList& parameters)
 {
-    switch (request.getResourceConstId())
+    switch (request.getResourceId().localResourceId)
     {
-    case WB_RES::LOCAL::SAMPLE_SENSOROUTPUT_CONFIG::ID:
+    case WB_RES::LOCAL::SAMPLE_SENSOROUTPUT_CONFIG::LID:
     {
         DEBUGLOG("SensorOutputService::onPutRequest() called.");
 
         if (isResourceSubscribed(WB_RES::LOCAL::SAMPLE_SENSOROUTPUT::ID) == wb::HTTP_CODE_OK)
         {
             DEBUGLOG("SensorOutputService::onPutRequest() skipping. Subscribers still exist.");
-            returnResult(request, whiteboard::HTTP_CODE_SERVICE_UNAVAILABLE);
+            returnResult(request, wb::HTTP_CODE_SERVICE_UNAVAILABLE);
         }
         else
         {
@@ -116,7 +115,7 @@ void SensorOutputService::onPutRequest(const whiteboard::Request& request,
             else
             {
                 DEBUGLOG("ERROR: Period [ms] cannot be 0!");
-                returnResult(request, whiteboard::HTTP_CODE_BAD_REQUEST);
+                returnResult(request, wb::HTTP_CODE_BAD_REQUEST);
                 break;
             }
 
@@ -124,7 +123,7 @@ void SensorOutputService::onPutRequest(const whiteboard::Request& request,
             if (true != getSensorRequestedByUser(testConfig.path))
             {
                 DEBUGLOG("ERROR: Wrong or no path was given");
-                returnResult(request, whiteboard::HTTP_CODE_BAD_REQUEST);
+                returnResult(request, wb::HTTP_CODE_BAD_REQUEST);
                 break;
             }
 
@@ -136,35 +135,32 @@ void SensorOutputService::onPutRequest(const whiteboard::Request& request,
             else
             {
                 DEBUGLOG("ERROR: Wrong or no sample rate specified!");
-                returnResult(request, whiteboard::HTTP_CODE_BAD_REQUEST);
+                returnResult(request, wb::HTTP_CODE_BAD_REQUEST);
                 break;
             }
 
-            returnResult(request, whiteboard::HTTP_CODE_OK);
+            returnResult(request, wb::HTTP_CODE_OK);
 
             // Configuration has been changed - reset current measurements
             resetCurrentMeasurement();
         }
+        break;
     }
-    break;
 
     default:
-    {
-        returnResult(request, whiteboard::HTTP_CODE_SERVICE_UNAVAILABLE);
-    }
-    break;
+        ASSERT(0); // would be a system error if we got here, trust the system and save rom.
     }
 }
 
-void SensorOutputService::onSubscribe(const whiteboard::Request& request,
-                                      const whiteboard::ParameterList& parameters)
+void SensorOutputService::onSubscribe(const wb::Request& request,
+                                      const wb::ParameterList& parameters)
 {
-    switch (request.getResourceConstId())
+    switch (request.getResourceId().localResourceId)
     {
-    case WB_RES::LOCAL::SAMPLE_SENSOROUTPUT::ID:
+    case WB_RES::LOCAL::SAMPLE_SENSOROUTPUT::LID:
     {
         DEBUGLOG("SensorOutput is being subscribed with the ID: %d", WB_RES::LOCAL::SAMPLE_SENSOROUTPUT::ID);
-        whiteboard::RequestId remoteRequestId;
+        wb::RequestId remoteRequestId;
         wb::Result result = asyncSubscribe(subscribedSensor, AsyncRequestOptions(&remoteRequestId, 0, true), mTestConfig.sampleRate);
 
         // Check if subscribing the selected sensor went OK
@@ -180,25 +176,22 @@ void SensorOutputService::onSubscribe(const whiteboard::Request& request,
             DEBUGLOG("ERROR: Subscribing the sensor failed with error: %u", result);
             returnResult(request, wb::HTTP_CODE_NOT_FOUND, ResponseOptions::Empty);
         }
+        break;
     }
-    break;
 
     default:
-    {
-        returnResult(request, whiteboard::HTTP_CODE_NOT_FOUND);
-    }
-    break;
+        ASSERT(0); // would be a system error if we got here, trust the system and save rom.
     }
 }
 
-void SensorOutputService::onUnsubscribe(const whiteboard::Request& request,
-                                        const whiteboard::ParameterList& parameters)
+void SensorOutputService::onUnsubscribe(const wb::Request& request,
+                                        const wb::ParameterList& parameters)
 {
     DEBUGLOG("SensorOutputService::onUnsubscribe()");
 
-    switch (request.getResourceConstId())
+    switch (request.getResourceId().localResourceId)
     {
-    case WB_RES::LOCAL::SAMPLE_SENSOROUTPUT::ID:
+    case WB_RES::LOCAL::SAMPLE_SENSOROUTPUT::LID:
     {
         if (wb::RETURN_OKC(asyncUnsubscribe(subscribedSensor, NULL, mTestConfig.sampleRate)))
         {
@@ -208,42 +201,39 @@ void SensorOutputService::onUnsubscribe(const whiteboard::Request& request,
         {
             DEBUGLOG("ERROR: asyncUnsubscribe failed!");
         }
+        break;
     }
-    break;
 
     default:
-    {
-        returnResult(request, wb::HTTP_CODE_NOT_FOUND);
-    }
-    break;
+        ASSERT(0); // would be a system error if we got here, trust the system and save rom.
     }
 }
 
-void SensorOutputService::onUnsubscribeResult(whiteboard::RequestId requestId,
-                                              whiteboard::ResourceId resourceId,
-                                              whiteboard::Result resultCode,
-                                              const whiteboard::Value& rResultData)
+void SensorOutputService::onUnsubscribeResult(wb::RequestId requestId,
+                                              wb::ResourceId resourceId,
+                                              wb::Result resultCode,
+                                              const wb::Value& rResultData)
 {
     DEBUGLOG("SensorOutputService::onUnsubscribeResult() called.");
 
     // Unsubscribing went OK so stop the timer
     ResourceProvider::stopTimer(mTestPeriodTimer);
-    mTestPeriodTimer = whiteboard::ID_INVALID_TIMER;
+    mTestPeriodTimer = wb::ID_INVALID_TIMER;
 }
 
-void SensorOutputService::onSubscribeResult(whiteboard::RequestId requestId,
-                                            whiteboard::ResourceId resourceId,
-                                            whiteboard::Result resultCode,
-                                            const whiteboard::Value& rResultData)
+void SensorOutputService::onSubscribeResult(wb::RequestId requestId,
+                                            wb::ResourceId resourceId,
+                                            wb::Result resultCode,
+                                            const wb::Value& rResultData)
 {
     DEBUGLOG("SensorOutputService::onSubscribeResult() called.");
-    if (whiteboard::ID_INVALID_TIMER == mTestPeriodTimer)
+    if (wb::ID_INVALID_TIMER == mTestPeriodTimer)
     {
         mTestPeriodTimer = ResourceProvider::startTimer(mTestConfig.period, true);
     }
 }
 
-void SensorOutputService::onTimer(whiteboard::TimerId timerId)
+void SensorOutputService::onTimer(wb::TimerId timerId)
 {
     if (timerId == mTestPeriodTimer)
     {
@@ -260,9 +250,9 @@ void SensorOutputService::onTimer(whiteboard::TimerId timerId)
     }
 }
 
-void SensorOutputService::onNotify(whiteboard::ResourceId resourceId,
-                                   const whiteboard::Value& value,
-                                   const whiteboard::ParameterList& parameters)
+void SensorOutputService::onNotify(wb::ResourceId resourceId,
+                                   const wb::Value& value,
+                                   const wb::ParameterList& parameters)
 {
     // Decide which sensor needs to be handled and verify its output
     switch (resourceId.localResourceId)
@@ -273,12 +263,12 @@ void SensorOutputService::onNotify(whiteboard::ResourceId resourceId,
 
         if ((currentSensorValue.arrayAcc.size()))
         {
-            const whiteboard::Array<whiteboard::FloatVector3D>& arrayData = currentSensorValue.arrayAcc;
+            const wb::Array<wb::FloatVector3D>& arrayData = currentSensorValue.arrayAcc;
             timeDiffCheck(currentSensorValue.timestamp);
             probesCheck(arrayData);
         }
+        break;
     }
-    break;
 
     case WB_RES::LOCAL::MEAS_GYRO_SAMPLERATE::LID:
     {
@@ -286,12 +276,12 @@ void SensorOutputService::onNotify(whiteboard::ResourceId resourceId,
 
         if ((currentSensorValue.arrayGyro.size()))
         {
-            const whiteboard::Array<whiteboard::FloatVector3D>& arrayData = currentSensorValue.arrayGyro;
+            const wb::Array<wb::FloatVector3D>& arrayData = currentSensorValue.arrayGyro;
             timeDiffCheck(currentSensorValue.timestamp);
             probesCheck(arrayData);
         }
+        break;
     }
-    break;
 
     case WB_RES::LOCAL::MEAS_MAGN_SAMPLERATE::LID:
     {
@@ -299,18 +289,15 @@ void SensorOutputService::onNotify(whiteboard::ResourceId resourceId,
 
         if ((currentSensorValue.arrayMagn.size()))
         {
-            const whiteboard::Array<whiteboard::FloatVector3D>& arrayData = currentSensorValue.arrayMagn;
+            const wb::Array<wb::FloatVector3D>& arrayData = currentSensorValue.arrayMagn;
             timeDiffCheck(currentSensorValue.timestamp);
             probesCheck(arrayData);
         }
+        break;
     }
-    break;
 
     default:
-    {
-        DEBUGLOG("ERROR: Not recognized sensor ID!");
-    }
-    break;
+        ASSERT(0); // would be a system error if we got here, trust the system and save rom.
     }
 }
 
@@ -339,14 +326,14 @@ void SensorOutputService::timeDiffCheck(const uint32_t currentTimestamp)
     lastTimestamp = currentTimestamp;
 }
 
-void SensorOutputService::probesCheck(const whiteboard::Array<whiteboard::FloatVector3D>& arrayData)
+void SensorOutputService::probesCheck(const wb::Array<wb::FloatVector3D>& arrayData)
 {
     // Count the amount of samples received from each sensor
     mGoodSensorSamples += arrayData.size();
 
     for (size_t i = 0; i < arrayData.size(); i++)
     {
-        whiteboard::FloatVector3D accValue = arrayData[i];
+        wb::FloatVector3D accValue = arrayData[i];
     }
 }
 

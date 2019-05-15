@@ -1,10 +1,11 @@
 ## Announcements
   
-**(Feb 4th 2019) Sensor firmware 1.8.1 is out!**  
-This bugfix version contains fixes for BLE communication, samples and 1-wire protocol
+**(May 15th 2019) Sensor firmware 1.9.0 is out!**  
+This version contains some new features and a lot of bug fixes
 
 **Known issues**  
 Please refer to [CHANGES.md](CHANGES.md) for a list of changes & known issues.
+**IMPORTANT!! Builds on Mac OSX are broken on 1.9 due to a compiler bug! We're preparing a docker build environment to avoid these issues in the future.**
 
 
 ## Overview
@@ -62,7 +63,7 @@ There is an experimental installation procedure using Vagrant to set up an isola
 ### Manual setup on Windows
 Install the following tools: 
 
-* [GNU Toolchain for ARM Embedded 6-2017-q2](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
+* [GNU Toolchain for ARM Embedded 2017q4](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
     * Remember to add it to your system path by ticking the checkbox during the last step of installation.
 * [Ninja build tool](https://ninja-build.org/) 
     * Download the file 
@@ -83,9 +84,11 @@ Optionally:
 * In case you encounter `ImportError: No module named yaml`, try to install pyyaml package using pip.
 
 ### Manual setup on OSX
+** BROKEN DUE TO BUG IN COMPILER **
+
 Install the following tools: 
 
-* [GNU Toolchain for ARM Embedded 6-2017-q2](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
+* [GNU Toolchain for ARM Embedded 2017q4](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
 * [Ninja build tool](https://ninja-build.org/) 
 * [cmake >=3.6](https://cmake.org/download/)
     * Download Mac OSX libraries and follow installation instructions
@@ -158,7 +161,9 @@ Optionally:
     
         `export PATH=$PATH:~/tools/mergehex:/opt/SEGGER/JLink/nrfjprog`  
     
-### Automated setup on all operating systems using Vagrant
+### Community provided automated setup on all operating systems using Vagrant
+**Note:** This method was provided to us by member of Movesense community. If you find bugs in it, please provide the fixes to us!
+
 [Vagrant](https://www.vagrantup.com/) provides an easy, reproducable environment
 for setting up development environments. It provides an isolated environment with
 all the dependencies set up without any version clashes or corner case bugs.
@@ -194,8 +199,6 @@ To build a release version:
 > ninja
 ```  
 
-**Note:** By default, the serial interface is enabled on Movesense sensor (see App.cpp file). Unless you need serial support (for programming JIG, for example), remember to keep it disabled to avoid excessive power consumption ([link to instructions](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/documentation/PowerOptimization.md?at=master&fileviewer=file-view-default)).
-
 ### Updating sensor "over the air"
 
 If you want to create OTA firmware update package, run command:  
@@ -217,7 +220,7 @@ ninja flash
 or you can use any other nRF52 compatible programming software such as *nRFGo Studio*. To acquire Movesense programming JIG, please contact us via [movesense.com](https://movesense.com).
 
 ### Removing manufacturing/settings data from the sensor
-Command below updates the sensor firmware and additionally erases all settings in its memory. You should use it only if you want to replace default manufacturing/calibration data. Please don't use the command unless you know what you're doing!  
+**Command below updates the sensor firmware and erases all settings in its memory. You should use it only if you want to replace default manufacturing/calibration data. Please don't use the command unless you know what you're doing!**
 
 `
 ninja flash_all

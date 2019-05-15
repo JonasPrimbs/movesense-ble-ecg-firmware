@@ -7,8 +7,8 @@
 
 namespace WB_RES {
 
-WB_STATIC_VERIFY(sizeof(VisualIndState) == 2, SizeOfStructure_VisualIndState_IsNotWhatExpected);
-WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(VisualIndState) == 2, AlignmentOfStructure_VisualIndState_IsNotWhatExpected);
+WB_STATIC_VERIFY(sizeof(VisualIndState) == 1, SizeOfStructure_VisualIndState_IsNotWhatExpected);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(VisualIndState) == 1, AlignmentOfStructure_VisualIndState_IsNotWhatExpected);
 
 
 } // namespace WB_RES

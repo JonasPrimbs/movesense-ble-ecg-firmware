@@ -26,6 +26,7 @@
 class SessionStorage
 {
 public:
+    PACK_BEGIN()
     union SessionFlags
     {
         uint16_t value;
@@ -46,7 +47,7 @@ public:
         uint64_t startTime;
         uint32_t duration;
     } PACKED;
-
+    PACK_END()
     static const uint32_t slots = MAX_SESSIONS;
     static const size_t slotSize = sizeof(SessionHeader); //EepromChecksumedAccessor::overhead + sizeof(SessionHeader);
     static const size_t size = slots * slotSize;
@@ -79,6 +80,7 @@ private:
     uint8_t curSessionSlot;
     STATIC_VERIFY( MAX_SESSIONS <= 255, TOO_HIGH_MAX_SESSIONS_FOR_curSessionSlot );
 
+    PACK_BEGIN()
     struct Bit
     {
         uint8_t value : 1;
@@ -88,6 +90,7 @@ private:
         uint8_t initialized : 1;
         Bit isValid[MAX(1,MAX_SESSIONS)];
     } PACKED sessionSlotValidity;
+    PACK_END()
 };
 
 #endif

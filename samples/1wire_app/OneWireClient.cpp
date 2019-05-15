@@ -31,9 +31,12 @@ OneWireClient::OneWireClient()
     : ResourceClient(WBDEBUG_NAME(__FUNCTION__), WB_EXEC_CTX_APPLICATION),
       LaunchableModule(LAUNCHABLE_NAME, WB_EXEC_CTX_APPLICATION),
       m1WireScanAndGetMemOngoing(false),
-      mWriteMemState(UNDEFINED)
+      mDoubleTapSubscribed(false),
+      mSmartConnectorHandle(0),
+      mWriteMemState(UNDEFINED),
+      mTimer(wb::ID_INVALID_TIMER),
+      mAAStatusReadTimer(wb::ID_INVALID_TIMER)
 {
-    mAAStatusReadTimer = mTimer = wb::ID_INVALID_TIMER;
 }
 
 OneWireClient::~OneWireClient()
@@ -51,7 +54,6 @@ void OneWireClient::deinitModule()
     mModuleState = WB_RES::ModuleStateValues::UNINITIALIZED;
 }
 
-/** @see wb::ILaunchableModule::startModule */
 bool OneWireClient::startModule()
 {
     mModuleState = WB_RES::ModuleStateValues::STARTED;
@@ -62,15 +64,17 @@ bool OneWireClient::startModule()
     return true;
 }
 
-/** @see wb::ILaunchableModule::startModule */
 void OneWireClient::stopModule()
 {
-    // Stop timer
+    // Stop timers
     stopTimer(mTimer);
+    stopTimer(mAAStatusReadTimer);
     mTimer = wb::ID_INVALID_TIMER;
+    mAAStatusReadTimer = wb::ID_INVALID_TIMER;
+    mModuleState = WB_RES::ModuleStateValues::STOPPED;
 }
 
-void OneWireClient::onTimer(whiteboard::TimerId timerId)
+void OneWireClient::onTimer(wb::TimerId timerId)
 {
     if (timerId == mTimer)
     {
@@ -79,8 +83,8 @@ void OneWireClient::onTimer(whiteboard::TimerId timerId)
             return;
 
         // Blink led 
-        constexpr uint16_t SHORT_BLINK = 2;
-        asyncPut(WB_RES::LOCAL::UI_IND_VISUAL(), AsyncRequestOptions::Empty, SHORT_BLINK);
+        asyncPut(WB_RES::LOCAL::UI_IND_VISUAL(), AsyncRequestOptions::Empty,
+                 WB_RES::VisualIndTypeValues::SHORT_VISUAL_INDICATION);
 
         m1WireScanAndGetMemOngoing = true;
         mSmartConnectorHandle = 0;
@@ -89,15 +93,17 @@ void OneWireClient::onTimer(whiteboard::TimerId timerId)
     }
     else if (timerId == mAAStatusReadTimer)
     {
+        mAAStatusReadTimer = wb::ID_INVALID_TIMER;
         WB_RES::OWCommand readReleaseCmd;
         readReleaseCmd.dataOut = wb::MakeArray<uint8_t>(NULL, 0);
         readReleaseCmd.readCount = 1; // 0xAA or error
         readReleaseCmd.contPrev = true;
-        asyncPut(WB_RES::LOCAL::COMM_1WIRE_PEERS_CONNHANDLE(), AsyncRequestOptions(NULL, 0, true), mSmartConnectorHandle, readReleaseCmd);
+        asyncPut(WB_RES::LOCAL::COMM_1WIRE_PEERS_CONNHANDLE(), AsyncRequestOptions(NULL, 0, true),
+                 mSmartConnectorHandle, readReleaseCmd);
     }
 }
 
-void OneWireClient::onNotify(whiteboard::ResourceId resourceId,const whiteboard::Value& value,const whiteboard::ParameterList& parameters)
+void OneWireClient::onNotify(wb::ResourceId resourceId,const wb::Value& value,const wb::ParameterList& parameters)
 {
     switch(resourceId.localResourceId)
     {
@@ -109,23 +115,27 @@ void OneWireClient::onNotify(whiteboard::ResourceId resourceId,const whiteboard:
                 DebugLogger::info("stateChange DOUBLETAP: newState = %d", stateChange.newState);
 
                 // Only do Write mem if not "Read Mem" ongoing or no smart connector found yet
-                if (stateChange.newState != 1 || m1WireScanAndGetMemOngoing || mSmartConnectorHandle == 0 || mWriteMemState != UNDEFINED)
+                if (stateChange.newState != 1 || m1WireScanAndGetMemOngoing ||
+                    mSmartConnectorHandle == 0 || mWriteMemState != UNDEFINED)
                     return;
 
                 // Subscribe 1wire to activate bus, then run write mem sequence. continues from onSubscribeResult and then onPutResult's
                 mWriteMemState = OneWireActive;
                 asyncSubscribe(WB_RES::LOCAL::COMM_1WIRE(),AsyncRequestOptions(NULL, 0, true)); 
             }
+            break;
         }
-        break;
     }
 }
-void OneWireClient::onSubscribeResult(whiteboard::RequestId requestId, whiteboard::ResourceId resourceId, whiteboard::Result resultCode, const whiteboard::Value& result)
+void OneWireClient::onSubscribeResult(wb::RequestId requestId,
+                                      wb::ResourceId resourceId,
+                                      wb::Result resultCode,
+                                      const wb::Value& result)
 {
     // If error result, just log and do nothing
     if (wb::IsErrorResult(resultCode))
     {
-        DebugLogger::error("onSubscribeResult error: resource: %u, resultCode: %u",resourceId.localResourceId,resultCode);
+        DebugLogger::error("onSubscribeResult error: resource: %u, resultCode: %u", resourceId.localResourceId,resultCode);
         return;
     }
 
@@ -144,18 +154,31 @@ void OneWireClient::onSubscribeResult(whiteboard::RequestId requestId, whiteboar
             // Send "Write Memory" command to Smart connector device
             WB_RES::OWCommand writeMemCmd;
             const uint8_t cmdBytes[2] = {0x55,0x00};  // Write to page 0, segment 0
-            writeMemCmd.dataOut = wb::MakeArray<uint8_t>(cmdBytes, 2);
+            writeMemCmd.dataOut = wb::MakeArray<uint8_t>(cmdBytes, sizeof(cmdBytes));
             writeMemCmd.readCount = 2; // 2 byte CRC 
 
-            asyncPut(WB_RES::LOCAL::COMM_1WIRE_PEERS_CONNHANDLE(), AsyncRequestOptions(NULL, 0, true), mSmartConnectorHandle, writeMemCmd);
+            asyncPut(WB_RES::LOCAL::COMM_1WIRE_PEERS_CONNHANDLE(), AsyncRequestOptions(NULL, 0, true),
+                     mSmartConnectorHandle, writeMemCmd);
             // Logic continues in onPutResult
+            break;
         }
-        break;
     }
 }
 
-void OneWireClient::onGetResult(whiteboard::RequestId requestId, wb::ResourceId resourceId, wb::Result resultCode, const wb::Value& result)
+void OneWireClient::onGetResult(wb::RequestId requestId,
+                                wb::ResourceId resourceId,
+                                wb::Result resultCode,
+                                const wb::Value& result)
 {
+    if (wb::IsErrorResult(resultCode))
+    {
+        DebugLogger::error("onGetResult failed! resource: %u, result: %u", resourceId.localResourceId, resultCode);
+        m1WireScanAndGetMemOngoing = false;
+        mSmartConnectorHandle = 0;
+        mWriteMemState = UNDEFINED;
+        return;
+    }
+   
     switch(resourceId.localResourceId)
     {
         case WB_RES::LOCAL::COMM_1WIRE_PEERS::LID:
@@ -185,16 +208,18 @@ void OneWireClient::onGetResult(whiteboard::RequestId requestId, wb::ResourceId 
                     if (!mDoubleTapSubscribed)
                     {                                            
                         //Enable double tap detection for writing memory
-                        asyncSubscribe(WB_RES::LOCAL::SYSTEM_STATES_STATEID(), AsyncRequestOptions::Empty, WB_RES::StateIdValues::DOUBLETAP);
+                        asyncSubscribe(WB_RES::LOCAL::SYSTEM_STATES_STATEID(), AsyncRequestOptions::Empty,
+                                       WB_RES::StateIdValues::DOUBLETAP);
                     }
 
                     // Send "Read Memory" command to Smart connector device
                     WB_RES::OWCommand readMemCmd;
                     const uint8_t cmdBytes[2] = {0xF0,0x00};  // Start from page 0, segment 0 => read whole page 32 bytes
-                    readMemCmd.dataOut = wb::MakeArray<uint8_t>(cmdBytes, 2);
+                    readMemCmd.dataOut = wb::MakeArray<uint8_t>(cmdBytes, sizeof(cmdBytes));
                     readMemCmd.readCount = 2 + 32 + 2; // 2 byte CRC + 32 bytes + 2 byte CRC 
 
-                    asyncPut(WB_RES::LOCAL::COMM_1WIRE_PEERS_CONNHANDLE(), AsyncRequestOptions(NULL, 0, true), handle, readMemCmd);
+                    asyncPut(WB_RES::LOCAL::COMM_1WIRE_PEERS_CONNHANDLE(), AsyncRequestOptions(NULL, 0, true),
+                             handle, readMemCmd);
 
                     // Logic continues in onPutResult
 
@@ -205,29 +230,33 @@ void OneWireClient::onGetResult(whiteboard::RequestId requestId, wb::ResourceId 
             {
                 // Disable double tap detection to save battery when no Smart connector is available
                 mDoubleTapSubscribed = false;
-                asyncUnsubscribe(WB_RES::LOCAL::SYSTEM_STATES_STATEID(), AsyncRequestOptions::Empty, WB_RES::StateIdValues::DOUBLETAP);
+                asyncUnsubscribe(WB_RES::LOCAL::SYSTEM_STATES_STATEID(), AsyncRequestOptions::Empty,
+                                 WB_RES::StateIdValues::DOUBLETAP);
             }
+            break;
         }
-        break;
     }
 }
 
 
-void OneWireClient::onPutResult(wb::RequestId requestId, wb::ResourceId resourceId, wb::Result resultCode, const wb::Value& result)
+void OneWireClient::onPutResult(wb::RequestId requestId,
+                                wb::ResourceId resourceId,
+                                wb::Result resultCode,
+                                const wb::Value& result)
 {
-    if (resultCode >= 400)
-    {
-        DebugLogger::error("onPutResult failed! resource: %u, result: %u", resourceId.localResourceId, resultCode);
-        m1WireScanAndGetMemOngoing = false;
-        mSmartConnectorHandle = 0;
-        mWriteMemState = UNDEFINED;
-        return;
-    }
-
     switch(resourceId.localResourceId)
     {
         case WB_RES::LOCAL::COMM_1WIRE_PEERS_CONNHANDLE::LID:
         {
+            if (wb::IsErrorResult(resultCode))
+            {
+                DebugLogger::error("onPutResult failed! resource: %u, result: %u", resourceId.localResourceId, resultCode);
+                m1WireScanAndGetMemOngoing = false;
+                mSmartConnectorHandle = 0;
+                mWriteMemState = UNDEFINED;
+                return;
+            }
+
             // Result of "Read Memory"-command
             if (m1WireScanAndGetMemOngoing)
             {
@@ -247,7 +276,8 @@ void OneWireClient::onPutResult(wb::RequestId requestId, wb::ResourceId resource
             else if(mWriteMemState == WriteCmdReadCrc && mSmartConnectorHandle != 0)
             {
                 const WB_RES::OWCommandResult &dataRead = result.convertTo<const WB_RES::OWCommandResult&>();
-                DebugLogger::info("WriteCmdReadCrc received data (%u bytes): 0x%02X, 0x%02X", dataRead.data.size(), dataRead.data[0], dataRead.data[1]);
+                DebugLogger::info("WriteCmdReadCrc received data (%u bytes): 0x%02X, 0x%02X",
+                                    dataRead.data.size(), dataRead.data[0], dataRead.data[1]);
 
                 mWriteMemState = WriteDataReadCrc;
                 WB_RES::OWCommand writeDataCmd;
@@ -255,13 +285,15 @@ void OneWireClient::onPutResult(wb::RequestId requestId, wb::ResourceId resource
                 writeDataCmd.dataOut = wb::MakeArray<uint8_t>(dataBytes, sizeof(dataBytes));
                 writeDataCmd.readCount = 2; // 2 byte CRC 
                 writeDataCmd.contPrev = true;
-                asyncPut(WB_RES::LOCAL::COMM_1WIRE_PEERS_CONNHANDLE(), AsyncRequestOptions(NULL, 0, true), mSmartConnectorHandle, writeDataCmd);
+                asyncPut(WB_RES::LOCAL::COMM_1WIRE_PEERS_CONNHANDLE(), AsyncRequestOptions(NULL, 0, true),
+                         mSmartConnectorHandle, writeDataCmd);
 
             }
             else if(mWriteMemState == WriteDataReadCrc && mSmartConnectorHandle != 0)
             {
                 const WB_RES::OWCommandResult &dataRead = result.convertTo<const WB_RES::OWCommandResult&>();
-                DebugLogger::info("WriteDataReadCrc received data (%u bytes): 0x%02X, 0x%02X", dataRead.data.size(), dataRead.data[0], dataRead.data[1]);
+                DebugLogger::info("WriteDataReadCrc received data (%u bytes): 0x%02X, 0x%02X",
+                                    dataRead.data.size(), dataRead.data[0], dataRead.data[1]);
 
                 mWriteMemState = WriteAA;
                 WB_RES::OWCommand writeReleaseCmd;
@@ -269,7 +301,8 @@ void OneWireClient::onPutResult(wb::RequestId requestId, wb::ResourceId resource
                 writeReleaseCmd.dataOut = wb::MakeArray<uint8_t>(cmdBytes, sizeof(cmdBytes));
                 writeReleaseCmd.readCount = 0; // 0xAA
                 writeReleaseCmd.contPrev = true;
-                asyncPut(WB_RES::LOCAL::COMM_1WIRE_PEERS_CONNHANDLE(), AsyncRequestOptions(NULL, 0, true), mSmartConnectorHandle, writeReleaseCmd);
+                asyncPut(WB_RES::LOCAL::COMM_1WIRE_PEERS_CONNHANDLE(), AsyncRequestOptions(NULL, 0, true),
+                         mSmartConnectorHandle, writeReleaseCmd);
             }
             else if(mWriteMemState == WriteAA && mSmartConnectorHandle != 0)
             {
@@ -290,8 +323,7 @@ void OneWireClient::onPutResult(wb::RequestId requestId, wb::ResourceId resource
                 // Free 1wire bus
                 asyncUnsubscribe(WB_RES::LOCAL::COMM_1WIRE());
             }
+            break;
         }
-
-        break;
     }
 }

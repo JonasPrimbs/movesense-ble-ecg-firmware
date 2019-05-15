@@ -12,37 +12,37 @@ All rights reserved.
 #include "whiteboard/ResourceProvider.h"
 #include "whiteboard/ResourceClient.h"
 #include "whiteboard/LaunchableModule.h"
+#include "whiteboard/DpcFunctor.h"
 
-#include "LogbookDb.hpp"
 #include "MeasStorage.h"
 #include "ExtflashChunkStorage.h"
-#include "common/core/dbgAssert.h"
+#include "common/core/dbgassert.h"
 
-void getLogbookMemoryArea(uint32_t &offset, uint32_t &size);
+void getLogbookMemoryArea(uint32_t& offset, uint32_t& size);
 
 #define _LOGBOOK_BYTESTREAM_OVERHEAD_MAX (10)
 #define _LOGBOOK_STREAM_PART_SIZE (256)
 
 /** Class to provide log file names to loggers. */
-class Logbook : 
-    private whiteboard::ResourceClient,
-    private whiteboard::ResourceProvider,
-    public  whiteboard::LaunchableModule
+class Logbook : private whiteboard::ResourceClient, private whiteboard::ResourceProvider, public whiteboard::LaunchableModule
 {
-    
+    static Logbook* spInstance;
+
 public:
     static const char* const LAUNCHABLE_NAME;
-   
-    Logbook(LogbookDb &logbookDb, ExtflashChunkStorage &chunkStorage, MeasStorage &measStorage);
+
+    Logbook(ExtflashChunkStorage& chunkStorage, MeasStorage& measStorage);
     virtual ~Logbook();
-    
+
+    static void triggerStateUpdate();
+
 private:
     /** @see whiteboard::ILaunchableModule::initModule */
     virtual bool initModule() OVERRIDE;
 
     /** @see whiteboard::ILaunchableModule::deinitModule */
     virtual void deinitModule() OVERRIDE;
-    
+
     /** @see whiteboard::ILaunchableModule::startModule */
     virtual bool startModule() OVERRIDE;
 
@@ -50,48 +50,44 @@ private:
     virtual void stopModule() OVERRIDE { mModuleState = WB_RES::ModuleStateValues::STOPPED; }
 
 private:
-
     using ResourceProvider::onTimer;
     using ResourceProvider::startTimer;
     using ResourceProvider::stopTimer;
 
     /** @see whiteboard::ResourceProvider::onGetRequest */
-    virtual void onGetRequest(const wb::Request& request,
-                              const wb::ParameterList& parameterList) OVERRIDE;
+    virtual void onGetRequest(const wb::Request& request, const wb::ParameterList& parameterList) OVERRIDE;
 
     /** @see whiteboard::ResourceProvider::onPutRequest */
-    virtual void onPutRequest(const wb::Request& request,
-                              const wb::ParameterList& parameters) OVERRIDE;
+    virtual void onPutRequest(const wb::Request& request, const wb::ParameterList& parameters) OVERRIDE;
 
     /** @see whiteboard::ResourceProvider::onPostRequest */
-    virtual void onPostRequest(const wb::Request& request,
-                               const wb::ParameterList& parameters) OVERRIDE;
+    virtual void onPostRequest(const wb::Request& request, const wb::ParameterList& parameters) OVERRIDE;
 
     /** @see whiteboard::ResourceProvider::onSubscribe */
-    virtual void onSubscribe(const wb::Request& request,
-                             const wb::ParameterList& parameters) OVERRIDE;
+    virtual void onSubscribe(const wb::Request& request, const wb::ParameterList& parameters) OVERRIDE;
 
     /** @see whiteboard::ResourceProvider::onUnsubscribe */
-    virtual void onUnsubscribe(const wb::Request& request,
-                               const wb::ParameterList& parameters) OVERRIDE;
+    virtual void onUnsubscribe(const wb::Request& request, const wb::ParameterList& parameters) OVERRIDE;
 
     /** @see whiteboard::ResourceProvider::onDeleteRequest */
-    virtual void onDeleteRequest(const whiteboard::Request& rRequest,
-                         const whiteboard::ParameterList& parameters) OVERRIDE;
+    virtual void onDeleteRequest(const whiteboard::Request& rRequest, const whiteboard::ParameterList& parameters) OVERRIDE;
 
-    void onSubscribeResult(wb::RequestId requestId, wb::ResourceId resourceId,
-                     wb::Result resultCode, const wb::Value& resultData) OVERRIDE { DEBUG_ASSERT(resultCode == wb::HTTP_CODE_OK); }
-
-
-    void onTimer(wb::TimerId timerId) OVERRIDE;
+    void onSubscribeResult(wb::RequestId requestId,
+                           wb::ResourceId resourceId,
+                           wb::Result resultCode,
+                           const wb::Value& resultData) OVERRIDE
+    {
+        DEBUG_ASSERT(resultCode == wb::HTTP_CODE_OK);
+    }
 
     /** @see whiteboard::ResourceProvider::onRemoteWhiteboardDisconnected */
     virtual void onRemoteWhiteboardDisconnected(whiteboard::WhiteboardId whiteboardId) OVERRIDE;
+
 private:
+    ExtflashChunkStorage& mChunkStorage;
+    MeasStorage& mMeasStorage;
 
-    ExtflashChunkStorage &mChunkStorage;
-    MeasStorage &mMeasStorage;
-
+    whiteboard::DpcFunctor mDpc;
 
     friend class LogbookTest; // Used for testing
     /**
@@ -103,11 +99,9 @@ private:
     void handleGetDescriptors(const wb::Request& request, const wb::ParameterList& parameterList);
     void handleGetData(const wb::Request& request, const wb::ParameterList& parameterList);
 
-    LogbookDb &mLogbookDb;
-
+    bool isLogbookFull() const;
     uint16 mIsLogging;
     bool mLogbookFull;
-    wb::TimerId mTimer;
     bool mShutdown;
 
     void resetGetLogDataState();
@@ -124,11 +118,11 @@ private:
     uint32_t mCurrentDataRead;
     uint32_t mLastDataReadPos;
 
-    inline size_t freeBytesInBuffer(size_t currentPosInStm) const {return _LOGBOOK_STREAM_PART_SIZE - currentPosInStm;}
-    inline uint32_t dataBytesLeftToRead() const {return mCurrentDataLength - mCurrentDataRead;}
-    bool selectNextChunkInSession(uint16_t sessionId, ChunkStorage::Iterator &iter);
+    inline size_t freeBytesInBuffer(size_t currentPosInStm) const { return _LOGBOOK_STREAM_PART_SIZE - currentPosInStm; }
+    inline uint32_t dataBytesLeftToRead() const { return mCurrentDataLength - mCurrentDataRead; }
+    bool selectNextChunkInSession(uint16_t sessionId, ChunkStorage::Iterator& iter);
 
     uint16_t mDescriptorizedResourceIds[16];
 
-    bool isResourceDescriptorized(wb::LocalResourceId resourceId, uint16_t & nextFreeIndex) const;
+    bool isResourceDescriptorized(wb::LocalResourceId resourceId, uint16_t& nextFreeIndex) const;
 };

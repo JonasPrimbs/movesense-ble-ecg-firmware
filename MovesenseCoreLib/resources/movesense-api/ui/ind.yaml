@@ -33,18 +33,24 @@ paths:
           description: State set succesfully
 
 definitions:
+
   VisualIndState:
     required:
       - state
     properties:
       state:
         $ref: '#/definitions/VisualIndType'
+
   VisualIndType:
     type: integer
-    format: uint16
-    minimum: 0
-    maximum: 2
-    x-enumNames:
-      - NO_VISUAL_INDICATIONS
-      - CONTINUOUS_VISUAL_INDICATION
-      - SHORT_VISUAL_INDICATION
+    format: uint8
+    enum:
+      - name: 'NO_VISUAL_INDICATIONS'
+        description: Nothing indicated by the led.
+        value: 0
+      - name: 'CONTINUOUS_VISUAL_INDICATION'
+        description: Led keeps blinking continuously.
+        value: 1
+      - name: 'SHORT_VISUAL_INDICATION'
+        description: Led blinks shortly a few times.
+        value: 2

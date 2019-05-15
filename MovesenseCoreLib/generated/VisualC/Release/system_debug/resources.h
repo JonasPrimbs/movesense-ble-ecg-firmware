@@ -75,6 +75,7 @@ struct WB_ALIGN(4) DebugMessage
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18434;
 
+	WB_ALIGN(4) whiteboard::Optional< uint32 > id;
 	WB_ALIGN(4) uint32 timestamp;
 	WB_ALIGN(4) DebugLevel level;
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> tag;
@@ -87,8 +88,9 @@ struct WB_ALIGN(4) DebugLogQuery
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18435;
 
-	WB_ALIGN(4) uint32 timestamp;
-	WB_ALIGN(2) uint16 count;
+	WB_ALIGN(4) uint32 id;
+	WB_ALIGN(4) whiteboard::Optional< uint32 > timestamp;
+	WB_ALIGN(2) whiteboard::Optional< uint16 > count;
 };
 
 struct WB_ALIGN(4) DebugLogConfig

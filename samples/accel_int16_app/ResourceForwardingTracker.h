@@ -45,6 +45,7 @@ private:
     wb::ResourceId notSoNiceSyncTemporaryResourceId; // "input" parameter 1
     int32_t sampleRate;      // "input" parameter 2
     wb::Result outResult;    // "output" parameter
+
 public:
     // for resource ID path parameter uniqueness, as in client API
     wb::Result isResourceSubscribed(wb::ResourceId rscId, int32_t samplerate);

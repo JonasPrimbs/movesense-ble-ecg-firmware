@@ -2,7 +2,7 @@
  * Main API include for making Movesense sensor apps
  *
  */
- 
+
 #pragma once
 
 #include <whiteboard/Initialization.h>
@@ -22,11 +22,11 @@ extern "C" {
        allocation. Existance of this function also engourages to do
        designs that use dynamic memory management, that should be
        avoid in (semi) life critical applications.
-    
+
        If you have to have memrealloc functionality, don't reimplement
        it here. Instead create another layer for allocating reallocatable
        buffers and this way avoid extra overhead to all other allocations
-    
+
     void* memrealloc(void* ptr, size_t size);
     */
 #if __cplusplus
@@ -34,7 +34,7 @@ extern "C" {
 #endif // __cplusplus
 
 // Declaration of callback that gets called just before launchable modules are started
-typedef void (*PreLaunchCallback)(void);  
+typedef void (*PreLaunchCallback)(void);
 extern PreLaunchCallback __preLaunchCallback;
 
 extern void WEAK __initAppInfoFields();
@@ -96,6 +96,7 @@ __MovesenseAppModuleHolder __launchableModuleHolder; const char * __MovesenseApp
 const char *const *__MOVESENSE_APP_SPECIFIC_MODULES = __MovesenseAppModuleHolder::__moduleNames;
 
 extern const bool g_enableBLEComm;
+extern const bool g_enableProductionTestSerial;
 
 extern const char* g_appInfo_name;
 extern const char* g_appInfo_version;
@@ -115,6 +116,7 @@ extern const char* g_appInfo_company;
 
 #define BLE_COMMUNICATION(enable) const bool g_enableBLEComm = (enable);
 #define BLE_REQUIRE_BONDING(enable) const bool __requireBonding() { return (enable); }
+#define PRODUCTION_TEST_SERIAL_COMMUNICATION(enable) const bool g_enableProductionTestSerial = (enable);
 
 // Logbook memory area macro
 typedef void(*LogbookMemoryAreaOverride)(uint32_t &rOffset, uint32_t &rSize);

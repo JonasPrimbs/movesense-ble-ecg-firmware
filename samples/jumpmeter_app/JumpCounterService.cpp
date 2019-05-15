@@ -3,30 +3,28 @@
 #include "common/core/debug.h"
 #include "common/core/dbgassert.h"
 #include "meas_acc/resources.h"
-#include "whiteboard/builtinTypes/UnknownStructure.h"
-
-#include <float.h>
-#include <math.h>
-
 
 const char* const JumpCounterService::LAUNCHABLE_NAME = "JumpC";
 
-static const whiteboard::ExecutionContextId sExecutionContextId =
+static const wb::ExecutionContextId sExecutionContextId =
     WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_JUMPCOUNT::EXECUTION_CONTEXT;
 
-static const whiteboard::LocalResourceId sProviderResources[] = {
+static const wb::LocalResourceId sProviderResources[] = {
     WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_JUMPCOUNT::LID,
     WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_LASTJUMPHEIGHT::LID,
 };
 
-JumpCounterService::JumpCounterService()
-    : ResourceClient(WBDEBUG_NAME(__FUNCTION__), sExecutionContextId),
-      ResourceProvider(WBDEBUG_NAME(__FUNCTION__), sExecutionContextId),
-      LaunchableModule(LAUNCHABLE_NAME, sExecutionContextId),
-      isRunning(false)
+JumpCounterService::JumpCounterService():
+    ResourceClient(WBDEBUG_NAME(__FUNCTION__), sExecutionContextId),
+    ResourceProvider(WBDEBUG_NAME(__FUNCTION__), sExecutionContextId),
+    LaunchableModule(LAUNCHABLE_NAME, sExecutionContextId),
+    mMeasAccResourceId(wb::ID_INVALID_RESOURCE),
+    mOngoingRequests(),
+    isRunning(false),
+    mLastJumpHeight(0.0f),
+    mJumpCounter(0),
+    mSamplesSince0GStart(0)
 {
-    mJumpCounter = 0;
-    mLastJumpHeight = 0.0f;
 }
 
 JumpCounterService::~JumpCounterService()
@@ -35,7 +33,7 @@ JumpCounterService::~JumpCounterService()
 
 bool JumpCounterService::initModule()
 {
-    if (registerProviderResources(sProviderResources) != whiteboard::HTTP_CODE_OK)
+    if (registerProviderResources(sProviderResources) != wb::HTTP_CODE_OK)
     {
         return false;
     }
@@ -50,63 +48,64 @@ void JumpCounterService::deinitModule()
     mModuleState = WB_RES::ModuleStateValues::UNINITIALIZED;
 }
 
-/** @see whiteboard::ILaunchableModule::startModule */
 bool JumpCounterService::startModule()
 {
     mModuleState = WB_RES::ModuleStateValues::STARTED;
     return true;
 }
 
-void JumpCounterService::onGetRequest(const whiteboard::Request& request,
-                                      const whiteboard::ParameterList& parameters)
+void JumpCounterService::stopModule()
+{
+    stopRunning();
+    mModuleState = WB_RES::ModuleStateValues::STOPPED;
+}
+
+void JumpCounterService::onGetRequest(const wb::Request& request,
+                                      const wb::ParameterList& parameters)
 {
     DEBUGLOG("JumpCounterService::onGetRequest() called.");
 
     if (mModuleState != WB_RES::ModuleStateValues::STARTED)
     {
-        return returnResult(request, wb::HTTP_CODE_SERVICE_UNAVAILABLE);
+        returnResult(request, wb::HTTP_CODE_SERVICE_UNAVAILABLE);
+        return;
     }
 
-    switch (request.getResourceConstId())
+    switch (request.getResourceId().localResourceId)
     {
-    case WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_JUMPCOUNT::ID:
+    case WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_JUMPCOUNT::LID:
     {
-        return returnResult(request, whiteboard::HTTP_CODE_OK,
-                            ResponseOptions::Empty, mJumpCounter);
+        returnResult(request, wb::HTTP_CODE_OK, ResponseOptions::Empty, mJumpCounter);
+        break;
     }
 
-    break;
-
-    case WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_LASTJUMPHEIGHT::ID:
+    case WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_LASTJUMPHEIGHT::LID:
     {
-        return returnResult(request, whiteboard::HTTP_CODE_OK,
-                            ResponseOptions::Empty, mLastJumpHeight);
+        returnResult(request, wb::HTTP_CODE_OK, ResponseOptions::Empty, mLastJumpHeight);
+        break;
     }
-
-    break;
 
     default:
-        // Return error
-        return returnResult(request, whiteboard::HTTP_CODE_NOT_IMPLEMENTED);
+        ASSERT(0); // would be a system error if we got here, trust the system and save rom.
     }
 }
 
-void JumpCounterService::onUnsubscribeResult(whiteboard::RequestId requestId,
-                                             whiteboard::ResourceId resourceId,
-                                             whiteboard::Result resultCode,
-                                             const whiteboard::Value& rResultData)
+void JumpCounterService::onUnsubscribeResult(wb::RequestId requestId,
+                                             wb::ResourceId resourceId,
+                                             wb::Result resultCode,
+                                             const wb::Value& rResultData)
 {
     DEBUGLOG("JumpCounterService::onUnsubscribeResult() called.");
 }
 
-void JumpCounterService::onSubscribeResult(whiteboard::RequestId requestId,
-                                           whiteboard::ResourceId resourceId,
-                                           whiteboard::Result resultCode,
-                                           const whiteboard::Value& rResultData)
+void JumpCounterService::onSubscribeResult(wb::RequestId requestId,
+                                           wb::ResourceId resourceId,
+                                           wb::Result resultCode,
+                                           const wb::Value& rResultData)
 {
     DEBUGLOG("JumpCounterService::onSubscribeResult() called. resourceId: %u, result: %d", resourceId.localResourceId, (uint32_t)resultCode);
 
-    whiteboard::Request relatedIncomingRequest;
+    wb::Request relatedIncomingRequest;
     bool relatedRequestFound = mOngoingRequests.get(requestId, relatedIncomingRequest);
 
     if (relatedRequestFound)
@@ -115,7 +114,7 @@ void JumpCounterService::onSubscribeResult(whiteboard::RequestId requestId,
     }
 }
 
-whiteboard::Result JumpCounterService::startRunning(whiteboard::RequestId& remoteRequestId)
+wb::Result JumpCounterService::startRunning(wb::RequestId& remoteRequestId)
 {
     DEBUGLOG("JumpCounterService::startRunning()");
 
@@ -126,30 +125,33 @@ whiteboard::Result JumpCounterService::startRunning(whiteboard::RequestId& remot
     wb::Result result = getResource("Meas/Acc/104", mMeasAccResourceId);
     if (!wb::RETURN_OKC(result))
     {
-        return whiteboard::HTTP_CODE_BAD_REQUEST;
+        return result;
     }
     result = asyncSubscribe(mMeasAccResourceId, AsyncRequestOptions(&remoteRequestId, 0, true));
 
     if (!wb::RETURN_OKC(result))
     {
         DEBUGLOG("asyncSubscribe threw error: %u", result);
-        return whiteboard::HTTP_CODE_BAD_REQUEST;
+        releaseResource(mMeasAccResourceId);
+        return result;
     }
     isRunning = true;
-    return whiteboard::HTTP_CODE_ACCEPTED;
+    return wb::HTTP_CODE_ACCEPTED;
 }
 
-whiteboard::Result JumpCounterService::stopRunning()
+wb::Result JumpCounterService::stopRunning()
 {
-    if (!isRunning) {
-        return whiteboard::HTTP_CODE_ACCEPTED;
+    if (!isRunning)
+    {
+        return wb::HTTP_CODE_ACCEPTED;
     }
 
     DEBUGLOG("JumpCounterService::stopRunning()");
     if (isResourceSubscribed(WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_JUMPCOUNT::ID) == wb::HTTP_CODE_OK ||
-        isResourceSubscribed(WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_LASTJUMPHEIGHT::ID) == wb::HTTP_CODE_OK) {
-            DEBUGLOG("JumpCounterService::stopRunning() skipping. Subscribers still exist.");
-            return whiteboard::HTTP_CODE_ACCEPTED;
+        isResourceSubscribed(WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_LASTJUMPHEIGHT::ID) == wb::HTTP_CODE_OK)
+    {
+        DEBUGLOG("JumpCounterService::stopRunning() skipping. Subscribers still exist.");
+        return wb::HTTP_CODE_ACCEPTED;
     }
 
     // Unsubscribe the LinearAcceleration resource, when unsubscribe is done, we get callback
@@ -161,7 +163,7 @@ whiteboard::Result JumpCounterService::stopRunning()
     isRunning = false;
     releaseResource(mMeasAccResourceId);
 
-    return whiteboard::HTTP_CODE_ACCEPTED;
+    return wb::HTTP_CODE_ACCEPTED;
 }
 
 void JumpCounterService::jumpFound(size_t nJumpSamples)
@@ -182,17 +184,16 @@ void JumpCounterService::jumpFound(size_t nJumpSamples)
     mLastJumpHeight = jumpHeight;
 
     // update jump count
-    updateResource(WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_JUMPCOUNT(),
-                   ResponseOptions::Empty, mJumpCounter);
+    updateResource(WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_JUMPCOUNT(), ResponseOptions::Empty, mJumpCounter);
 
     // update jump height
-    updateResource(WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_LASTJUMPHEIGHT(),
-                   ResponseOptions::Empty, mLastJumpHeight);
+    updateResource(WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_LASTJUMPHEIGHT(), ResponseOptions::Empty, mLastJumpHeight);
 }
 
 // This callback is called when the acceleration resource notifies us of new data
-void JumpCounterService::onNotify(whiteboard::ResourceId resourceId, const whiteboard::Value& value,
-                                  const whiteboard::ParameterList& parameters)
+void JumpCounterService::onNotify(wb::ResourceId resourceId,
+                                  const wb::Value& value,
+                                  const wb::ParameterList& parameters)
 {
     // Confirm that it is the correct resource
     switch (resourceId.localResourceId)
@@ -208,11 +209,11 @@ void JumpCounterService::onNotify(whiteboard::ResourceId resourceId, const white
             return;
         }
 
-        const whiteboard::Array<whiteboard::FloatVector3D>& arrayData = linearAccelerationValue.arrayAcc;
+        const wb::Array<wb::FloatVector3D>& arrayData = linearAccelerationValue.arrayAcc;
 
         for (size_t i = 0; i < arrayData.size(); i++)
         {
-            whiteboard::FloatVector3D accValue = arrayData[i];
+            wb::FloatVector3D accValue = arrayData[i];
             float accelerationSq = accValue.mX * accValue.mX +
                                    accValue.mY * accValue.mY +
                                    accValue.mZ * accValue.mZ;
@@ -240,28 +241,31 @@ void JumpCounterService::onNotify(whiteboard::ResourceId resourceId, const white
                 mSamplesSince0GStart = 0;
             }
         }
+        break;
     }
-    break;
+
+    default:
+        ASSERT(0); // would be a system error if we got here, trust the system and save rom.
     }
 }
 
-void JumpCounterService::onSubscribe(const whiteboard::Request& request,
-                                     const whiteboard::ParameterList& parameters)
+void JumpCounterService::onSubscribe(const wb::Request& request,
+                                     const wb::ParameterList& parameters)
 {
     DEBUGLOG("JumpCounterService::onSubscribe()");
 
-    switch (request.getResourceConstId())
+    switch (request.getResourceId().localResourceId)
     {
-    case WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_JUMPCOUNT::ID:
-    case WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_LASTJUMPHEIGHT::ID:
+    case WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_JUMPCOUNT::LID:
+    case WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_LASTJUMPHEIGHT::LID:
     {
         // Someone subscribed to our service. If no subscribers before, start running
         if (!isRunning)
         {
-            whiteboard::RequestId remoteRequestId;
-            whiteboard::Result result = startRunning(remoteRequestId);
+            wb::RequestId remoteRequestId;
+            wb::Result result = startRunning(remoteRequestId);
 
-            if (result == whiteboard::HTTP_CODE_ACCEPTED)
+            if (result == wb::HTTP_CODE_ACCEPTED)
             {
                 bool queueResult = mOngoingRequests.put(remoteRequestId, request);
                 (void)queueResult;
@@ -269,46 +273,44 @@ void JumpCounterService::onSubscribe(const whiteboard::Request& request,
             }
             else
             {
-                return returnResult(request, whiteboard::HTTP_CODE_BAD_REQUEST);
+                returnResult(request, wb::HTTP_CODE_BAD_REQUEST);
             }
-
         }
-        else{
-            return returnResult(request, whiteboard::HTTP_CODE_OK);
+        else
+        {
+            returnResult(request, wb::HTTP_CODE_OK);
         }
-
         break;
     }
     default:
-        ASSERT(0); // Should not happen
+        ASSERT(0); // would be a system error if we got here, trust the system and save rom.
     }
 }
 
-void JumpCounterService::onUnsubscribe(const whiteboard::Request& request,
-                                       const whiteboard::ParameterList& parameters)
+void JumpCounterService::onUnsubscribe(const wb::Request& request,
+                                       const wb::ParameterList& parameters)
 {
     DEBUGLOG("JumpCounterService::onUnsubscribe()");
 
-    switch (request.getResourceConstId())
+    switch (request.getResourceId().localResourceId)
     {
-    case WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_JUMPCOUNT::ID:
-    case WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_LASTJUMPHEIGHT::ID:
+    case WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_JUMPCOUNT::LID:
+    case WB_RES::LOCAL::SAMPLE_JUMPCOUNTER_LASTJUMPHEIGHT::LID:
         returnResult(request, stopRunning());
         break;
 
     default:
-        returnResult(request, wb::HTTP_CODE_BAD_REQUEST);
-        break;
+        ASSERT(0); // would be a system error if we got here, trust the system and save rom.
     }
 }
 
-void JumpCounterService::onRemoteWhiteboardDisconnected(whiteboard::WhiteboardId whiteboardId)
+void JumpCounterService::onRemoteWhiteboardDisconnected(wb::WhiteboardId whiteboardId)
 {
     DEBUGLOG("JumpCounterService::onRemoteWhiteboardDisconnected()");
     stopRunning();
 }
 
-void JumpCounterService::onClientUnavailable(whiteboard::ClientId clientId)
+void JumpCounterService::onClientUnavailable(wb::ClientId clientId)
 {
     DEBUGLOG("JumpCounterService::onClientUnavailable()");
     stopRunning();

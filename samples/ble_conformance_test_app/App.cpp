@@ -34,7 +34,7 @@ DEBUG_EEPROM_MEMORY_AREA(false, 0, 2048) // EEPROM storage disabled
 LOGBOOK_MEMORY_AREA(0, 384 * 1024);
 
 APPINFO_NAME("Sample BLE Conformance Test");
-APPINFO_VERSION("1.0.0");
+APPINFO_VERSION("1.1.0");
 APPINFO_COMPANY("Movesense");
 
 // Serial communication must be disabled so that the battery has enough power for running the tests

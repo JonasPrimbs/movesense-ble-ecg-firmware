@@ -35,7 +35,7 @@
 #include "common/compiler/genDef.h"
 #include "common/compiler/pack.h"
 
-
+PACK_BEGIN()
 /**
     Header of a chunk
 */
@@ -62,7 +62,7 @@ struct ChunkHeader
     uint8_t    headerChecksum;    // ChunkStorage calculates and checks
     uint8_t    dataChecksum;      // -"-
 } PACKED;
-
+PACK_END()
 #ifndef MAX_CHUNK_SIZE
     #define MAX_CHUNK_SIZE                    255
 #endif

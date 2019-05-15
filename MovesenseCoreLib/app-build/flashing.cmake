@@ -15,6 +15,18 @@ endif()
 set(APPLICATION_VERSION 2)
 set(BOOTLOADER_VERSION 2)
 
+
+# Check nrfutil version
+execute_process(COMMAND ${NRFUTIL_CMD} version
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+  RESULT_VARIABLE NRFUTIL_RESULT
+  OUTPUT_VARIABLE NRFUTIL_VERSION_STR)
+if (NOT NRFUTIL_VERSION_STR MATCHES "^nrfutil version 3\.")
+    message("nrfutil version >=4 detected. adding --no-backup option")
+    set(NRFUTIL_NO_BACKUP "--no-backup")
+endif()
+
+
 set (WITH_SETTINGS_HEX ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}_w_settings.hex)
 set (COMBINED_HEX ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}_combined.hex)
 set (DFU_PACKAGE_NAME ${EXECUTABLE_NAME}_dfu.zip)
@@ -23,14 +35,14 @@ set (MANUFACTURING_DATA_NAME ${EXECUTABLE_NAME}_manufacturing_data.txt)
 if (${COMPILER} MATCHES "IAR")
     add_custom_command(
         OUTPUT ${EXECUTABLE_NAME}.hex
-        DEPENDS ${EXECUTABLE_NAME}.elf      
+        DEPENDS ${EXECUTABLE_NAME}.elf
         POST_BUILD
         COMMAND ielftool.exe --ihex ${EXECUTABLE_NAME}.elf ${EXECUTABLE_NAME}.hex
         )
 elseif(${COMPILER} STREQUAL "GCCARM")
     add_custom_command(
         OUTPUT ${EXECUTABLE_NAME}.hex
-        DEPENDS ${EXECUTABLE_NAME}       
+        DEPENDS ${EXECUTABLE_NAME}
         COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_NAME} ${EXECUTABLE_NAME}.hex
         )
 endif()
@@ -39,7 +51,7 @@ endif()
 add_custom_command(
         OUTPUT ${WITH_SETTINGS_HEX}
         DEPENDS ${EXECUTABLE_NAME}.hex
-        COMMAND ${NRFUTIL_CMD} settings generate --family NRF52 --application ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}.hex --application-version ${APPLICATION_VERSION} --bootloader-version ${BOOTLOADER_VERSION} --bl-settings-version 1 ${CMAKE_CURRENT_BINARY_DIR}/settings.hex
+        COMMAND ${NRFUTIL_CMD} settings generate ${NRFUTIL_NO_BACKUP} --family NRF52 --application ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}.hex --application-version ${APPLICATION_VERSION} --bootloader-version ${BOOTLOADER_VERSION} --bl-settings-version 1 ${CMAKE_CURRENT_BINARY_DIR}/settings.hex
         COMMAND ${MERGEHEX_CMD} -m ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}.hex ${CMAKE_CURRENT_BINARY_DIR}/settings.hex -o ${WITH_SETTINGS_HEX}
         COMMENT "Prepare app hex files for flashing"
 )
@@ -103,13 +115,25 @@ add_custom_command(
         COMMENT "Gathering the manufacturing data backup in the file: ${CMAKE_CURRENT_BINARY_DIR}/${MANUFACTURING_DATA_NAME}"
 )
 
+add_custom_command(
+        OUTPUT flash.pkg
+        DEPENDS ${COMBINED_HEX}
+        COMMAND ${NRFJPROG_CMD} --family NRF52 --program ${COMBINED_HEX} --chiperase --verify
+        COMMAND ${NRFJPROG_CMD} --family NRF52 --reset
+        COMMAND ${PING_CMD} 127.0.0.1
+        COMMAND ${NRFJPROG_CMD} --family NRF52 --reset
+        COMMENT "Flashing hex package which includes bootloader, softdevice and application. This command erases manufacturing data"
+)
+
 # Create targets for flashing and hex generation
 if (NOT ${BSP} MATCHES "SDL")
     add_custom_target(dfupkg DEPENDS ${DFU_PACKAGE_NAME})
     add_custom_target(create_hex DEPENDS ${WITH_SETTINGS_HEX})
     add_custom_target(create_combined_hex DEPENDS ${COMBINED_HEX})
-    
+
     add_custom_target(flash_all DEPENDS cmd.reset_device_after_flash_and_erase)
     add_custom_target(flash DEPENDS cmd.reset_flash_without_erasing)
     add_custom_target(backup_manufacturing_data DEPENDS ${MANUFACTURING_DATA_NAME})
+    add_custom_target(pkgs DEPENDS ${DFU_PACKAGE_NAME} ${COMBINED_HEX} COMMENT "Creates both DFU and HEX packages")
+    add_custom_target(flash_pkg DEPENDS flash.pkg)
 endif()
