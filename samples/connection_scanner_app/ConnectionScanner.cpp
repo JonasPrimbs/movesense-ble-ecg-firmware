@@ -8,14 +8,15 @@
 
 const char* const ConnectionScanner::LAUNCHABLE_NAME = "ConnectionScanner";
 
-ConnectionScanner::ConnectionScanner()
-    : ResourceClient(WBDEBUG_NAME(__FUNCTION__), WB_EXEC_CTX_APPLICATION),
-      LaunchableModule(LAUNCHABLE_NAME, WB_EXEC_CTX_APPLICATION),
-      mSamplesCounter(0),
-      mLedBlinkTimer(whiteboard::ID_INVALID_TIMER),
-      mHRCheckOffTimer(whiteboard::ID_INVALID_TIMER),
-      mBlinkCount(0),
-      mDetectionState(DEVICE_DISCONNECTED)
+ConnectionScanner::ConnectionScanner():
+    ResourceClient(WBDEBUG_NAME(__FUNCTION__), WB_EXEC_CTX_APPLICATION),
+    LaunchableModule(LAUNCHABLE_NAME, WB_EXEC_CTX_APPLICATION),
+    mSystemStateResourceId(wb::ID_INVALID_RESOURCE),
+    mLedBlinkTimer(wb::ID_INVALID_TIMER),
+    mHRCheckOffTimer(wb::ID_INVALID_TIMER),
+    mSamplesCounter(0),
+    mBlinkCount(0),
+    mDetectionState(DEVICE_DISCONNECTED)
 {
 }
 
@@ -47,42 +48,48 @@ bool ConnectionScanner::startModule()
     return true;
 }
 
-void ConnectionScanner::onTimer(whiteboard::TimerId timerId)
+void ConnectionScanner::stopModule()
+{ 
+    stopRunning();
+    mModuleState = WB_RES::ModuleStateValues::STOPPED;
+}
+
+void ConnectionScanner::onTimer(wb::TimerId timerId)
 {
     DEBUGLOG("ConnectionScanner::onTimer");
 
     if (timerId == mLedBlinkTimer)
     {
-        mLedBlinkTimer = whiteboard::ID_INVALID_TIMER;
-        uint16_t indicationType = 2; // SHORT_VISUAL_INDICATION, defined in ui/ind.yaml
+        mLedBlinkTimer = wb::ID_INVALID_TIMER;
 
         // Make PUT request to trigger led blink
-        asyncPut(WB_RES::LOCAL::UI_IND_VISUAL::ID, AsyncRequestOptions::Empty, indicationType);
+        asyncPut(WB_RES::LOCAL::UI_IND_VISUAL(), AsyncRequestOptions::Empty,
+                 WB_RES::VisualIndTypeValues::SHORT_VISUAL_INDICATION);
+
         if (--mBlinkCount)
         {
             mLedBlinkTimer = startTimer(BLINK_TIME, false);
         }
     }
-
     else if (timerId == mHRCheckOffTimer)
     {
         //TIMEOUT ON HR
-        mHRCheckOffTimer = whiteboard::ID_INVALID_TIMER;
+        mHRCheckOffTimer = wb::ID_INVALID_TIMER;
         asyncUnsubscribe(WB_RES::LOCAL::MEAS_HR());
         updateDetectionState(UNKNOWN_DEVICE);
     }
 }
 
 // This callback is called when the acceleration resource notifies us of new data
-void ConnectionScanner::onNotify(whiteboard::ResourceId resourceId, const whiteboard::Value& value,
-                                 const whiteboard::ParameterList& parameters)
+void ConnectionScanner::onNotify(wb::ResourceId resourceId,
+                                 const wb::Value& value,
+                                 const wb::ParameterList& parameters)
 {
     DEBUGLOG("ConnectionScanner::onNotify");
 
     // Confirm that it is the correct resource
     switch (resourceId.localResourceId)
     {
-
     case WB_RES::LOCAL::SYSTEM_STATES_STATEID::LID:
     {
         const WB_RES::StateChange& stateChange = value.convertTo<const WB_RES::StateChange&>();
@@ -94,8 +101,8 @@ void ConnectionScanner::onNotify(whiteboard::ResourceId resourceId, const whiteb
         {
             updateDetectionState(DEVICE_CONNECTED);
         }
+        break;
     }
-    break;
 
     case WB_RES::LOCAL::MEAS_HR::LID:
     {
@@ -105,21 +112,22 @@ void ConnectionScanner::onNotify(whiteboard::ResourceId resourceId, const whiteb
         if (mSamplesCounter > 2)
         {
             stopTimer(mHRCheckOffTimer);
-            mHRCheckOffTimer = whiteboard::ID_INVALID_TIMER;
+            mHRCheckOffTimer = wb::ID_INVALID_TIMER;
             asyncUnsubscribe(WB_RES::LOCAL::MEAS_HR());
             updateDetectionState(HR_DETECTED);
         }
-    }
-    break;
-
-    default:
-    {
         break;
     }
+
+    default:
+        break;
     }
 }
 
-void ConnectionScanner::onGetResult(whiteboard::RequestId requestId, whiteboard::ResourceId resourceId, whiteboard::Result resultCode, const whiteboard::Value& result)
+void ConnectionScanner::onGetResult(wb::RequestId requestId,
+                                    wb::ResourceId resourceId,
+                                    wb::Result resultCode,
+                                    const wb::Value& result)
 {
     DEBUGLOG("ConnectionScanner::onGetResult");
     if (resultCode != wb::HTTP_CODE_OK)
@@ -142,8 +150,8 @@ void ConnectionScanner::onGetResult(whiteboard::RequestId requestId, whiteboard:
         {
             updateDetectionState(GEAR_NOT_FOUND);
         }
+        break;
     }
-    break;
 
     default:
         break;
@@ -154,7 +162,7 @@ void ConnectionScanner::startRunning(void)
 {
     DEBUGLOG("ConnectionScanner::startRunning");
 
-    whiteboard::Result result = getResource("System/States/2", mSystemStateResourceId); // 2 = Connector
+    wb::Result result = getResource("System/States/2", mSystemStateResourceId); // 2 = Connector
     if (result == wb::HTTP_CODE_OK)
     {
         asyncSubscribe(mSystemStateResourceId, NULL);
@@ -169,7 +177,7 @@ void ConnectionScanner::stopRunning(void)
     DEBUGLOG("ConnectionScanner::stopRunning");
 
     asyncUnsubscribe(mSystemStateResourceId, NULL);
-    whiteboard::Result result = releaseResource(mSystemStateResourceId); // 2 = Connector
+    wb::Result result = releaseResource(mSystemStateResourceId); // 2 = Connector
     if (result != wb::HTTP_CODE_OK)
     {
         DEBUGLOG("ConnectionScanner::stopRunning ERROR");

@@ -53,7 +53,7 @@ paths:
           description: See common error codes http://developer.suunto.com/api/std-errors#subscribe
         x-notification:
           schema:
-              $ref: '#/definitions/TestResult'
+            $ref: '#/definitions/TestResult'
     delete:
       description: |
         Unsubscribe

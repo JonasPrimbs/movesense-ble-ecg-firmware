@@ -4,9 +4,6 @@
 // Copyright (c) Suunto Oy 2014 - 2017. All rights reserved.
 
 
-static const unsigned short COMPONENT_LSM6DS3_AUTOPASSIVEENABLED_LID = 14592;
-static const unsigned short COMPONENT_LSM6DS3_MODE_LID = 14593;
-static const unsigned short COMPONENT_LSM6DS3_RAWENABLED_LID = 14594;
-static const unsigned short COMPONENT_LSM6DS3_TILTCOMPENSATIONENABLED_LID = 14595;
-static const unsigned short COMPONENT_LSM6DS3_WAKEUP_LID = 14596;
+static const unsigned short COMPONENT_LSM6DS3_TAPPARAMS_LID = 14592;
+static const unsigned short COMPONENT_LSM6DS3_WAKEUP_LID = 14593;
 

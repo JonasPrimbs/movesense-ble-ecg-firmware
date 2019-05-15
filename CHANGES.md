@@ -1,3 +1,39 @@
+## Version 1.9.0.8e23b279009f7
+
+###Whats new:
+- Feature: Double tap parameters for LSM6DSx component
+- Feature: Movement wakeup sample (movement_wakeup_app)
+- Feature: 1-Wire standard speed support
+- Feature: 1-Wire thermometer sample (1wire_temperature_app)
+- Feature: /Mem/Logbook/IsFull implementation
+
+- Bugfix: Movement wakeup doesn't work
+- Bugfix: Bugfix: UART ON return value missing
+- Bugfix: slow system shutdown on hardware
+- Bugfix: Build creates too large hex files (Issue #53)
+- Bugfix: Subscribe ECG / HR + Connector doesn't work (Issue #47)
+- Bugfix: accelerometer timestamp jitter correction
+- Bugfix: /System/Debug/Log API can't return entries over reset
+- Bugfix: ble_std_app has wrong scan name
+- Bugfix: SBEM generation dependency fix
+- Bugfix: Logbook/../Data GET in infinite loop
+- Bugfix: Logbook entry timestamps are wrong
+- Bugfix: Logbook returns invalid SBEM
+
+- Technical: Updated to FreeRTOS v10
+- Technical: Enabled LTO option on builds
+- Technical: Fix type check issues in response handling
+- Technical: Support nrfutil >=4 
+- Technical: Sample app fixes and clean up
+
+
+###Known Bugs:
+- [OSX] App build fails if path has space
+- [OSX] GNU Toolchain for ARM 2017q4 on Mac has a bug that prevents builds
+
+###Notes:
+- REQUIRED: Use **GNU Toolchain for ARM v. 7.2.1 2017q4**
+
 ## Version 1.8.1.34a9fd4453016b
 
 ###Whats new:

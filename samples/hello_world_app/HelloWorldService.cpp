@@ -3,26 +3,23 @@
 #include "HelloWorldService.h"
 #include "common/core/debug.h"
 
-#include "DebugLogger.hpp"
 #include "app-resources/resources.h"
-#include "whiteboard/builtinTypes/UnknownStructure.h"
-#include <float.h>
-#include <math.h>
+#include "DebugLogger.hpp"
 
 const size_t HELLO_WORLD_PERIOD_MS = 1000;
 
 const char* const HelloWorldService::LAUNCHABLE_NAME = "HelloSvc";
 
-static const whiteboard::LocalResourceId sProviderResources[] = {
+static const wb::LocalResourceId sProviderResources[] = {
     WB_RES::LOCAL::SAMPLE_HELLOWORLD::LID,
 };
 
-HelloWorldService::HelloWorldService()
-    : ResourceProvider(WBDEBUG_NAME(__FUNCTION__), WB_RES::LOCAL::SAMPLE_HELLOWORLD::EXECUTION_CONTEXT),
-      LaunchableModule(LAUNCHABLE_NAME, WB_RES::LOCAL::SAMPLE_HELLOWORLD::EXECUTION_CONTEXT)
+HelloWorldService::HelloWorldService():
+    ResourceProvider(WBDEBUG_NAME(__FUNCTION__), WB_RES::LOCAL::SAMPLE_HELLOWORLD::EXECUTION_CONTEXT),
+    LaunchableModule(LAUNCHABLE_NAME, WB_RES::LOCAL::SAMPLE_HELLOWORLD::EXECUTION_CONTEXT),
+    mTimer(wb::ID_INVALID_TIMER),
+    mCounter(0)
 {
-    mCounter = 0;
-    mTimer = whiteboard::ID_INVALID_TIMER;
 }
 
 HelloWorldService::~HelloWorldService()
@@ -31,7 +28,7 @@ HelloWorldService::~HelloWorldService()
 
 bool HelloWorldService::initModule()
 {
-    if (registerProviderResources(sProviderResources) != whiteboard::HTTP_CODE_OK)
+    if (registerProviderResources(sProviderResources) != wb::HTTP_CODE_OK)
     {
         return false;
     }
@@ -46,7 +43,6 @@ void HelloWorldService::deinitModule()
     mModuleState = WB_RES::ModuleStateValues::UNINITIALIZED;
 }
 
-/** @see whiteboard::ILaunchableModule::startModule */
 bool HelloWorldService::startModule()
 {
     mModuleState = WB_RES::ModuleStateValues::STARTED;
@@ -54,46 +50,47 @@ bool HelloWorldService::startModule()
     return true;
 }
 
-void HelloWorldService::onGetRequest(const whiteboard::Request& request,
-                                     const whiteboard::ParameterList& parameters)
+void HelloWorldService::stopModule()
+{
+    stopTimer(mTimer);
+    mTimer = wb::ID_INVALID_TIMER;
+    mModuleState = WB_RES::ModuleStateValues::STOPPED;
+}
+
+void HelloWorldService::onGetRequest(const wb::Request& request,
+                                     const wb::ParameterList& parameters)
 {
     DEBUGLOG("HelloWorldService::onGetRequest() called.");
 
     if (mModuleState != WB_RES::ModuleStateValues::STARTED)
     {
-        return returnResult(request, wb::HTTP_CODE_SERVICE_UNAVAILABLE);
+        returnResult(request, wb::HTTP_CODE_SERVICE_UNAVAILABLE);
+        return;
     }
 
-    switch (request.getResourceConstId())
+    switch (request.getResourceId().localResourceId)
     {
-    case WB_RES::LOCAL::SAMPLE_HELLOWORLD::ID:
+    case WB_RES::LOCAL::SAMPLE_HELLOWORLD::LID:
     {
         WB_RES::HelloWorldValue hello;
         hello.greeting = "Hello World!";
         DebugLogger::info(hello.greeting);
-        return returnResult(request, whiteboard::HTTP_CODE_OK, ResponseOptions::Empty, hello);
+        returnResult(request, wb::HTTP_CODE_OK, ResponseOptions::Empty, hello);
+        break;
     }
 
-    break;
-
     default:
-        // Return error
-        return returnResult(request, whiteboard::HTTP_CODE_NOT_FOUND);
+        ASSERT(0); // would be a system error if we got here, trust the system and save rom.
     }
 }
 
-void HelloWorldService::onTimer(whiteboard::TimerId timerId)
+void HelloWorldService::onTimer(wb::TimerId timerId)
 {
     if (isResourceSubscribed(WB_RES::LOCAL::SAMPLE_HELLOWORLD::ID) != wb::HTTP_CODE_OK)
     {
         DEBUGLOG("Stop timer.");
         stopTimer(mTimer);
-        mTimer = whiteboard::ID_INVALID_TIMER;
-        return;
-    }
-
-    if (timerId != mTimer)
-    {
+        mTimer = wb::ID_INVALID_TIMER;
         return;
     }
 
@@ -107,19 +104,18 @@ void HelloWorldService::onTimer(whiteboard::TimerId timerId)
 
     DebugLogger::info(buf);
     // and update the resources/resources
-    updateResource(WB_RES::LOCAL::SAMPLE_HELLOWORLD(),
-                   ResponseOptions::Empty, hello);
+    updateResource(WB_RES::LOCAL::SAMPLE_HELLOWORLD(), ResponseOptions::Empty, hello);
 }
 
-void HelloWorldService::onSubscribe(const whiteboard::Request& request,
-                                    const whiteboard::ParameterList& parameters)
+void HelloWorldService::onSubscribe(const wb::Request& request,
+                                    const wb::ParameterList& parameters)
 {
-    switch (request.getResourceConstId())
+    switch (request.getResourceId().localResourceId)
     {
-    case WB_RES::LOCAL::SAMPLE_HELLOWORLD::ID:
+    case WB_RES::LOCAL::SAMPLE_HELLOWORLD::LID:
     {
         // Someone subscribed to our service. Start timer that greets once every 5 seconds
-        if (mTimer == whiteboard::ID_INVALID_TIMER)
+        if (mTimer == wb::ID_INVALID_TIMER)
         {
             mTimer = startTimer(HELLO_WORLD_PERIOD_MS, true);
         }
@@ -128,21 +124,20 @@ void HelloWorldService::onSubscribe(const whiteboard::Request& request,
         break;
     }
     default:
-        // Return error
-        returnResult(request, whiteboard::HTTP_CODE_NOT_FOUND);
+        ASSERT(0); // would be a system error if we got here, trust the system and save rom.
     }
 }
 
-void HelloWorldService::onUnsubscribe(const whiteboard::Request& request,
-                                      const whiteboard::ParameterList& parameters)
+void HelloWorldService::onUnsubscribe(const wb::Request& request,
+                                      const wb::ParameterList& parameters)
 {
-    switch (request.getResourceConstId())
+    switch (request.getResourceId().localResourceId)
     {
-    case WB_RES::LOCAL::SAMPLE_HELLOWORLD::ID:
+    case WB_RES::LOCAL::SAMPLE_HELLOWORLD::LID:
         returnResult(request, wb::HTTP_CODE_OK, ResponseOptions::Empty);
         break;
 
     default:
-        returnResult(request, wb::HTTP_CODE_NOT_FOUND);
+        ASSERT(0); // would be a system error if we got here, trust the system and save rom.
     }
 }

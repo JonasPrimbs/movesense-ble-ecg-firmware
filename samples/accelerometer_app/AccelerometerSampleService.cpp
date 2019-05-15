@@ -2,17 +2,18 @@
 #include "app-resources/resources.h"
 #include "common/core/debug.h"
 #include "meas_acc/resources.h"
-#include "whiteboard/builtinTypes/UnknownStructure.h"
 
 #include <float.h>
-#include <math.h>
 
-const char* const AccelerometerSampleService::LAUNCHABLE_NAME = "SampleA";
-#define SAMPLE_RATE 13
-static const whiteboard::ExecutionContextId sExecutionContextId =
+#define ACC_PATH_WITH_SAMPLERATE "Meas/Acc/13"
+
+const char* const AccelerometerSampleService::LAUNCHABLE_NAME = "AccSample";
+
+static const wb::ExecutionContextId sExecutionContextId =
     WB_RES::LOCAL::SAMPLE_ACCELEROMETER_DATA::EXECUTION_CONTEXT;
 
-static const whiteboard::LocalResourceId sProviderResources[] = {
+static const wb::LocalResourceId sProviderResources[] =
+{
     WB_RES::LOCAL::SAMPLE_ACCELEROMETER_DATA::LID,
 };
 
@@ -20,7 +21,11 @@ AccelerometerSampleService::AccelerometerSampleService()
     : ResourceClient(WBDEBUG_NAME(__FUNCTION__), sExecutionContextId),
       ResourceProvider(WBDEBUG_NAME(__FUNCTION__), sExecutionContextId),
       LaunchableModule(LAUNCHABLE_NAME, sExecutionContextId),
-      isRunning(false)
+      mOngoingRequests(),
+      mMeasAccResourceId(wb::ID_INVALID_RESOURCE),
+      isRunning(false),
+      mSamplesIncluded(0),
+      mMaxAccelerationSq(0.0f)
 {
 }
 
@@ -30,7 +35,7 @@ AccelerometerSampleService::~AccelerometerSampleService()
 
 bool AccelerometerSampleService::initModule()
 {
-    if (registerProviderResources(sProviderResources) != whiteboard::HTTP_CODE_OK)
+    if (registerProviderResources(sProviderResources) != wb::HTTP_CODE_OK)
     {
         return false;
     }
@@ -45,30 +50,35 @@ void AccelerometerSampleService::deinitModule()
     mModuleState = WB_RES::ModuleStateValues::UNINITIALIZED;
 }
 
-/** @see whiteboard::ILaunchableModule::startModule */
 bool AccelerometerSampleService::startModule()
 {
     mModuleState = WB_RES::ModuleStateValues::STARTED;
-
     return true;
 }
 
-void AccelerometerSampleService::onUnsubscribeResult(whiteboard::RequestId requestId,
-                                                     whiteboard::ResourceId resourceId,
-                                                     whiteboard::Result resultCode,
-                                                     const whiteboard::Value& rResultData)
+void AccelerometerSampleService::stopModule()
+{
+    stopRunning();
+    mModuleState = WB_RES::ModuleStateValues::STOPPED;
+}
+
+void AccelerometerSampleService::onUnsubscribeResult(wb::RequestId requestId,
+                                                     wb::ResourceId resourceId,
+                                                     wb::Result resultCode,
+                                                     const wb::Value& rResultData)
 {
     DEBUGLOG("AccelerometerSampleService::onUnsubscribeResult() called.");
 }
 
-void AccelerometerSampleService::onSubscribeResult(whiteboard::RequestId requestId,
-                                                   whiteboard::ResourceId resourceId,
-                                                   whiteboard::Result resultCode,
-                                                   const whiteboard::Value& rResultData)
+void AccelerometerSampleService::onSubscribeResult(wb::RequestId requestId,
+                                                   wb::ResourceId resourceId,
+                                                   wb::Result resultCode,
+                                                   const wb::Value& rResultData)
 {
-    DEBUGLOG("AccelerometerSampleService::onSubscribeResult() called. resourceId: %u, result: %d", resourceId.localResourceId, (uint32_t)resultCode);
+    DEBUGLOG("AccelerometerSampleService::onSubscribeResult() called. resourceId: %u, result: %u",
+             resourceId.localResourceId, resultCode);
 
-    whiteboard::Request relatedIncomingRequest;
+    wb::Request relatedIncomingRequest;
     bool relatedRequestFound = mOngoingRequests.get(requestId, relatedIncomingRequest);
 
     if (relatedRequestFound)
@@ -77,11 +87,11 @@ void AccelerometerSampleService::onSubscribeResult(whiteboard::RequestId request
     }
 }
 
-whiteboard::Result AccelerometerSampleService::startRunning(whiteboard::RequestId& remoteRequestId)
+wb::Result AccelerometerSampleService::startRunning(wb::RequestId& remoteRequestId)
 {
     if (isRunning)
     {
-        return whiteboard::HTTP_CODE_OK;
+        return wb::HTTP_CODE_OK;
     }
 
     DEBUGLOG("AccelerometerSampleService::startRunning()");
@@ -90,7 +100,7 @@ whiteboard::Result AccelerometerSampleService::startRunning(whiteboard::RequestI
     mMaxAccelerationSq = FLT_MIN;
     mSamplesIncluded = 0;
 
-    wb::Result result = getResource("Meas/Acc/13", mMeasAccResourceId);
+    wb::Result result = getResource(ACC_PATH_WITH_SAMPLERATE, mMeasAccResourceId);
     if (!wb::RETURN_OKC(result))
     {
         return result;
@@ -101,24 +111,24 @@ whiteboard::Result AccelerometerSampleService::startRunning(whiteboard::RequestI
     if (!wb::RETURN_OKC(result))
     {
         DEBUGLOG("asyncSubscribe threw error: %u", result);
-        return whiteboard::HTTP_CODE_BAD_REQUEST;
+        return wb::HTTP_CODE_BAD_REQUEST;
     }
     isRunning = true;
 
-    return whiteboard::HTTP_CODE_OK;
+    return wb::HTTP_CODE_OK;
 }
 
-whiteboard::Result AccelerometerSampleService::stopRunning()
+wb::Result AccelerometerSampleService::stopRunning()
 {
     if (!isRunning)
     {
-        return whiteboard::HTTP_CODE_OK;
+        return wb::HTTP_CODE_OK;
     }
 
     if (isResourceSubscribed(WB_RES::LOCAL::SAMPLE_ACCELEROMETER_DATA::ID) == wb::HTTP_CODE_OK)
     {
         DEBUGLOG("AccelerometerSampleService::stopRunning() skipping. Subscribers still exist.");
-        return whiteboard::HTTP_CODE_OK;
+        return wb::HTTP_CODE_OK;
     }
 
     DEBUGLOG("AccelerometerSampleService::stopRunning()");
@@ -132,12 +142,12 @@ whiteboard::Result AccelerometerSampleService::stopRunning()
     isRunning = false;
     releaseResource(mMeasAccResourceId);
 
-    return whiteboard::HTTP_CODE_OK;
+    return wb::HTTP_CODE_OK;
 }
 
-// This callback is called when the resource we have subscribed notifies us
-void AccelerometerSampleService::onNotify(whiteboard::ResourceId resourceId, const whiteboard::Value& value,
-                                          const whiteboard::ParameterList& parameters)
+void AccelerometerSampleService::onNotify(wb::ResourceId resourceId,
+                                          const wb::Value& value,
+                                          const wb::ParameterList& parameters)
 {
     DEBUGLOG("onNotify() called.");
 
@@ -155,7 +165,7 @@ void AccelerometerSampleService::onNotify(whiteboard::ResourceId resourceId, con
             return;
         }
 
-        const whiteboard::Array<whiteboard::FloatVector3D>& arrayData = linearAccelerationValue.arrayAcc;
+        const wb::Array<wb::FloatVector3D>& arrayData = linearAccelerationValue.arrayAcc;
 
         uint32_t relativeTime = linearAccelerationValue.timestamp;
 
@@ -163,7 +173,7 @@ void AccelerometerSampleService::onNotify(whiteboard::ResourceId resourceId, con
         {
             mSamplesIncluded++;
 
-            whiteboard::FloatVector3D accValue = arrayData[i];
+            wb::FloatVector3D accValue = arrayData[i];
             float accelerationSq = accValue.mX * accValue.mX +
                                    accValue.mY * accValue.mY +
                                    accValue.mZ * accValue.mZ;
@@ -185,33 +195,34 @@ void AccelerometerSampleService::onNotify(whiteboard::ResourceId resourceId, con
             mMaxAccelerationSq = FLT_MIN;
 
             // and update our WB resource. This causes notification to be fired to our subscribers
-            updateResource(WB_RES::LOCAL::SAMPLE_ACCELEROMETER_DATA(),
-                           ResponseOptions::Empty, sampleDataValue);
+            updateResource(WB_RES::LOCAL::SAMPLE_ACCELEROMETER_DATA(), ResponseOptions::Empty, sampleDataValue);
         }
+        break;
     }
-    break;
     }
 }
 
-void AccelerometerSampleService::onSubscribe(const whiteboard::Request& request,
-                                             const whiteboard::ParameterList& parameters)
+void AccelerometerSampleService::onSubscribe(const wb::Request& request,
+                                             const wb::ParameterList& parameters)
 {
-    switch (request.getResourceConstId())
+    switch (request.getResourceId().localResourceId)
     {
-    case WB_RES::LOCAL::SAMPLE_ACCELEROMETER_DATA::ID:
+    case WB_RES::LOCAL::SAMPLE_ACCELEROMETER_DATA::LID:
     {
         // Someone subscribed to our service. Start collecting data and notifying when our service changes state (every 10 seconds)
-        whiteboard::RequestId remoteRequestId;
-        whiteboard::Result result = startRunning(remoteRequestId);
+        wb::RequestId remoteRequestId;
+        wb::Result result = startRunning(remoteRequestId);
 
         if (isRunning)
         {
-            return returnResult(request, whiteboard::HTTP_CODE_OK);
+            returnResult(request, wb::HTTP_CODE_OK);
+            return;
         }
 
-        if (!whiteboard::RETURN_OK(result))
+        if (!wb::RETURN_OK(result))
         {
-            return returnResult(request, result);
+            returnResult(request, result);
+            return;
         }
         bool queueResult = mOngoingRequests.put(remoteRequestId, request);
         (void)queueResult;
@@ -223,29 +234,28 @@ void AccelerometerSampleService::onSubscribe(const whiteboard::Request& request,
     }
 }
 
-void AccelerometerSampleService::onUnsubscribe(const whiteboard::Request& request,
-                                               const whiteboard::ParameterList& parameters)
+void AccelerometerSampleService::onUnsubscribe(const wb::Request& request,
+                                               const wb::ParameterList& parameters)
 {
-    switch (request.getResourceConstId())
+    switch (request.getResourceId().localResourceId)
     {
-    case WB_RES::LOCAL::SAMPLE_ACCELEROMETER_DATA::ID:
+    case WB_RES::LOCAL::SAMPLE_ACCELEROMETER_DATA::LID:
         stopRunning();
         returnResult(request, wb::HTTP_CODE_OK);
         break;
 
     default:
-        returnResult(request, wb::HTTP_CODE_BAD_REQUEST);
         ASSERT(0); // Should not happen
     }
 }
 
-void AccelerometerSampleService::onRemoteWhiteboardDisconnected(whiteboard::WhiteboardId whiteboardId)
+void AccelerometerSampleService::onRemoteWhiteboardDisconnected(wb::WhiteboardId whiteboardId)
 {
     DEBUGLOG("AccelerometerSampleService::onRemoteWhiteboardDisconnected()");
     stopRunning();
 }
 
-void AccelerometerSampleService::onClientUnavailable(whiteboard::ClientId clientId)
+void AccelerometerSampleService::onClientUnavailable(wb::ClientId clientId)
 {
     DEBUGLOG("AccelerometerSampleService::onClientUnavailable()");
     stopRunning();

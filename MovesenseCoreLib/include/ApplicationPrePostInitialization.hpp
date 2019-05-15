@@ -14,7 +14,12 @@ struct ApplicationInitializationParameters_t
     bool enableBLEComm;
 };
 
-/** Initialization code that should be called just before application is started 
+/**
+ * Set nea::InfoProvider::DeviceFirmwareVersion
+ */
+void preApplicationStartInitFirmwareVersion(void);
+
+/** Initialization code that should be called just before application is started
  *
  * @param parameters Initialization parameters
  * @return A value indicating wether initialization steps were successfully completed

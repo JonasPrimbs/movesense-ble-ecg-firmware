@@ -16,6 +16,9 @@ paths:
       responses:
         200:
           description: State updated succesfully.
+          schema:
+            type: boolean
+
     put:
       description: |
         Sets the UART state after reset

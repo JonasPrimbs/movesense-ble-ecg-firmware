@@ -138,6 +138,10 @@ definitions:
       - Tag
       - Message
     properties:
+      Id:
+        description: Continuously (even over reset) incrementing Id number 
+        type: integer
+        format: uint32
       Timestamp:
         description: Local timestamp in seconds since epoch 1.1.1970 (UTC).
         type: integer
@@ -154,16 +158,21 @@ definitions:
 
   DebugLogQuery:
     required:
-      - Timestamp
-      - Count
+      - Id
     properties:
+      Id:
+        description: Id defining the range of debug messages (messages with Id less or equal are selected).
+          To get all DebugMessages in the buffer, query again with smallest returned Id-1
+        type: integer
+        format: uint32
       Timestamp:
-        description: Timestamp defining the range of debug messages (messages with older timestamps are selected).
+        description: (Optional) Timestamp defining the range of 
+          debug messages (messages with older timestamps are selected). Do note that timestamp resets to 0 in a sensor reset.
         type: integer
         format: uint32
         x-unit: millisecond
       Count:
-        description: Number of messages to be selected.
+        description: Maximum number of messages to return.
         type: integer
         format: uint16
 

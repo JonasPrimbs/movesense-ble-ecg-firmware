@@ -47,11 +47,96 @@ struct SYSTEM;
 
 struct SYSTEM_SETTINGS;
 
-struct SYSTEM_SETTINGS_POWEROFFAFTERRESET
+struct SYSTEM_SETTINGS_ADCUARTON
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 13568, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 13568;
+
+	struct GET
+	{
+		typedef whiteboard::StronglyTypedResult<bool, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
+	};
+
+	struct PUT
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			struct STATE
+			{
+				static const whiteboard::ParameterIndex Index = 0;
+
+				typedef bool Type;
+				typedef Type ConstReferenceType;
+			};
+
+			typedef STATE Parameter1;
+
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
+		};
+
+		/** Reference wrapper for strongly typed parameter list for /System/Settings/AdcUartOn */
+		class ParameterListRef
+		{
+		private:
+			/** Prevent use of default constructor */
+			ParameterListRef() DELETED;
+
+			/** Prevent use of copy constructor */
+			ParameterListRef(const ParameterListRef&) DELETED;
+
+			/** Prevent use of assignment operator */
+			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
+
+		public:
+			/** Constructor that initializes this class from existing parameter list
+			*
+			* @param rParameterList Reference to parameter list that contains untyped parameters
+			*/
+			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
+				: mrParameterList(rParameterList)
+			{
+			}
+
+			/** Gets STATE parameter value
+			*
+			* @return Current parameter value
+			*/
+			inline Parameters::STATE::ConstReferenceType getState() const
+			{
+				return mrParameterList[Parameters::STATE::Index].convertTo<Parameters::STATE::ConstReferenceType>();
+			}
+
+		private:
+			/** Reference to actual parameter list */
+			const whiteboard::ParameterList& mrParameterList;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::STATE::ConstReferenceType)
+		{
+		}
+	};
+};
+
+struct SYSTEM_SETTINGS_POWEROFFAFTERRESET
+{
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 13569, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 13569;
 
 	struct PUT
 	{
@@ -120,8 +205,8 @@ struct SYSTEM_SETTINGS_POWEROFFAFTERRESET
 struct SYSTEM_SETTINGS_UARTON
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 13569, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 13569;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 13570, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 13570;
 
 	struct GET
 	{

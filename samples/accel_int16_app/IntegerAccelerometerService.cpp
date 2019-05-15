@@ -3,13 +3,8 @@
 #include "IntegerAccelerometerService.h"
 #include "app-resources/resources.h"
 #include "common/core/debug.h"
-#include "common/core/dbgassert.h"
 #include "meas_acc/resources.h"
-#include "whiteboard/builtinTypes/UnknownStructure.h"
 #include "common/text/Text.hpp"
-
-#include <float.h>
-#include <math.h>
 
 const char* const IntegerAccelerometerService::LAUNCHABLE_NAME = "IntAcc";
 static const wb::ExecutionContextId sExecutionContextId = WB_RES::LOCAL::SAMPLE_INTACC_SAMPLERATE::EXECUTION_CONTEXT;
@@ -29,7 +24,7 @@ static const wb::LocalResourceId sProviderResources[] =
 //      Consequently notifications to e.g. /meas/acc/52 and /meas/acc/416 will be forwarded to subscribers
 //      of /sample/intacc/52 and /sample/intacc/416 correspondingly.
 
-IntegerAccelerometerService::IntegerAccelerometerService() :
+IntegerAccelerometerService::IntegerAccelerometerService():
     ResourceClient(WBDEBUG_NAME(__FUNCTION__), sExecutionContextId),
     ResourceProvider(WBDEBUG_NAME(__FUNCTION__), sExecutionContextId),
     LaunchableModule(LAUNCHABLE_NAME, sExecutionContextId),
@@ -66,10 +61,15 @@ bool IntegerAccelerometerService::startModule()
     return true;
 }
 
+void IntegerAccelerometerService::stopModule()
+{
+    mModuleState = WB_RES::ModuleStateValues::STOPPED;
+}
+
 // This callback is called when the acceleration resource notifies us of new data
 void IntegerAccelerometerService::onNotify(wb::ResourceId resourceId,
-                                       const wb::Value& value,
-                                       const wb::ParameterList& parameters)
+                                           const wb::Value& value,
+                                           const wb::ParameterList& parameters)
 {
     const WB_RES::AccData& linearAccelerationData = value.convertTo<const WB_RES::AccData&>();
     const wb::FloatVector3D* itemArray = linearAccelerationData.arrayAcc.getItems();
@@ -122,8 +122,10 @@ void IntegerAccelerometerService::onNotify(wb::ResourceId resourceId,
     }
 }
 
-void IntegerAccelerometerService::onGetResult(wb::RequestId requestId, wb::ResourceId resourceId,
-    wb::Result resultCode, const wb::Value& rResultData)
+void IntegerAccelerometerService::onGetResult(wb::RequestId requestId,
+                                              wb::ResourceId resourceId,
+                                              wb::Result resultCode,
+                                              const wb::Value& rResultData)
 {
     const WB_RES::AccConfig& config = rResultData.convertTo<const WB_RES::AccConfig&>();
     // g is 9.832 m/s^2 at poles, 9.780 m/a^2 at equator, average that
@@ -135,9 +137,9 @@ void IntegerAccelerometerService::onGetResult(wb::RequestId requestId, wb::Resou
 }
 
 void IntegerAccelerometerService::onSubscribeResult(wb::RequestId requestId,
-    wb::ResourceId resourceId,
-    wb::Result resultCode,
-    const wb::Value& rResultData)
+                                                    wb::ResourceId resourceId,
+                                                    wb::Result resultCode,
+                                                    const wb::Value& rResultData)
 {
     DEBUGLOG("%s called. rscID: %u, resCode: %u", __FUNCTION__, resourceId, resultCode);
 
@@ -151,7 +153,7 @@ void IntegerAccelerometerService::onSubscribeResult(wb::RequestId requestId,
 
 // NOTE: all response codes that may be returned by this method must be specified in yaml under subscription post responses.
 void IntegerAccelerometerService::onSubscribe(const wb::Request& request,
-                                          const wb::ParameterList& parameters)
+                                              const wb::ParameterList& parameters)
 {
     wb::ResourceId rscId = request.getResourceId();
     DEBUGLOG("%s %u %u %u", __FUNCTION__, rscId, rscId.isPathParameterRef(), rscId.instanceId);
@@ -224,9 +226,9 @@ void IntegerAccelerometerService::onSubscribe(const wb::Request& request,
 }
 
 void IntegerAccelerometerService::onUnsubscribeResult(wb::RequestId requestId,
-    wb::ResourceId resourceId,
-    wb::Result resultCode,
-    const wb::Value& rResultData)
+                                                      wb::ResourceId resourceId,
+                                                      wb::Result resultCode,
+                                                      const wb::Value& rResultData)
 {
     DEBUGLOG("%s called. rscID: %u, resCode: %u", __FUNCTION__, resourceId, resultCode);
 

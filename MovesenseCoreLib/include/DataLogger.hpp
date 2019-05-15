@@ -3,10 +3,9 @@
 
 #include "mem_datalogger/resources.h"
 #include "buildconfig/hal/features.h"
+#include <whiteboard/ResourceClient.h>
+#include <whiteboard/ResourceProvider.h>
 #include <whiteboard/LaunchableModule.h>
-
-// Logging
-#include "logger/DescriptorProvider.hpp"
 
 #include "hwconfig.h"
 #include "MeasStorage.h"

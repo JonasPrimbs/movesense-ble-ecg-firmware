@@ -8,7 +8,6 @@
 #include "common/services/SystemModeProvider.hpp"
 #include "common/services/TimeProvider.hpp"
 
-#include "hal/memory/MemoryAccess.hpp"
 #include "hal/systemevent/SystemEventProvider.hpp"
 
 namespace nea

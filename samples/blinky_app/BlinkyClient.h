@@ -3,8 +3,8 @@
 #include <whiteboard/LaunchableModule.h>
 #include <whiteboard/ResourceClient.h>
 
-class BlinkyClient FINAL : private whiteboard::ResourceClient,
-                           public whiteboard::LaunchableModule
+class BlinkyClient FINAL : private wb::ResourceClient,
+                           public wb::LaunchableModule
 
 {
 public:
@@ -27,13 +27,9 @@ private:
     virtual void stopModule() OVERRIDE;
 
 protected:
-    /**
-    *	Timer callback.
-    *
-    *	@param timerId Id of timer that triggered
-    */
-    virtual void onTimer(whiteboard::TimerId timerId) OVERRIDE;
+    /** @see whiteboard::ResourceClient::onTimer */
+    virtual void onTimer(wb::TimerId timerId) OVERRIDE;
 
 private:
-    whiteboard::TimerId mTimer;
+    wb::TimerId mTimer;
 };

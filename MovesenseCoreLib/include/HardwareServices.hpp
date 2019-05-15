@@ -3,94 +3,115 @@
 #include "buildconfig/hal/features.h"
 #include "hwconfig.h"
 
-#ifdef BUILD_HAL_WANT_GPS
-#include "hal/gps/nextgen-driver/gps-driver.hpp"
-#endif // def BUILD_HAL_WANT_GPS
-
-#ifdef BUILD_HAL_WANT_BUTTONS
-#include "hal/userinput/ButtonProvider.hpp"
-#endif // def BUILD_HAL_WANT_BUTTONS
-
+#ifdef BUILD_HAL_WANT_ACCELEROMETER
 #include "hal/sensor/accelerometer/AccelerometerProvider.hpp"
+#endif
 
-#ifdef HAL_WANT_MAGNETOMETER
+#ifdef BUILD_HAL_WANT_MAGNETOMETER
 #include "hal/sensor/magnetometer/ak09912/MagnetometerProvider.hpp"
 #endif // def HAL_WANT_MAGNETOMETER
 
-#ifdef HAL_WANT_PRESSURE
+#ifdef BUILD_HAL_WANT_PRESSURE
 #include "hal/sensor/pressureSensor/ms5837-02ba/PressureProvider.hpp"
 #endif // def HAL_WANT_PRESSURE
 
-#ifdef BUILD_HAL_WANT_TMP112
-#ifndef HWCONFIG_SIMU
+#if defined(BUILD_HAL_TEMPERATURE_DRIVER_TMP112)
 #include "hal/sensor/temperature/tmp112/TemperatureProvider.hpp"
-#else
+#elif defined(BUILD_HAL_TEMPERATURE_DRIVER_SIMU)
 #include "hal/sensor/temperature/simulator/TemperatureProvider.hpp"
 #endif
-#endif // def BUILD_HAL_WANT_TMP112
 
-#ifdef BUILD_HAL_WANT_HEARTRATE
-#ifndef HWCONFIG_SIMU
-#include "hal/sensor/AFE/MAX3000X/MAX30004_provider.hpp"
-#else
+#if defined(BUILD_HAL_HEARTRATE_DRIVER_MAX3000X)
+#include "hal/sensor/AFE/MAX3000x/MAX30004_provider.hpp"
+#elif defined(BUILD_HAL_HEARTRATE_DRIVER_SIMU)
 #include "hal/sensor/AFE/MAX3000X_simu/MAX30004_provider.hpp"
 #endif
-#endif // def BUILD_HAL_WANT_HEARTRATE
 
-#ifdef BUILD_HAL_WANT_1WIRE
+#ifdef BUILD_HAL_1WIRE_DRIVER_DS24165
 #include "hal/sensor/security/ds24l65/DS24L65_provider.hpp"
-#endif // def BUILD_HAL_WANT_1WIRE
-
-#ifdef BUILD_HAL_WANT_TOUCH
-#include "hal/touchscreen/tma5xx/TouchProviderDriver.hpp"
-#endif // def BUILD_HAL_WANT_TOUCH
-
-#if defined (BUILD_HAL_WANT_BUZZER) || defined (BUILD_HAL_WANT_VIBRA)
-#include "hal/vibra/drv2605/VibraProvider.hpp"
-#include "hal/buzzer/BuzzerProvider.hpp"
-#include "hal/useroutput/UserFeedbackProvider.hpp"
-#endif // defined (BUILD_HAL_WANT_BUZZER) || defined (BUILD_HAL_WANT_VIBRA)
-
-#if defined(BUILD_HAL_WANT_PMIC)
-#include "hal/pmic/PmicProvider.hpp"
 #endif
 
-#ifdef HWCONFIG_SIMU
+#ifdef BUILD_HAL_WANT_SKISENSE_MSM
+#include "hal/sensor/msm/SkisenseMSM_provider.hpp"
+#endif // def BUILD_HAL_WANT_SKISENSE_MSM
+
+
+#if defined(BUILD_HAL_BATTERY_GAUGE_DRIVER_SIMU)
 #include "hal/sensor/batteryGauge/simu/BatteryChargeProvider.hpp"
-#else
+#elif defined(BUILD_HAL_BATTERY_GAUGE_DRIVER_MAX17055)
+#include "hal/sensor/batteryGauge/max17055/BatteryChargeProvider.hpp"
+#elif defined(BUILD_HAL_BATTERY_GAUGE_DRIVER_SS2)
 #include "hal/sensor/batteryGauge/SS2/BatteryChargeProvider.hpp"
-#endif // SIMU
+#endif
 
 // include hwconfig specific restrictions (not all hardware is present in all
 // designs)
 #include "hwconfig.h"
 
-#ifdef BUILD_HAL_WANT_ACCELEROMETER
-// if we cannot satisfy the wish, break the build here
-#if !defined(HWCONFIG_PERF16_SIMU) && !defined(HWCONFIG_SS2_SIMU) && !defined(BSP_HACK_ENABLE_SPI_EXPERIMENT)
-#warning "Cannot enable accelerometer since SPIE is disabled (or not building for SIMU)"
-#endif
+#ifdef BUILD_HAL_PMIC_DRIVER_BQ25120
+#include "hal/pmic/bq25120/BQPmicService.hpp"
 #endif
 
-#if defined(BUILD_HAL_WANT_PMIC) && defined(HWCONFIG_HAVE_PMIC_MAXIM)
-#define _ENABLE_PMIC_MAXIM
+#if defined(BUILD_HAL_PMIC_DRIVER_BQ25120) && defined(BUILD_HAL_BATTERY_GAUGE_DRIVER_MAX17055)
+#include "LowBatteryShipmodeService.hpp"
 #endif
 
-#if defined(BUILD_HAL_WANT_CHARGEMETER) && defined(HWCONFIG_HAVE_FUEL_GAUGE_MAXIM)
-#define _ENABLE_CHARGEMETER_MAXIM
-#endif
+/*
+ * These services are NOT deinitialized on mode switch
+ */
 
+class CoreHardwareServices FINAL
+{
+public:
+    CoreHardwareServices():
+#ifdef BUILD_HAL_PMIC_DRIVER_BQ25120
+        bqPmicDriver(),
+#endif
+#ifdef BUILD_HAL_WANT_CHARGEMETER
+        chargeDriver(),
+#endif
+#if defined(BUILD_HAL_PMIC_DRIVER_BQ25120) && defined(BUILD_HAL_BATTERY_GAUGE_DRIVER_MAX17055)
+        lowBatteryShutdown(),
+#endif
+        dummy(0)
+        {
+        }
+
+    const char *const*getProviderNames() const {
+        static const char* const moduleList[] = {
+#ifdef BUILD_HAL_PMIC_DRIVER_BQ25120
+            BQPmicService::LAUNCHABLE_NAME,
+#endif
+#ifdef BUILD_HAL_WANT_CHARGEMETER
+            hal::BatteryChargeProvider::LAUNCHABLE_NAME,
+#endif
+#if defined(BUILD_HAL_PMIC_DRIVER_BQ25120) && defined(BUILD_HAL_BATTERY_GAUGE_DRIVER_MAX17055)
+            LowBatteryShipmodeService::LAUNCHABLE_NAME,
+#endif
+            NULL };
+        return moduleList;
+    }
+
+#ifdef BUILD_HAL_PMIC_DRIVER_BQ25120
+    BQPmicService bqPmicDriver;
+#endif
+#ifdef BUILD_HAL_WANT_CHARGEMETER
+    hal::BatteryChargeProvider chargeDriver;
+#endif
+#if defined(BUILD_HAL_PMIC_DRIVER_BQ25120) && defined(BUILD_HAL_BATTERY_GAUGE_DRIVER_MAX17055)
+    LowBatteryShipmodeService lowBatteryShutdown;
+#endif
+    uint8 dummy;
+};
+
+/*
+ * These services are deinitialized on mode switch
+ */
 class HardwareServices FINAL
 {
 public:
     HardwareServices():
-#ifdef _ENABLE_PMIC_MAXIM
-        // NOTE: keep this first, so that sleep lock can be released when PMIC
-        //       is launched first
-        pmicDriver(HWCONFIG_LP_PMIC_I2C_BUS),
-        //rrDriver(),
-#endif
-#ifdef BUILD_HAL_WANT_ACCELEROMETER
+#if defined(BUILD_HAL_WANT_ACCELEROMETER) && !defined(BUILD_HAL_WANT_SKISENSE_MSM)
         accDriver(),
 #endif
 #ifdef BUILD_HAL_WANT_MAGNETOMETER
@@ -99,25 +120,14 @@ public:
 #ifdef BUILD_HAL_WANT_PRESSURE
         presDriver(HWCONFIG_PRESSURE_I2C_BUS),
 #endif
-#ifdef BUILD_HAL_WANT_TMP112
+#ifdef BUILD_HAL_WANT_TEMPERATURE
         tmp112Driver(),
 #endif
-#ifdef BUILD_HAL_WANT_1WIRE
+#ifdef BUILD_HAL_1WIRE_DRIVER_DS24165
         ds24l65Provider(),
 #endif
-#ifdef BUILD_HAL_WANT_TOUCH
-        touchDriver(HWCONFIG_TOUCH_I2C_BUS),
-#endif
-        chargeDriver(),
-
-#ifdef BUILD_HAL_WANT_BUTTONS
-        buttonProvider(),
-#endif
-#ifdef BUILD_HAL_WANT_GPS
-        gpsProvider(),
-#endif
-#if defined (BUILD_HAL_WANT_BUZZER) || defined (BUILD_HAL_WANT_VIBRA)
-        mUserFeedbackProvider(),
+#ifdef BUILD_HAL_WANT_SKISENSE_MSM
+        skisenseMSMProvider(),
 #endif
         dummy(0)
     {
@@ -128,47 +138,29 @@ public:
 #ifdef BUILD_HAL_WANT_PRESSURE
             hal::PressureProvider::LAUNCHABLE_NAME,
 #endif
-#ifdef BUILD_HAL_WANT_ACCELEROMETER
+#if defined(BUILD_HAL_WANT_ACCELEROMETER) && !defined(BUILD_HAL_WANT_SKISENSE_MSM)
             hal::AccelerometerProvider::LAUNCHABLE_NAME,
 #endif
 #ifdef BUILD_HAL_WANT_MAGNETOMETER
             hal::MagnetometerProvider::LAUNCHABLE_NAME,
 #endif
-#ifdef BUILD_HAL_WANT_TMP112
+#ifdef BUILD_HAL_WANT_TEMPERATURE
             hal::TemperatureService::LAUNCHABLE_NAME,
 #endif
 #ifdef BUILD_HAL_WANT_HEARTRATE
             hal::MAX30004Provider::LAUNCHABLE_NAME,
 #endif
-#ifdef BUILD_HAL_WANT_1WIRE
+#ifdef BUILD_HAL_1WIRE_DRIVER_DS24165
             hal::DS24L65Provider::LAUNCHABLE_NAME,
 #endif
-#ifdef _ENABLE_PMIC_MAXIM
-            hal::PmicProvider::LAUNCHABLE_NAME,
-#endif
-            hal::BatteryChargeProvider::LAUNCHABLE_NAME,
-#ifdef BUILD_HAL_WANT_BUTTONS
-            hal::ButtonProvider::LAUNCHABLE_NAME,
-#endif
-#ifdef BUILD_HAL_WANT_GPS
-            hal::GpsProvider::LAUNCHABLE_NAME,
-#endif
-#ifdef BUILD_HAL_WANT_TOUCH
-            nea::TouchProvider::LAUNCHABLE_NAME,
-#endif
-#if defined (BUILD_HAL_WANT_BUZZER) || defined (BUILD_HAL_WANT_VIBRA)
-            hal::UserFeedbackProvider::LAUNCHABLE_NAME,
+#ifdef BUILD_HAL_WANT_SKISENSE_MSM
+            hal::SkisenseMSMProvider::LAUNCHABLE_NAME,
 #endif
             NULL };
         return moduleList;
     }
 
-//    hal::RrProvider rrDriver;
-
-#ifdef _ENABLE_PMIC_MAXIM
-    hal::PmicProvider pmicDriver;
-#endif
-#ifdef BUILD_HAL_WANT_ACCELEROMETER
+#if defined(BUILD_HAL_WANT_ACCELEROMETER) && !defined(BUILD_HAL_WANT_SKISENSE_MSM)
     hal::AccelerometerProvider accDriver;
 #endif
 #ifdef BUILD_HAL_WANT_MAGNETOMETER
@@ -177,33 +169,17 @@ public:
 #ifdef BUILD_HAL_WANT_PRESSURE
     hal::PressureProvider presDriver;
 #endif
-#ifdef BUILD_HAL_WANT_TMP112
+#ifdef BUILD_HAL_WANT_TEMPERATURE
     hal::TemperatureService tmp112Driver;
 #endif
 #ifdef BUILD_HAL_WANT_HEARTRATE
     hal::MAX30004Provider max30004Provider;
 #endif
-#ifdef BUILD_HAL_WANT_1WIRE
+#ifdef BUILD_HAL_1WIRE_DRIVER_DS24165
     hal::DS24L65Provider ds24l65Provider;
 #endif
-#ifdef BUILD_HAL_WANT_TOUCH
-    hal::TouchProviderDriver touchDriver;
-#endif
-
-    hal::BatteryChargeProvider chargeDriver;
-
-#ifdef BUILD_HAL_WANT_BUTTONS
-    hal::ButtonProvider buttonProvider;
-#endif
-
-#ifdef BUILD_HAL_WANT_GPS
-    // constructor will start the initialization cycle during which SPI1 becomes
-    // unavailable for accelerometer. Accelerometer initialization is deferred
-    // internally in the accel driver (horrible hack)
-    hal::GpsProvider gpsProvider;
-#endif
-#if defined (BUILD_HAL_WANT_BUZZER) || defined (BUILD_HAL_WANT_VIBRA)
-    hal::UserFeedbackProvider mUserFeedbackProvider;
+#ifdef BUILD_HAL_WANT_SKISENSE_MSM
+    hal::SkisenseMSMProvider skisenseMSMProvider;
 #endif
     uint8 dummy;
 };

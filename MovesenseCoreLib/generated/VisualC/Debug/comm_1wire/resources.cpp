@@ -7,13 +7,13 @@
 
 namespace WB_RES {
 
-WB_STATIC_VERIFY(sizeof(OWPeerEntry) == 16, SizeOfStructure_OWPeerEntry_IsNotWhatExpected);
+WB_STATIC_VERIFY(sizeof(OWPeerEntry) == 24, SizeOfStructure_OWPeerEntry_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(OWPeerEntry) == 8, AlignmentOfStructure_OWPeerEntry_IsNotWhatExpected);
 
 WB_STATIC_VERIFY(sizeof(OWPeerList) == 8, SizeOfStructure_OWPeerList_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(OWPeerList) == 4, AlignmentOfStructure_OWPeerList_IsNotWhatExpected);
 
-WB_STATIC_VERIFY(sizeof(OWPeerChange) == 24, SizeOfStructure_OWPeerChange_IsNotWhatExpected);
+WB_STATIC_VERIFY(sizeof(OWPeerChange) == 32, SizeOfStructure_OWPeerChange_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(OWPeerChange) == 8, AlignmentOfStructure_OWPeerChange_IsNotWhatExpected);
 
 WB_STATIC_VERIFY(sizeof(OWCommand) == 12, SizeOfStructure_OWCommand_IsNotWhatExpected);

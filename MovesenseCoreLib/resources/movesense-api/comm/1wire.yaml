@@ -60,6 +60,8 @@ paths:
           description: Operation completed successfully.
           schema:
             $ref: '#/definitions/OWCommandResult'
+        404:
+          description: Peer with ConnHandle does not exist.
 
 parameters:
   ConnHandle:
@@ -73,6 +75,7 @@ definitions:
   OWPeerEntry:
     required:
     - Address
+    - Flags
     properties:
       Address:
         description: Address of the 1wire device
@@ -82,6 +85,9 @@ definitions:
         description: handle of the peer connection.
         type: integer
         format: int32
+      Flags:
+        description: Flags describing the peer
+        $ref: '#/definitions/OWPeerFlags'
 
   OWPeerList:
     required:
@@ -114,6 +120,22 @@ definitions:
       - name: 'CONNECTED'
         description: Peer is connected.
         value: 1
+
+  OWPeerFlags:
+    description: |
+      Flags describing the peer.
+    type: integer
+    format: uint8
+    enum:
+      - name: 'STANDARD_SPEED'
+        description: Peer supports standard speed.
+        value: 1
+      - name: 'OVERDRIVE_SPEED'
+        description: Peer supports overdrive speed.
+        value: 2
+      - name: 'BOTH_SPEEDS'
+        description: Peer supports standard and overdrive speed.
+        value: 3
 
   OWCommand:
     description: |

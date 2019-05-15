@@ -2,28 +2,26 @@
 #include "app-resources/resources.h"
 #include "common/core/debug.h"
 
-#include <float.h>
-#include <math.h>
-
 #define PACKET_INTERVAL_MS 100
 
 const char* const ConnectionReliabilityService::LAUNCHABLE_NAME = "ConnRel";
 
-static const whiteboard::ExecutionContextId sExecutionContextId =
+static const wb::ExecutionContextId sExecutionContextId =
     WB_RES::LOCAL::TEST_CONNECTIONRELIABILITY_INCREMENTSMALLPKG::EXECUTION_CONTEXT;
 
-static const whiteboard::LocalResourceId sProviderResources[] = {
+static const wb::LocalResourceId sProviderResources[] =
+{
     WB_RES::LOCAL::TEST_CONNECTIONRELIABILITY_INCREMENTSMALLPKG::LID,
     WB_RES::LOCAL::TEST_CONNECTIONRELIABILITY_INCREMENTLARGEPKG::LID,
 };
 
-ConnectionReliabilityService::ConnectionReliabilityService()
-    : ResourceProvider(WBDEBUG_NAME(__FUNCTION__), sExecutionContextId),
-      LaunchableModule(LAUNCHABLE_NAME, sExecutionContextId),
-      mCounterTimer(whiteboard::ID_INVALID_TIMER)
+ConnectionReliabilityService::ConnectionReliabilityService():
+    ResourceProvider(WBDEBUG_NAME(__FUNCTION__), sExecutionContextId),
+    LaunchableModule(LAUNCHABLE_NAME, sExecutionContextId),
+    mCounterTimer(wb::ID_INVALID_TIMER),
+    mSubCounter(0),
+    mCounter(0)
 {
-    mCounter = 0;
-    mSubCounter = 0;
 }
 
 ConnectionReliabilityService::~ConnectionReliabilityService()
@@ -32,7 +30,7 @@ ConnectionReliabilityService::~ConnectionReliabilityService()
 
 bool ConnectionReliabilityService::initModule()
 {
-    if (registerProviderResources(sProviderResources) != whiteboard::HTTP_CODE_OK)
+    if (registerProviderResources(sProviderResources) != wb::HTTP_CODE_OK)
     {
         return false;
     }
@@ -47,16 +45,21 @@ void ConnectionReliabilityService::deinitModule()
     mModuleState = WB_RES::ModuleStateValues::UNINITIALIZED;
 }
 
-/** @see whiteboard::ILaunchableModule::startModule */
 bool ConnectionReliabilityService::startModule()
 {
     mModuleState = WB_RES::ModuleStateValues::STARTED;
     return true;
 }
 
+void ConnectionReliabilityService::stopModule()
+{
+    stopRunning();
+    mModuleState = WB_RES::ModuleStateValues::STOPPED;
+}
+
 void ConnectionReliabilityService::startRunning()
 {
-    if (mCounterTimer != whiteboard::ID_INVALID_TIMER)
+    if (mCounterTimer != wb::ID_INVALID_TIMER)
         stopRunning();
 
     mCounter = 0;
@@ -66,52 +69,49 @@ void ConnectionReliabilityService::startRunning()
 void ConnectionReliabilityService::stopRunning()
 {
     stopTimer(mCounterTimer);
-    mCounterTimer = whiteboard::ID_INVALID_TIMER;
+    mCounterTimer = wb::ID_INVALID_TIMER;
 }
 
-void ConnectionReliabilityService::onTimer(wb::TimerId timerId)
+void ConnectionReliabilityService::onTimer(wb::TimerId /*timerId*/)
 {
-    if (mCounterTimer == timerId)
+    mCounter++;
+    if (isResourceSubscribed(WB_RES::LOCAL::TEST_CONNECTIONRELIABILITY_INCREMENTSMALLPKG::ID))
     {
-        mCounter++;
-        if (isResourceSubscribed(WB_RES::LOCAL::TEST_CONNECTIONRELIABILITY_INCREMENTSMALLPKG::ID))
-        {
-            updateResource(WB_RES::LOCAL::TEST_CONNECTIONRELIABILITY_INCREMENTSMALLPKG(), ResourceProvider::ResponseOptions::Empty, mCounter);
-        }
-        
-        if (isResourceSubscribed(WB_RES::LOCAL::TEST_CONNECTIONRELIABILITY_INCREMENTLARGEPKG::ID))
-        {
-            WB_RES::LargePkg largePkg;
-            largePkg.counter1 = mCounter;
-            largePkg.counter2 = mCounter;
-            largePkg.counter3 = mCounter;
-            largePkg.counter4 = mCounter;
-            largePkg.counter5 = mCounter;
-            largePkg.counter6 = mCounter;
-            largePkg.counter7 = mCounter;
-            largePkg.counter8 = mCounter;
-            largePkg.counter9 = mCounter;
-            largePkg.counter10 = mCounter;
-            largePkg.counter11 = mCounter;
-            largePkg.counter12 = mCounter;
-            largePkg.counter13 = mCounter;
-            largePkg.counter14 = mCounter;
-            largePkg.counter15 = mCounter;
-            largePkg.counter16 = mCounter;
-            updateResource(WB_RES::LOCAL::TEST_CONNECTIONRELIABILITY_INCREMENTLARGEPKG(), ResourceProvider::ResponseOptions::Empty, largePkg);
-        }
+        updateResource(WB_RES::LOCAL::TEST_CONNECTIONRELIABILITY_INCREMENTSMALLPKG(), ResponseOptions::Empty, mCounter);
+    }
+    
+    if (isResourceSubscribed(WB_RES::LOCAL::TEST_CONNECTIONRELIABILITY_INCREMENTLARGEPKG::ID))
+    {
+        WB_RES::LargePkg largePkg;
+        largePkg.counter1 = mCounter;
+        largePkg.counter2 = mCounter;
+        largePkg.counter3 = mCounter;
+        largePkg.counter4 = mCounter;
+        largePkg.counter5 = mCounter;
+        largePkg.counter6 = mCounter;
+        largePkg.counter7 = mCounter;
+        largePkg.counter8 = mCounter;
+        largePkg.counter9 = mCounter;
+        largePkg.counter10 = mCounter;
+        largePkg.counter11 = mCounter;
+        largePkg.counter12 = mCounter;
+        largePkg.counter13 = mCounter;
+        largePkg.counter14 = mCounter;
+        largePkg.counter15 = mCounter;
+        largePkg.counter16 = mCounter;
+        updateResource(WB_RES::LOCAL::TEST_CONNECTIONRELIABILITY_INCREMENTLARGEPKG(), ResponseOptions::Empty, largePkg);
     }
 }
 
-void ConnectionReliabilityService::onSubscribe(const whiteboard::Request& request,
-                                     const whiteboard::ParameterList& parameters)
+void ConnectionReliabilityService::onSubscribe(const wb::Request& request,
+                                               const wb::ParameterList& parameters)
 {
     DEBUGLOG("ConnectionReliabilityService::onSubscribe()");
 
-    switch (request.getResourceConstId())
+    switch (request.getResourceId().localResourceId)
     {
-    case WB_RES::LOCAL::TEST_CONNECTIONRELIABILITY_INCREMENTSMALLPKG::ID:
-    case WB_RES::LOCAL::TEST_CONNECTIONRELIABILITY_INCREMENTLARGEPKG::ID:
+    case WB_RES::LOCAL::TEST_CONNECTIONRELIABILITY_INCREMENTSMALLPKG::LID:
+    case WB_RES::LOCAL::TEST_CONNECTIONRELIABILITY_INCREMENTLARGEPKG::LID:
     {
         bool bHadSubsriptions = mSubCounter > 0;
         mSubCounter++;
@@ -122,24 +122,23 @@ void ConnectionReliabilityService::onSubscribe(const whiteboard::Request& reques
         {
             startRunning();
         }
-        return returnResult(request, whiteboard::HTTP_CODE_OK);
-
+        returnResult(request, wb::HTTP_CODE_OK);
         break;
     }
     default:
-        ASSERT(0); // Should not happen
+        ASSERT(0); // would be a system error if we reached this, trust the system and safe rom
     }
 }
 
-void ConnectionReliabilityService::onUnsubscribe(const whiteboard::Request& request,
-                                       const whiteboard::ParameterList& parameters)
+void ConnectionReliabilityService::onUnsubscribe(const wb::Request& request,
+                                                 const wb::ParameterList& parameters)
 {
     DEBUGLOG("ConnectionReliabilityService::onUnsubscribe()");
 
-    switch (request.getResourceConstId())
+    switch (request.getResourceId().localResourceId)
     {
-    case WB_RES::LOCAL::TEST_CONNECTIONRELIABILITY_INCREMENTSMALLPKG::ID:
-    case WB_RES::LOCAL::TEST_CONNECTIONRELIABILITY_INCREMENTLARGEPKG::ID:
+    case WB_RES::LOCAL::TEST_CONNECTIONRELIABILITY_INCREMENTSMALLPKG::LID:
+    case WB_RES::LOCAL::TEST_CONNECTIONRELIABILITY_INCREMENTLARGEPKG::LID:
     {
         mSubCounter--;
         bool bHasSubsriptions = mSubCounter > 0;
@@ -150,23 +149,21 @@ void ConnectionReliabilityService::onUnsubscribe(const whiteboard::Request& requ
         {
             stopRunning();
         }
-        return returnResult(request, whiteboard::HTTP_CODE_OK);
-
+        returnResult(request, wb::HTTP_CODE_OK);
         break;
     }
     default:
-        returnResult(request, wb::HTTP_CODE_BAD_REQUEST);
-        break;
+        ASSERT(0); // would be a system error if we reached this, trust the system and safe rom
     }
 }
 
-void ConnectionReliabilityService::onRemoteWhiteboardDisconnected(whiteboard::WhiteboardId whiteboardId)
+void ConnectionReliabilityService::onRemoteWhiteboardDisconnected(wb::WhiteboardId whiteboardId)
 {
     DEBUGLOG("ConnectionReliabilityService::onRemoteWhiteboardDisconnected()");
     stopRunning();
 }
 
-void ConnectionReliabilityService::onClientUnavailable(whiteboard::ClientId clientId)
+void ConnectionReliabilityService::onClientUnavailable(wb::ClientId clientId)
 {
     DEBUGLOG("ConnectionReliabilityService::onClientUnavailable()");
     stopRunning();

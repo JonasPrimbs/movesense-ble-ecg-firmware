@@ -34,6 +34,8 @@ paths:
       responses:
         200:
           description: Operation completed successfully
+          schema:
+            $ref: '#/definitions/DataLoggerConfig'
         400:
           description: Bad request.
 

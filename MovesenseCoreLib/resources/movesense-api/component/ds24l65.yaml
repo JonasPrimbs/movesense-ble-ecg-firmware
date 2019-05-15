@@ -126,7 +126,7 @@ paths:
         200:
           description: Data read successfully
           schema:
-              $ref: '#/definitions/EEprom64ByteArray'
+            $ref: '#/definitions/EEprom64ByteArray'
         500:
           description: Data does not exist
     put:
@@ -137,7 +137,7 @@ paths:
           required: true
           in: body
           schema:
-              $ref: '#/definitions/EEprom64ByteArray'
+            $ref: '#/definitions/EEprom64ByteArray'
       responses:
         200:
           description: Data written successfully

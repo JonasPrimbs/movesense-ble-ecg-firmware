@@ -9,6 +9,7 @@ All rights reserved.
 #include <whiteboard/LaunchableModule.h>
 #include <whiteboard/ResourceProvider.h>
 
+#include "buildconfig/hal/features.h"
 
 class BleTestService FINAL :
     private whiteboard::ResourceProvider,
@@ -29,11 +30,13 @@ private:
     uint32_t currentPayloadPattern;
     uint8_t currentTimeout;
     bool hasValueCurrentChannelEnd;
-
+#ifdef BUILD_HAL_PMIC_DRIVER_BQ25120
+    bool mIsChargerConnected;
+#endif
     volatile bool softdeviceDisabled;
     void initDTM();
 
-    
+
     /** @see whiteboard::ILaunchableModule::initModule */
     virtual bool initModule() OVERRIDE;
 

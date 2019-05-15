@@ -2,7 +2,7 @@
 #include <whiteboard/ResourceProvider.h>
 #include <whiteboard/ResourceClient.h>
 
-#include "hal/systemevent.h"
+#include "platform/bsp/systemevent.h"
 
 namespace nea
 {
@@ -18,7 +18,7 @@ public:
 
     // called from the launchable module
     bool wbRegister();
-    void wbUnregister();
+    // no unregister since we are the last active prior to pulling the rug from under
 
 private:
     /** Callback for timer notifications.

@@ -3,6 +3,7 @@
 
 #include <whiteboard/LaunchableModule.h>
 #include <whiteboard/ResourceProvider.h>
+#include "buildconfig/movesense-core/features.h"
 #include "hal/manufacturingdata/manufacturingdata.h"
 
 #define STEPDATA_OFFSET         0x70B00
@@ -62,6 +63,9 @@ private:
     void ProductDataGet(const whiteboard::Request& request,
             const whiteboard::ParameterList& parameters);
 
+    void ProductDataDelete(const whiteboard::Request& request,
+                           const whiteboard::ParameterList& parameters);
+
     void CalibrationDataPost(const whiteboard::Request& request,
             const whiteboard::ParameterList& parameters);
 
@@ -83,6 +87,12 @@ private:
     void BatteryCorrectionPost(const whiteboard::Request& request, const whiteboard::ParameterList& parameters);
     void BatteryCorrectionGet(const whiteboard::Request& request, const whiteboard::ParameterList& parameters);
     void BatteryCorrectionDelete(const whiteboard::Request& request, const whiteboard::ParameterList& parameters);
+
+#ifdef BUILD_APP_FEATURE_AFE_CALIBRATION
+    void AfeCorrectionPost(const whiteboard::Request& request, const whiteboard::ParameterList& parameters);
+    void AfeCorrectionGet(const whiteboard::Request& request, const whiteboard::ParameterList& parameters);
+    void AfeCorrectionDelete(const whiteboard::Request& request, const whiteboard::ParameterList& parameters);
+#endif // BUILD_APP_FEATURE_AFE_CALIBRATION
 
     virtual void onGetRequest(const whiteboard::Request& request,
                               const whiteboard::ParameterList& parameters) OVERRIDE;

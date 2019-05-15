@@ -17,7 +17,8 @@ paths:
       responses:
         200:
           description: Operation completed successfully.
-          $ref: 'types.yaml#/definitions/MacAddress48'
+          schema:
+            $ref: 'types.yaml#/definitions/MacAddress48'
 
   /Comm/Ble/Config:
     get:
@@ -26,7 +27,8 @@ paths:
       responses:
         200:
           description: Operation completed successfully.
-          $ref: '#/definitions/BleConfig'
+          schema:
+            $ref: '#/definitions/BleConfig'
     put:
       description: |
         Set new BLE configuration
@@ -183,8 +185,6 @@ paths:
       responses:
         200:
           description: Operation completed successfully.
-          schema:
-            $ref: '#/definitions/BondList'
     delete:
       description: |
         Turns of pin validation and enable just works pairing

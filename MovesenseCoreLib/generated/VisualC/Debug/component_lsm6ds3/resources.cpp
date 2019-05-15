@@ -10,5 +10,8 @@ namespace WB_RES {
 WB_STATIC_VERIFY(sizeof(WakeUpState) == 2, SizeOfStructure_WakeUpState_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(WakeUpState) == 1, AlignmentOfStructure_WakeUpState_IsNotWhatExpected);
 
+WB_STATIC_VERIFY(sizeof(TapParams) == 8, SizeOfStructure_TapParams_IsNotWhatExpected);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(TapParams) == 1, AlignmentOfStructure_TapParams_IsNotWhatExpected);
+
 
 } // namespace WB_RES

@@ -4,8 +4,25 @@
 #include <whiteboard/ResourceClient.h>
 #include <whiteboard/DpcFunctor.h>
 
+#include "BleController.hpp"
+
 class BleServicesApp FINAL : private wb::ResourceClient, public wb::LaunchableModule
 {
+    // Handle callbacks for HRS enabled/disabled
+    // Note: This pattern is bound to change at some point
+    class CustomBleController : public BleController
+    {
+    public:
+        CustomBleController() {}
+
+    protected:
+        void OnHrsNotificationEnabled() { BleServicesApp::setNotificationRequest(true); }
+
+        void OnHrsNotificationDisabled() { BleServicesApp::setNotificationRequest(false); }
+    };
+    // Allocate a global so that this supercedes the built in one
+    CustomBleController bleCtrl;
+
 public:
     /** Name of this class. Used in StartupProvider list. */
     static const char* const LAUNCHABLE_NAME;
@@ -19,40 +36,28 @@ public:
     ~BleServicesApp();
 
 protected:
-    wb::DpcFunctor mDpc;
-    wb::TimerId mTimer;
-
-    uint32_t mCounter;
-    struct InternalStates
-    {
-        uint16_t HrsEnabled    : 1;
-        uint16_t HrsEnableReq  : 1;
-        uint16_t PeerConnected : 1;
-    };
-    InternalStates mStates;
- 
     /** @see whiteboard::ILaunchableModule::initModule */
     virtual bool initModule() OVERRIDE;
-
     /** @see whiteboard::ILaunchableModule::deinitModule */
     virtual void deinitModule() OVERRIDE;
-
     /** @see whiteboard::ILaunchableModule::startModule */
     virtual bool startModule() OVERRIDE;
-
     /** @see whiteboard::ILaunchableModule::stopModule */
     virtual void stopModule() OVERRIDE;
 
-    /**
-    *	Callback for resource notifications.
-    *   Note that this function will not be called for notifications that are
-    *   of types WB_RESOURCE_NOTIFICATION_TYPE_INSERT or WB_RESOURCE_NOTIFICATION_TYPE_DELETE,
-    *   just for notifications that are of type WB_RESOURCE_NOTIFICATION_TYPE_UPDATE.
-    *
-    *	@param resourceId Resource id associated with the update
-    *	@param value Current value of the resource
-    */
-    virtual void onNotify(wb::ResourceId resourceId, const wb::Value& value, const wb::ParameterList& parameters);
+    /** @see whiteboard::ResourceClient::onNotify */
+    virtual void onNotify(wb::ResourceId resourceId,
+                          const wb::Value& value,
+                          const wb::ParameterList& parameters);
+
+    /** @see whiteboard::ResourceClient::onPutResult */
+    virtual void onPutResult(wb::RequestId requestId,
+                             wb::ResourceId resourceId,
+                             wb::Result resultCode,
+                             const wb::Value& result) OVERRIDE;
+
+    /** @see whiteboard::ResourceClient::onTimer */
+    virtual void onTimer(wb::TimerId timerId) OVERRIDE;
 
     /** Prepare to shutdown and set timer */
     void startShutdownTimer();
@@ -61,17 +66,23 @@ protected:
     void stopShutdownTimer();
 
     /**
-    *	Timer callback.
-    *
-    *	@param timerId Id of timer that triggered
-    */
-    virtual void onTimer(wb::TimerId timerId) OVERRIDE;
-
-    /**
     *	DPS callback - events handler for HRS BLE events
     */
     void dpcHandler();
 
 private:
+    void setBleAdvPacket();
+
+    wb::DpcFunctor mDpc;
+    wb::TimerId mTimer;
+    struct InternalStates
+    {
+        uint16_t HrsEnabled : 1;
+        uint16_t HrsEnableReq : 1;
+        uint16_t PeerConnected : 1;
+    };
+    InternalStates mStates;
+    uint32_t mCounter;
+
     static BleServicesApp* spInstance;
 };

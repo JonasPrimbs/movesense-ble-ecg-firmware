@@ -51,7 +51,7 @@
  *----------------------------------------------------------*/
 
 #include "platform/bsp/maxfreq.h"
-#ifdef ARCH_KINETIS_K
+#if defined(ARCH_KINETIS_K) || defined(ARCH_NRF52)
 #include "buildconfig/bsp/config.h"
 #endif
 
@@ -63,7 +63,7 @@
 /* Constants related to the behaviour or the scheduler. */
 #ifdef ARCH_NRF52
 // Bug: https://devzone.nordicsemi.com/question/80413/freertos-tick-issue-on-nrf52-can-lead-to-lockups-sdk11/
-#define configUSE_PORT_OPTIMISED_TASK_SELECTION	0 
+#define configUSE_PORT_OPTIMISED_TASK_SELECTION	0
 #define configUSE_TICKLESS_IDLE_SIMPLE_DEBUG    1
 /*
      * Implementation note:
@@ -77,7 +77,7 @@
      */
 #else
 #define configUSE_PORT_OPTIMISED_TASK_SELECTION	1
-#endif 
+#endif
 
 #define configUSE_PREEMPTION					1
 #define configUSE_TIME_SLICING					1
@@ -150,6 +150,12 @@ extern void WD_feed(void);
 #endif // STDC
 #endif // ARCH_KINETIS_K
 
+#if defined(ARCH_NRF52) && defined(BUILD_BSP_ENABLE_WATCHDOG)
+extern void WD_feed(void);
+#define traceTASK_SWITCHED_OUT()                                                                                                 \
+    if (pxCurrentTCB == xTaskGetIdleTaskHandle()) WD_feed();
+#endif // BUILD_BSP_ENABLE_WATCHDOG && ARCH_NRF52
+
 /* Constants that build features in or out. */
 #define configUSE_MUTEXES 1
 #define configUSE_APPLICATION_TASK_TAG 0
@@ -195,11 +201,20 @@ extern void WD_feed(void);
 
 // This file is included from assembler and C functions must be guarded
 #if defined(__STDC__) || defined(_MSC_VER)
+
+
+// Prefer to use TRACE_FILENAME if given by build system, default to __FILE__
+#ifdef TRACE_FILENAME
+    #define FREERTOS_ASSERT_FILE TRACE_FILENAME
+#else
+    #define FREERTOS_ASSERT_FILE __FILE__
+#endif
+
 void kernelAssert(const char* file, int line);
 #define configASSERT(x)                                                                                                          \
     if ((x) == 0)                                                                                                                \
     {                                                                                                                            \
-        kernelAssert(__FILE__, __LINE__);                                                                                        \
+        kernelAssert(FREERTOS_ASSERT_FILE, __LINE__);                                                                            \
     }
 #endif
 
