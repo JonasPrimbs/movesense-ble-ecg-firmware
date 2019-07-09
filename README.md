@@ -1,7 +1,7 @@
 ## Announcements
   
-**(May 15th 2019) Sensor firmware 1.9.0 is out!**  
-This version contains some new features and a lot of bug fixes
+**(July 8th 2019) Sensor firmware 1.9.1 is out!**  
+This version contains some important bug fixes for those that use DataLogger/Logbook or */Meas/ECG*
 
 **Known issues**  
 Please refer to [CHANGES.md](CHANGES.md) for a list of changes & known issues.
