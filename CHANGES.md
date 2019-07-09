@@ -1,3 +1,18 @@
+## Version 1.9.1.a1943b29485341
+
+###Whats new:
+- Bugfix: Writing to EEPROM sometimes fails under heavy load and concurrent reads
+- Bugfix: /Meas/ECG sometimes stops sending data updates under heavy load
+
+
+###Known Bugs:
+- [OSX] App build fails if path has space
+- [OSX] GNU Toolchain for ARM 2017q4 on Mac has a bug that prevents builds
+
+###Notes:
+- REQUIRED: Use **Windows** build environment only (due to above GNU OSX bug)
+- REQUIRED: Use **GNU Toolchain for ARM v. 7.2.1 2017q4**
+
 ## Version 1.9.0.8e23b279009f7
 
 ###Whats new:
