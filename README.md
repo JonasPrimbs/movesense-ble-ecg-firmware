@@ -80,7 +80,7 @@ Install the following tools:
 Optionally: 
 
 * For flashing with Movesense programming JIG: 
-    * Nordic Semiconductor's [nRF5x-Command-Line-Tools-XXX](https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF52-DK)
+    * Nordic Semiconductor's [nRF5x-Command-Line-Tools](https://www.nordicsemi.com/Software-and-Tools/Development-Tools/nRF5-Command-Line-Tools)
 * In case you encounter `ImportError: No module named yaml`, try to install pyyaml package using pip.
 
 ### Manual setup on OSX
