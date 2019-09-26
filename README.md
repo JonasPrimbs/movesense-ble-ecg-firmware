@@ -1,7 +1,7 @@
 ## Announcements
   
-**(July 8th 2019) Sensor firmware 1.9.1 is out!**  
-This version contains some important bug fixes for those that use DataLogger/Logbook or */Meas/ECG*
+**(Sep 25th 2019) Sensor firmware 1.9.2 is out!**  
+This version contains a fix for high power consumption when using */Meas/HR*
 
 **Known issues**  
 Please refer to [CHANGES.md](CHANGES.md) for a list of changes & known issues.

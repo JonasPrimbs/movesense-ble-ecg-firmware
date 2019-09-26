@@ -1,21 +1,34 @@
+## Version 1.9.2.64280c34992f07
+
+### Whats new:
+- Bugfix: /Meas/HR high current consumption
+
+### Known Bugs:
+- [OSX] App build fails if path has space
+- [OSX] GNU Toolchain for ARM 2017q4 on Mac has a bug that prevents builds
+
+### Notes:
+- REQUIRED: Use **Windows** build environment only (due to above GNU OSX bug)
+- REQUIRED: Use **GNU Toolchain for ARM v. 7.2.1 2017q4**
+
 ## Version 1.9.1.a1943b29485341
 
-###Whats new:
+### Whats new:
 - Bugfix: Writing to EEPROM sometimes fails under heavy load and concurrent reads
 - Bugfix: /Meas/ECG sometimes stops sending data updates under heavy load
 
 
-###Known Bugs:
+### Known Bugs:
 - [OSX] App build fails if path has space
 - [OSX] GNU Toolchain for ARM 2017q4 on Mac has a bug that prevents builds
 
-###Notes:
+### Notes:
 - REQUIRED: Use **Windows** build environment only (due to above GNU OSX bug)
 - REQUIRED: Use **GNU Toolchain for ARM v. 7.2.1 2017q4**
 
 ## Version 1.9.0.8e23b279009f7
 
-###Whats new:
+### Whats new:
 - Feature: Double tap parameters for LSM6DSx component
 - Feature: Movement wakeup sample (movement_wakeup_app)
 - Feature: 1-Wire standard speed support
@@ -42,30 +55,30 @@
 - Technical: Sample app fixes and clean up
 
 
-###Known Bugs:
+### Known Bugs:
 - [OSX] App build fails if path has space
 - [OSX] GNU Toolchain for ARM 2017q4 on Mac has a bug that prevents builds
 
-###Notes:
+### Notes:
 - REQUIRED: Use **GNU Toolchain for ARM v. 7.2.1 2017q4**
 
 ## Version 1.8.1.34a9fd4453016b
 
-###Whats new:
+### Whats new:
 - Bugfix: Fixed BLE issues with some phone models
 - Bugfix: Fixed slow metadata fetch on first connection
 - Bugfix: 1Wire command doesn't work from MDS
 - Bugfix: samples ble_std_services and secure_ble_app wont start (Issue #50)
 
-###Known Bugs:
+### Known Bugs:
 - OTA Firmware update fails if app size is over 339968 bytes
 
-###Notes:
+### Notes:
 - To create DFU package for OTA update, compile application with "ninja dfupkg"
 
 ## Version 1.8.0.1986.3e4686edc878fc  
 
-###Whats new  
+### Whats new  
 - Feature: BLE power consumption improvements 
 - Feature: BLE speed improvements for BLE 4.2 and newer phones 
 - Feature: Get /Algo/ECGRR when subscribing to /Meas/HR when rr_from_ecg module included in build
@@ -79,33 +92,33 @@
 - Bugfix: Connect after Disconnect fails sometimes
 - Sample: New *accel_int16_app* that provides accelerometer data as int16
 
-###Notes:  
+### Notes:  
 - Subscribing higher ECG samplerates (> 200) can lead to loss of data due to small on chip FIFO on AFE chip (especially when heavy BLE traffic)
 
 ## Version 1.7.2.1932.31fa1076f86ebc  
 
-###Whats new:  
+### Whats new:  
 - Bugfix: /System/States:Movement doesn't work without accelerometer subscription  
 - Bugfix: /System/States:Connector doesn't work 100% (Issue #44)  
 
-###Known Bugs:  
+### Known Bugs:  
 - In heavy BLE traffic accelerometer timestamps may have jitter  
 
 ## Version 1.7.1.1901.cd8cac83fb55d7
 
-###Whats new:
+### Whats new:
 - Bugfix: Samsung S7-S9 cannot find sensor in scan after disconnect
 
-###Known Bugs:
+### Known Bugs:
 - In heavy BLE traffic accelerometer timestamps may have jitter
 
-###Notes:
+### Notes:
 - ECG over BLE datarate is close to max data bandwidth when subscribing samplerates 500 & 512. This can lead to loss of data due to small on chip FIFO on AFE chip.
 - Build system has been changed quite a bit so please copy the new style CMakeLists.txt-file from one of the sample apps to your own project folder!
 
 ## Version 1.7.0.1820.f1520cad7c8107
 
-###Whats new:
+### Whats new:
 
 - Update: Whiteboard 3.16
 - Feature: PC Simulator support (see: README.md)
@@ -117,32 +130,32 @@
 - Bugfix: Fixed RR-description in hr.yaml API
 - Bugfix: Some SystemStates issues
 
-###Known Bugs:
+### Known Bugs:
 - In heavy BLE traffic accelerometer timestamps may have jitter
 
-###Notes:###
+### Notes:
 - ECG over BLE datarate is close to max data bandwidth when subscribing samplerates 500 & 512. This can lead to loss of data due to small on chip FIFO on AFE chip.
 - Build system has been changed quite a bit so please copy the new style CMakeLists.txt-file from one of the sample apps to your own project folder!
 
 ## Version 1.6.2.1664.34ea980127698d
 
-###Whats new:###
+### Whats new:
 - Bugfix: ECG stuck in high sample-rates over BLE
 
-###Known Bugs:###
+### Known Bugs:
 
 - Standard BLE battery profile does not send new values
 - The first package of Acc/Magn/Gyro can be corrupted for high sample rates
 - be sure to also check Bitbucket for any additional reported issues: [device library](https://bitbucket.org/suunto/movesense-device-lib/issues?status=new&status=open) and [mobile library](https://bitbucket.org/suunto/movesense-mobile-lib/issues?status=new&status=open)
 
-###Notes:###
+### Notes:
 - ECG over BLE datarate is close to max data bandwidth when subscribing samplerates 500 & 512. This can lead to loss of data due to small on chip FIFO on AFE chip. 
 
 
 ## Version 1.6.1.1655.ec1bba61bb8493 ##
 
 
-###Whats new:###
+### Whats new:
 
 - Feature: Store RTC over reset (accuracy about +-1 second after reset)
 - Feature: Added function faultcom_GetLastFaultStr() (See: *movesense.h*) to receive string to describe error/reason of last reset
@@ -156,7 +169,7 @@
 - Deprecated: SERIAL_COMMUNICATION macro is no longer needed
 
 
-###Known Bugs:###
+### Known Bugs:
 
 - Standard BLE battery profile does not send new values
 - The first package of Acc/Magn/Gyro can be corrupted for high sample rates
