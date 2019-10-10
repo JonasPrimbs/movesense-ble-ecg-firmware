@@ -1,3 +1,16 @@
+## Version 1.9.3.35a1deb37c0987
+
+### Whats new:
+- Bugfix: Too high current consumption on some sensors when not using Acc/IMU
+
+### Known Bugs:
+- [OSX] App build fails if path has space
+- [OSX] GNU Toolchain for ARM 2017q4 on Mac has a bug that prevents builds
+
+### Notes:
+- REQUIRED: Use **Windows** build environment only (due to above GNU OSX bug)
+- REQUIRED: Use **GNU Toolchain for ARM v. 7.2.1 2017q4**
+
 ## Version 1.9.2.64280c34992f07
 
 ### Whats new:
