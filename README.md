@@ -1,7 +1,8 @@
 ## Announcements
   
-**(Oct 9th 2019) Sensor firmware 1.9.3 is out!**  
-This version contains a fix for too high power consumption when *not* using */Meas/Acc, Gyro or IMU*.
+**(Nov 15th 2019) Sensor firmware 1.9.4 is out!**  
+This version contains a fix for sensor getting occasionally stuck for 1h 37minutes. 
+*We recommend all the customers using previous 1.9.x versions to immediately update to this version.*
 
 **Known issues**  
 Please refer to [CHANGES.md](CHANGES.md) for a list of changes & known issues.
