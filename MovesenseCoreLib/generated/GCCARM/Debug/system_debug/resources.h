@@ -58,6 +58,8 @@ struct WB_ALIGN(4) DebugMessage;
 struct WB_ALIGN(4) DebugLogQuery;
 struct WB_ALIGN(4) DebugLogConfig;
 struct WB_ALIGN(4) DebugLogResult;
+struct WB_ALIGN(4) ResetReason;
+struct WB_ALIGN(4) FaultInfo;
 
 struct WB_ALIGN(1) DebugMessageConfig
 {
@@ -78,8 +80,8 @@ struct WB_ALIGN(4) DebugMessage
 	WB_ALIGN(4) whiteboard::Optional< uint32 > id;
 	WB_ALIGN(4) uint32 timestamp;
 	WB_ALIGN(4) DebugLevel level;
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> tag;
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> message;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > tag;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > message;
 };
 
 struct WB_ALIGN(4) DebugLogQuery
@@ -109,6 +111,36 @@ struct WB_ALIGN(4) DebugLogResult
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18437;
 
 	WB_ALIGN(4) whiteboard::Array< DebugMessage > messages;
+};
+
+struct WB_ALIGN(4) ResetReason
+{
+	// Structure type identification and serialization
+	typedef int Structure;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18438;
+
+	WB_ALIGN(4) uint32 rawValue;
+	WB_ALIGN(4) ResetReasonEnum enumValue;
+};
+
+struct WB_ALIGN(4) FaultInfo
+{
+	// Structure type identification and serialization
+	typedef int Structure;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18439;
+
+	WB_ALIGN(4) uint32 hFSR;
+	WB_ALIGN(4) uint32 cFSR;
+	WB_ALIGN(4) uint32 mMFAR;
+	WB_ALIGN(4) uint32 bFAR;
+	WB_ALIGN(4) uint32 r0;
+	WB_ALIGN(4) uint32 r1;
+	WB_ALIGN(4) uint32 r2;
+	WB_ALIGN(4) uint32 r3;
+	WB_ALIGN(4) uint32 r12;
+	WB_ALIGN(4) uint32 lR;
+	WB_ALIGN(4) uint32 pC;
+	WB_ALIGN(4) uint32 pSR;
 };
 
 namespace LOCAL 
@@ -568,6 +600,50 @@ struct SYSTEM_DEBUG_LEVEL
 		/** Compile time type checking */
 		inline static void typeCheck(
 			Parameters::LEVEL::ConstReferenceType)
+		{
+		}
+	};
+};
+
+struct SYSTEM_LASTFAULT
+{
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 18436, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 18436;
+
+	struct GET
+	{
+		typedef whiteboard::StronglyTypedResult<const FaultInfo&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
+	};
+};
+
+struct SYSTEM_RESETREASON
+{
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 18437, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 18437;
+
+	struct GET
+	{
+		typedef whiteboard::StronglyTypedResult<const ResetReason&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
 		{
 		}
 	};

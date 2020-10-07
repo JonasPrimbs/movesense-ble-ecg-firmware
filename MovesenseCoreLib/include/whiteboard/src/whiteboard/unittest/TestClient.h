@@ -7,6 +7,10 @@
 #include "whiteboard/unittest/TestClientBase.h"
 #include "whiteboard/unittest/TestResult.h"
 
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+#include "whiteboard/BatchingParameters.h"
+#endif
+
 #if WB_UNITTEST_BUILD
 
 namespace whiteboard
@@ -121,7 +125,7 @@ public:
                 mpClient = &rClient;
 
                 TestResult<NoType> result = rClient.callGetResourceInternal(mResourcePath);
-                return result ? result.mResourceId : ID_INVALID_RESOURCE;
+                return result ? result.mResourceId : ResourceId(ID_INVALID_RESOURCE);
             }
         }
 
@@ -142,7 +146,7 @@ public:
     TestResult<NoType> callGetResource(const char* resourcePath)
     {
         TestResult<NoType> result = callGetResourceInternal(resourcePath);
-        mTestResourceId = (result.mReturnResultCode == HTTP_CODE_OK) ? result.mResourceId : ID_INVALID_RESOURCE;
+        mTestResourceId = (result.mReturnResultCode == HTTP_CODE_OK) ? result.mResourceId : ResourceId(ID_INVALID_RESOURCE);
         return result;
     }
 
@@ -388,7 +392,7 @@ public:
         TestResult<NoType> result = callAsyncOpAndWaitResult<NoType, const char*, NoType, NoType>(
             &TestClientWithDefaults::asyncGetResourceDpcHandler, ID_INVALID_RESOURCE, resourcePath, NoType::NoValue, NoType::NoValue);
 
-        mTestResourceId = RETURN_OK(result.mCallResultCode) && (result.mReturnResultCode == HTTP_CODE_OK) ? result.mResourceId : ID_INVALID_RESOURCE;
+        mTestResourceId = RETURN_OK(result.mCallResultCode) && (result.mReturnResultCode == HTTP_CODE_OK) ? result.mResourceId : ResourceId(ID_INVALID_RESOURCE);
         return result;
     }
 
@@ -508,7 +512,11 @@ public:
         const P3& param3 = NoType::NoValue,
         bool forceAsync = false,
         bool isCritical = true,
-        bool forceReceiverDataType = false)
+        bool forceReceiverDataType = false
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+        , BatchingParameters batchingParameters = BatchingParameters()
+#endif
+    )
     {
         ResourceId resourceId = rResourceIdOrPath.getId(*this);
         if (resourceId == ID_INVALID_RESOURCE)
@@ -520,7 +528,11 @@ public:
         }
 
         return callAsyncOpAndWaitResult<R, P1, P2, P3>(
-            &TestClientWithDefaults::asyncSubscribeDpcHandler, resourceId, param1, param2, param3, forceAsync, isCritical, forceReceiverDataType);
+            &TestClientWithDefaults::asyncSubscribeDpcHandler, resourceId, param1, param2, param3, forceAsync, isCritical, forceReceiverDataType
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+            , batchingParameters
+#endif
+            );
     }
 
     /** asyncUnsubscribe */
@@ -606,7 +618,11 @@ private:
             bool forceAsync = false,
             bool isCritical = true,
             bool noResponse = false,
-            bool forceReceiverDataType = false) :
+            bool forceReceiverDataType = false
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+            , BatchingParameters batchingParameters = BatchingParameters()
+#endif
+        ) :
             mrParam1(rParam1),
             mrParam2(rParam2),
             mrParam3(rParam3),
@@ -614,6 +630,9 @@ private:
             mIsCritical(isCritical),
             mNoResponse(noResponse),
             mForceReceiverDataType(forceReceiverDataType)
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+            , mBatchingParameters(batchingParameters)
+#endif
         {
         }
 
@@ -627,6 +646,9 @@ private:
         bool mIsCritical;
         bool mNoResponse;
         bool mForceReceiverDataType;
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+        BatchingParameters mBatchingParameters;
+#endif
     };
 
     /** Implementation of asynchronous operations */
@@ -640,7 +662,11 @@ private:
         bool forceAsync = false,
         bool isCritical = true,
         bool noResponse = false,
-        bool forceReceiverDataType = false)
+        bool forceReceiverDataType = false
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+        , BatchingParameters batchingParameters = BatchingParameters()
+#endif
+    )
     {
         AsyncTestResult<R> result;
 
@@ -653,7 +679,11 @@ private:
         }
 
         TestResult<R>& rSyncResult = static_cast<TestResult<R>&>(result);
-        OpWrapper<P1, P2, P3> wrapper(param1, param2, param3, forceAsync, isCritical, noResponse, forceReceiverDataType);
+        OpWrapper<P1, P2, P3> wrapper(param1, param2, param3, forceAsync, isCritical, noResponse, forceReceiverDataType
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+            , batchingParameters
+#endif
+        );
         mpResult = &rSyncResult;
         mResourceId = resourceId;
         mUpdateCurrentTestResource = resourceId == ID_INVALID_RESOURCE;
@@ -679,7 +709,11 @@ private:
         const P3& param3,
         bool forceAsync = true,
         bool isCritical = false,
-        bool forceReceiverDataType = false)
+        bool forceReceiverDataType = false
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+        , BatchingParameters batchingParameters = BatchingParameters()
+#endif
+    )
     {
         TestResult<R> result;
 
@@ -691,7 +725,11 @@ private:
             return result;
         }
 
-        OpWrapper<P1, P2, P3> wrapper(param1, param2, param3, forceAsync, isCritical, false, forceReceiverDataType);
+        OpWrapper<P1, P2, P3> wrapper(param1, param2, param3, forceAsync, isCritical, false, forceReceiverDataType
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+            , batchingParameters
+#endif
+        );
         mpResult = &result;
         mResourceId = resourceId;
         mUpdateCurrentTestResource = resourceId == ID_INVALID_RESOURCE;
@@ -740,7 +778,11 @@ private:
     template <typename P1, typename P2, typename P3>
     Result asyncGetDpcHandler(OpWrapper<P1, P2, P3>& wrapper)
     {
-        const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs, false, true, wrapper.mNoResponse, wrapper.mForceReceiverDataType);
+        const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs, false, true, wrapper.mNoResponse, wrapper.mForceReceiverDataType
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+            , wrapper.mBatchingParameters
+#endif
+        );
 
         if (IsSame<P1, NoType>::value && IsSame<P2, NoType>::value && IsSame<P3, NoType>::value)
         {
@@ -766,7 +808,11 @@ private:
     template <typename P1, typename P2, typename P3>
     Result asyncPutDpcHandler(OpWrapper<P1, P2, P3>& wrapper)
     {
-        const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs, false, true, wrapper.mNoResponse, wrapper.mForceReceiverDataType);
+        const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs, false, true, wrapper.mNoResponse, wrapper.mForceReceiverDataType
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+            , wrapper.mBatchingParameters
+#endif
+        );
 
         if (IsSame<P1, NoType>::value && IsSame<P2, NoType>::value && IsSame<P3, NoType>::value)
         {
@@ -793,7 +839,11 @@ private:
     template <typename P1, typename P2, typename P3>
     Result asyncPostDpcHandler(OpWrapper<P1, P2, P3>& wrapper)
     {
-        const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs, false, true, wrapper.mNoResponse, wrapper.mForceReceiverDataType);
+        const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs, false, true, wrapper.mNoResponse, wrapper.mForceReceiverDataType
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+            , wrapper.mBatchingParameters
+#endif
+        );
 
         if (IsSame<P1, NoType>::value && IsSame<P2, NoType>::value && IsSame<P3, NoType>::value)
         {
@@ -820,7 +870,11 @@ private:
     template <typename P1, typename P2, typename P3>
     Result asyncDeleteDpcHandler(OpWrapper<P1, P2, P3>& wrapper)
     {
-        const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs, false, true, wrapper.mNoResponse, wrapper.mForceReceiverDataType);
+        const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs, false, true, wrapper.mNoResponse, wrapper.mForceReceiverDataType
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+            , wrapper.mBatchingParameters
+#endif
+        );
 
         if (IsSame<P1, NoType>::value && IsSame<P2, NoType>::value && IsSame<P3, NoType>::value)
         {
@@ -847,7 +901,11 @@ private:
     template <typename P1, typename P2, typename P3>
     Result asyncSubscribeDpcHandler(OpWrapper<P1, P2, P3>& wrapper)
     {
-        const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs, wrapper.mForceAsync, wrapper.mIsCritical, wrapper.mNoResponse, wrapper.mForceReceiverDataType);
+        const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs, wrapper.mForceAsync, wrapper.mIsCritical, wrapper.mNoResponse, wrapper.mForceReceiverDataType
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+            , wrapper.mBatchingParameters
+#endif
+        );
         if (IsSame<P1, NoType>::value && IsSame<P2, NoType>::value && IsSame<P3, NoType>::value)
         {
             return asyncSubscribe(
@@ -873,7 +931,11 @@ private:
     template <typename P1, typename P2, typename P3>
     Result asyncUnsubscribeDpcHandler(OpWrapper<P1, P2, P3>& wrapper)
     {
-        const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs, false, true, wrapper.mNoResponse, wrapper.mForceReceiverDataType);
+        const ResourceClient::AsyncRequestOptions options(&mRequestId, mTimeoutMs, false, true, wrapper.mNoResponse, wrapper.mForceReceiverDataType
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+            , wrapper.mBatchingParameters
+#endif
+        );
 
         if (IsSame<P1, NoType>::value && IsSame<P2, NoType>::value && IsSame<P3, NoType>::value)
         {
@@ -897,6 +959,14 @@ private:
         }
     }
 
+    /** Compare ResourceIds without instance ID as it isn't known at call time */
+    static bool isSameResourceId(ResourceId request, ResourceId result)
+    {
+        request.instanceId = 0;
+        result.instanceId = 0;
+        return request == result;
+    }
+
     /** Handles result of asyncGetResource */
     void handleGetResourceResult(RequestId requestId, Result resultCode, const ResourceId resourceId)
     {
@@ -908,7 +978,7 @@ private:
     /** Handles result of asyncReleaseResource */
     void handleReleaseResourceResult(RequestId requestId, Result resultCode, const ResourceId resourceId)
     {
-        mpResult->mValidResponse = (mRequestId == requestId) && (mResourceId == resourceId);
+        mpResult->mValidResponse = (mRequestId == requestId) && isSameResourceId(mResourceId, resourceId);
         mpResult->mReturnResultCode = resultCode;
         mpResult->mResourceId = resourceId;
     }
@@ -916,7 +986,7 @@ private:
     /** Handles result of asyncXxxRequest */
     void handleResult(RequestId requestId, ResourceId resourceId, Result resultCode, const Value& rResult)
     {
-        mpResult->mValidResponse = (mRequestId == requestId) && (mResourceId == resourceId);
+        mpResult->mValidResponse = (mRequestId == requestId) && isSameResourceId(mResourceId, resourceId);
         mpResult->mReturnResultCode = resultCode;
         mpResult->mValueDataTypeId = rResult.getSenderDataTypeId();
         mpResult->setValue(rResult);
@@ -947,7 +1017,7 @@ protected:
         
         if (mUpdateCurrentTestResource)
         {
-            mTestResourceId = (resultCode == HTTP_CODE_OK) ? resourceId : ID_INVALID_RESOURCE;
+            mTestResourceId = (resultCode == HTTP_CODE_OK) ? resourceId : ResourceId(ID_INVALID_RESOURCE);
         }
 
         WbSemaphoreRelease(mResultSemaphore);

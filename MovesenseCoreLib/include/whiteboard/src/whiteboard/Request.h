@@ -7,6 +7,10 @@
 #include "whiteboard/Identifiers.h"
 #include "whiteboard/metadata/MetadataStructures.h"
 
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+#include "whiteboard/BatchingParameters.h"
+#endif
+
 namespace whiteboard
 {
 
@@ -94,6 +98,14 @@ public:
         return mForceReceiverDatatype == 1 ? true : false;
     }
 
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+    /** @return optional batching parameters */
+    inline const BatchingParameters& getBatchingParameters() const
+    {
+        return mBatchingParameters;
+    }
+#endif
+
     /** @return true if provider returned ok return code of returnResult */
     inline bool isSuccess() const
     {
@@ -160,6 +172,11 @@ private:
 
     // ID of the client making the request
     ClientId mClientId;
+
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+    // Optional batching parameters
+    BatchingParameters mBatchingParameters;
+#endif
 };
 
 } // namespace whiteboard

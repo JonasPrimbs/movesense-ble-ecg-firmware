@@ -286,6 +286,23 @@ definitions:
         description: Address of the peer in directed advertising. If not set, broadcast advertising active.
         $ref: 'types.yaml#/definitions/MacAddress48'
 
+  AdvProps:
+    type: object
+    required:
+    - Connectable
+    - Scannable
+    - Anonymous
+    properties:
+      Connectable:
+        description:  CONNECTABLE advertising (false = NONCONNECTABLE)
+        type:         boolean
+      Scannable:
+        description:  SCANNABLE advertising (false = NONSCANNABLE)
+        type:         boolean
+      Anonymous:
+        description:  Anonymous advertising. Omit sender address from all PDUs.
+        type:         boolean
+
   AdvSettings:
     type: object
     required:
@@ -322,6 +339,9 @@ definitions:
         minimum: 0
         maximum: 32767
         x-unit: s
+      Properties:
+        description: Optinal properties for advertising
+        $ref: '#/definitions/AdvProps'
 
   PeerEntry:
     required:

@@ -31,7 +31,7 @@ SensorOutputService::SensorOutputService():
     mTimestampGaps(0),
     mBadSensorSamples(0),
     mGoodSensorSamples(0),
-    mTestConfig{DEFAULT_PATH, (DEFAULT_PERIOD_MS / timerIntervalInMs), DEFAULT_ACC_SAMPLERATE},
+    mTestConfig{DEFAULT_PATH, static_cast<int32_t>(DEFAULT_PERIOD_MS / timerIntervalInMs), DEFAULT_ACC_SAMPLERATE},
     subscribedSensor(wb::ID_INVALID_RESOURCE),
     lastTimestamp(0),
     lastDiff(0),
@@ -303,7 +303,7 @@ void SensorOutputService::onNotify(wb::ResourceId resourceId,
 
 void SensorOutputService::timeDiffCheck(const uint32_t currentTimestamp)
 {
-    uint32_t tempDiff = currentTimestamp - lastTimestamp;
+    int32_t tempDiff = currentTimestamp - lastTimestamp;
 
     // Display the current timestamp information in the logs
     DEBUGLOG("TimeStampDiff: %d    %d    %d    %d", currentTimestamp, lastTimestamp, tempDiff, lastDiff);

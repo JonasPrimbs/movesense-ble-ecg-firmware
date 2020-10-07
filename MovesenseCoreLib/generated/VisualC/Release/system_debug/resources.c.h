@@ -8,4 +8,6 @@ static const unsigned short SYSTEM_DEBUG_CONFIG_LID = 18432;
 static const unsigned short SYSTEM_DEBUG_LOG_LID = 18433;
 static const unsigned short SYSTEM_DEBUG_LOG_CONFIG_LID = 18434;
 static const unsigned short SYSTEM_DEBUG_LEVEL_LID = 18435;
+static const unsigned short SYSTEM_LASTFAULT_LID = 18436;
+static const unsigned short SYSTEM_RESETREASON_LID = 18437;
 

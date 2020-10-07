@@ -63,6 +63,12 @@ paths:
           description: Operation completed successfully
         400:
           description: Bad request.
+    post:
+      description: |
+        Flush the DataLogger state (RAM-buffers etc.) to storage
+      responses:
+        200:
+          description: Operation completed successfully
 
 definitions:
   DataLoggerConfig:

@@ -46,6 +46,9 @@ public:
     /// Empty async request options, that can be used if no options required for the operation
     static const ResourceProvider_ResponseOptions Empty;
 
+    /// Convinience to set response as asynchronoys always
+    static const ResourceProvider_ResponseOptions ForceAsync;
+
 private:
     /** Prevent use of default constructor */
     ResourceProvider_ResponseOptions() DELETED;
@@ -523,29 +526,26 @@ protected:
     *   if the onTimedDpc(...) implementation returns false, in this case no cancellation is necessary.
     *
     *   @param deltaTimeMs Delta in ms to the time when the ::onTimedDpc callback is to be executed.
-    *   @param isIsr True is this method is called from an interrupt service routine.
     *   @return A valid TimedDpcId value if successful, ID_INVALID_TIMED_DPC if unsuccessful.
     */
-    TimedDpcId queueTimedDpc(size_t deltaTimeMs, bool isIsr = false);
+    TimedDpcId queueTimedDpc(size_t deltaTimeMs);
 
     /**
     *   Cancel a timed DPC.
     *
     *   @param timedDpcId Reference to the ID of the timed DPC. Will be invalidated.
-    *   @param isIsr True is this method is called from an interrupt service routine.
     *   @return HTTP_CODE_OK if successful.
     *           HTTP_CODE_NOT_FOUND if a DPC with given stamp was not found for the entity ID.
     *           HTTP_CODE_RANGE_NOT_SATISFIABLE if given timed DPC id is out of bounds.
     */
-    Result cancelTimedDpc(TimedDpcId& timedDpcId, bool isIsr = false);
+    Result cancelTimedDpc(TimedDpcId& timedDpcId);
 
     /**
     *   Cancel all timed DPCs queued by the resource provider.
     *
-    *   @param isIsr True is this method is called from an interrupt service routine.
     *   @return Returns the amount of DPCs that were active and cancelled.
     */
-    uint32 cancelAllTimedDpcs(bool isIsr = false);
+    uint32 cancelAllTimedDpcs();
 
     /**
     *   Callback for timed DPCs (low priority).
@@ -668,6 +668,8 @@ private:
     * ID of the provider
     */
     LocalProviderId mId;
+
+protected:
 
     /** Helper constant that allows us to piggyback type check info on result code and local resource ID
     * parameter which generates more optimal code. */

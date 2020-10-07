@@ -41,11 +41,23 @@ WB_API WbThreadHandle WbThreadAttachExternal();
 */
 WB_API void WbThreadDetachExternal();
 
-/** Deletes a thread
+/** Terminates and deletes a thread
+*
+* Preferred way of terminating a thread.
+*
+* Should not be called for threads cleaned up with WbThreadSelfTerminatedCleanup.
 *
 * @param threadHandle Handle of the thread to delete
 */
 WB_API void WbThreadDelete(WbThreadHandle threadHandle);
+
+/** Cleans up a self terminated thread
+*
+* Should not be called for threads deleted with WbThreadDelete.
+*
+* @param threadHandle Handle of the thread to delete
+*/
+WB_API void WbThreadSelfTerminatedCleanup(WbThreadHandle threadHandle);
 
 /** Gets handle of current thread
 *

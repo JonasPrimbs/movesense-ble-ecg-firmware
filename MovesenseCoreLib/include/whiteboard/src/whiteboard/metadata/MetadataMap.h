@@ -2,6 +2,7 @@
 // Copyright (c) Suunto Oy 2015. All rights reserved.
 
 #include "whiteboard/integration/port.h"
+#include "whiteboard/metadata/IDataTypeMetadata.h"
 #include "whiteboard/metadata/MetadataStructures.h"
 #include "whiteboard/Result.h"
 
@@ -9,21 +10,22 @@ namespace whiteboard
 {
 
 /** Map of read-only resource metadata */
-class WB_API MetadataMap
+class WB_API MetadataMap : public IDataTypeMetadata
 {
 public:
     /** Constructor 
      *
-     * @param pMetadataBlob Metadata blob instanse
+     * @param pMetadataBlob Metadata blob instance
+     * @param numberOfBytes Size of the metadata blop
      */
-    MetadataMap(const uint32* pMetadataBlob);
+    MetadataMap(const uint32* pMetadataBlob, size_t numberOfBytes);
 
     /** Destructor */
     virtual ~MetadataMap();
 
     /** Checks validity of the metadata blob 
     *
-    * @return A value indicating wether the metadata blob i valid or not;
+    * @return A value indicating whether the metadata blob i valid or not;
     * HTTP_CODE_OK - the blob is valid
     * HTTP_CODE_BAD_VERSION - the blob version is not correct
     * HTTP_CODE_BAD_REQUEST - the blob is corrupt
@@ -197,9 +199,9 @@ public:
     }
 
     /** @return array of data type sparse map entries */
-    inline const metadata::DataTypeId* getDataTypeSparseMap() const
+    inline const LocalDataTypeId* getDataTypeSparseMap() const
     {
-        return reinterpret_cast<const metadata::DataTypeId*>(
+        return reinterpret_cast<const LocalDataTypeId*>(
             mpMetadataBlob + getMetadataHeader().offsetToDataTypeSparseMap);
     }
 
@@ -271,21 +273,14 @@ public:
     * @param id ID of the object
     * @return Object or NULL if invalid id is given
     */
-    const char* getStringById(metadata::StringId id) const;
+    const char* getString(metadata::StringId id) const OVERRIDE;
 
     /** Returns a data type by ID
     *
     * @param id ID of the object
     * @return Object or NULL if invalid id is given
     */
-    const metadata::DataType* getDataTypeById(metadata::DataTypeId id) const;
-
-    /** Returns a base data type of data type with ID
-    *
-    * @param rId On input ID of the object. On output ID of the base data type.
-    * @return Object or NULL if invalid id is given
-    */
-    const metadata::DataType* getBaseDataTypeByDataTypeId(metadata::DataTypeId& rId) const;
+    const metadata::DataType* getDataType(LocalDataTypeId id) const OVERRIDE;
 
     /** Returns a data type by index
     *
@@ -293,29 +288,37 @@ public:
     * @param rDataTypeId On output contains ID of the data type
     * @return Object or NULL if invalid id is given
     */
-    const metadata::DataType* getDataTypeByIndex(size_t index, metadata::DataTypeId& rDataTypeId) const;
+    const metadata::DataType* getDataTypeByIndex(size_t index, LocalDataTypeId& rDataTypeId) const;
+
+    /** Finds data type by name
+    *
+    * @param name Name of the data type
+    * @param rDataTypeId On output contains ID of the data type
+    * @return Object or NULL if data type was not found
+    */
+    const metadata::DataType* getDataTypeByName(const char* name, LocalDataTypeId& rDataTypeId) const;
 
     /** Returns a property by ID
     *
     * @param id ID of the object
     * @return Object or NULL if invalid id is given
     */
-    const metadata::Property* getPropertyById(metadata::PropertyId id) const;
+    const metadata::Property* getProperty(metadata::PropertyId id) const OVERRIDE;
 
     /** Returns a property list by ID
     *
     * @param id ID of the object
     * @return Object or NULL if invalid id is given
     */
-    const metadata::PropertyList* getPropertyListById(metadata::PropertyListId id) const;
-
+    const metadata::PropertyList* getPropertyList(metadata::PropertyListId id) const OVERRIDE;
+ 
     /** Returns a enumeration item list by ID
     *
     * @param id ID of the object
     * @return Object or NULL if invalid id is given
     */
-    const metadata::EnumerationItemList getEnumerationItemListById(metadata::EnumerationItemListId id) const;
-
+    const metadata::EnumerationItemList getEnumerationItemList(metadata::EnumerationItemListId id) const OVERRIDE;
+ 
     /** Returns a parameter by ID
     *
     * @param id ID of the object

@@ -183,6 +183,12 @@ void OneWireClient::onGetResult(wb::RequestId requestId,
     {
         case WB_RES::LOCAL::COMM_1WIRE_PEERS::LID:
         {
+            if (!wb::RETURN_OKC(resultCode))
+            {
+                DEBUGLOG("GET COMM_1WIRE_PEERS. error: %u", resultCode);
+                return;
+            }
+
             // Result of scan available. 
             const WB_RES::OWPeerList& peerList = result.convertTo<WB_RES::OWPeerList&>();
             DEBUGLOG("COMM_1WIRE_PEERS. size: %u", peerList.connectedPeers.size());

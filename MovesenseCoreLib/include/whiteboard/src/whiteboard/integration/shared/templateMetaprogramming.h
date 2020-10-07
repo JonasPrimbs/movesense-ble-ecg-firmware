@@ -98,7 +98,21 @@ template <typename T> struct RemoveReference<T&>
     typedef T type;
 };
 
-// Remove consts and references
+// Template that removes pointer from the given type
+template <typename T> struct RemovePointer
+{
+    typedef T type;
+};
+template <typename T> struct RemovePointer<T*>
+{
+    typedef T type;
+};
+template <typename T> struct RemovePointer<T* const>
+{
+    typedef T type;
+};
+
+// Remove consts and references (but not pointers)
 template <typename T> struct RemoveAll
 {
     typedef typename RemoveReference<typename RemoveConstRecursive<T>::type>::type type;

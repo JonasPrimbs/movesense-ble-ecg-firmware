@@ -2,8 +2,7 @@ set(CPU_SPEED 48000000)
 add_definitions(-DCPU_SPEED=${CPU_SPEED})
 add_definitions(-DARCH_SDL=1)
 
-set(USED_FILESYSTEM "None" CACHE STRING "Used filesystem")
-set_property(CACHE USED_FILESYSTEM PROPERTY STRINGS "None" "hcc" "stdio")
+
 
 # HWConfig to target
 set(HWCONFIG "SS2_Simu" CACHE STRING "HWConfig")

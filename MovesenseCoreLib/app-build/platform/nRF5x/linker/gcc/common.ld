@@ -44,6 +44,7 @@ SECTIONS
 {
     .text :
     {
+        __isr_vector = .;
         KEEP(*(.isr_vector))
         *(.text*)
 

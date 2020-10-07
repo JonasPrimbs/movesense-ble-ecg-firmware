@@ -186,3 +186,21 @@ definitions:
         type: array
         items:
           type: string
+
+#ifdef WB_HAVE_ELASTIC_INTERFACE
+  BinaryData:
+    description: Type for elastic binary transport parameters and return values (do not use in any other purpose)
+    x-fixedId: 46
+    required:
+    - items
+    properties:
+      items:
+        type: array
+        items:
+          type: integer
+          format: uint8
+      totalLength:
+        description: Reserved for internal use
+        type: integer
+        format: uint32
+#endif

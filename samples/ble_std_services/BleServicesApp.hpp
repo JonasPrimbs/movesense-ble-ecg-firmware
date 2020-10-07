@@ -2,27 +2,12 @@
 
 #include <whiteboard/LaunchableModule.h>
 #include <whiteboard/ResourceClient.h>
-#include <whiteboard/DpcFunctor.h>
+#include "BleStandardHRS.hpp"
 
-#include "BleController.hpp"
-
-class BleServicesApp FINAL : private wb::ResourceClient, public wb::LaunchableModule
+class BleServicesApp FINAL : 
+    private wb::ResourceClient, 
+    public wb::LaunchableModule
 {
-    // Handle callbacks for HRS enabled/disabled
-    // Note: This pattern is bound to change at some point
-    class CustomBleController : public BleController
-    {
-    public:
-        CustomBleController() {}
-
-    protected:
-        void OnHrsNotificationEnabled() { BleServicesApp::setNotificationRequest(true); }
-
-        void OnHrsNotificationDisabled() { BleServicesApp::setNotificationRequest(false); }
-    };
-    // Allocate a global so that this supercedes the built in one
-    CustomBleController bleCtrl;
-
 public:
     /** Name of this class. Used in StartupProvider list. */
     static const char* const LAUNCHABLE_NAME;
@@ -72,13 +57,14 @@ protected:
 
 private:
     void setBleAdvPacket();
+    void hrsNotificationChanged(bool enabled);
 
-    wb::DpcFunctor mDpc;
+    void handleNusDataRx(const wb::Array<uint8_t> rxDataArray);
+
     wb::TimerId mTimer;
     struct InternalStates
     {
         uint16_t HrsEnabled : 1;
-        uint16_t HrsEnableReq : 1;
         uint16_t PeerConnected : 1;
     };
     InternalStates mStates;

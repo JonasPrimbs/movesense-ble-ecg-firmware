@@ -18,13 +18,7 @@ function(CONFIGURE_EXECUTABLE executable_name link_address linker_script_name)
         ASSERT_DEFINED(LINKER_SCRIPTS_PATH)
         ASSERT_DEFINED(PATH_TOOL_PYTHON)
 
-        if(${COMPILER} MATCHES "IAR")
-            # Set link script
-            set_target_properties(${executable_name} PROPERTIES
-                LINK_FLAGS "--config ${LINKER_SCRIPTS_PATH}/${linker_script_name}.icf"
-                )
-
-        elseif(${COMPILER} MATCHES "GCC")
+        if(${COMPILER} MATCHES "GCC")
             # Set link script
             set_target_properties(${executable_name} PROPERTIES
                 LINK_FLAGS "-T${LINKER_SCRIPTS_PATH}/${linker_script_name}.ld"
@@ -103,3 +97,5 @@ if(NOT COMMAND ASSERT_DEFINED)
         endif()
     endfunction(ASSERT_DEFINED)
 endif()
+
+include(${CMAKE_CURRENT_LIST_DIR}/../shared-build/functions.cmake)

@@ -197,6 +197,9 @@ void ConnectionScanner::updateDetectionState(DetectionState newState)
             return;
         }
         newState = GEAR_DETECTING;
+        updateDetectionState(newState);
+        // bypass the rest
+        return;
     case GEAR_DETECTING:
         //Check GEARID
         DEBUGLOG("ConnectionScanner::updateDetectionState GEAR_DETECTING");
@@ -210,6 +213,9 @@ void ConnectionScanner::updateDetectionState(DetectionState newState)
     case GEAR_NOT_FOUND:
         DEBUGLOG("ConnectionScanner::updateDetectionState GEAR_NOT_FOUND");
         newState = HR_DETECTING;
+        updateDetectionState(newState);
+        // bypass the rest
+        return;
     case HR_DETECTING:
         mSamplesCounter = 0;
         DEBUGLOG("ConnectionScanner::updateDetectionState HR_DETECTING");
@@ -223,6 +229,9 @@ void ConnectionScanner::updateDetectionState(DetectionState newState)
     case HR_NOT_FOUND:
         DEBUGLOG("ConnectionScanner::updateDetectionState HR_NOT_FOUND");
         newState = UNKNOWN_DEVICE;
+        updateDetectionState(newState);
+        // bypass the rest
+        return;
     case UNKNOWN_DEVICE:
         DEBUGLOG("ConnectionScanner::updateDetectionState UNKNOWN_DEVICE");
         startBlinking(5);

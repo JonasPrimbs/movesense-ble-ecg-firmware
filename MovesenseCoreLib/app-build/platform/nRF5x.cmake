@@ -31,9 +31,9 @@ set_property(CACHE HWCONFIG PROPERTY STRINGS
              "SS2_B1")
 
 # Link target (bootloader or regular app, they start at different addresses)
-set(BSP_KINETIS_LINKTO "appflash" CACHE STRING "Link to")
-string(TOUPPER ${BSP_KINETIS_LINKTO} LINKTOUC)
-add_definitions(-DBSP_KINETIS_LINKTO_${LINKTOUC}=1)
+set(BSP_LINKTO "appflash" CACHE STRING "Link to")
+string(TOUPPER ${BSP_LINKTO} LINKTOUC)
+add_definitions(-DBSP_LINKTO_${LINKTOUC}=1)
 
 # OS configuration
 set(NEA_OS "freertos" CACHE STRING "Operating system")

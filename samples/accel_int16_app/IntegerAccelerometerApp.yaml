@@ -5,6 +5,11 @@ wbres:
   type: "root"
 
 # Execution context definitions
+# NOTE:
+# "application" context has to be the first one.
+# "meas" context has to be the second one.
+# These will be assigned IDs 0 and 1 which are required by the pre-built movesense library.
+# According to needs the configurations of these may be changed and also new contexts added below these.
 executionContexts:
   application:
     numberOfDpcs: 8

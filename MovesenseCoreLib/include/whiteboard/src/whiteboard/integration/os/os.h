@@ -4,6 +4,7 @@
 #include "whiteboard/integration/os/debugLogging.h"
 #include "whiteboard/integration/os/eventGroup.h"
 #include "whiteboard/integration/os/interrupt.h"
+#include "whiteboard/integration/os/java.h"
 #include "whiteboard/integration/os/mutex.h"
 #include "whiteboard/integration/os/recursiveMutex.h"
 #include "whiteboard/integration/os/semaphore.h"

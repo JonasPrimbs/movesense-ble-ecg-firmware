@@ -41,6 +41,11 @@ typedef uint8 ExecutionContextId;
 * Used also to mark remote execution contexts */
 static const ExecutionContextId ID_INVALID_EXECUTION_CONTEXT = WB_MAX_EXECUTION_CONTEXTS;
 
+#if WB_HAVE_OPERATION_TIMESTAMP
+/** Type of system generated timestamps for data values, indicates the birth time of the specific data value */
+typedef uint32 OperationTimestamp;
+#endif
+
 /** Type that is used to identify security tags. */
 typedef uint8 SecurityTagId;
 
@@ -132,6 +137,9 @@ typedef uint16 ParameterListId;
 /** Invalid parameter list reference */
 static const ParameterListId INVALID_PARAMETER_LIST = 0xffff;
 
+/** Invalid paramter list reference for notifications */
+static const ParameterListId INVALID_NOTIFICATION_PARAMETER_LIST = 0x7fff;
+
 /** Reference to a parameter */
 typedef uint16 ParameterId;
 
@@ -150,16 +158,10 @@ typedef uint16 ResponseId;
 /** Invalid response reference */
 static const ResponseId INVALID_RESPONSE = 0xffff;
 
-/** Reference to a data type */
-typedef uint16 DataTypeId;
-
-/** Invalid data type reference */
-static const DataTypeId INVALID_DATATYPE = 0xffff;
-
 /** Reference to a property list type */
 typedef uint16 PropertyListId;
 
-/** Invalid proeprty list reference */
+/** Invalid property list reference */
 static const PropertyListId INVALID_PROPERTY_LIST = 0xffff;
 
 /** Reference to a property type */
@@ -235,6 +237,9 @@ struct ExecutionContext
     * by a external thread */
     uint8 externalThread : 1;
 
+    /** A value indicating whether this execution context should support Java VM */
+    uint8 javaSupport : 1;
+
     /** Execution context priority
     *
     * @see WbThreadPriority enumeration
@@ -242,7 +247,7 @@ struct ExecutionContext
     uint8 priority : 3;
 
     /** Reserved */
-    uint8 reserved : 4;
+    uint8 reserved : 3;
 
     /** Size of the execution context thread stack */
     uint16 stackSize;
@@ -258,8 +263,8 @@ struct ExecutionContext
 };
 
 #define ALL_ACCESS UINT32_MAX
-#define INIT_EXEC_CTX_METADATA(nameId, numberOfDpcs, numberOfRequests, numberOfResponses, externalThread, priority, stackSize, securityMask) \
-    { nameId, numberOfDpcs, numberOfRequests, numberOfResponses, externalThread ? 1 : 0, priority, 0, stackSize, securityMask }
+#define INIT_EXEC_CTX_METADATA(nameId, numberOfDpcs, numberOfRequests, numberOfResponses, externalThread, javaSupport, priority, stackSize, securityMask) \
+    { nameId, numberOfDpcs, numberOfRequests, numberOfResponses, externalThread ? 1 : 0, javaSupport ? 1 : 0, priority, 0, stackSize, securityMask }
 
 /** Structure that stores scalar data type related meta data */
 struct ScalarType
@@ -287,14 +292,14 @@ struct NamedType
     StringId nameId;
 
     /** Actual type of the named data type */
-    DataTypeId typeId;
+    LocalDataTypeId typeId;
 };
 
 /** Structure that stores array data type related meta data */
 struct ArrayType
 {
     /** Item type */
-    DataTypeId itemTypeId;
+    LocalDataTypeId itemTypeId;
 
     /** Reserved for future use */
     uint16 reserved : 2;
@@ -335,7 +340,7 @@ struct Property
     StringId nameId;
 
     /** Property type */
-    DataTypeId typeId;
+    LocalDataTypeId typeId;
 
     /** A value indicating whether the property is required */
     uint16 required : 1;
@@ -412,7 +417,7 @@ public:
     /** Default constructor. Creates invalid EnumerationItemList instance
     */
     EnumerationItemList()
-        : mSequential(false), mpItems(NULL)
+        : mSequential(0), mNumberOfItems(0), mpItems(NULL)
     {
     }
 
@@ -422,14 +427,52 @@ public:
      * @param pItems Pointer to enumeration items
      */
     EnumerationItemList(bool sequential, const void* pItems)
-        : mSequential(sequential), mpItems(pItems)
+        : mSequential(sequential ? 1 : 0), mNumberOfItems(0), mpItems(pItems)
     {
+        if (isValid())
+        {
+            WB_STATIC_VERIFY(WB_OFFSETOF(SequentialEnumerationItem, nameId) == 0, OffsetOfNameIdNotExpected);
+            WB_STATIC_VERIFY(WB_OFFSETOF(EnumerationItem, nameId) == 0, OffsetOfNameIdNotExpected2);
+
+            // Count items
+            const size_t ptrStep = mSequential ? sizeof(SequentialEnumerationItem) : sizeof(EnumerationItem);
+            const StringId* pEnumName = static_cast<const StringId*>(mpItems);
+            while (*pEnumName != INVALID_STRING)
+            {
+                ++mNumberOfItems;
+                pEnumName = reinterpret_cast<const StringId*>(reinterpret_cast<const uint8*>(pEnumName) + ptrStep);
+            }
+        }
     }
 
     /** Checks whether the list is valid */
     inline bool isValid() const 
     { 
         return mpItems != NULL;
+    }
+
+    /** Checks whether the list is sequential */
+    inline bool isSequential() const 
+    { 
+        return mSequential == 1;
+    }
+
+    /** Gets number of enumeration items in the list
+    *
+    * @return Size of the list
+    */
+    inline size_t getNumberOfItems() const
+    {
+        return mNumberOfItems;
+    }
+
+    /** Gets pointer to item array
+     *
+     * @return Pointer to item array
+     */
+    inline const void* getItemArray() const
+    {
+        return mpItems;
     }
 
     /** Gets enumeration item with specified index 
@@ -450,27 +493,6 @@ public:
             const EnumerationItem* pEnumItems = static_cast<const EnumerationItem*>(mpItems);
             return pEnumItems[index];
         }
-    }
-
-    /** Counts number of enumeration items in the list
-    *
-    * @return Size of the list
-    */
-    size_t count() const
-    {
-        WB_STATIC_VERIFY(WB_OFFSETOF(SequentialEnumerationItem, nameId) == 0, OffsetOfNameIdNotExpected);
-        WB_STATIC_VERIFY(WB_OFFSETOF(EnumerationItem, nameId) == 0, OffsetOfNameIdNotExpected2);
-
-        const size_t ptrStep = mSequential ? sizeof(SequentialEnumerationItem) : sizeof(EnumerationItem);
-        const StringId* pEnumName = static_cast<const StringId*>(mpItems);
-        size_t i = 0;
-        while (*pEnumName != INVALID_STRING)
-        {
-            ++i;
-            pEnumName = reinterpret_cast<const StringId*>(reinterpret_cast<const uint8*>(pEnumName) + ptrStep);
-        }
-
-        return i;
     }
 
     /** Converts given null terminated enumeration item array to enumeration item list
@@ -497,8 +519,11 @@ public:
 
 private:
     /** A value indicating whether enumeration items are sequential */
-    bool mSequential;
+    uint32 mSequential : 1;
     
+    /** Number of items in the enumeration */
+    uint32 mNumberOfItems : 31;
+
     /** Pointer to enumeration items */
     const void* mpItems;
 };
@@ -507,21 +532,21 @@ private:
 struct EnumerationType
 {
     /** Base type */
-    DataTypeId baseTypeId;
+    LocalDataTypeId baseTypeId;
 
     /** ID of the structure's enumeration item list */
     EnumerationItemListId enumerationItemListId;
 };
 
 /** Type of a data type */
-typedef enum
+enum DataTypeType
 {
     DATATYPE_SCALAR,
     DATATYPE_NAMED,
     DATATYPE_ARRAY,
     DATATYPE_STRUCTURE,
     DATATYPE_ENUMERATION
-} DataTypeType;
+};
 
 /** Helper structure for calculating required data type meta data size */
 struct DataTypeContainer
@@ -668,7 +693,7 @@ struct Parameter
     bool required;
 
     /** ID of the parameter type */
-    DataTypeId dataTypeId;
+    LocalDataTypeId dataTypeId;
 };
 
 /** Structure that stores parameter list meta data */
@@ -691,28 +716,60 @@ struct ParameterList
         return i;
     }
 
-    /** Converts given null terminated parameter array to parameter list
+    /** Converts given INVALID_PARAMETER terminated parameter array to parameter list
     *
-    * @param pNullTerminatedParameterArray Null terminated array of parameters
+    * @param pTerminatedParameterArray Terminated array of parameters
     * @return Parameter list reference
     */
-    static const ParameterList& toList(const ParameterId* pNullTerminatedParameterArray)
+    static const ParameterList& toList(const ParameterId* pTerminatedParameterArray)
     {
-        return *reinterpret_cast<const ParameterList*>(pNullTerminatedParameterArray);
+        return *reinterpret_cast<const ParameterList*>(pTerminatedParameterArray);
     }
 };
 
 /** Structure that stores response meta data */
 struct Response
 {
-    /** Result code
-    *
-    * @see Result enumeration
-    */
-    uint16 code;
+    union
+    {
+        struct
+        {
+            /** A flag indicating whether this is a notification */
+            uint16 isNotification : 1;
+
+            /** Result code
+             *
+             * @see Result enumeration
+             */
+            uint16 code : 15;
+        } response;
+
+        struct
+        {
+            /** A flag indicating whether this is a notification */
+            uint16 isNotification : 1;
+
+            /** Parameter list for notifications (headers).
+             * Notification is always first response of SUBSCRIBE operation response list
+             */
+            ParameterListId parameterListId : 15;
+        } notification;
+    };
+
+    /** @return A value indicating whether this is normal response */
+    inline bool isResponse() const
+    {
+        return response.isNotification == 0;
+    }
+
+    /** @return A value indicating whether this is notification "response" */
+    inline bool isNotification() const 
+    {
+        return response.isNotification != 0;
+    }
 
     /** ID of result type */
-    DataTypeId dataTypeId;
+    LocalDataTypeId dataTypeId;
 };
 
 /** Structure that stores response list meta data */
@@ -1048,7 +1105,7 @@ typedef uint32 MetadataBlobOffset;
 typedef uint16 MetadataBlobItemCount;
 
 /** Magic constant used to identify resource tree blob */
-static const uint32 RESOURCE_TREE_MAGIC = WB_BE_TAG('W', 'B', 'R', '0');
+static const uint32 RESOURCE_TREE_MAGIC = WB_BE_TAG('W', 'B', 'R', '1');
 
 /** Maximum alignment of any metadata structure */
 #define WB_METADATA_MAX_ALIGNMENT 4
@@ -1181,7 +1238,6 @@ WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(PropertyId) <= WB_METADATA_MAX_ALIGNMENT, Une
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(SequentialEnumerationItem) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment5);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(EnumerationItem) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment6);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(DataType) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment7);
-WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(DataTypeId) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment8);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(Parameter) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment9);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ParameterId) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment10);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(Response) <= WB_METADATA_MAX_ALIGNMENT, UnexpectedDataTypeAlignment11);

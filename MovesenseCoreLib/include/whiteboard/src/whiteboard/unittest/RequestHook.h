@@ -19,7 +19,12 @@ namespace whiteboard
 */
 struct WB_API RequestIdRange
 {
-    static const RequestIdRange ANY;
+    static
+#ifndef ARCH_HEXAGON
+    // Hexagon's 16-bit absolute addresses are not enough to address global constants
+    const
+#endif
+    RequestIdRange ANY;
 
     /// Start of the specified range, ID_INVALID_REQUEST indicates no low limit
     RequestId mFirst;

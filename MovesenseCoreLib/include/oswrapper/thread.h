@@ -38,6 +38,8 @@ void threadDelete(ThreadHandle threadHandle);
 void threadSuspend(ThreadHandle threadHandle);
 void threadResume(ThreadHandle threadHandle);
 void threadResumeISR(ThreadHandle threadHandle);
+void threadSuspendAll();
+void threadResumeAll();
 
 /** Gets handle of current thread. Note that this function will return valid values only for
  * when run in OS thread. For any pre OS thread including main program entry point this function

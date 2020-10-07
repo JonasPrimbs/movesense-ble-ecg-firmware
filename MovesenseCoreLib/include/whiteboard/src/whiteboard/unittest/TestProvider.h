@@ -402,7 +402,7 @@ public:
     {
         if (rRequest.getResourceId() == mpResource->getId())
         {
-            returnResult(rRequest, HTTP_CODE_OK, ResourceProvider::ResponseOptions::Empty, static_cast<T>(mValue));
+            returnResult(rRequest, HTTP_CODE_OK, ResourceProvider::ResponseOptions::Empty, static_cast<const T&>(mValue));
         }
         else
         {

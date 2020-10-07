@@ -13,6 +13,10 @@
 #include "whiteboard/unittest/RequestHook.h"
 #endif
 
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+#include "whiteboard/BatchingParameters.h"
+#endif
+
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs" // Caused by the WB_STATIC_VERIFY calls below
@@ -66,13 +70,16 @@ public:
     recipients event queues full or all message buffers in use. Usefull with subscriptions with high update frequency - e.g. measurement / 
     sensor data.
 
-    In case of resource subscription of a path containing path parameters, the criticality flag affects ALL subscriptions of that path from
+    In case of resource subscription of a path containing path parameters, the criticality flag affects ALL subscriptions of that resource from
     that client.
     
     @param noRequestResponse [in] Optional, default false. If client has not implemented eg. onPutResult /onSubscibeResult / 
     onUnsubscribeResult handlers, with this optional flag the result messages can be omitted to tweak system performance. Only meaningful in 
     requests to another execution context or to remote whiteboard. Note: For safety reasons also no effect if the request returns a value
     with the response.
+    @param batchingParameters [in] Optional, default 0 ms. Local parameter only, not transfered in remote WB requests. Applicable for subscriptions
+    only. Can be used by client to signal provider that no data in this subscription is time critical. It is up to the provider to decide if
+    it wants to batch the data or not.
     */
     ResourceClient_AsyncRequestOptions(
         RequestId* pRequestId, 
@@ -80,14 +87,21 @@ public:
         bool forceAsync = false, 
         bool isCriticalSubscription = true,
         bool noRequestResponse = false,
-        bool forceReceiverDatatype = false)
+        bool forceReceiverDatatype = false
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+        , BatchingParameters batchingParameters = BatchingParameters()
+#endif
+    )
         : mpRequestId(pRequestId), 
           mTimeoutMs(timeoutMs), 
           mForceAsync(forceAsync ? 1 : 0), 
           mIsCriticalSub(isCriticalSubscription ? 1 : 0), 
           mNoRequestResponse(noRequestResponse ? 1 : 0),
           mForceReceiverDataType(forceReceiverDatatype ? 1 : 0),
-          mReserved(0) 
+          mReserved(0)
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+        , mBatchingParameters(batchingParameters)
+#endif
     {
         WB_NOT_USED(mReserved);
     }
@@ -119,6 +133,13 @@ public:
     @return true if serialization should set bit to treat the sent datatypes of the request as receivers own.
     */
     inline bool getForceReceiverDataType() const { return mForceReceiverDataType ? true : false; }
+
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+    /**
+    @return Optional batching parameters.
+    */
+    inline BatchingParameters getBatchingParameters() const { return mBatchingParameters; }
+#endif
 
     /// Empty async request options, that can be used if no options required for the operation
     static const ResourceClient_AsyncRequestOptions Empty;
@@ -160,6 +181,11 @@ private:
 
     /** Reserved for future use */
     uint8 mReserved : 4;
+
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+    /** Optional pass-through batching parameters. */
+    BatchingParameters mBatchingParameters;
+#endif
 };
 
 /**
@@ -482,6 +508,9 @@ public:
     *   @param isCriticalSubscription A value indicating whether subscriptions are critical
     *   @param noResponseExpected A value indicating if subscription operation response is required (for optimization purposes)
     */
+#ifdef WB_HAVE_MORE_VIRTUAL_RESOURCE_CLIENT
+    virtual
+#endif
     void asyncSubscribeLocalResources(
         size_t numberOfResources, const LocalResourceId* const pResourceIds, bool isCriticalSubscription = true, bool noResponseExpected = false);
 
@@ -791,29 +820,26 @@ protected:
     *   if the onTimedDpc(...) implementation returns false, in this case no cancellation is necessary.
     *
     *   @param deltaTimeMs Delta in ms to the time when the ::onTimedDpc callback is to be executed.
-    *   @param isIsr True is this method is called from an interrupt service routine.
     *   @return A valid TimedDpcId value if successful, ID_INVALID_TIMED_DPC if unsuccessful.
     */
-    TimedDpcId queueTimedDpc(size_t deltaTimeMs, bool isIsr = false);
+    TimedDpcId queueTimedDpc(size_t deltaTimeMs);
 
     /**
     *   Cancel a timed DPC.
     *
     *   @param timedDpcId Reference to the ID of the timed DPC. Will be invalidated.
-    *   @param isIsr True is this method is called from an interrupt service routine.
     *   @return HTTP_CODE_OK if successful.
     *           HTTP_CODE_NOT_FOUND if a DPC with given stamp was not found for the entity ID.
     *           HTTP_CODE_RANGE_NOT_SATISFIABLE if given timed DPC id is out of bounds.
     */
-    Result cancelTimedDpc(TimedDpcId& timedDpcId, bool isIsr = false);
+    Result cancelTimedDpc(TimedDpcId& timedDpcId);
 
     /**
     *   Cancel all timed DPCs queued by the resource client.
     *
-    *   @param isIsr True is this method is called from an interrupt service routine.
     *   @return Returns the amount of DPCs that were active and cancelled.
     */
-    uint32 cancelAllTimedDpcs(bool isIsr = false);
+    uint32 cancelAllTimedDpcs();
 
     /**
     *   Callback for timed DPCs (low priority).
@@ -876,6 +902,17 @@ protected:
     */
     virtual void onResourceUnavailable(ResourceId resourceId);
 
+protected:
+    /**
+    *   Sets ID of next request
+    *
+    *   @note This function is intended to be used only by other higher level API implementations,
+    *         that generate their own request IDs and have related book keeping. There is no need
+    *         to use this in normal resource client implementations.
+    *   @param nextRequestId ID for next request
+    */
+    inline void setNextRequestId(RequestId nextRequestId);
+
 private:
     /**
     * Sets ID of the client
@@ -884,6 +921,9 @@ private:
     */
     void setLocalClientId(const LocalClientId clientId);
 
+#ifdef WB_HAVE_MORE_VIRTUAL_RESOURCE_CLIENT
+protected:
+#endif
     /**
     *   This unsafe method is for internal use only - or for porting Whiteboard to specific environment!
     *
@@ -895,11 +935,15 @@ private:
     * @param rParameters List of request parameters
     * @return Result of the operation
     */
+#ifdef WB_HAVE_MORE_VIRTUAL_RESOURCE_CLIENT
+    virtual
+#endif
     Result asyncRequestInternal(
         ResourceId resourceId,
         RequestType requestType,
         const AsyncRequestOptions& rOptions,
         const ParameterList& rParameters);
+private:
 
 #ifdef WB_HAVE_DEPRECATED_BYTE_STREAM
 
@@ -1123,6 +1167,11 @@ WB_FORCE_INLINE_ATTRIBUTE Result ResourceClient::asyncUnsubscribe(
         static_cast<typename Api::ParameterType<P6>::type>(rP6),
         static_cast<typename Api::ParameterType<P7>::type>(rP7),
         static_cast<typename Api::ParameterType<P8>::type>(rP8));
+}
+
+void ResourceClient::setNextRequestId(RequestId nextRequestId)
+{
+    mNextRequestId = nextRequestId;
 }
 
 } // namespace whiteboard

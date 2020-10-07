@@ -56,7 +56,7 @@ struct WB_ALIGN(4) EepromInfo
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 17409;
 
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> model;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > model;
 	WB_ALIGN(4) uint32 size;
 };
 

@@ -49,7 +49,7 @@ struct WB_ALIGN(4) ModuleStatus
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 3328;
 
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> name;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > name;
 	WB_ALIGN(1) bool enabled;
 };
 
@@ -68,9 +68,9 @@ struct WB_ALIGN(4) AppInfo
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 3330;
 
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> name;
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> version;
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> company;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > name;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > version;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > company;
 	WB_ALIGN(4) whiteboard::Optional< ModulesStatusArray > modules;
 };
 
@@ -80,19 +80,19 @@ struct WB_ALIGN(4) DeviceInfo
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 3331;
 
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> manufacturerName;
-	WB_ALIGN(4) whiteboard::Optional< whiteboard::WrapperFor32BitPointer<const char> > brandName;
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> productName;
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> variant;
-	WB_ALIGN(4) whiteboard::Optional< whiteboard::WrapperFor32BitPointer<const char> > design;
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> hwCompatibilityId;
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> serial;
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> pcbaSerial;
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> sw;
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> hw;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > manufacturerName;
+	WB_ALIGN(4) whiteboard::Optional< whiteboard::WrapperFor32BitPointer< const char > > brandName;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > productName;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > variant;
+	WB_ALIGN(4) whiteboard::Optional< whiteboard::WrapperFor32BitPointer< const char > > design;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > hwCompatibilityId;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > serial;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > pcbaSerial;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > sw;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > hw;
 	WB_ALIGN(4) whiteboard::Optional< VersionInfoArray > additionalVersionInfo;
 	WB_ALIGN(4) whiteboard::Optional< whiteboard::Array< AddressInfo > > addressInfo;
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> apiLevel;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > apiLevel;
 };
 
 namespace LOCAL 

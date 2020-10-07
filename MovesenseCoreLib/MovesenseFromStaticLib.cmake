@@ -146,14 +146,14 @@ include(${CMAKE_CURRENT_LIST_DIR}/tools/wbres/resources.cmake)
 
 # Setup link check address for application
 # NOTE: Ajdust this when changing the softdevice!
-set(LINK_STARTAT "0x1f000")
+set(LINK_STARTAT "0x26000")
 
 ################################
 # Exported variables
 ################################
 
 # Variable that contains the filename of the softdevice hex-file that is supposed to be used with this version of Movesense Core-lib 
-set(MOVESENSE_INTENDED_SOFTDEVICE_HEX_FILE "s132_nrf52_4.0.5_softdevice.hex")
+set(MOVESENSE_INTENDED_SOFTDEVICE_HEX_FILE "s132_nrf52_6.1.1_softdevice.hex")
 
 ####################################
 # Prepare external modules

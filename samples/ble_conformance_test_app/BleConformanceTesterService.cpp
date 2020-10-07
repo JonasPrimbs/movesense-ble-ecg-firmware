@@ -83,7 +83,7 @@ void BleConformanceTesterService::onPutRequest(const wb::Request& request,
                  bleTestParams.timeout);
 
         // Validate test parameters
-        if (bleTestParams.powerLvl < 0 || bleTestParams.powerLvl > 11)
+        if (bleTestParams.powerLvl > 11)
         {
             DEBUGLOG("Invalid powerLvl, returning BAD_REQUEST.");
             returnResult(request, wb::HTTP_CODE_BAD_REQUEST);
@@ -95,13 +95,13 @@ void BleConformanceTesterService::onPutRequest(const wb::Request& request,
             returnResult(request, wb::HTTP_CODE_BAD_REQUEST);
             return;
         }
-        if (bleTestParams.chn < 0 || bleTestParams.chn > 39)
+        if (bleTestParams.chn > 39)
         {
             DEBUGLOG("Invalid chn, returning BAD_REQUEST.");
             returnResult(request, wb::HTTP_CODE_BAD_REQUEST);
             return;
         }
-        if (bleTestParams.len < 0 || bleTestParams.len > 37)
+        if (bleTestParams.len > 37)
         {
             DEBUGLOG("Invalid len, returning BAD_REQUEST.");
             returnResult(request, wb::HTTP_CODE_BAD_REQUEST);
@@ -110,12 +110,6 @@ void BleConformanceTesterService::onPutRequest(const wb::Request& request,
         if (!(bleTestParams.payload == 0 || bleTestParams.payload == 1 || bleTestParams.payload == 2 || bleTestParams.payload == 0xffffffff))
         {
             DEBUGLOG("Invalid payload, returning BAD_REQUEST.");
-            returnResult(request, wb::HTTP_CODE_BAD_REQUEST);
-            return;
-        }
-        if (bleTestParams.timeout < 0 || bleTestParams.timeout > 255)
-        {
-            DEBUGLOG("Invalid timeout, returning BAD_REQUEST.");
             returnResult(request, wb::HTTP_CODE_BAD_REQUEST);
             return;
         }

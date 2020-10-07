@@ -26,7 +26,7 @@ ResourceForwardingTracker::ResourceIdMapEntry* ResourceForwardingTracker::alloca
         if (mResourceMap[i].inResource == wb::ID_INVALID_RESOURCE)
         {
             // store ID, unfortunately not unique by path paramter :(, thus we also need to track the sample rates separately
-            return &(mResourceMap[i] = { inResource, 0, static_cast<const uint16_t>(samplerate) });
+            return &(mResourceMap[i] = { inResource, 0, static_cast<uint16_t>(samplerate) });
         }
     }
     return NULL;

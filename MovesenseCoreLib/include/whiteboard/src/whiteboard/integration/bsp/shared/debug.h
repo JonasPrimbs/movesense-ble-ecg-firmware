@@ -1,19 +1,31 @@
 #pragma once
 // Copyright (c) Suunto Oy 2015. All rights reserved.
 
+/** Whiteboard debug out message hook prototype */
+#ifdef __cplusplus
+extern "C" {
+#else
+#include <stdbool.h>
+#include "whiteboard/integration/shared/macros.h"
+#endif
+
+typedef void(*WbDebugOutHookFunction)(bool fatal, const char* message);
+
+/** C function that can be used to redirect Whiteboard debug out messages
+ *
+ * @param hookFunction Function that should handle debug messages
+ */
+WB_API void WbDebugOutSetHookC(WbDebugOutHookFunction hookFunction);
+
+#ifdef __cplusplus
+}
 #include "whiteboard/integration/port.h"
 
 /** Debug out function prototype. Works just like printf. */
-WB_API void WbDebugOut(const char* format, ...);
+WB_API void WbDebugOut(bool fatal, const char* format, ...);
 
 /** Function that issues a breakpoint or terminates execution to assertion */
 WB_API void WbAssertBreak(void);
-
-/** Whiteboard debug out message hook prototype */
-extern "C"
-{
-    typedef void(*WbDebugOutHookFunction)(const char* message);
-}
 
 /** Function that can be used to redirect Whiteboard debug out messages 
  *
@@ -29,7 +41,7 @@ inline void WbDebugSetThreadName(const char*) {}
 #endif
 
 #if !defined(NDEBUG) || defined(WB_HAVE_DEBUGLOG_IN_RELEASE)
-#define WB_DEBUGLOG(format, ...) WbDebugOut(format, ##__VA_ARGS__)
+#define WB_DEBUGLOG(format, ...) WbDebugOut(false, format, ##__VA_ARGS__)
 #define WB_DEBUGLOG_SIZE() WB_DEBUGLOG("[this]:%s: %zuB", __FUNCTION__, sizeof(*this))
 
 #else
@@ -41,7 +53,7 @@ inline void WbDebugSetThreadName(const char*) {}
 #define _WB_ASSERT_IMPL(cond)                                                           \
     if (!(cond))                                                                        \
     {                                                                                   \
-        WbDebugOut("%s(%i): ASSERT FAILED! [%s]", WB_SOURCE_FILENAME, __LINE__, #cond); \
+        WbDebugOut(true, "%s(%i): ASSERT FAILED! [%s]", WB_SOURCE_FILENAME, __LINE__, #cond); \
         WbAssertBreak();                                                                \
     }
 
@@ -59,4 +71,6 @@ inline void WbDebugSetThreadName(const char*) {}
 #define WB_ASSERT(cond) ((void)0) 
 #endif
 
-#define WB_VERIFY(cond) ((cond) ? true : (WbDebugOut("%s(%i): VERIFY FAILED! [%s]", WB_SOURCE_FILENAME, __LINE__, #cond), false))
+#define WB_VERIFY(cond) ((cond) ? true : (WbDebugOut(false, "%s(%i): VERIFY FAILED! [%s]", WB_SOURCE_FILENAME, __LINE__, #cond), false))
+
+#endif // __cplusplus

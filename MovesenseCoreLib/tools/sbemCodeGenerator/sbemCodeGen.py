@@ -3,12 +3,42 @@ from __future__ import print_function
 import sys
 import yaml
 import re
-
 import glob, os
+
+from SbemCodeGenFuncs import *
+
+# TODO: a lot of work for better maintainability
+
+#################################################
+# script debugging config for further developing
+#################################################
+debugEnabled = True
+try:
+    from PyObjTool import *
+    def debugWrite(filename, string, mode="a"):
+        global debugEnabled
+        if not debugEnabled:
+            return
+        debugfile = open("/" + filename, mode)
+        debugfile.write(string)
+        debugfile.close()
+except:
+    def debugWrite(filename, string, mode=""):
+        return
+    def pythonObjToHumanReadable(p1, p2=0, p3=""):
+        return ""
+
+debugWrite("debug.txt", "temporary debug file...\n\n", "w")
+indent = ""
+for arg in sys.argv:
+    indent += "  "
+    debugWrite("debug.txt", indent + str(arg) + "\n")
+#################################################
+#################################################
 
 oldDir = os.getcwd()
 
-loopNumber = 1
+
 MAX_CHUNKSTORAGE_LENGTH = 112*4
 MAX_NET_CHUNKSTORAGE_LENGTH = MAX_CHUNKSTORAGE_LENGTH - 2
 
@@ -35,499 +65,39 @@ for arg in sys.argv:
     else:
         # Assume it's a resources.h folder
         resFileDirs.append(arg)
-        print("Skipped argument since not a valid yaml glob: ", arg)
+        print("Resource folder added: ", arg)
 
 print("processing following yaml-files:")
 for yglob in yamlGlobs:            
     for f in glob.glob(yglob):
         yamlFiles.append(f)
-        #print("  ", f)
-
-
-print("Processing total ", len(yamlFiles), " .yaml-files")
-
-
-
-# Function definitions
-def cppNameFromResName(resName):
-    return resName[1:].replace('/','_').replace('{','').replace('}','').upper()
-
-def resourceToSbemPath(resourcePath):
-    return resourcePath[1:].replace('/','.').replace('{','').replace('}','')
-
-def frmFromResponse(response):
-    return frmFromSchema(response['schema'])
-
-def frmFromSchema(schema):
-    if 'type' in schema:
-        typedef = schema['type']
-        if typedef == 'number' and schema['format']=='float':
-            return 'float32'
-        if typedef == 'number' and schema['format']=='double':
-            return 'float64'
-        elif typedef == 'integer':
-            return schema['format']
-        elif typedef == 'string':
-            return 'utf8'
-        elif typedef == 'boolean':
-            return 'bool'
-        elif typedef == 'objec': 
-            return None
-        elif typedef == 'object': 
-            return None
-        elif typedef == 'array': # XXXX TODO!5
-            raise Exception('type == array should not be handled here!')
-
-        print("unknown typedef. schema: ", schema)
-        raise Exception('Unsupported typedef: ' + str(typedef))
-
-
-def sbemNullValueFromItem(item):
-    frm = item['SBEM_FRM']
-    if frm == 'float32':
-        return '-99999999999.0';
-    if frm == 'float64':
-        return '-99999999999.0';
-    elif frm == 'int64':
-        return '4294967295';
-    elif frm == 'int32':
-        return '2147483647';
-    elif frm == 'int16':
-        return '32767';
-    elif frm == 'uint32':
-        return '4294967295';
-    elif frm == 'uint64':
-        return '4294967295';
-    elif frm == 'uint16':
-        return '65535';
-    elif frm == 'uint8':
-        return '255';
-    else:
-        raise Exception("UNSUPPORTED SBEM NULL TYPE: " + str(frm))
-
-def cppNullValueFromItem(item):
-    frm = item['SBEM_FRM']
-    if frm == 'float32':
-        return '-99999999999.0f';
-    return sbemNullValueFromItem(item)
-
-def sizeExprFromItem(item):
-    frm = item['SBEM_FRM']
-    if frm.startswith('float') or frm.startswith('int') or frm.startswith('uint'):
-        m = endNumRegex.match(frm)
-        sizeExpression = int(m.groups(1)[0])/8
-
-    elif frm == 'utf8':
-        print("frm == 'utf8' item: " , item)
-        propertyName = "XXXXX"
-        sizeExpression = 'strlen(data.' + propertyName + ')'
-        return None
-    
-    elif frm == 'bool':
-        sizeExpression = 1
-
-    else:
-       raise Exception("sizeExprFromItem: UNSUPPORTED SBEM NULL TYPE: ", str(frm))
-
-    return sizeExpression
-
-
-def getItemPropChain(item):
-    # collect the chain of parent groups 
-    propchain = [item]
-    grp = item
-    while '__parentGrp' in grp:
-        grp = grp['__parentGrp']
-        propchain.append(grp)
-
-    propchain.reverse()
-
-    return propchain
-
-def itemIsOptional(item):
-    #print("#### itemIsOptional: ", item['SBEM_PTH'])
-    frm = item['SBEM_FRM']
-    if frm == 'utf8':
-        return False
-    if frm == 'bool':
-        return False
-
-    propchain = getItemPropChain(item)
-    for prop in propchain:
-        if not '__required' in prop or not prop['__required']:
-            return True
-
-    return False
-
-
-def valueExprFromItem(item, includeIndexing = True):
-
-#    if '__parentGrp' in item:
-#        print(" parent prop: ", item['__parentGrp']['__property'], ", required=",item['__parentGrp']['__required'])
-
-    propchain = getItemPropChain(item)
-
-#    print("valueExprFromItem for item: ", item['__property'])
-    # find out the possible wb::Optional's
-    hasValueExpr = ""
-    propertyExpr = ""
-    lastUsedLoopnumber = loopNumber-1
-    for prop in propchain:
-        if len(propertyExpr)>0:
-            propertyExpr += "."
-
-        propterm = prop['__property']
-        if propterm.endswith('/'):
-            propterm = propterm[:-1]
-
-        # Take last piece of path
-        propterm = propterm.split('/')[-1]
-
-
-#        print("- property: ", propterm) #, " : ", prop)
-        propertyExpr += decapitalize(propterm)
-
-        isArrayProperty = '__isArray' in prop and prop['__isArray']
-
-        # Index here for each loop of array
-        if isArrayProperty and includeIndexing:
-            # write for loop for traversing array
-            currentLoopVariable = "loopidx_" + str(lastUsedLoopnumber)
-            lastUsedLoopnumber = lastUsedLoopnumber -1
-
-            propertyExpr += '[' + currentLoopVariable + ']'
-
-        if '__required' in prop and not prop['__required']:
-            if len(hasValueExpr) > 0:
-                hasValueExpr += " && " 
-            hvexpr = "@@." + propertyExpr + ".hasValue()"
-            hasValueExpr += "(" + hvexpr + ")"
-            propertyExpr += ".getValue()"
-
-    # make sure that this really is a nullable type. if type is not found, we cant make it anywaus
-
-    if len(hasValueExpr) > 0:
-        return "(" + hasValueExpr + ") ? @@." + propertyExpr + " : " + cppNullValueFromItem(prop)
-
-    if (len(propertyExpr)>0):
-        propertyExpr = "." + propertyExpr
-    return "@@" + propertyExpr
-
-def hasVariableLengthItems(itemsToGenerate):
-    for item in itemsToGenerate:
-        # if this item has subgroups or items, clean them as well
-        isArray = '__isArray' in item and item['__isArray']
-        if isArray:
-            return True
-        if 'SBEM_FRM' in item and item['SBEM_FRM'] == 'utf8':
-            return True
-        elif 'subgroups' in item:
-            if hasVariableLengthItems(item['subgroups']):
-                return True
-    return False
-
-def getVariableLengthItems(itemsToGenerate):
-    size = 0
-    for item in itemsToGenerate:
-        if 'subgroups' in item:
-            size += getVariableLengthItems(item['subgroups'])
-        else:
-            size += sizeExprFromItem(item)
-    return size
-
-def hasUnsupportedItems(itemsToGenerate):
-    for item in itemsToGenerate:
-        # if this item has subgroups or items, clean them as well
-        isArray = '__isArray' in item and item['__isArray']
-        if 'SBEM_FRM' in item and item['SBEM_FRM'] == 'utf8':
-            return True
-        elif 'subgroups' in item:
-            if hasUnsupportedItems(item['subgroups']):
-                return True
-        elif not 'SBEM_FRM' in item:
-            return True
-        
-    return False
-
-def preprocessItemsToGenerate(itemsToGenerate):
-    for itemOrGroup in itemsToGenerate:
-        # remove __parentGrp, makes easier to read for debugging
-        #itemOrGroup.pop('__parentGrp', None)
-        # remove SBEM_GRP_ITEMS
-        #itemOrGroup.pop('SBEM_GRP_ITEMS', None)
-
-        # if this item has subgroups or items, clean them as well
-        if 'subgroups' in itemOrGroup:
-            preprocessItemsToGenerate(itemOrGroup['subgroups'])
-
-def generateLengthMethodCodeForItem(item, lengthCodeArr):
-    # Make sure that if item is marked as unsupported, we don't create code for it
-    if writeCodeArr == None:
-        return False
-    if (('__INSERT_ASSERT' in item) and item['__INSERT_ASSERT']):
-        del writeCodeArr[:] # clear all code and return false
-        return False
-
-    lengthMethodCode = ""
-
-    isArray = '__isArray' in item and item['__isArray']
-    methodCode_ArrayEnd = None
-    methodCode_ArrayBegin = None
-    if isArray:
-        arrayLenExpr = valueExprFromItem(item, False)+'.size()'
-
-        # write for loop for traversing array
-        methodCode_ArrayBegin = arrayLenExpr + ' * (0 '
-        methodCode_ArrayEnd = ' ) '
-        lengthCodeArr.append(' + ')
-        lengthCodeArr.append(methodCode_ArrayBegin)
-
-
-    if 'SBEM_FRM' in item:
-        # length code for individual item (e.g. int64)
-        sizeExpr = sizeExprFromItem(item)
-        if sizeExpr:
-            lengthCodeArr.append(' + ')
-            lengthCodeArr.append(str(sizeExpr))
-
-    elif 'subgroups' in item and item['subgroups']:
-        # write for loop for traversing array
-        for grp in item['subgroups']:
-            #print("handling length code for subgroup: ", grp)
-            generateLengthMethodCodeForItem(grp, lengthCodeArr)
-
-    else:
-        print("generateLengthMethodCodeForItem NOT IMPLEMENTED: ", item)
-
-
-    if methodCode_ArrayEnd:
-        lengthCodeArr.append(methodCode_ArrayEnd)
-
-    return True
-
-def generateWriteMethodCodeForItem(item, writeCodeArr, recursionLevel=1):
-    global loopNumber    # Needed to modify global copy of loopNumber
-    # Make sure that if item is marked as unsupported, we don't create code for it
-    if writeCodeArr == None:
-        return False
-    if (('__INSERT_ASSERT' in item) and item['__INSERT_ASSERT']):
-        print("__INSERT_ASSERT detected: ", item)
-        del writeCodeArr[:] # clear all code and return false
-        return False
-
-    isArray = '__isArray' in item and item['__isArray']
-    methodCode_ForEnd = None
-    methodCode_ForBegin = None
-    indent = ' ' * 4*loopNumber
-    if isArray:
-        valExpr = valueExprFromItem(item, False)
-
-        #print("handling writer code for Array: ", valExpr)
-
-        # write for loop for traversing array
-        loopVariable = "loopidx_" + str(loopNumber)
-        loopNumber = loopNumber+1
-
-        methodCode_ForBegin = indent + 'for(size_t '+loopVariable+'=0; '+loopVariable+'<'+valExpr+'.size(); '+loopVariable+'++)\n    {\n'
-        methodCode_ForEnd = indent+'}\n'
-        writeCodeArr.append(methodCode_ForBegin)
-
-
-    writeMethodCode = ""
-    if 'SBEM_FRM' in item:
-        # write code for individual item (e.g. int64)
-        frm = item['SBEM_FRM']
-
-        valExpr = valueExprFromItem(item)
-
-        writeMethodCode += indent+'{\n'
-        writeMethodCode += indent+'    auto value = ' + valExpr + ";\n"
-        writeMethodCode += indent+'    const uint8_t *src = reinterpret_cast<const uint8_t*>(&value);\n'
-        writeMethodCode += indent+'    for(size_t i=0; i<sizeof(value); i++, src++, bytesRead++)\n'
-        writeMethodCode += indent+'        if ((bytesRead >= startOffset) && (bytesWritten < bufferLen)) byteBuf[bytesWritten++] = *src;\n'
-        writeMethodCode += indent+'}\n'
-
-    elif 'subgroups' in item and item['subgroups']:
-        # write for loop for traversing array
-        for grp in item['subgroups']:
-            #print("handling writer code for subgroup: ", grp)
-            generateWriteMethodCodeForItem(grp, writeCodeArr)
-
-    else:
-        print("generateWriteMethodCodeForItem NOT IMPLEMENTED: ", item)
-
-    writeCodeArr.append(writeMethodCode)
-
-    if methodCode_ForEnd:
-        writeCodeArr.append(methodCode_ForEnd)
-
-
-    return True
-
-
-# recursive function to greate groups from complex datatypes
-def generateGroupsForResAndDatatype(resource, path, datatype, resourceGroups, resourceItems):
-    #print ("generateGroupsForResAndDatatype(). path: ",  path, " datatype: ", datatype['__datatype'])
-
-    if not 'properties' in datatype:
-#        print("No properties in datatype: ", datatype)
-        return
-
-    subGroups = []
-    subItems = []
-
-    # do each property, recurse into complex ones
-    for k,v in sorted(datatype['properties'].iteritems()):
-
-        if not 'SBEM_KIND' in v:
-            print(" ERROR! v:",v)
-            raise Exception("KIND MISSIG!")
-
-        kind = v['SBEM_KIND']
-        if 'simple' == kind:
-
-            propPath = path + k
-
-            longPath = resource['SBEM_PTH'] + propPath
-
-            # for simple properties make entry that is simple item
-            # make sure that array indicators don't end up in sbem path
-
-            itemSubGroup = {'id': cppNameFromResName(longPath),
-                         'SBEM_FRM': v['SBEM_FRM'],
-                         'SBEM_PTH': resourceToSbemPath(longPath),
-                         '__property': k,
-                         '__required': v['__required']
-                         }
-
-            subItems.append(itemSubGroup)
-            resourceItems.append(itemSubGroup)
-
-        # do complex properties recursively
-        elif 'complex' == kind:
-
-            propPath = path + k + "/"
-#            print("complex propPath: ", propPath)
-
-            propGroup = generateGroupsForResAndDatatype(resource,
-                                            propPath,
-                                            definitions[v['__datatype']],
-                                            resourceGroups,
-                                            resourceItems)
-            propGroup['__required'] = v['__required']
-            subGroups.append(propGroup)
-            resourceGroups.append(propGroup)
-
-        elif 'array' == kind:
-#            print('array kind: ', k)
-            # find what kind of items the array has
-            itemdef = v['items']
-            if '$ref' in itemdef:
-                datatypename = itemdef['$ref'].split('/')[-1]
-#                print('  - datatypename: ', datatypename)
-
-                propPath = path + k + "/"
-
-                itemsGroup = generateGroupsForResAndDatatype(resource,
-                                                propPath,
-                                                definitions[datatypename],
-                                                resourceGroups,
-                                                resourceItems)
-
-                if itemsGroup:
-                    # Array items are required
-                    itemsGroup['__required'] = True
-
-                    # Mark "array" here
-                    # TODO: Add array count?
-                    itemsGroup['__isArray'] = True
-
-                    subGroups.append(itemsGroup)
-                    resourceGroups.append(itemsGroup)
-                    #print("itemsGroup for array: ", itemsGroup)
-
-
-            elif 'type' in itemdef:
-                # get FRM def from itemdef (won't be in array type property)
-                frmString = frmFromSchema(itemdef) 
-
-                propPath = path + k
-                longPath = resource['SBEM_PTH'] + propPath
-                itemSubGroup = {'id': cppNameFromResName(longPath),
-                                'SBEM_FRM': frmString,
-                                'SBEM_PTH': resourceToSbemPath(longPath),
-                                '__property': k,
-                                '__isArray': True,
-                                '__required': True
-                         }
-                #print("simple array: ", itemSubGroup)
-                subItems.append(itemSubGroup)
-                resourceItems.append(itemSubGroup)
-
-            else:
-                raise Exception("Weird itemdef encountered: ", itemdef)
-
-        else:
-            raise Exception("Unknown SBEM_KIND encountered:", kind)
-
-    # make a parent group
-    longPath = resource['SBEM_PTH'] + path
-    required = path=='/' 
-
-    complexGroup = {'id': cppNameFromResName(longPath),
-                    'subgroups': subItems + subGroups,
-                    '__property': path,
-# required flag = true for root datatypes
-                    '__required': required }
-
-    # store link upward to current group
-    for subgrp in complexGroup['subgroups']:
-        subgrp['__parentGrp'] = complexGroup
-
-    # return the group for this path    
-    return complexGroup                     
-
-
-
-endNumRegex = re.compile(r'.*[^\d](\d+)$')
-
-
+        print("  ", f)
 
 
 
 # Start of program flow
-yamlTrees = []
-resources = {}
-definitions = {}
-
-for f in yamlFiles:
-    stream = file(f, 'r')
-    obj = yaml.load(stream)
-    yamlTrees.append(obj)
-    if 'paths' in obj:
-        for k, v in sorted(obj['paths'].iteritems()):
-            if k.endswith('/Subscription'):
-                k = k[:-len('/Subscription')]
-                if k not in resources:
-                    resources[k] = {}
-                    #print("merged subscription to parent path: ",k)
-                resources[k]['subscription'] = v['post']
-            else:
-                resources[k] = v
-
-    if ('definitions' in obj):
-        for k, v in obj['definitions'].iteritems():
-            definitions[k] =v
-#            print("yaml datatype: ", k)
-
-    stream.close()
-
+#########################################
+print("Processing total ", len(yamlFiles), " .yaml-files")
+yamlTrees, resources, definitions = readInYamlFiles(yamlFiles)
 print("Found ", len(resources), " resources and ", len(definitions), " datatype definitions.")
+
+global dataLoggerConfig
+dataLoggerConfig, fullConfig = parseDataloggerConfigFromYamlBlobs(yamlTrees)
+
+debugWrite("datalogger-config.txt", "config:\n" + pythonObjToHumanReadable(dataLoggerConfig) + "\n", "w")
+debugWrite("datalogger-config.txt", "full config:\n" + pythonObjToHumanReadable(fullConfig) + "\n", "a")
+
+#########################################
+#########################################
+debugWrite("debug-yaml-tree-pre.txt", pythonObjToHumanReadable(yamlTrees) + "\n", "w")
+debugWrite("debug-resources-pre.txt", pythonObjToHumanReadable(resources) + "\n", "w")
+#########################################
+#########################################
+
+
 
 patternForResource = re.compile('struct ([A-Z0-9_]+)');
 patternForType = re.compile('struct WB_STRUCT_PACKED ([A-Z][a-z][A-Za-z0-9]+)$');
-
-decapitalize = lambda s: s[:1].lower() + s[1:] if s else ''
 
 # read resources.h and find struct definitions
 cppTypes = {}
@@ -548,7 +118,7 @@ for resDir in resFileDirs:
 resource_include_files = []
 for resFile in resourceFiles:
     resFile = resFile.replace("\\", "/")
-    #print("Scanning resources.h-file: ", resFile)
+#    print("Scanning resources.h-file: ", resFile)
 
     separator_idx = resFile.rfind("/", 0, len(resFile) - len('/resources.h') - 1) 
     inc_file_name = resFile[separator_idx+1:]
@@ -618,7 +188,7 @@ for resName in resources.keys():
         cppName = cppNameFromResName(resName)
         if cppName in cppResourceNames:
             newResources[resName] = resources[resName]
-#            print ("newResources: ", resName)
+            #print ("newResources: ", resName)
 
 resources = newResources
 newResources = None
@@ -721,6 +291,10 @@ for k,v in sorted(resources.iteritems()):
 #        print("resource: ", k, " skipping, no subscription")
         continue
 
+    if seekPathInConfig(dataLoggerConfig, "disabled-resources", k, True) is not None:
+        print("LOGGING DISABLED: ", k)
+        continue
+
     if 'subscription' in v:
         verb = v['subscription']
 
@@ -803,9 +377,8 @@ for k,v in sorted(resourcesWithComplexType.iteritems()):
     resourceItems = []
     resourceGroups = []
     resource['SBEM_PTH'] = k
-    resourceParentGroup = generateGroupsForResAndDatatype(resource,
-                                    "/",
-                                    datatype, resourceGroups, resourceItems)
+    resourceParentGroup = generateGroupsForResAndDatatype(definitions, resource,
+                                    "/", datatype, resourceGroups, resourceItems)
 
     if not resourceParentGroup:
         #print("resourceParentGroup was None, won't generate group")
@@ -873,14 +446,18 @@ with open("sbem_definitions.h", 'wb') as f_h:
             if not 'subgroups' in group:
                 continue
 
-            maxArrayLen = 1
+            elements = [1] # elements of 1 == no array
+
             subgroupsContainArray = False
             for subgrp in group['subgroups']:
                 if '__isArray' in subgrp and subgrp['__isArray']:
                     subgroupsContainArray = True
-                    maxArrayLen = 8
+                    arrayPath = "/" + subgrp["id"].replace("_","/")
 
-            for i in range(1, maxArrayLen+1, 1): # TODO, make fewer?
+                    elements = seekArrayElementsConfig(dataLoggerConfig, "resources", arrayPath, True)
+                    break
+
+            for i in elements:
                 groupId = group['id']
                 if subgroupsContainArray:
                     group['__isArrayGroup'] = True
@@ -892,7 +469,6 @@ with open("sbem_definitions.h", 'wb') as f_h:
 
                 # append group declaration to list to be written later to h-file
                 groupIdEntries.append("    " + groupId + ",\n")
-
 
                 firstItem = True
                 for item in group['subgroups']:
@@ -924,63 +500,9 @@ with open("sbem_definitions.h", 'wb') as f_h:
 
                 print(");", file=f_cpp)
 
-
         # Now generate SBEM DescriptionItems array:
         #  declaration in h, implementation in cpp
-
-        # generate DescriptorItem_t array start
-        print('\nconst DescriptorItem_t s_possibleSbemItems[] = {', file=f_cpp)
-        count = 0
-        itemIndexes = {}
-        alreadyPlussedResources = set()
-        descriptorItemIds = []
-        for item in items:
-            if (not 'SBEM_FRM' in item) or not item['SBEM_FRM']:
-                #print("Skipping item without SBEM_FRM! item:", item)
-                continue
-
-            isNillable = itemIsOptional(item)
-            isFirstInArray = \
-                bool(item['id'] in arrayGroupStartItems and arrayGroupStartItems[item['id']])
-            isFirstInRootGroup = \
-                bool(item['id'] in rootGroupStartItems and rootGroupStartItems[item['id']])
-            itemIndexes[item['id']] = count
-
-            # All entries here have been preprocessed earlier
-            # sample   {DUMMY8, "<PTH>Dummy8\n<FRM>uint8"},
-            itemPath = item['SBEM_PTH']
-            lastDotIdx=itemPath.rfind('.')
-            itemPath = list(itemPath)
-
-            if isFirstInArray:
-                itemPath[lastDotIdx] = '+'
-            if isFirstInRootGroup:
-                grpId = rootGroupStartItems[item['id']]['id']
-                # grpId is of style "MEAS_ACC_SAMPLERATE_", so we have to find position of second last _ and put + there in itemPath
-                plusPosition = grpId.rfind('_', 0, len(grpId)-1)
-                if plusPosition>=0:
-                    itemPath[plusPosition] = '+'
-
-            itemPath = "".join(itemPath)
-            entry = ""
-            descriptorItemIds.append(item['id'])
-            entry += '    {' + item['id'] + ", "
-            entry += '\"'
-            entry += "<PTH>" + itemPath
-            entry += "\\n"
-            entry += "<FRM>" + item['SBEM_FRM']
-            if isNillable:
-                entry += ",nillable=" + sbemNullValueFromItem(item)
-            entry += '\"},'
-            count += 1
-            print(entry, file=f_cpp)
-
-        # ARRAY_BEGIN & END tags
-        print('    {ARRAY_BEGIN, \"<PTH>[\"},', file=f_cpp)
-        print('    {ARRAY_END, \"<PTH>]\"},', file=f_cpp)
-        count += 2
-        # end SBEM DescriptionItems array
-        print("};", file=f_cpp)
+        count, descriptorItemIds, itemIndexes = generateDescriptorArray(f_h, f_cpp, items, arrayGroupStartItems, rootGroupStartItems)
 
         print('\nextern const DescriptorItem_t s_possibleSbemItems[' +str(count) + '];', file=f_h)
 
@@ -1021,18 +543,33 @@ with open("sbem_definitions.h", 'wb') as f_h:
             if not 'subgroups' in group:
                 continue
 
-            maxArrayLen = 1
+            #groupPath = "__dummy" # init with dummy path to get no match and default array config
+            groupPath = "/" + group['id'].replace("_","/")
+
+            if "SBEM_GRP_ITEMS" in group:
+                for listItem in group["SBEM_GRP_ITEMS"]:
+                    if "SBEM_PTH" in listItem:
+                        groupPath = "/" + listItem["SBEM_PTH"].replace(".","/")
+                        # just fetch the first path declaration in the list
+                        break
+            if "SBEM_PTH" in group:
+                groupPath = group["SBEM_PTH"]
+
+            elements = [1]
             subgroupsContainArray = False
             if '__isArrayGroup' in group and group['__isArrayGroup']:
                 subgroupsContainArray = True
-                maxArrayLen = 8
 
-            for i in range(1, maxArrayLen+1, 1): # TODO, make fewer?
+                elements = seekArrayElementsConfig(dataLoggerConfig, "resources", groupPath, True)
+
+            for i in elements:
                 groupId = group['id']
+
                 if subgroupsContainArray:
                     groupId = groupId + str(i)
 
                 count += 1
+
                 print("    " + groupId + "_Group,", file=f_cpp)
 
         print("};", file=f_cpp)
@@ -1072,10 +609,11 @@ with open("sbem_definitions.h", 'wb') as f_h:
             itemsToDo = v['__itemsToGenerate']
 
             # reset loop index numbering
-            loopNumber = 1
+            setLoopNumber(1)
 
-            writeMethodCode = '\nsize_t writeToSbemBuffer_' +cppNameFromResName(k) + '(void *buffer, size_t bufferLen, size_t startOffset, const WB_RES::LOCAL::' + cppNameFromResName(k) + '::EVENT::NotificationType &data)'
-            writeMethodCode += '{\n'
+            cppName = cppNameFromResName(k)
+            writeMethodCode = '\nsize_t writeToSbemBuffer_' + cppName + '(void *buffer, size_t bufferLen, size_t startOffset, const WB_RES::LOCAL::' + cppName + '::EVENT::NotificationType &data)'
+            writeMethodCode += ' {\n'
             writeMethodCode += '    size_t bytesRead = 0;\n'
             writeMethodCode += '    size_t bytesWritten = 0;\n'
             writeMethodCode += '    uint8_t *byteBuf = static_cast<uint8_t*>(buffer);\n'
@@ -1112,7 +650,7 @@ with open("sbem_definitions.h", 'wb') as f_h:
             codeOk = True
             lengthCodeArr = []
             for item in itemsToDo:
-                codeOk = codeOk and generateLengthMethodCodeForItem(item, lengthCodeArr)
+                codeOk = codeOk and generateLengthMethodCodeForItem(item, writeCodeArr, lengthCodeArr)
 
             if not codeOk:
                 getLengthMethodCode += '    // UNIMPLEMENTED FEATURE in codegen, so we assert;\n'
@@ -1137,17 +675,15 @@ with open("sbem_definitions.h", 'wb') as f_h:
         for k,v in sorted(resourcesThatNeedSbemMethods.iteritems()):
             itemsToDo = v['__itemsToGenerate']
 
-            # print(cppNameFromResName(k))
-
             if not hasVariableLengthItems(itemsToDo):
                 getLengthMethodCode += '    case WB_RES::LOCAL::' + cppNameFromResName(k) + '::LID:\n'
                 sizeExpr = str(getVariableLengthItems(itemsToDo))
                 # print(sizeExpr)
                 getLengthMethodCode += '        return ('+sizeExpr+');\n'
 
+        getLengthMethodCode += '    default:\n'
+        getLengthMethodCode += '        return -1;\n'
         getLengthMethodCode += '    }\n'
-
-        getLengthMethodCode += '    return -1;\n'
         getLengthMethodCode += '}\n'
 
         print(getLengthMethodCode, file=f_cpp)
@@ -1194,7 +730,7 @@ with open("sbem_definitions.h", 'wb') as f_h:
 
 
         # Generate resourceId => SbemItem mapping table (single items)
-        print("\nconst SbemResID2ItemIdMapping s_sbemResID2ItemIdMap[] = {", file=f_cpp)
+        tableString = "\nconst SbemResID2ItemIdMapping s_sbemResID2ItemIdMap[] = {"
         count = 0
         for k,v in sorted(resourcesThatNeedSbemMethods.iteritems()):
             if 'SBEM_GRP' in v:
@@ -1202,11 +738,15 @@ with open("sbem_definitions.h", 'wb') as f_h:
 
             if 'SBEM_ID' in v:
                 count += 1
-                print("    {WB_RES::LOCAL::" + cppNameFromResName(k) + "::LID, s_possibleSbemItems[" + str(itemIndexes[v['SBEM_ID']]) + "] },", file=f_cpp)
+                tableString += "    {WB_RES::LOCAL::" + cppNameFromResName(k) + "::LID, s_possibleSbemItems[" + str(itemIndexes[v['SBEM_ID']]) + "] },"
+        tableString += "};"
 
-        print("};", file=f_cpp)
-
-        print("\nextern const SbemResID2ItemIdMapping s_sbemResID2ItemIdMap[" + str(count) + "];", file=f_h)
+        if (count > 0):
+            print(tableString, file=f_cpp)
+            print("\nextern const SbemResID2ItemIdMapping s_sbemResID2ItemIdMap[" + str(count) + "];", file=f_h)
+        else:
+            print("const SbemResID2ItemIdMapping s_sbemResID2ItemIdMap[] = { 0, {0, 0} };", file=f_cpp) # no data, inject dummy table
+            print("\nextern const SbemResID2ItemIdMapping s_sbemResID2ItemIdMap[1];", file=f_h)
 
 
         # Generate resourceId => SbemGrp mapping table
@@ -1221,28 +761,30 @@ with open("sbem_definitions.h", 'wb') as f_h:
                     print("SKIPPING valueExpression! SBEM_FRM was None for ", item['SBEM_PTH'])
                     continue
 
-            maxArrayLen = 1
-
             itemsToDo = v['__itemsToGenerate']
-            lengtCodeArr = []
+            lengthCodeArr = []
             for item in itemsToDo:
-                generateLengthMethodCodeForItem(item, lengtCodeArr)
+                generateLengthMethodCodeForItem(item, writeCodeArr, lengthCodeArr)
 
             subgroupsContainArray = False
             if hasVariableLengthItems(itemsToDo):
                 subgroupsContainArray = True
-                maxArrayLen = 8
 
-            lengthCode = "".join(lengtCodeArr)
+            lengthCode = "".join(lengthCodeArr)
 
             # replace all length expressions with the @#@ tag        
             sizePartRegex = re.compile(r'@@[\.\w]+.size\(\)')
             lengthCode = sizePartRegex.sub("@#@", lengthCode)
 
-            # create version or all groups until maxArrayLen which have 
-            for i in range(1,maxArrayLen+1):
-                lengthInBytesExpr = lengthCode.replace('@#@', " (" + str(i) + ") ")        
+            elements = [1] # init with no array (e.g. one element)
+            if subgroupsContainArray:
+                elements = seekArrayElementsConfig(dataLoggerConfig, "resources", v['SBEM_PTH'])
+
+            # create version or all groups for arrays, either custom array lengths or 1-8
+            for i in elements:
+                lengthInBytesExpr = lengthCode.replace('@#@', " (" + str(i) + ") ")
                 lengthInBytes = eval(lengthInBytesExpr)
+
                 if lengthInBytes > MAX_NET_CHUNKSTORAGE_LENGTH:
                     print("Skipping",v['SBEM_GRP']['id'],"size()==" + str(i),"because data too long.")
                     continue
@@ -1253,7 +795,7 @@ with open("sbem_definitions.h", 'wb') as f_h:
                     groupId = v['SBEM_GRP']['id'] + "_Group"
                 else:
                     groupId = v['SBEM_GRP']['id'] + str(i) + "_Group"
-                print("    {WB_RES::LOCAL::" + cppNameFromResName(k) + "::LID, " + lengthInBytesExpr + ", " + groupId + " },", file=f_cpp)
+                print("    { WB_RES::LOCAL::" + cppNameFromResName(k) + "::LID, " + lengthInBytesExpr + ", " + groupId + " },", file=f_cpp)
         print("};", file=f_cpp)
 
         print("extern const SbemResID2GrpIdMapping s_sbemResID2GrpIdMap[" + str(count) + "];", file=f_h)
@@ -1300,3 +842,10 @@ with open("sbem_definitions.h", 'wb') as f_h:
 
 if "idlelib" in sys.modules and len(sys.argv) == 1:
     os.chdir(oldDir)
+
+#########################################
+#########################################
+
+debugWrite("debug-yaml-tree-post.txt", pythonObjToHumanReadable(yamlTrees) + "\n", "w")
+debugWrite("debug-resources-post.txt", pythonObjToHumanReadable(resources) + "\n", "w")
+

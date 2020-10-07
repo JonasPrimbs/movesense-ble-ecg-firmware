@@ -52,8 +52,10 @@ private:
 
     /** @see whiteboard::ResourceProvider::onPutRequest */
     virtual void onPutRequest(const wb::Request& request,
-                      const wb::ParameterList& parameterList) OVERRIDE;                              
-    
+                      const wb::ParameterList& parameterList) OVERRIDE;
+
+    virtual void onPostRequest(const wb::Request& request, const wb::ParameterList& parameterList) OVERRIDE;
+
     /** @see whiteboard::ResourceProvider::onNotify */
     virtual void onNotify(whiteboard::ResourceId resourceId, const whiteboard::Value& value,
                             const whiteboard::ParameterList& parameters);
@@ -89,12 +91,11 @@ private:
     bool isLogging() const;
     whiteboard::Result startLogging();
     whiteboard::Result stopLogging();    
-    
-    WB_RES::DataLoggerState mDataLoggerState;
 
     ExtflashChunkStorage &mChunkStorage;
     MeasStorage &mMeasStorage;
-        
+    WB_RES::DataLoggerState mDataLoggerState;
+
     volatile bool mSubscribeCompleted;
     volatile bool mUnsubscribeCompleted;
 

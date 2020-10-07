@@ -48,7 +48,7 @@ struct WB_ALIGN(4) SystemEventLogEntry
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 1536;
 
 	WB_ALIGN(4) uint32 sequenceNumber;
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> event;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > event;
 	WB_ALIGN(2) uint16 compoundSystemState;
 	WB_ALIGN(4) uint32 timestamp;
 	WB_ALIGN(2) uint16 moduleID;

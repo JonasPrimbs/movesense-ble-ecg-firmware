@@ -50,14 +50,14 @@ struct WB_ALIGN(4) ProductData
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 3584;
 
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> manufacturerName;
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> productName;
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> variant;
-	WB_ALIGN(4) whiteboard::Optional< whiteboard::WrapperFor32BitPointer<const char> > design;
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> hwCompatibilityId;
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> serial;
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> pcbaSerial;
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> hw;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > manufacturerName;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > productName;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > variant;
+	WB_ALIGN(4) whiteboard::Optional< whiteboard::WrapperFor32BitPointer< const char > > design;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > hwCompatibilityId;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > serial;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > pcbaSerial;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > hw;
 	WB_ALIGN(4) whiteboard::Optional< whiteboard::Array< AddressInfo > > addressInfo;
 };
 

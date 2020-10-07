@@ -61,7 +61,7 @@ struct WB_ALIGN(4) DataEntry
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 13056;
 
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> path;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > path;
 };
 
 struct WB_ALIGN(4) DataEntryArray
@@ -259,6 +259,21 @@ struct MEM_DATALOGGER_STATE
 		/** Compile time type checking */
 		inline static void typeCheck(
 			Parameters::NEWSTATE::ConstReferenceType)
+		{
+		}
+	};
+
+	struct POST
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
 		{
 		}
 	};

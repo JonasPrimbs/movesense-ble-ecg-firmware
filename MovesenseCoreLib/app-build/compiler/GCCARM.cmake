@@ -1,10 +1,12 @@
+include(${CMAKE_CURRENT_LIST_DIR}/gcc-version-check.cmake)
+
 set(GCCARM_USE_LTO True CACHE BOOL "Enable link-time optimization in GCC build")
 
 set(LINKER_SCRIPTS_PATH ${CMAKE_CURRENT_LIST_DIR}/../platform/${BSP}/linker/gcc )
 
 # Check that the relevant linker file exists
-if(NOT EXISTS ${LINKER_SCRIPTS_PATH}/${BSP_KINETIS_LINKTO}.ld)
-    message(FATAL_ERROR "BSP_KINETIS_LINKTO not chosen or invalid (cannot find ${LINKER_SCRIPTS_PATH}/${BSP_KINETIS_LINKTO}.ld or is not valid)")
+if(NOT EXISTS ${LINKER_SCRIPTS_PATH}/${BSP_LINKTO}.ld)
+    message(FATAL_ERROR "BSP_LINKTO not chosen or invalid (cannot find ${LINKER_SCRIPTS_PATH}/${BSP_LINKTO}.ld or is not valid)")
 endif()
 
 # redefine the types to use for INT32 and UINT32 (driving the stdint.h setup)
@@ -14,31 +16,30 @@ endif()
 set(GCCARM_TYPEFIX "-U__INT32_TYPE__ -D__INT32_TYPE__=int \
 -U__UINT32_TYPE__ -D__UINT32_TYPE__=\"unsigned int\"")
 
-set(GCCARM_NRF5SDK_ERROR_DISABLES "-Wno-lto-type-mismatch -Wno-old-style-declaration -Wno-discarded-qualifiers -Wp,-w -Wno-write-strings")
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_C_STANDARD 11)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
--W -Wall -Werror -Wfatal-errors \
+-W -Wall -Wextra -Werror -Wfatal-errors \
 -Wshadow -Wpointer-arith -Wcast-qual -Wwrite-strings -Wunreachable-code \
 -Wbad-function-cast -Wsign-compare \
--Wno-aggregate-return -Wno-unused-parameter -Wno-unused-function \
+-Wno-aggregate-return -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-function \
 -Wno-cast-align -Wno-strict-aliasing -Wno-maybe-uninitialized \
 -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 \
 -fno-common -ffreestanding -fno-builtin -mapcs -gdwarf-3 \
--std=gnu11 -ffunction-sections -fdata-sections \
-${GCCARM_NRF5SDK_ERROR_DISABLES} \
+-ffunction-sections -fdata-sections \
 ${GCCARM_TYPEFIX}")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} \
--W -Wall -Werror -Wfatal-errors \
+-W -Wall -Wextra -Werror -Wfatal-errors \
 -Wshadow -Wpointer-arith -Wcast-qual -Wwrite-strings -Wunreachable-code \
 -Wsign-compare \
--Wno-aggregate-return -Wno-unused-parameter -Wno-unused-function \
--Wno-cast-align -Wno-strict-aliasing -Wno-maybe-uninitialized \
+-Wno-aggregate-return -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-function \
+-Wno-cast-align -Wno-reorder -Wno-strict-aliasing -Wno-maybe-uninitialized \
 -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 \
 -fno-common -ffreestanding -fno-builtin -mapcs -gdwarf-3 \
--std=gnu++11 -ffunction-sections -fdata-sections \
+-ffunction-sections -fdata-sections \
 -fno-rtti -fno-exceptions -fno-unwind-tables -fno-use-cxa-atexit -fno-threadsafe-statics \
-${GCCARM_NRF5SDK_ERROR_DISABLES} \
 ${GCCARM_TYPEFIX}")
 
 # For some reason C_FLAGS is the base of CMAKE_EXE_LINKER_FLAGS here, argh?
@@ -46,13 +47,13 @@ ${GCCARM_TYPEFIX}")
 # but since it would require gnu make, this will fail.
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} \
 -Wl,--wrap -Wl,_malloc_r -Wl,--wrap -Wl,_calloc_r -Wl,--wrap -Wl,_free_r -Wl,--wrap -Wl,_realloc_r \
---specs=nano.specs --specs=nosys.specs \
+--specs=nano.specs \
 -Wl,-Map -Wl,target.map \
 -Wl,--gc-sections -Wl,-static -L${LINKER_SCRIPTS_PATH}")
 
 if(${GCCARM_USE_LTO})
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flto -fno-fat-lto-objects")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto -fno-fat-lto-objects")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flto -ffat-lto-objects")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto -ffat-lto-objects")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-linker-plugin -flto")
 # fix lto in archives
 SET(CMAKE_C_ARCHIVE_CREATE "<CMAKE_AR> qcs <TARGET> <LINK_FLAGS> <OBJECTS>")

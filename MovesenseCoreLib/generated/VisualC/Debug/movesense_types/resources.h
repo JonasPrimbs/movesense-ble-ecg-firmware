@@ -37,6 +37,24 @@
 
 namespace WB_RES {
 
+struct ResetReasonEnumValues
+{
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 516;
+
+	enum Type
+	{
+		NONE = 0U,
+		ASSERT = 1U,
+		HARD_FAULT = 2U,
+		MEM_FAULT = 3U,
+		BUS_FAULT = 4U,
+		USAGE_FAULT = 5U,
+		WATCHDOG = 6U,
+		DIV_BY_ZERO = 7U
+	};
+};
+typedef whiteboard::TypedEnum<ResetReasonEnumValues, ResetReasonEnumValues::Type, uint32> ResetReasonEnum;
+
 struct WB_ALIGN(4) VersionInfo;
 struct WB_ALIGN(4) VersionInfoArray;
 struct WB_ALIGN(4) AddressInfo;
@@ -51,8 +69,8 @@ struct WB_ALIGN(4) VersionInfo
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 512;
 
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> name;
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> version;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > name;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > version;
 };
 
 struct WB_ALIGN(4) VersionInfoArray
@@ -70,8 +88,8 @@ struct WB_ALIGN(4) AddressInfo
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 514;
 
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> name;
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> address;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > name;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > address;
 };
 
 struct WB_ALIGN(4) HRData

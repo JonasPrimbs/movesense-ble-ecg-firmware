@@ -1,0 +1,30 @@
+swagger: '2.0'
+
+info:
+  version: NA
+  title: Movesense-API configuration file.
+  description: |
+    This file configures movesense specific configuration parameters such as datalogger details
+  x-api-type: public
+  x-api-required: true
+
+
+datalogger:
+    version: "1.0"
+    type: "config"
+
+    resources:
+      /Meas/ECG/.*:
+        array-lengths: 16
+      /Meas/Acc/.*:
+        array-lengths: 1,2,4,8
+      /Meas/Gyro/.*:
+        array-lengths: 1,2,4,8
+      /Meas/Magn/.*:
+        array-lengths: 1,2,4,8
+      /Meas/IMU9/.*:
+        array-lengths: 1,2,4,8
+      /Meas/IMU6/.*:
+        array-lengths: 1,2,4,8
+      /Meas/IMU6m/.*:
+        array-lengths: 1,2,4,8

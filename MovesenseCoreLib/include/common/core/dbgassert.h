@@ -2,11 +2,14 @@
 
 #ifdef __cplusplus
 extern "C" {
+#else
+
+#include <stdbool.h> // bool
+
 #endif
 
 #include "buildconfig/bsp/config.h"
 #include <common/compiler/genDef.h>
-#include <stdbool.h> // bool
 #include <stddef.h>  // size_t
 
 void systemAbort(void);

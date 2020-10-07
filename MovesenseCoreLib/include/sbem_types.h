@@ -4,7 +4,6 @@
 #include "whiteboard/Identifiers.h"
 #include "whiteboard/Value.h"
 #include "common/core/debug.h"
-#include "movesense.h"
 
 #define CREATE_GROUP(name, ...)                                                                    \
     static const uint16 name##_items_items[] = {__VA_ARGS__};                                             \

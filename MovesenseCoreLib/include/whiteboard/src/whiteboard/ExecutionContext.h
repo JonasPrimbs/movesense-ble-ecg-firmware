@@ -25,6 +25,25 @@ private:
 
 public:
     /**
+    * Gets execution context ID for given execution context name
+    *
+    * @param executionContextName Name of the execution context
+    * @return ID of the execution context or ID_INVALID_EXECUTION_CONTEXT if the execution context was not found
+    */
+    static ExecutionContextId tryFindExecutionContextByName(
+        const char* executionContextName);
+
+    /**
+    * Gets execution context ID for given execution context name
+    *
+    * @param executionContextName Name of the execution context
+    * @param rWhiteboard Whiteboard instance to use
+    * @return ID of the execution context or ID_INVALID_EXECUTION_CONTEXT if the execution context was not found
+    */
+    static ExecutionContextId tryFindExecutionContextByName(
+        const char* executionContextName, const Whiteboard& rWhiteboard);
+
+    /**
     * Checks whether this is the local execution thread of the given of execution context
     *
     * @param executionContextId ID of execution context to compare
@@ -124,7 +143,7 @@ public:
     * @see ResourceSubtreeRegistration class is used to install this hook function.
     */
     typedef IFunctor4<bool, whiteboard::ClientId, whiteboard::ResourceId, const whiteboard::Value&, const whiteboard::ParameterList&>
-        NoticationFilterFunc;
+        NotificationFilterFunc;
 };
 
 } // namespace whiteboard
