@@ -30,7 +30,6 @@
 */
 
 #include <stdint.h>
-#include <stdbool.h>
 
 #include "common/compiler/genDef.h"
 #include "common/compiler/pack.h"

@@ -16,7 +16,10 @@ WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(AdvParams) == 4, AlignmentOfStructure_AdvPara
 WB_STATIC_VERIFY(sizeof(AdvState) == 12, SizeOfStructure_AdvState_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(AdvState) == 4, AlignmentOfStructure_AdvState_IsNotWhatExpected);
 
-WB_STATIC_VERIFY(sizeof(AdvSettings) == 28, SizeOfStructure_AdvSettings_IsNotWhatExpected);
+WB_STATIC_VERIFY(sizeof(AdvProps) == 3, SizeOfStructure_AdvProps_IsNotWhatExpected);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(AdvProps) == 1, AlignmentOfStructure_AdvProps_IsNotWhatExpected);
+
+WB_STATIC_VERIFY(sizeof(AdvSettings) == 32, SizeOfStructure_AdvSettings_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(AdvSettings) == 4, AlignmentOfStructure_AdvSettings_IsNotWhatExpected);
 
 WB_STATIC_VERIFY(sizeof(PeerEntry) == 20, SizeOfStructure_PeerEntry_IsNotWhatExpected);

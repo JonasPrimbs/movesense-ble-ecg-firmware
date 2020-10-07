@@ -25,13 +25,19 @@
 /** Maximum number of structure properties. */
 #define WB_MAX_NUMBER_OF_STRUCTURE_PROPERTIES 64
 
+/** Maximum depth of structures. */
+#define WB_MAX_STRUCTURE_DEPTH 4
+
 /** Maximum size of message payload */
-#define WB_MAX_MESSAGE_PAYLOAD_LENGTH 470
+#define WB_MAX_MESSAGE_PAYLOAD_LENGTH 466 // was 470, optional 4 bytes used for 32 bit timestamp in the datamessage serialisation
 
 /** Minimum length of whiteboard messages */
 #define WB_MIN_MESSAGE_LENGTH 6
 
-/** Maximum length of whiteboard messages */
+/** Maximum length of Whiteboard messages. Changing this will break backwards compatibility. This might be ok, if it is otherwise
+ * guaranteed that larger messages are not used with "older" devices. If you plan to increase this, see also StructureValueHeader
+ * that defines that maximum size of single structure is 511 bytes (there are some extra bits to increase this).
+ */
 #define WB_MAX_MESSAGE_LENGTH 512
 
 /** Message alignment */

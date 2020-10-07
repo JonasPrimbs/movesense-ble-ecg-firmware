@@ -14,7 +14,7 @@ static const size_t WB_SYSEVENT_SEVERITY_COUNT = 4;
 *
 * @see WbSystemEventModule
 */
-static const size_t WB_SYSEVENT_MODULE_COUNT = 5;
+static const size_t WB_SYSEVENT_MODULE_COUNT = 7;
 
 /** Array of bools for doing run-time checking whether system event logging is enabled
  * for specific system event. Using here more memory than needed to have simpler check.

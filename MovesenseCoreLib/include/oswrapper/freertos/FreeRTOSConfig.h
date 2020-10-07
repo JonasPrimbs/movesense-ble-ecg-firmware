@@ -110,9 +110,9 @@
 /**
  * Tick/tickless configuration
  */
-
 // Frequency of the scheduling tick when it's active
 #define configTICK_RATE_HZ ((TickType_t)KERNEL_TICK_RATE_HZ)
+/*
 #if defined(BUILD_BSP_TICKLESS_AGGRESSIVE)
 // Use custom tickless implementation (LPTMR based)
 // Must define this since regular systick is still being compiled and needs this
@@ -130,7 +130,7 @@
 #define configCPU_CLOCK_HZ (MAXFREQ_ACTUAL_HZ)
 #define xPortSysTickHandler SysTick_Handler
 #endif
-
+*/
 // Additional debugging facility for task switching using pinreflect
 #ifdef ARCH_KINETIS_K
 #if defined(__STDC__)
@@ -195,6 +195,7 @@ extern void WD_feed(void);
 #define configTICK_SOURCE						FREERTOS_USE_RTC
 #define configSYSTICK_CLOCK_HZ  ( 32768UL )
 #define xPortSysTickHandler     RTC1_IRQHandler
+#define configUSE_TICKLESS_IDLE 1
 #else
 #define configTICK_SOURCE						FREERTOS_USE_SYSTICK
 #endif

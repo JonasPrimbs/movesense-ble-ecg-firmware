@@ -36,5 +36,6 @@ APPINFO_COMPANY("Movesense");
 
 // NOTE: SERIAL_COMMUNICATION macro has been DEPRECATED
 BLE_COMMUNICATION(true)
-//BLE_REQUIRE_BONDING(true)
+// Set Whiteboard communication to require an encrypted (bonded) connection
+BLE_REQUIRE_BONDING(true)
 MOVESENSE_FEATURES_END()

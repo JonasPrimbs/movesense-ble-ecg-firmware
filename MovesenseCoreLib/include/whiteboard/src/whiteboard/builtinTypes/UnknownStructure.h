@@ -1,7 +1,8 @@
 #pragma once
 // Copyright (c) Suunto Oy 2015. All rights reserved.
 
-#include "whiteboard/metadata/IDataTypeMetadataContainer.h"
+#include "whiteboard/Identifiers.h"
+#include "whiteboard/metadata/IDataTypeMetadata.h"
 
 WB_HEADER_CHECK_DEFINE(WB_HAVE_UNKNOWN_STRUCTURES)
 
@@ -97,100 +98,93 @@ public:
     *
     * @param nameId Name ID of the enumeration type or ID_INVALID_STRING if enumeration is anonymous
     */
-    virtual void enterEnumeration(WB_RES::StringId /*nameId*/) {}
+    virtual void enterEnumeration(metadata::StringId /*nameId*/) {}
 
     /** Called when structure deserializer exits enumeration
     *
     * @param nameId Name ID of the enumeration type or ID_INVALID_STRING if enumeration is anonymous
     */
-    virtual void exitEnumeration(WB_RES::StringId /*nameId*/) {}
+    virtual void exitEnumeration(metadata::StringId /*nameId*/) {}
 
     /** Called when structure deserializer deserializes enumeration value
     *
     * @param data Data that was deserialized
     * @param nameId Name ID of the value
     */
-    virtual void onEnumerationValue(int8 /*data*/, WB_RES::StringId /*nameId*/) {}
+    virtual void onEnumerationValue(int8 /*data*/, metadata::StringId /*nameId*/) {}
 
     /** Called when structure deserializer deserializes enumeration value
     *
     * @param data Data that was deserialized
     * @param nameId Name ID of the value
     */
-    virtual void onEnumerationValue(int16 /*data*/, WB_RES::StringId /*nameId*/) {}
+    virtual void onEnumerationValue(int16 /*data*/, metadata::StringId /*nameId*/) {}
 
     /** Called when structure deserializer deserializes enumeration value
     *
     * @param data Data that was deserialized
     * @param nameId Name ID of the value
     */
-    virtual void onEnumerationValue(int32 /*data*/, WB_RES::StringId /*nameId*/) {}
+    virtual void onEnumerationValue(int32 /*data*/, metadata::StringId /*nameId*/) {}
 
     /** Called when structure deserializer deserializes enumeration value
     *
     * @param data Data that was deserialized
     * @param nameId Name ID of the value
     */
-    virtual void onEnumerationValue(int64 /*data*/, WB_RES::StringId /*nameId*/) {}
+    virtual void onEnumerationValue(uint8 /*data*/, metadata::StringId /*nameId*/) {}
 
     /** Called when structure deserializer deserializes enumeration value
     *
     * @param data Data that was deserialized
     * @param nameId Name ID of the value
     */
-    virtual void onEnumerationValue(uint8 /*data*/, WB_RES::StringId /*nameId*/) {}
+    virtual void onEnumerationValue(uint16 /*data*/, metadata::StringId /*nameId*/) {}
 
     /** Called when structure deserializer deserializes enumeration value
     *
     * @param data Data that was deserialized
     * @param nameId Name ID of the value
     */
-    virtual void onEnumerationValue(uint16 /*data*/, WB_RES::StringId /*nameId*/) {}
-
-    /** Called when structure deserializer deserializes enumeration value
-    *
-    * @param data Data that was deserialized
-    * @param nameId Name ID of the value
-    */
-    virtual void onEnumerationValue(uint32 /*data*/, WB_RES::StringId /*nameId*/) {}
+    virtual void onEnumerationValue(uint32 /*data*/, metadata::StringId /*nameId*/) {}
 
     /** Called when structure deserializer enters sub structure
     *
     * @param nameId Name ID of the structure type or ID_INVALID_STRING if structure is anonymous
     */
-    virtual void enterStructure(WB_RES::StringId /*nameId*/) {}
+    virtual void enterStructure(metadata::StringId /*nameId*/) {}
 
     /** Called when structure deserializer exits sub structure
     *
     * @param nameId Name ID of the structure type or ID_INVALID_STRING if structure is anonymous
     */
-    virtual void exitStructure(WB_RES::StringId /*nameId*/) {}
+    virtual void exitStructure(metadata::StringId /*nameId*/) {}
 
     /** Called when structure deserializer enters property
     *
     * @param nameId Name ID of the property
     * @param hasValue A value indicating whether the property has a value
     */
-    virtual void enterProperty(WB_RES::StringId /*nameId*/, bool /*hasValue*/) {}
+    virtual void enterProperty(metadata::StringId /*nameId*/, bool /*hasValue*/) {}
 
     /** Called when structure deserializer exits property
     *
     * @param nameId Name ID of the property
     */
-    virtual void exitProperty(WB_RES::StringId /*nameId*/) {}
+    virtual void exitProperty(metadata::StringId /*nameId*/) {}
 
     /** Called when structure deserializer enters array
     *
     * @param nameId Name ID of the array type or ID_INVALID_STRING if array is anonymous
     * @param numberOfItems Number of items in the array
     */
-    virtual void enterArray(WB_RES::StringId /*nameId*/, size_t /*numberOfItems*/) {}
+    virtual void enterArray(metadata::StringId /*nameId*/, size_t /*numberOfItems*/) {}
 
     /** Called when structure deserializer exits array
     *
     * @param nameId Name ID of the array type or ID_INVALID_STRING if array is anonymous
     */
-    virtual void exitArray(WB_RES::StringId /*nameId*/) {}
+    virtual void exitArray(metadata::StringId /*nameId*/) {}
 
     /** Called when structure deserializer enters new array item
     */
@@ -220,6 +214,12 @@ public:
      * @param rOther UnknownStructure which ownership should be transferred
      */
     UnknownStructure(const UnknownStructure& rOther);
+
+    /** Assignment operator
+     *
+     * @param rOther UnknownStructure which ownership should be transferred
+     * @return Reference to this UnknownStructure instance
+     */
     UnknownStructure& operator=(const UnknownStructure& rOther);
 
     /** Destructor */
@@ -253,20 +253,7 @@ public:
     */
     bool deserialize(
         bool metadataForSenderDataType,
-        const IDataTypeMetadataContainer& rMetadataContainer,
-        IStructureDataVisitor& rTreeVisitor) const;
-
-    /** Deserializes the structure and calls tree visitor members while doing so.
-    *
-    * @param metadataForSenderDataType A value indicating whether the dataTypeId and rMetadataContainer
-    *        are for sender data types
-    * @param rMetadataMap Metadata map that can describe the structure type
-    * @param rDataVisitor Structure visitor instance that should handle the data
-    * @return A value indicating whether the structure was successfully deserialized
-    */
-    bool deserialize(
-        bool metadataForSenderDataType,
-        const MetadataMap& rMetadataMap,
+        const IDataTypeMetadata& rMetadataContainer,
         IStructureDataVisitor& rTreeVisitor) const;
 
     /** Copies unknown structure to a new instance. Both of the instances
@@ -279,10 +266,11 @@ private:
      *
      * @param dataTypeId ID of the data type
      * @param protocolVersion Protocol version that was used to encode the structure
+     * @param deserialized A value indicating whether the is deserialized
      * @param dataOwner Ownership of the data
      * @param pData Encoded data
      */
-    UnknownStructure(LocalDataTypeId dataTypeId, ProtocolVersion protocolVersion, bool dataOwner, const void* pData);
+    UnknownStructure(LocalDataTypeId dataTypeId, ProtocolVersion protocolVersion, bool deserialized, bool dataOwner, const void* pData);
 
 private:
     /** Library internal implementation can access these members */
@@ -294,8 +282,11 @@ private:
     /** Protocol version */
     ProtocolVersion mProtocolVersion;
 
+    /** A value indicating whether the is deserialized */
+    bool mDeserialized : 1;
+
     /** Ownership of the data */
-    mutable bool mDataOwner;
+    mutable bool mDataOwner : 1;
 
     /** The data */
     mutable const void* mpData;

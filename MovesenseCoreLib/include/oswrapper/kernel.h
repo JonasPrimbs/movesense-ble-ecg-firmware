@@ -16,6 +16,10 @@ extern "C" {
 void kernelRun(void);
 void kernelKill(void); // kill scheduler for debugging purposes. not recoverable
 
+// should be called after HW init and OS init to indicate kernel calls can be made
+void kernelReadyToOperate(void);
+bool isKernelReady(void);
+
 /// By default the FreeRTOS sleeps 1 ms in prvSimulatedPeripheralTimer
 /// This function can be used to add multiplier
 void kernelSetTickrate(uint32_t tickRate);
@@ -67,7 +71,7 @@ bool kernelHasMemoryAllocationError(void);
 * @param interruptNumber Number of the simulated interrupt
 * @param interruptHandler Interrupt handler function
 */
-void kernelSetSimulatedInterruptHandler(uint32_t interruptNumber, uint32_t (*interruptHandler)(void));
+void kernelSetSimulatedInterruptHandler(uint32_t interruptNumber, void (*interruptHandler)(void));
 
 /*
 * Raise a simulated interrupt

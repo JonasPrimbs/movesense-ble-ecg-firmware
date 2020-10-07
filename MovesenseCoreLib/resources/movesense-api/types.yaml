@@ -95,3 +95,32 @@ definitions:
     example: 00:14:22:01:23:45
     minLength: 17
     maxLength: 17
+
+  ResetReasonEnum:
+    type: integer
+    format: uint32
+    enum:
+    - name: 'NONE'
+      description: No specific reason available.
+      value: 0
+    - name: 'ASSERT'
+      value: 1
+    - name: 'HARD_FAULT'
+      description: Default fault if none of the other types is suitable. Also error during fault processing triggers this.
+      value: 2
+    - name: 'MEM_FAULT'
+      description: Memory access fault triggered by the MPU protection.
+      value: 3
+    - name: 'BUS_FAULT'
+      description: Memory access errors on instruction fetch, data read/write, interrupt vector fetch, and register stacking (save/restore) on interrupt (entry/exit).
+      value: 4
+    - name: 'USAGE_FAULT'
+      description: Execution of undefined instructions, unaligned memory access for load/store multiple.
+      value: 5
+# additional, derived from HW status registers
+    - name: 'WATCHDOG'
+      description: System was reset by the HW watchdog.
+      value: 6
+    - name: 'DIV_BY_ZERO'
+      description: Division by zero error.
+      value: 7

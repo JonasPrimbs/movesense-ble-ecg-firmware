@@ -14,7 +14,6 @@
 */
 
 #include <stdint.h>
-#include <stdbool.h>
 
 #include "common/compiler/genDef.h"
 #include "chunkStorage.h"

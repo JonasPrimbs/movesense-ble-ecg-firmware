@@ -1,0 +1,77 @@
+# Copyright Suunto Oy 2018
+# All rights reserved.
+#
+swagger: '2.0'
+
+# Document metadata
+info:
+  version: "0.9.0"
+  title: /Whiteboard API
+  description: |
+    This file defines Suunto Whiteboard Core Services API.
+
+    See http://developer.suunto.com for more information.
+  termsOfService: http://suunto.com/wbapi/terms/
+  contact:
+    name: Suunto team
+    url: http://developer.suunto.com
+  
+# Security definitions
+security:
+  - suuntoAccessCode:
+    - public
+
+securityDefinitions:
+  suuntoAccessCode:
+    type: oauth2
+    scopes:
+      public: Grants read/write access to public resources.
+    flow: accessCode
+    authorizationUrl: https://suunto.com/wbapi/login/oauth/authorize
+    tokenUrl: https://suunto.com/wbapi/login/oauth/access_token
+    
+# Paths
+paths:
+  /Whiteboard/Time:
+    get:
+      description: |
+        Gets current timestamp. Returns number of microseconds since epoch (00:00 1.1.1970).
+      responses:
+        200:
+          description: Operation completed successfully
+          schema:
+            type: integer
+            format: int64
+      security:
+        - suuntoAccessCode:
+          - public
+
+  /Whiteboard/Time/Subscription:
+    post:
+      description: |
+        Subscribes the client to receive time change event notification at once per second interval.
+      responses:
+        200:
+          description: |
+            Operation completed successfully. Returns current timestamp expressed as number of microseconds 
+            since epoch (00:00 1.1.1970).
+          schema:
+            type: integer
+            format: int64
+        x-notification:
+          description: New time expressed as number of microseconds since epoch (00:00 1.1.1970).
+          schema:
+            type: integer
+            format: int64
+      security:
+        - suuntoAccessCode:
+          - public
+    delete:
+      description: |
+        Unsubscribes the client from time change event notifications.
+      responses:
+        200:
+          description: Operation completed successfully
+      security:
+        - suuntoAccessCode:
+          - public

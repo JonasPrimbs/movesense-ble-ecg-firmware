@@ -1,3 +1,65 @@
+## Version 2.0.0.faefabe6891488 ##
+
+### Whats new:
+- Feature: BLE5 support (nRF SoftDevice v6.1.1)
+- Feature: Docker based build system for all environments (Issue #82)
+- Feature: Improved power-off logic of wakeup samples
+- Feature: DataLogger flush
+- Feature: 128bit UUID support for CustomGATTService
+- Feature: Array and datatype configuration for DataLogger
+- Feature: New sample gatt_sensordata_app for datastreams over GATT
+- Feature: Watchdog support (protects from stuck sensors, reset after 30seconds)
+- Feature: New nice HRS and NUS BLE modules
+####
+- Bugfix: App build, no ASSERT file path, only file name
+- Bugfix: Datalogger does not log ECG data
+- Bugfix: Faultcom reset reason sometimes gives wrong data
+- Bugfix: BLE Advertising starts too early
+- Bugfix: BLE service_changed called at wrong time
+- Bugfix: Sensor stuck if /misc/gear/id read fails
+- Bugfix: DataLogger writes invalid chunk
+- Bugfix: BLE/Adv doesn't support Non-Connectable (Issue #72)
+- Bugfix: OTA DFU fails for large apps (Issue #55)
+####
+- Technical: Change to 16bit Whiteboard ServiceUUID
+- Technical: Enabled "warnings as errors" in app builds
+- Technical: Much improved bootloader (blink during update, 6x speed, reset to app after timeout)
+
+### Known Bugs:
+- /Meas/IMU/Info gives invalid magnetometer scalings
+- Slow /Logbook/Entries with many logs
+- /Meas/ECG/info gives wrong current sample rate
+- Simulator has wrong speed and sporadic connetion issues
+- [DOC] Api default time when time is not explicitly set (Issue #45)
+
+
+### Notes:
+
+**This is a major update to Movesense core library. Practically everything has changed since 1.9.x**
+
+ - BLE stack (SoftDevice)
+ - Bootloader
+ - Nordics SDK
+ - Compiler environment and toolchains
+ 
+As a result extra care should be taken to make sure that your application works correctly. **Please read
+carefully the documentation in https://www.movesense.com/docs ** and test your sensor app thoroughly when moving to 2.0.
+
+#### About DFU update:
+
+Since the bootloader and softdevice have changed the DFU from older sensors **have to be performed** using the 
+ *xxxxxxx_w_bootloader.zip* DFU package. If the sensor already has 2.0 firmware the smaller DFU package 
+ can be used. 
+ 
+ **Reverting to older version is not possible using OTA update.**
+
+#### Flashing the sensor using JIG:
+
+Flashing system was changed so that now the only file that needs/must to be flashed is the *Movesense_combined.hex*. 
+Partial flashing will not work in most cases. For more read the documentation.
+
+
+
 ## Version 1.9.4.57e7d2e4fcbe
 
 ### Whats new:

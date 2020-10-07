@@ -1,7 +1,7 @@
 #pragma once
 // Copyright (c) Suunto Oy 2015. All rights reserved.
 
-#include "whiteboard/metadata/IDataTypeMetadataContainer.h"
+#include "whiteboard/metadata/IDataTypeMetadata.h"
 
 WB_HEADER_CHECK_DEFINE(WB_HAVE_ALIEN_STRUCTURES)
 
@@ -9,6 +9,9 @@ WB_HEADER_CHECK_DEFINE(WB_HAVE_ALIEN_STRUCTURES)
 
 namespace whiteboard
 {
+
+// Forward declarations
+class EnumerationItemNameToValueMapper;
 
 /** Interface for retrieving data for serialization */
 class IStructureDataAccessor : public IDynamicallyAllocatable
@@ -104,28 +107,30 @@ public:
     /** Called when structure serializer enters enumeration
     *
     * @param nameId Name ID of the enumeration type or ID_INVALID_STRING if enumeration is anonymous
+    * @param rEnumerationItemValueMapper Object that can be used to find scalar values for enumeration item names. This
+    *        instance is destructed only after corresponding call to exitEnumeration
     * @return A value indicating whether the operation completed successfully
     */
-    virtual bool enterEnumeration(WB_RES::StringId nameId) = 0;
+    virtual bool enterEnumeration(metadata::StringId nameId, const EnumerationItemNameToValueMapper& rEnumerationItemValueMapper) = 0;
 
     /** Called when structure serializer exits enumeration
     *
     * @return A value indicating whether the operation completed successfully
     */
-    virtual bool exitEnumeration(WB_RES::StringId nameId) = 0;
+    virtual bool exitEnumeration(metadata::StringId nameId) = 0;
 
     /** Called when structure serializer enters sub structure
     *
     * @param nameId Name ID of the structure type or ID_INVALID_STRING if structure is anonymous
     * @return A value indicating whether the operation completed successfully
     */
-    virtual bool enterStructure(WB_RES::StringId nameId) = 0;
+    virtual bool enterStructure(metadata::StringId nameId) = 0;
 
     /** Called when structure serializer exits sub structure
     *
     * @return A value indicating whether the operation completed successfully
     */
-    virtual bool exitStructure(WB_RES::StringId nameId) = 0;
+    virtual bool exitStructure(metadata::StringId nameId) = 0;
 
     /** Called when structure serializer enters property
     *
@@ -134,14 +139,14 @@ public:
     * @param rHasValue On output contains a value indicating whether the optional has a value
     * @return A value indicating whether the operation completed successfully
     */
-    virtual bool enterProperty(WB_RES::StringId nameId, bool required, bool& rHasValue) = 0;
+    virtual bool enterProperty(metadata::StringId nameId, bool required, bool& rHasValue) = 0;
 
     /** Called when structure serializer exits property
     *
     * @param nameId Name ID of the property
     * @return A value indicating whether the operation completed successfully
     */
-    virtual bool exitProperty(WB_RES::StringId nameId) = 0;
+    virtual bool exitProperty(metadata::StringId nameId) = 0;
 
     /** Called when structure serializer enters array
     *
@@ -149,14 +154,14 @@ public:
     * @param rNumberOfItems On output contains number of items in the array
     * @return A value indicating whether the data was retrieved
     */
-    virtual bool enterArray(WB_RES::StringId nameId, uint16& rNumberOfItems) = 0;
+    virtual bool enterArray(metadata::StringId nameId, uint16& rNumberOfItems) = 0;
 
     /** Called when structure serializer exits array
     *
     * @param nameId Name ID of the array type or ID_INVALID_STRING if array is anonymous
     * @return A value indicating whether the operation completed successfully
     */
-    virtual bool exitArray(WB_RES::StringId nameId) = 0;
+    virtual bool exitArray(metadata::StringId nameId) = 0;
 
     /** Called when structure serializer enters new array item
     *
@@ -183,7 +188,7 @@ public:
      * @param dataTypeId ID of the datatype
      */
     AlienStructure(
-        const IDataTypeMetadataContainer& rMetadataContainer,
+        const IDataTypeMetadata& rMetadataContainer,
         IStructureDataAccessor& rDataAccessor,
         LocalDataTypeId dataTypeId);
 
@@ -197,7 +202,7 @@ public:
     }
 
     /** Gets metadata container that can be used to retrieve information about given datatype */
-    inline const IDataTypeMetadataContainer& getMetadataContainer() const
+    inline const IDataTypeMetadata& getMetadataContainer() const
     {
         return mrMetadataContainer;
     }
@@ -217,37 +222,43 @@ public:
 private:
     /** Validates given data type befre serialization
     *
+    * @param dataTypeId ID of the data type
     * @param rDataType Metadata of the data type
     * @param nameId Name id of the current data type or ID_INVALID_STRING data type is anonynous
     * @return A value indicating whether the data type was successfully validated
     */
     bool validate(
-        const WB_RES::DataTypeMetadata& rDataType,
-        WB_RES::StringId nameId);
+        LocalDataTypeId dataTypeId,
+        const metadata::DataType& rDataType,
+        metadata::StringId nameId);
 
     /** Validates given array data type befre serialization
     *
+    * @param itemDataTypeId ID of the data type
     * @param rItemDataType Metadata of the array item
     * @param nameId Name id of the current data type or ID_INVALID_STRING data type is anonynous
     * @return A value indicating whether the data type was successfully validated
     */
     bool validateArray(
-        const WB_RES::DataTypeMetadata& rItemDataType,
-        WB_RES::StringId nameId);
+        LocalDataTypeId itemDataTypeId,
+        const metadata::DataType& rItemDataType,
+        metadata::StringId nameId);
 
     /** Validates given property type befre serialization
     *
     * @param rProperty Metadata of the property
+    * @param baseDataTypeId ID of the data type
     * @param rBaseDataType Metadata of the propertys data type
     * @return A value indicating whether the property was successfully validated
     */
     bool validateProperty(
-        const WB_RES::StructurePropertyMetadata& rProperty,
-        const WB_RES::DataTypeMetadata& rBaseDataType);
+        const metadata::Property& rProperty,
+        LocalDataTypeId baseDataTypeId,
+        const metadata::DataType& rBaseDataType);
 
 private:
     /** Metadata container that can be used to retrieve information about given datatype */
-    const IDataTypeMetadataContainer& mrMetadataContainer;
+    const IDataTypeMetadata& mrMetadataContainer;
     
     /** Data accessor instance that can be used to retrieve data for the datatype */
     IStructureDataAccessor& mrDataAccessor;

@@ -2,7 +2,9 @@
 // Copyright (c) Suunto Oy 2016. All rights reserved.
 
 #include "whiteboard/Value.h"
+#ifdef WB_HAVE_HASH_STRING
 #include "whiteboard/builtinTypes/HashString.h"
+#endif
 
 namespace whiteboard
 {

@@ -5,6 +5,7 @@
 
 
 static const unsigned short META_DATATYPE_LID = 11;
+static const unsigned short META_DATATYPEID_LID = 15;
 static const unsigned short META_EXECUTIONCONTEXT_LID = 1;
 static const unsigned short META_HASH_LID = 14;
 static const unsigned short META_METADATASTREAM_LID = 13;
@@ -41,4 +42,5 @@ static const unsigned short WHITEBOARD_TEST_ECHO_LID = 275;
 static const unsigned short WHITEBOARD_TEST_NULL_LID = 276;
 static const unsigned short WHITEBOARD_TEST_PING_LID = 277;
 static const unsigned short WHITEBOARD_TEST_ZERO_LID = 278;
+static const unsigned short WHITEBOARD_TIME_LID = 279;
 

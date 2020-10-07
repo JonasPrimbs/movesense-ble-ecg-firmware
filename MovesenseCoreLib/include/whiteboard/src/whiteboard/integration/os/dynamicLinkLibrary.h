@@ -99,6 +99,50 @@ public:
         return static_cast<EntryPointFunc>(pEntryPoint)(param1, param2);
     }
 
+    /** Creates a new instance of object with type T
+    *
+    * @param entryPoint Name of the entry point function
+    * @param param1 First parameter to the entry point function
+    * @param param2 Second parameter to the entry point function
+    * @param param3 Third parameter to the entry point function
+    * @return New instance or NULL if dll could not be loaded or entry point was not found
+    */
+    template <typename T, typename P1, typename P2, typename P3>
+    T * createInterface(const char* entryPoint, P1 param1, P2 param2, P3 param3)
+    {
+        void* pEntryPoint = getEntryPoint(entryPoint);
+        if (pEntryPoint == NULL)
+        {
+            return NULL;
+        }
+
+        typedef T* (*EntryPointFunc)(P1, P2, P3);
+        return static_cast<EntryPointFunc>(pEntryPoint)(param1, param2, param3);
+    }
+
+    /** Creates a new instance of object with type T
+     *
+     * @param entryPoint Name of the entry point function
+     * @param param1 First parameter to the entry point function
+     * @param param2 Second parameter to the entry point function
+     * @param param3 Third parameter to the entry point function
+     * @param param4 Fourth parameter to the entry point function
+     * @return New instance or NULL if dll could not be loaded or entry point was not found
+     */
+    template <typename T, typename P1, typename P2, typename P3, typename P4>
+    T* createInterface(const char* entryPoint, P1 param1, P2 param2, P3 param3, P4 param4)
+    {
+        void* pEntryPoint = getEntryPoint(entryPoint);
+        if (pEntryPoint == NULL)
+        {
+            return NULL;
+        }
+
+        typedef T* (*EntryPointFunc)(P1, P2, P3, P4);
+        return static_cast<EntryPointFunc>(pEntryPoint)(param1, param2, param3, param4);
+    }
+
+
 private:
     void* getEntryPoint(const char* entryPoint)
     {

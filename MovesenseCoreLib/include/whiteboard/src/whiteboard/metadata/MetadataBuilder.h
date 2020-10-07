@@ -55,7 +55,7 @@ public:
     * @param unitInfo Unit information
     * @return Id of the added scalar datatype
     */
-    metadata::DataTypeId addScalarDataType(ValueType type, unit::Info unitInfo);
+    LocalDataTypeId addScalarDataType(ValueType type, unit::Info unitInfo);
 
     /** Adds a named datatype to resource metadata
     *
@@ -63,14 +63,14 @@ public:
     * @param dataTypeId Base data type
     * @return Id of the added named datatype
     */
-    metadata::DataTypeId addNamedDataType(metadata::StringId nameId, metadata::DataTypeId dataTypeId);
+    LocalDataTypeId addNamedDataType(metadata::StringId nameId, LocalDataTypeId dataTypeId);
 
     /** Adds a array datatype to resource metadata
     *
     * @param dataTypeId Item data type
     * @return Id of the added array datatype
     */
-    metadata::DataTypeId addArrayDataType(metadata::DataTypeId dataTypeId);
+    LocalDataTypeId addArrayDataType(LocalDataTypeId dataTypeId);
  
     /** Adds a structure property to resource metadata
     *
@@ -88,7 +88,7 @@ public:
     * @return Id of the added structure property
     */
     metadata::PropertyId addProperty(
-        metadata::StringId nameId, metadata::DataTypeId dataTypeId, bool required, bool inlineStorage);
+        metadata::StringId nameId, LocalDataTypeId dataTypeId, bool required, bool inlineStorage);
 
     /** Adds a list of properties to resource metadata
     *
@@ -117,7 +117,7 @@ public:
     * @return Id of the added structure
     */
     template <size_t N>
-    inline metadata::DataTypeId addStructureDataType(const metadata::PropertyId propertyIds[N])
+    inline LocalDataTypeId addStructureDataType(const metadata::PropertyId propertyIds[N])
     {
         return addStructureDataType(addPropertyList(N, propertyIds));
     }
@@ -128,7 +128,7 @@ public:
     * @param propertyIds List of properties
     * @return Id of the added structure
     */
-    inline metadata::DataTypeId addStructureDataType(size_t numberOfProperties, const metadata::PropertyId* propertyIds)
+    inline LocalDataTypeId addStructureDataType(size_t numberOfProperties, const metadata::PropertyId* propertyIds)
     {
         return addStructureDataType(addPropertyList(numberOfProperties, propertyIds));
     }
@@ -138,7 +138,7 @@ public:
     * @param propertyListId ID of property list
     * @return Id of the added structure
     */
-    metadata::DataTypeId addStructureDataType(metadata::PropertyListId propertyListId);
+    LocalDataTypeId addStructureDataType(metadata::PropertyListId propertyListId);
 
     /** Adds a list of enumeration items to resource metadata
     *
@@ -168,8 +168,8 @@ public:
     * @return Id of the added enumeration data type
     */
     template <size_t N>
-    inline metadata::DataTypeId addEnumerationDataType(
-        metadata::DataTypeId dataTypeId, const metadata::EnumerationItem items[N])
+    inline LocalDataTypeId addEnumerationDataType(
+        LocalDataTypeId dataTypeId, const metadata::EnumerationItem items[N])
     {
         return addEnumerationDataType(dataTypeId, addEnumerationItemList(N, items));
     }
@@ -181,8 +181,8 @@ public:
     * @param pItems List of enumeration items to add
     * @return Id of the added enumeration data type
     */
-    inline metadata::DataTypeId addEnumerationDataType(
-        metadata::DataTypeId dataTypeId, size_t numberOfItems, const metadata::EnumerationItem* pItems)
+    inline LocalDataTypeId addEnumerationDataType(
+        LocalDataTypeId dataTypeId, size_t numberOfItems, const metadata::EnumerationItem* pItems)
     {
         return addEnumerationDataType(dataTypeId, addEnumerationItemList(numberOfItems, pItems));
     }
@@ -193,8 +193,8 @@ public:
     * @param enumerationItemListId Enumeration item list
     * @return Id of the added enumeration data type
     */
-    metadata::DataTypeId addEnumerationDataType(
-        metadata::DataTypeId dataTypeId, metadata::EnumerationItemListId enumerationItemListId);
+    LocalDataTypeId addEnumerationDataType(
+        LocalDataTypeId dataTypeId, metadata::EnumerationItemListId enumerationItemListId);
 
     /** Adds a parameter to resource metadata
     *
@@ -210,7 +210,7 @@ public:
     * @param dataTypeId Id of the parameter's data type
     * @return Id of the added parameter
     */
-    metadata::ParameterId addParameter(metadata::StringId nameId, bool required, metadata::DataTypeId dataTypeId);
+    metadata::ParameterId addParameter(metadata::StringId nameId, bool required, LocalDataTypeId dataTypeId);
 
     /** Adds a parameter list to resource metadata
     *
@@ -254,9 +254,6 @@ public:
     */
     metadata::ParameterListId addParameterList(size_t numberOfParameters, const metadata::ParameterId* parameterIds);
 
-    /** Response code that is used to indicate notifications */
-    static const Result NOTIFICATION = static_cast<Result>(0);
-
     /** Adds a response to resource metadata
     *
     * @param rResponse Response to add
@@ -270,9 +267,19 @@ public:
     * @param dataTypeId Optional data type of the response
     * @return Id of the added response
     */
-    metadata::ResponseId addResponse(Result resultCode, metadata::DataTypeId dataTypeId = metadata::INVALID_DATATYPE);
+    metadata::ResponseId addResponse(Result resultCode, LocalDataTypeId dataTypeId = ID_INVALID_LOCAL_DATA_TYPE);
+
+    /** Adds a notification to resource metadata
+    *
+    * @param dataTypeId Data type of the notification
+    * @param parameterListId Optional parameter list for the notification
+    * @return Id of the added notification typed response
+    */
+    metadata::ResponseId addNotification(LocalDataTypeId dataTypeId, metadata::ParameterListId parameterListId = metadata::INVALID_PARAMETER_LIST);
 
     /** Adds a response list to resource metadata
+    *
+    * @note Notification must be first member subscription response lists
     *
     * @tparam N Size of the response list
     * @param responseIds List of responses to add
@@ -285,6 +292,8 @@ public:
     }
 
     /** Adds a response list to resource metadata
+    *
+    * @note Notification must be first member subscription response lists
     *
     * @param responseId1 Optional 1st response of the list
     * @param responseId2 Optional 2nd response of the list
@@ -311,6 +320,8 @@ public:
         const metadata::ResponseId responseId10 = metadata::INVALID_RESPONSE);
 
     /** Adds a response list to resource metadata
+    *
+    * @note Notification must be first member subscription response lists
     *
     * @param numberOfResponses Size of the response list
     * @param responseIds List of responses to add

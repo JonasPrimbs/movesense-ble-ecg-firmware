@@ -31,11 +31,19 @@ private:
     /** @see whiteboard::ResourceClient::onTimer */
     virtual void onTimer(wb::TimerId timerId) OVERRIDE;
 
+    virtual void onGetResult(whiteboard::RequestId requestId,
+                             whiteboard::ResourceId resourceId,
+                             whiteboard::Result resultCode,
+                             const whiteboard::Value& result) OVERRIDE;
+
+
     /**
     *	Prepare to shutdown and set timer
     */
     void setShutdownTimer();
 
     wb::TimerId mTimer;
-    uint32_t counter;
+    uint32_t mCounter;
+    bool mLeadsConnected;
+    uint8_t mDataLoggerState;
 };

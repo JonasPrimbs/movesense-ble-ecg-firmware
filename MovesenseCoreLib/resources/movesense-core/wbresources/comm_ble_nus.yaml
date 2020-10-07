@@ -1,0 +1,65 @@
+swagger: '2.0'
+
+info:
+  version: NA
+  title: BLE HRS GATT service - Movesense core-API
+  description: |
+    API for creating and controlling  Movesense core NUS service module.
+  x-api-type: public
+  x-api-required: false
+  x-api-state: experimental
+
+paths:
+
+  /Comm/Ble/NUS:
+    post:
+      description: |
+        Send data
+      parameters:
+        - name: data
+          in: body
+          description: Send data to recipient
+          required: true
+          schema:
+            $ref: '#/definitions/NUSData'
+      responses:
+        200:
+          description: Operation completed successfully
+        400:
+          description: Data-array too long
+        500:
+          description: Error sending data
+        503:
+          description: Client notification not enabled, so cannot send
+
+  /Comm/Ble/NUS/Subscription:
+    post:
+      description: |
+        Subscribe to receive NUS data.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-notification:
+          description: received data
+          schema:
+            $ref: '#/definitions/NUSData'
+
+    delete:
+        description: |
+            Unsubscribe from NUS data.
+        responses:
+          200:
+            description: Operation completed successfully
+
+definitions:
+  NUSData:
+    type: object
+    required:
+      - bytes
+    properties:
+      bytes:
+        description: array of data bytes
+        type: array
+        items:
+          type: integer
+          format: uint8

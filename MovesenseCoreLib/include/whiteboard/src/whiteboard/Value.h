@@ -13,7 +13,9 @@
 #include "whiteboard/builtinTypes/Date.h"
 #include "whiteboard/builtinTypes/DateTime.h"
 #include "whiteboard/builtinTypes/ByteStream.h"
+#ifdef WB_HAVE_HASH_STRING
 #include "whiteboard/builtinTypes/HashString.h"
+#endif
 #include "whiteboard/builtinTypes/Time.h"
 #include "whiteboard/builtinTypes/Timestamp.h"
 #include "whiteboard/builtinTypes/Vector2D.h"
@@ -84,6 +86,15 @@ public:
      * @param rValue Reference to the value
      */
     template <typename NativeType> EXPLICIT inline Value(const NativeType& rValue);
+
+    /** Constructor for creating value from another value
+    *
+    * @param value Source instance to copy content from.
+    */
+    Value(const Value& value)
+    {
+        assign(value);
+    }
 
     /** Destructor */
     inline ~Value();
@@ -160,6 +171,20 @@ public:
     template <typename NativeType>
     inline typename ConvertResult<NativeType>::type convertTo(const unit::Info& rSourceUnit, const unit::Info& rTargetUnit) const;
 
+#if WB_HAVE_OPERATION_TIMESTAMP
+    /** Get the time of creation of the value.
+    * If the value is coming from a separate physical device the time is then from the
+    * timebase of that other device.
+    * @return OperationTimestamp the time of creation of the value.
+    */
+    inline OperationTimestamp getCreationTime() const;
+
+    /** Query if the value has been timestamped upon creation.
+    * @return True if timestamp is attached.
+    */
+    inline bool hasCreationTime() const { return mIsTimestampedValue == 1; }
+#endif // #if WB_HAVE_OPERATION_TIMESTAMP
+
 private:
     // Disallow some constructors to avoid nasty accidental misusage
     template <typename T>
@@ -171,11 +196,7 @@ private:
 #endif
 
     // Assignment operator is allowed only for internal use
-#ifdef WB_HAVE_CPLUSPLUS_11
-    inline Value& operator=(const Value&) = default;
-#else
     inline Value& operator=(const Value&);
-#endif
 
 private:
 
@@ -203,17 +224,12 @@ private:
      */
     inline Value(LocalDataTypeId dataTypeId, ProtocolVersion protocolVersion, const void* pData);
 
-    /** Structure value deserializer
-     *
-     * @return Pointer to deserialized structure
-     */
-    const void* deserialize();
-
     /** Helper for convertTo for checking the that the dataType of the Value matches */
     void dataTypeCheck(size_t dataTypeId) const;
     
     /** Internal cast function for casting to bool type, required to dodge certain compiler warnings. */
     bool castToBool() const;
+
 public:
     /** Deserialization state flags */
     enum DeserializationState
@@ -224,9 +240,15 @@ public:
         DESERIALIZATION_NOT_SUPPORTED
     };
 
-private:
+protected:
     /** Library internal implementation can access these members */
     friend class ValueAccessor;
+
+    /** Structure value deserializer
+    *
+    * @return Pointer to deserialized structure
+    */
+    const void* deserialize();
 
     /** Data type of the value */
     LocalDataTypeId mDataTypeId;
@@ -246,13 +268,19 @@ private:
     /** A flag indicating whether the value is an AlienStructure */
     uint8 mIsAlienStructure : 1;
 
+    /** Flag to indicate that this value instance is wrapped into ValueWithTimestamp
+    * In data message serialisation the passed value indicates if a timestamp is also serialised in the message
+    * the value itself will not contain the timestamp as there may be multiple values in a single message.
+    */
+    uint8 mIsTimestampedValue : 1;
+
     /** Reserved for future use,
      *
      * @note Above flags have their own storage space only for convenience and debuggability.
      *       If we would need more flags we could have use
      *       union { mDeserializationState, struct { mIsUnknownStructure, mIsAlienStructure } }
      */
-    uint8 mReserved : 2;
+    uint8 mReserved : 1;
 
     /** Protocol version */
     ProtocolVersion mProtocolVersion;
@@ -261,6 +289,62 @@ private:
     const void* mpData;
 };
 
+#if WB_HAVE_OPERATION_TIMESTAMP
+/** Extended Value type for operation timestamps */
+class WB_API ValueWithTimestamp : public Value
+{
+public:
+    /** default constructor */
+    inline ValueWithTimestamp() : Value() { }
+
+    /** Construct a ValueWithTimestamp instance from a Value instance which may be an instance of ValueWithTimestamp */
+    inline ValueWithTimestamp(const Value& value) : Value(value)
+    {
+        if (value.hasCreationTime())
+        {
+            mCreationTime = value.getCreationTime();
+            Value::mIsTimestampedValue = true;
+        }
+    }
+
+    /** Construct a ValueWithTimestamp instance from a Value instance and given timestamp
+    * @param originalValue The Value instance
+    * @creationTime Time of creation of the value
+    * @param hasTimestamp Flag to indicate if the timestamp is to used or not
+    */
+    inline ValueWithTimestamp(const Value& originalValue, const OperationTimestamp& creationTime, bool hasTimestamp=true):
+        Value(originalValue), mCreationTime(creationTime)
+    {
+        Value::mIsTimestampedValue = hasTimestamp;
+    }
+
+    /** Get the creation timestamp of the Value instance
+    * @return the creation time
+    */
+    inline OperationTimestamp getCreationTime() const
+    {
+        return mCreationTime;
+    }
+
+    /** ValueWithTimestamp copy constructor
+    * @param value The instance to copy from
+    */
+    inline ValueWithTimestamp(const ValueWithTimestamp& value)
+    {
+        assign(value);
+    }
+
+    /** Copies value from another object. Only use if you know what you are doing :) */
+    inline void assign(const ValueWithTimestamp& that)
+    {
+        memcpy(this, &that, sizeof(*this));
+    }
+
+private: 
+    OperationTimestamp mCreationTime;
+};
+#endif
+
 inline Value::Value()
     : mDataTypeId(WB_TYPE_NONE),
       mSenderDataType(1),
@@ -268,6 +352,7 @@ inline Value::Value()
       mDeserializationState(NO_DESERIALIZATION_NEEDED),
       mIsUnknownStructure(0),
       mIsAlienStructure(0),
+      mIsTimestampedValue(0),
       mReserved(0),
       mProtocolVersion(0),
       mpData(NULL)
@@ -281,6 +366,7 @@ inline Value::Value(char* rValue)
       mDeserializationState(NO_DESERIALIZATION_NEEDED),
       mIsUnknownStructure(0),
       mIsAlienStructure(0),
+      mIsTimestampedValue(0),
       mReserved(0),
       mProtocolVersion(0), 
       mpData(rValue)
@@ -300,6 +386,7 @@ inline Value::Value(const NativeType& rValue)
       mDeserializationState(NO_DESERIALIZATION_NEEDED),
       mIsUnknownStructure(0),
       mIsAlienStructure(0),
+      mIsTimestampedValue(0),
       mReserved(0),
       mProtocolVersion(0), 
       mpData(&rValue)
@@ -313,6 +400,7 @@ inline Value::Value(LocalDataTypeId dataTypeId, ProtocolVersion protocolVersion,
       mDeserializationState(NO_DESERIALIZATION_NEEDED),
       mIsUnknownStructure(0),
       mIsAlienStructure(0),
+      mIsTimestampedValue(0),
       mReserved(0),
       mProtocolVersion(protocolVersion),
       mpData(pData)
@@ -329,13 +417,12 @@ inline Value::~Value()
 #endif
 }
 
-#ifndef WB_HAVE_CPLUSPLUS_11
 inline Value& Value::operator=(const Value& rOther)
 {
     memcpy(this, &rOther, sizeof(Value));
+    mIsTimestampedValue = 0;
     return *this;
 }
-#endif
 
 inline ValueType Value::getType(LocalDataTypeId dataTypeId)
 {
@@ -699,4 +786,12 @@ template <typename NativeType> inline typename Value::ConvertResult<NativeType>:
     return convertTo<NativeType>();
 }
 
+#if WB_HAVE_OPERATION_TIMESTAMP
+OperationTimestamp Value::getCreationTime() const
+{
+    return mIsTimestampedValue ? static_cast<const ValueWithTimestamp*>(this)->getCreationTime() : 0;
+}
+#endif
+
 } // namespace whiteboard
+

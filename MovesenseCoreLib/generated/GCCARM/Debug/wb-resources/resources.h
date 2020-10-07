@@ -189,7 +189,7 @@ struct ScalarTypeValues
 		STRING = 12U,
 		LIST_OF_BYTES = 13U,
 		BYTE_STREAM = 14U,
-		LIST_OF_STRINGS = 15U,
+		HASH_STRING = 15U,
 		STRUCTURE = 16U
 	};
 };
@@ -247,7 +247,7 @@ struct WB_ALIGN(4) ListOfStrings
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 33;
 
-	WB_ALIGN(4) whiteboard::Array< whiteboard::WrapperFor32BitPointer<const char> > items;
+	WB_ALIGN(4) whiteboard::Array< whiteboard::WrapperFor32BitPointer< const char > > items;
 };
 
 struct WB_ALIGN(4) ExecutionContextMetadata
@@ -257,7 +257,7 @@ struct WB_ALIGN(4) ExecutionContextMetadata
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 34;
 
 	WB_ALIGN(1) whiteboard::ExecutionContextId id;
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> name;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > name;
 	WB_ALIGN(1) uint8 numberOfDpcs;
 	WB_ALIGN(1) uint8 numberOfRequests;
 	WB_ALIGN(1) uint8 numberOfResponses;
@@ -272,7 +272,7 @@ struct WB_ALIGN(4) ResourceMetadata
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 35;
 
 	WB_ALIGN(2) whiteboard::LocalResourceId id;
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> name;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > name;
 	WB_ALIGN(1) whiteboard::ExecutionContextId executionContextId;
 	WB_ALIGN(4) whiteboard::Array< LocalOperationId > operationIdList;
 	WB_ALIGN(2) LocalParameterId pathParameterId;
@@ -372,7 +372,7 @@ struct WB_ALIGN(4) StringMetadata
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 45;
 
 	WB_ALIGN(2) uint16 id;
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> name;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > name;
 };
 
 struct WB_ALIGN(4) WbInfo
@@ -381,7 +381,7 @@ struct WB_ALIGN(4) WbInfo
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 256;
 
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> version;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > version;
 	WB_ALIGN(1) uint8 commVersion;
 	WB_ALIGN(1) uint8 minCommVersion;
 };
@@ -402,7 +402,7 @@ struct WB_ALIGN(4) ThreadInfo
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 259;
 
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> name;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > name;
 	WB_ALIGN(1) ThreadState state;
 	WB_ALIGN(1) ThreadPriorityLevel basePriority;
 	WB_ALIGN(1) ThreadPriorityLevel currentPriority;
@@ -429,7 +429,7 @@ struct WB_ALIGN(4) PoolStats
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 261;
 
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> name;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > name;
 	WB_ALIGN(2) uint16 size;
 	WB_ALIGN(2) uint16 allocated;
 	WB_ALIGN(2) uint16 highWaterMark;
@@ -454,7 +454,7 @@ struct WB_ALIGN(4) EventQueueInfo
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 263;
 
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> name;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > name;
 	WB_ALIGN(4) uint32 size;
 	WB_ALIGN(4) uint32 used;
 	WB_ALIGN(4) uint32 total;
@@ -479,7 +479,7 @@ struct WB_ALIGN(4) SubscriptionInfo
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 265;
 
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> name;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > name;
 	WB_ALIGN(2) uint16 localClientId;
 	WB_ALIGN(4) whiteboard::Array< int32 > pathParams;
 	WB_ALIGN(1) whiteboard::Optional< bool > critical;
@@ -512,7 +512,7 @@ struct WB_ALIGN(4) RoutingTableEntry
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 269;
 
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> serialNumber;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > serialNumber;
 	WB_ALIGN(1) uint8 entryVersion;
 	WB_ALIGN(1) uint8 sequenceNumber;
 	WB_ALIGN(1) uint8 numberOfHops;
@@ -542,7 +542,7 @@ struct WB_ALIGN(4) LaunchableModule
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 275;
 
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> name;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > name;
 	WB_ALIGN(1) ModuleState state;
 };
 
@@ -661,6 +661,111 @@ struct META_DATATYPE
 		/** Compile time type checking */
 		inline static void typeCheck(
 			Parameters::TYPEID::ConstReferenceType,
+			const whiteboard::Api::OptionalParameter<Parameters::RESOURCEID::ConstReferenceType>& = whiteboard::NoType::NoValue)
+		{
+		}
+	};
+};
+
+struct META_DATATYPEID
+{
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 15, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 15;
+
+	struct GET
+	{
+		typedef whiteboard::StronglyTypedResult<uint16, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_FOUND> HTTP_CODE_NOT_FOUND;
+
+		struct Parameters
+		{
+			struct NAME
+			{
+				static const whiteboard::ParameterIndex Index = 0;
+
+				typedef const char* Type;
+				typedef Type ConstReferenceType;
+			};
+
+			typedef NAME Parameter1;
+
+			struct RESOURCEID
+			{
+				static const whiteboard::ParameterIndex Index = 1;
+
+				typedef uint16 Type;
+				typedef Type ConstReferenceType;
+			};
+
+			typedef RESOURCEID Parameter2;
+
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 2;
+		};
+
+		/** Reference wrapper for strongly typed parameter list for /Meta/DataTypeId */
+		class ParameterListRef
+		{
+		private:
+			/** Prevent use of default constructor */
+			ParameterListRef() DELETED;
+
+			/** Prevent use of copy constructor */
+			ParameterListRef(const ParameterListRef&) DELETED;
+
+			/** Prevent use of assignment operator */
+			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
+
+		public:
+			/** Constructor that initializes this class from existing parameter list
+			*
+			* @param rParameterList Reference to parameter list that contains untyped parameters
+			*/
+			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
+				: mrParameterList(rParameterList)
+			{
+			}
+
+			/** Gets NAME parameter value
+			*
+			* @return Current parameter value
+			*/
+			inline Parameters::NAME::ConstReferenceType getName() const
+			{
+				return mrParameterList[Parameters::NAME::Index].convertTo<Parameters::NAME::ConstReferenceType>();
+			}
+
+			/** Checks whether optional parameter RESOURCEID has a value
+			*
+			* @return A value indicating whether the parameter has a value
+			*/
+			inline bool hasResourceId() const
+			{
+				if (mrParameterList.getNumberOfParameters() <= Parameters::RESOURCEID::Index)
+				{
+					return false;
+				}
+
+				return mrParameterList[Parameters::RESOURCEID::Index].getType() != whiteboard::WB_TYPE_NONE;
+			}
+
+			/** Gets RESOURCEID parameter value
+			*
+			* @return Current parameter value
+			*/
+			inline Parameters::RESOURCEID::ConstReferenceType getResourceId() const
+			{
+				return mrParameterList[Parameters::RESOURCEID::Index].convertTo<Parameters::RESOURCEID::ConstReferenceType>();
+			}
+
+		private:
+			/** Reference to actual parameter list */
+			const whiteboard::ParameterList& mrParameterList;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::NAME::ConstReferenceType,
 			const whiteboard::Api::OptionalParameter<Parameters::RESOURCEID::ConstReferenceType>& = whiteboard::NoType::NoValue)
 		{
 		}
@@ -3709,6 +3814,75 @@ struct WHITEBOARD_TEST_ZERO
 	struct GET
 	{
 		typedef whiteboard::StronglyTypedResult<const ListOfBytes&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
+	};
+};
+
+struct WHITEBOARD_TIME
+{
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 279, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 279;
+
+	struct GET
+	{
+		typedef whiteboard::StronglyTypedResult<int64, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
+	};
+
+	struct SUBSCRIBE
+	{
+		typedef whiteboard::StronglyTypedResult<int64, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
+	};
+
+	struct EVENT
+	{
+		typedef int64 NotificationType;
+		typedef NotificationType ConstReferenceNotificationType;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			const whiteboard::Api::OptionalParameter<ConstReferenceNotificationType>&)
+		{
+		}
+	};
+
+	struct UNSUBSCRIBE
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{

@@ -12,7 +12,10 @@
 #if !defined(FSM_TRACE) && defined(FSM_TRACE_ENABLED)
 #define FSM_TRACE DEBUGLOG
 #else
-#define FSM_TRACE
+#define FSM_TRACE(...)                                                                                                            \
+    do                                                                                                                           \
+    {                                                                                                                            \
+    } while (0)
 #endif //FSM_TRACE_ENABLED
 
 // This file defines macros that help to create a finite state machine class.
@@ -29,10 +32,7 @@ protected:\
     virtual void onReset() {}\
 public:\
     typedef uint32_t EVENT_PARAM;\
-    enum EVENT_TYPE {__UNDEFINED, __RESET, GET,POST,PUT,DELETE,SUBSCRIBE,UNSUBSCRIBE,TIMER,OTHER};\
-//    virtual void onEnter<__STATE_DEF State>(EVENT_TYPE eventType, EVENT_PARAM event_param) {}\
-//    virtual void onLeave<__STATE_DEF State>(EVENT_TYPE eventType, EVENT_PARAM event_param) {}\
-//    virtual void onTransition<__STATE_DEF fromState, __STATE_DEF toState>(EVENT_TYPE eventType, EVENT_PARAM event_param) {}\
+    enum EVENT_TYPE {__UNDEFINED, __RESET, GET,POST,PUT,DELETE,SUBSCRIBE,UNSUBSCRIBE,TIMER,OTHER};
 
 // State block macros. Define the states and defaul state of the state machine
 #define FSM_STATES_BEGIN \

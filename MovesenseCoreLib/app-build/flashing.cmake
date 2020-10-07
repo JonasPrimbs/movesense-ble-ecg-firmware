@@ -13,33 +13,30 @@ set(PING_CMD ping -c 6)
 endif()
 
 set(APPLICATION_VERSION 2)
-set(BOOTLOADER_VERSION 2)
+set(BOOTLOADER_VERSION 3)
+set(BL_SETTINGS_VERSION 2)
+set(SOFTDEVICE_ID "0xB7")
+set(BL_REQUIRED_SOFTDEVICES_WITH_BOOTLOADER "0x9F,0xB7")
+set(BL_REQUIRED_SOFTDEVICES_WITHOUT_BOOTLOADER ${SOFTDEVICE_ID})
 
+# Check nrfutil version in GCC builds
+if(${COMPILER} STREQUAL "GCCARM")
+    execute_process(COMMAND ${NRFUTIL_CMD} version
+      WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+      RESULT_VARIABLE NRFUTIL_RESULT
+      OUTPUT_VARIABLE NRFUTIL_VERSION_STR)
 
-# Check nrfutil version
-execute_process(COMMAND ${NRFUTIL_CMD} version
-  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-  RESULT_VARIABLE NRFUTIL_RESULT
-  OUTPUT_VARIABLE NRFUTIL_VERSION_STR)
-if (NOT NRFUTIL_VERSION_STR MATCHES "^nrfutil version 3\.")
-    message("nrfutil version >=4 detected. adding --no-backup option")
-    set(NRFUTIL_NO_BACKUP "--no-backup")
+    if (NOT NRFUTIL_VERSION_STR MATCHES "^nrfutil version [5-9]\.")
+        message(FATAL_ERROR "nrfutil version >=5.0.0 required")
+    endif()
 endif()
-
 
 set (WITH_SETTINGS_HEX ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}_w_settings.hex)
 set (COMBINED_HEX ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}_combined.hex)
 set (DFU_PACKAGE_NAME ${EXECUTABLE_NAME}_dfu.zip)
 set (MANUFACTURING_DATA_NAME ${EXECUTABLE_NAME}_manufacturing_data.txt)
 # Command for converting ELF to Intel-HEX. results Movesense.hex
-if (${COMPILER} MATCHES "IAR")
-    add_custom_command(
-        OUTPUT ${EXECUTABLE_NAME}.hex
-        DEPENDS ${EXECUTABLE_NAME}.elf
-        POST_BUILD
-        COMMAND ielftool.exe --ihex ${EXECUTABLE_NAME}.elf ${EXECUTABLE_NAME}.hex
-        )
-elseif(${COMPILER} STREQUAL "GCCARM")
+if(${COMPILER} STREQUAL "GCCARM")
     add_custom_command(
         OUTPUT ${EXECUTABLE_NAME}.hex
         DEPENDS ${EXECUTABLE_NAME}
@@ -47,11 +44,13 @@ elseif(${COMPILER} STREQUAL "GCCARM")
         )
 endif()
 
+
+
 # Create Movesense_w_settings.hex
 add_custom_command(
         OUTPUT ${WITH_SETTINGS_HEX}
         DEPENDS ${EXECUTABLE_NAME}.hex
-        COMMAND ${NRFUTIL_CMD} settings generate ${NRFUTIL_NO_BACKUP} --family NRF52 --application ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}.hex --application-version ${APPLICATION_VERSION} --bootloader-version ${BOOTLOADER_VERSION} --bl-settings-version 1 ${CMAKE_CURRENT_BINARY_DIR}/settings.hex
+        COMMAND ${NRFUTIL_CMD} settings generate --family NRF52 --application ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}.hex --application-version ${APPLICATION_VERSION} --bootloader-version ${BOOTLOADER_VERSION} --bl-settings-version ${BL_SETTINGS_VERSION} ${CMAKE_CURRENT_BINARY_DIR}/settings.hex
         COMMAND ${MERGEHEX_CMD} -m ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}.hex ${CMAKE_CURRENT_BINARY_DIR}/settings.hex -o ${WITH_SETTINGS_HEX}
         COMMENT "Prepare app hex files for flashing"
 )
@@ -68,8 +67,8 @@ add_custom_command(
 add_custom_command(
         OUTPUT ${DFU_PACKAGE_NAME}
         DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}.hex
-        COMMAND ${NRFUTIL_CMD} pkg generate --hw-version 52 --sd-req 0x8C,0x9F --application-version ${APPLICATION_VERSION} --application ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}.hex --sd-id 0x9F --softdevice ${MOVESENSE_CORE_LIBRARY}/softdevice/${MOVESENSE_INTENDED_SOFTDEVICE_HEX_FILE} --bootloader ${MOVESENSE_CORE_LIBRARY}/bootloader/bootloader.hex --bootloader-version ${BOOTLOADER_VERSION} --key-file ${MOVESENSE_CORE_LIBRARY}/privatekey_debug.pem ${EXECUTABLE_NAME}_dfu_w_bootloader.zip
-        COMMAND ${NRFUTIL_CMD} pkg generate --hw-version 52 --sd-req 0x9F --application-version 2 --application ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}.hex --key-file ${MOVESENSE_CORE_LIBRARY}/privatekey_debug.pem ${DFU_PACKAGE_NAME}
+        COMMAND ${NRFUTIL_CMD} pkg generate --hw-version 52 --sd-req ${BL_REQUIRED_SOFTDEVICES_WITH_BOOTLOADER} --application-version ${APPLICATION_VERSION} --application ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}.hex --sd-id ${SOFTDEVICE_ID} --softdevice ${MOVESENSE_CORE_LIBRARY}/softdevice/${MOVESENSE_INTENDED_SOFTDEVICE_HEX_FILE} --bootloader ${MOVESENSE_CORE_LIBRARY}/bootloader/bootloader.hex --bootloader-version ${BOOTLOADER_VERSION} --key-file ${MOVESENSE_CORE_LIBRARY}/privatekey_debug.pem ${EXECUTABLE_NAME}_dfu_w_bootloader.zip
+        COMMAND ${NRFUTIL_CMD} pkg generate --hw-version 52 --sd-req ${BL_REQUIRED_SOFTDEVICES_WITHOUT_BOOTLOADER} --application-version ${APPLICATION_VERSION} --application ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}.hex --key-file ${MOVESENSE_CORE_LIBRARY}/privatekey_debug.pem ${DFU_PACKAGE_NAME}
         COMMENT "Creating DFU packages"
 )
 
@@ -85,10 +84,8 @@ add_custom_command(
 
 add_custom_command(
         OUTPUT cmd.flash_without_erasing
-        DEPENDS ${WITH_SETTINGS_HEX} ${MOVESENSE_CORE_LIBRARY}/softdevice/${MOVESENSE_INTENDED_SOFTDEVICE_HEX_FILE} ${MOVESENSE_CORE_LIBRARY}/bootloader/bootloader.hex
-        COMMAND ${NRFJPROG_CMD} --family NRF52 --program ${MOVESENSE_CORE_LIBRARY}/softdevice/${MOVESENSE_INTENDED_SOFTDEVICE_HEX_FILE} --sectorerase --verify
-        COMMAND ${NRFJPROG_CMD} --family NRF52 --program ${WITH_SETTINGS_HEX} --sectorerase --verify
-        COMMAND ${NRFJPROG_CMD} --family NRF52 --program ${MOVESENSE_CORE_LIBRARY}/bootloader/bootloader.hex --sectorerase --verify
+        DEPENDS ${COMBINED_HEX}
+        COMMAND ${NRFJPROG_CMD} --family NRF52 --program ${COMBINED_HEX} --sectoranduicrerase --verify
         COMMENT "Flashing Softdevice, app & bootloader to device"
 )
 

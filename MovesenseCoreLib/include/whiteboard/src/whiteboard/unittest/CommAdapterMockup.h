@@ -177,16 +177,13 @@ public:
 
     bool waitForConnection(RoutingTableEntryHandle& rRouteHandle);
 
+    using CommAdapter::addRoute;
+
     RoutingTableEntryHandle addRoute(
         const char* address, const char* serialNumber, bool buddy = false);
+    
     RoutingTableEntryHandle addRouteAndWait(
         const char* address, const char* serialNumber, bool buddy = false);
-
-    whiteboard::Result addRoute(
-        const char* address,
-        const char* serialNumber,
-        bool buddy,
-        whiteboard::RoutingTableEntryHandle& rRouteHandle) OVERRIDE FINAL;
 
     RoutingTableEntryHandle addRouteAndWait(
         const char* serialNumber,
@@ -194,6 +191,10 @@ public:
         HopCount numberOfHops,
         SequenceNumber sequenceNumber,
         WbTimestamp lifeTime);
+
+    Result parseAddress(const char* address, Address& rAddress) OVERRIDE FINAL;
+
+    Result formatAddress(const Address& rAddress, size_t bufferSize, char* addressBuffer) OVERRIDE FINAL;
 
     whiteboard::Result enableAdapter() OVERRIDE FINAL;
 
@@ -207,13 +208,13 @@ public:
 
     whiteboard::IBufferPool& getBufferPool() OVERRIDE FINAL;
 
-    Result formatAddress(const Address& rAddress, size_t bufferSize, char* addressBuffer) OVERRIDE FINAL;
-
     /**
         For test to control the return result code of disableAdapter()
         @param result Result code to return from disableAdapter(), result == static_cast<Result>(0) indicates "not used"
     */
     void setControlledDisableResult(const Result result) { mControlledDisableResult = result; }
+
+    static int findFreeIndex();
 
 protected:
     static void indexToAddress(size_t index, whiteboard::Address& rAddressData);

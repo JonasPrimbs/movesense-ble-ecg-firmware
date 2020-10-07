@@ -115,7 +115,7 @@ extern const char* g_appInfo_company;
     _Pragma("message \"DEPRECATED: SERIAL_COMMUNICATION macro is now deprecated.\"")
 
 #define BLE_COMMUNICATION(enable) const bool g_enableBLEComm = (enable);
-#define BLE_REQUIRE_BONDING(enable) const bool __requireBonding() { return (enable); }
+#define BLE_REQUIRE_BONDING(enable) bool __requireBonding() { return (enable); }
 #define PRODUCTION_TEST_SERIAL_COMMUNICATION(enable) const bool g_enableProductionTestSerial = (enable);
 
 // Logbook memory area macro

@@ -158,10 +158,11 @@ void CustomGATTSvcClient::onGetResult(wb::RequestId requestId,
             snprintf(pathBuffer, sizeof(pathBuffer), "/Comm/Ble/GattSvc/%d/%d", mTemperatureSvcHandle, mMeasCharHandle);
             getResource(pathBuffer, mMeasCharResource);
 
+            // Forse subscriptions asynchronously to save stack (will have stack overflow if not) 
             // Subscribe to listen to intervalChar notifications (someone writes new value to intervalChar) 
-            asyncSubscribe(mIntervalCharResource, AsyncRequestOptions::Empty);
+            asyncSubscribe(mIntervalCharResource, AsyncRequestOptions(NULL, 0, true));
             // Subscribe to listen to measChar notifications (someone enables/disables the INDICATE characteristic) 
-            asyncSubscribe(mMeasCharResource, AsyncRequestOptions::Empty);
+            asyncSubscribe(mMeasCharResource,  AsyncRequestOptions(NULL, 0, true));
             break;
         }
 
@@ -209,7 +210,7 @@ void CustomGATTSvcClient::onNotify(wb::ResourceId resourceId,
                 uint16_t interval = *reinterpret_cast<const uint16_t*>(&charValue.bytes[0]);
                 DEBUGLOG("onNotify: mIntervalCharHandle: len: %d, new interval: %d", charValue.bytes.size(), interval);
                 // Update the interval
-                if (interval >= 1 && interval <= 65535)
+                if (interval >= 1)
                     mMeasIntervalSecs = interval;
                 // restart timer if exists
                 if (mMeasurementTimer != wb::ID_INVALID_TIMER)

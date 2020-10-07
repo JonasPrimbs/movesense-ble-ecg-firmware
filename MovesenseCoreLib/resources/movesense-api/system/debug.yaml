@@ -10,6 +10,26 @@ info:
   x-api-required: false
 
 paths:
+  /System/ResetReason:
+    get:
+      description: |
+        Get the last reset reason.
+      responses:
+        200:
+          description: Reset reason successfully fetched.
+          schema:
+            $ref: '#/definitions/ResetReason'
+
+  /System/LastFault:
+    get:
+      description: |
+        Get info on last system fault.
+      responses:
+        200:
+          description: System fault info string.
+          schema:
+            $ref: '#/definitions/FaultInfo'
+
   /System/Debug/Config:
     get:
       description: |
@@ -194,3 +214,66 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/DebugMessage'
+
+  ResetReason:
+    required:
+      - RawValue
+      - EnumValue
+    properties:
+      RawValue:
+        type: integer
+        format: uint32
+      EnumValue:
+        $ref: 'types.yaml#/definitions/ResetReasonEnum'
+
+  FaultInfo:
+    required:
+      - HFSR
+      - CFSR
+      - MMFAR
+      - BFAR
+      - R0
+      - R1
+      - R2
+      - R3
+      - R12
+      - LR
+      - PC
+      - PSR
+    properties:
+      HFSR:
+        type: integer
+        format: uint32
+      CFSR:
+        type: integer
+        format: uint32
+      MMFAR:
+        type: integer
+        format: uint32
+      BFAR:
+        type: integer
+        format: uint32
+      R0:
+        type: integer
+        format: uint32
+      R1:
+        type: integer
+        format: uint32
+      R2:
+        type: integer
+        format: uint32
+      R3:
+        type: integer
+        format: uint32
+      R12:
+        type: integer
+        format: uint32
+      LR:
+        type: integer
+        format: uint32
+      PC:
+        type: integer
+        format: uint32
+      PSR:
+        type: integer
+        format: uint32

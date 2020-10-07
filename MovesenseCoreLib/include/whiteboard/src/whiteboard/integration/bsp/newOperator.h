@@ -22,12 +22,14 @@ public:
     * deallocations there.
     *
     * @param size Number of bytes to allocate
-    * @return Pointer to allocated memory block
+    * @return Pointer to allocated memory block. Asserts if there is not enough memory.
     */
     static void* operator new(size_t size)
     {
         // Compiler handles class alignment
-        return WbMemAlloc(size);
+        void* pResult = WbMemAlloc(size);
+        WB_ASSERT(pResult != NULL);
+        return pResult;
     }
 
     /** Matching customized delete operator
@@ -48,9 +50,9 @@ public:
     * deallocations there.
     *
     * @param size Number of bytes to allocate
-    * @return Pointer to allocated memory block
+    * @return Pointer to allocated memory block. Returns NULL if there is not enough memory.
     */
-    static void* operator new[](size_t size)
+    static void* operator new(size_t size, const std::nothrow_t&)
     {
         // Compiler handles class alignment
         return WbMemAlloc(size);
@@ -60,7 +62,61 @@ public:
     *
     * @param ptr Pointer to allocated memory block that should be freed
     */
+    static void operator delete(void* ptr, const std::nothrow_t&)
+    {
+        if (ptr)
+        {
+            WbMemFree(ptr);
+        }
+    }
+
+    /** Customized new operator implementation that redirects memory allocation
+    * to WbMemAlloc functions. Library user might have its own pool for
+    * Whiteboard memory allocations and we want to direct all allocations and
+    * deallocations there.
+    *
+    * @param size Number of bytes to allocate
+    * @return Pointer to allocated memory block. Asserts if there is not enough memory.
+    */
+    static void* operator new[](size_t size)
+    {
+        // Compiler handles class alignment
+        void* pResult = WbMemAlloc(size);
+        WB_ASSERT(pResult != NULL);
+        return pResult;
+    }
+
+    /** Matching customized delete operator
+    *
+    * @param ptr Pointer to allocated memory block that should be freed
+    */
     static void operator delete[](void* ptr)
+    {
+        if (ptr)
+        {
+            WbMemFree(ptr);
+        }
+    }
+
+    /** Customized new operator implementation that redirects memory allocation
+    * to WbMemAlloc functions. Library user might have its own pool for
+    * Whiteboard memory allocations and we want to direct all allocations and
+    * deallocations there.
+    *
+    * @param size Number of bytes to allocate
+    * @return Pointer to allocated memory block. Returns NULL if there is not enough memory.
+    */
+    static void* operator new[](size_t size, const std::nothrow_t&)
+    {
+        // Compiler handles class alignment
+        return WbMemAlloc(size);
+    }
+
+    /** Matching customized delete operator
+    *
+    * @param ptr Pointer to allocated memory block that should be freed
+    */
+    static void operator delete[](void* ptr, const std::nothrow_t&)
     {
         if (ptr)
         {

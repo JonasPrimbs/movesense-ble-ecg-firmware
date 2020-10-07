@@ -40,7 +40,7 @@ namespace WB_RES {
 
 struct PeerStateValues
 {
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14086;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14087;
 
 	enum Type
 	{
@@ -52,7 +52,7 @@ typedef whiteboard::TypedEnum<PeerStateValues, PeerStateValues::Type, uint8> Pee
 
 struct BondingPolicyValues
 {
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14092;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14093;
 
 	enum Type
 	{
@@ -67,6 +67,7 @@ typedef whiteboard::TypedEnum<BondingPolicyValues, BondingPolicyValues::Type, ui
 struct WB_ALIGN(4) BleConfig;
 struct WB_ALIGN(4) AdvParams;
 struct WB_ALIGN(4) AdvState;
+struct WB_ALIGN(1) AdvProps;
 struct WB_ALIGN(4) AdvSettings;
 struct WB_ALIGN(4) PeerEntry;
 struct WB_ALIGN(4) PeerList;
@@ -83,7 +84,7 @@ struct WB_ALIGN(4) BleConfig
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14080;
 
-	WB_ALIGN(4) whiteboard::Optional< whiteboard::WrapperFor32BitPointer<const char> > deviceName;
+	WB_ALIGN(4) whiteboard::Optional< whiteboard::WrapperFor32BitPointer< const char > > deviceName;
 };
 
 struct WB_ALIGN(4) AdvParams
@@ -92,7 +93,7 @@ struct WB_ALIGN(4) AdvParams
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14081;
 
-	WB_ALIGN(4) whiteboard::Optional< MacAddress48 > peerAddr;
+	WB_ALIGN(4) whiteboard::Optional< whiteboard::WrapperFor32BitPointer< whiteboard::RemovePointer<MacAddress48>::type > > peerAddr;
 };
 
 struct WB_ALIGN(4) AdvState
@@ -102,29 +103,41 @@ struct WB_ALIGN(4) AdvState
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14082;
 
 	WB_ALIGN(1) bool isAdvertising;
-	WB_ALIGN(4) whiteboard::Optional< MacAddress48 > peerAddr;
+	WB_ALIGN(4) whiteboard::Optional< whiteboard::WrapperFor32BitPointer< whiteboard::RemovePointer<MacAddress48>::type > > peerAddr;
+};
+
+struct WB_ALIGN(1) AdvProps
+{
+	// Structure type identification and serialization
+	typedef int Structure;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14083;
+
+	WB_ALIGN(1) bool connectable;
+	WB_ALIGN(1) bool scannable;
+	WB_ALIGN(1) bool anonymous;
 };
 
 struct WB_ALIGN(4) AdvSettings
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14083;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14084;
 
 	WB_ALIGN(4) whiteboard::Optional< whiteboard::Array< uint8 > > advPacket;
 	WB_ALIGN(4) whiteboard::Optional< whiteboard::Array< uint8 > > scanRespPacket;
 	WB_ALIGN(2) uint16 interval;
 	WB_ALIGN(2) uint16 timeout;
+	WB_ALIGN(1) whiteboard::Optional< AdvProps > properties;
 };
 
 struct WB_ALIGN(4) PeerEntry
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14084;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14085;
 
-	WB_ALIGN(4) MacAddress48 address;
-	WB_ALIGN(4) whiteboard::Optional< whiteboard::WrapperFor32BitPointer<const char> > name;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< whiteboard::RemovePointer<MacAddress48>::type > address;
+	WB_ALIGN(4) whiteboard::Optional< whiteboard::WrapperFor32BitPointer< const char > > name;
 	WB_ALIGN(4) whiteboard::Optional< uint32 > handle;
 };
 
@@ -132,7 +145,7 @@ struct WB_ALIGN(4) PeerList
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14085;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14086;
 
 	WB_ALIGN(4) whiteboard::Array< PeerEntry > connectedPeers;
 };
@@ -141,7 +154,7 @@ struct WB_ALIGN(4) PeerChange
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14087;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14088;
 
 	WB_ALIGN(4) PeerEntry peer;
 	WB_ALIGN(1) PeerState state;
@@ -151,7 +164,7 @@ struct WB_ALIGN(2) ScanParams
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14088;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14089;
 
 	WB_ALIGN(1) bool active;
 	WB_ALIGN(2) uint16 timeout;
@@ -163,29 +176,29 @@ struct WB_ALIGN(4) ScanResult
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14089;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14090;
 
-	WB_ALIGN(4) MacAddress48 address;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< whiteboard::RemovePointer<MacAddress48>::type > address;
 	WB_ALIGN(1) bool isScanResponse;
 	WB_ALIGN(1) int8 rssi;
 	WB_ALIGN(4) whiteboard::Array< uint8 > dataPacket;
-	WB_ALIGN(4) whiteboard::Optional< whiteboard::WrapperFor32BitPointer<const char> > name;
+	WB_ALIGN(4) whiteboard::Optional< whiteboard::WrapperFor32BitPointer< const char > > name;
 };
 
 struct WB_ALIGN(4) BondEntry
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14090;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14091;
 
-	WB_ALIGN(4) MacAddress48 address;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< whiteboard::RemovePointer<MacAddress48>::type > address;
 };
 
 struct WB_ALIGN(4) BondList
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14091;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14092;
 
 	WB_ALIGN(4) whiteboard::Array< BondEntry > bondedDevices;
 };
@@ -194,7 +207,7 @@ struct WB_ALIGN(1) BondingSettings
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14093;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14094;
 
 	WB_ALIGN(1) BondingPolicy policy;
 	WB_ALIGN(1) int8 recoveryTime;

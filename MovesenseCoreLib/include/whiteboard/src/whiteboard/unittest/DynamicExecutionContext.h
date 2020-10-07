@@ -18,7 +18,7 @@ struct ExecutionContextInfo
     const metadata::ExecutionContext settings;
 
     /** Pointer to function that is used to filter update notifications before dispatching. */
-    ExecutionContext::NoticationFilterFunc* pNotificationFilter;
+    ExecutionContext::NotificationFilterFunc* pNotificationFilter;
 
     /** Pointer to function that that performs custom processing between
     *  Whiteboard events handling. */
@@ -26,7 +26,7 @@ struct ExecutionContextInfo
 };
 
 #define INIT_EXEC_CTX_INFO(name, numberOfDpcs, numberOfRequests, numberOfResponses, externalThread, priority, stackSize, securityMask) \
-    { name, { whiteboard::metadata::INVALID_STRING, numberOfDpcs, numberOfRequests, numberOfResponses, externalThread ? 1 : 0, priority, 0, stackSize, securityMask }, NULL, NULL }
+    { name, { whiteboard::metadata::INVALID_STRING, numberOfDpcs, numberOfRequests, numberOfResponses, externalThread ? 1 : 0, 0, priority, 0, stackSize, securityMask }, NULL, NULL }
 
 /** Execution context that is allocated and deallocated at runtime */
 class DynamicExecutionContext : public LocalExecutionContext

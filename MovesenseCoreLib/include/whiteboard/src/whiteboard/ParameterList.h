@@ -1,8 +1,5 @@
 #pragma once
-/******************************************************************************
-    Copyright (c) Suunto Oy 2015.
-    All rights reserved.
-******************************************************************************/
+//  Copyright (c) 2015 Suunto Oy. All rights reserved.
 
 #include "whiteboard/WhiteboardConfig.h"
 #include "whiteboard/Value.h"
@@ -58,7 +55,14 @@ public:
     */
     inline const Value& operator[](size_t index) const;
 
-private:
+    /** Resets the number of parameters of the parameter list to zero
+    *
+    * @note This method won't call destructors for removed parameters, so make sure that you don't remove
+    *       parameters that have already been initialized.
+    */
+    inline void clear();
+
+protected:
     /** Number of parameters */
     size_t mNumberOfParameters;
 
@@ -84,6 +88,14 @@ public:
     * @param numberOfParameters Number of parameters in the parameter list
     */
     inline ParameterListInstance(size_t numberOfParameters);
+
+    /** Sets number of parameters in the parameter list.
+     *
+     * @note This method won't call destructors for removed parameters, so make sure that you don't remove
+     *       parameters that have already been initialized.
+     * @param numberOfParameters Number of parameters
+     */
+    inline void setNumberOfParameters(size_t numberOfParameters);
 
 private:
     /** Array of parameters (values). Reserved only space and don't call constructors.
@@ -117,6 +129,12 @@ inline size_t ParameterList::getNumberOfParameters() const
     return mNumberOfParameters;
 }
 
+inline void ParameterList::clear()
+{
+    mNumberOfParameters = 0;
+}
+
+
 inline Value& ParameterList::operator[](size_t index)
 {
     WB_DEBUG_ASSERT(index < mNumberOfParameters);
@@ -143,6 +161,13 @@ inline ParameterListInstance<NUMBER_OF_PARAMETERS>::ParameterListInstance(size_t
 {
     WB_STATIC_VERIFY(NUMBER_OF_PARAMETERS <= WB_MAX_NUMBER_OF_PARAMETERS, TooManyParametersInParameterList);
     WB_DEBUG_ASSERT(numberOfParameters <= NUMBER_OF_PARAMETERS);
+}
+
+template <size_t NUMBER_OF_PARAMETERS>
+inline void ParameterListInstance<NUMBER_OF_PARAMETERS>::setNumberOfParameters(size_t numberOfParameters)
+{
+    WB_DEBUG_ASSERT(numberOfParameters <= NUMBER_OF_PARAMETERS);
+    mNumberOfParameters = numberOfParameters;
 }
 
 /**

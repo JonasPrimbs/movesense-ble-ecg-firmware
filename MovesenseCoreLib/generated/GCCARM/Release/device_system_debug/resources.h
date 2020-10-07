@@ -45,7 +45,7 @@ struct WB_ALIGN(4) FilterData
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 768;
 
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer<const char> filterString;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > filterString;
 };
 
 namespace LOCAL 

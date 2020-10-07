@@ -28,12 +28,12 @@ private:
     uint8_t currentChannelEnd;
     uint8_t currentPayloadLength;
     uint32_t currentPayloadPattern;
-    uint8_t currentTimeout;
+    volatile bool softdeviceDisabled;
     bool hasValueCurrentChannelEnd;
 #ifdef BUILD_HAL_PMIC_DRIVER_BQ25120
     bool mIsChargerConnected;
 #endif
-    volatile bool softdeviceDisabled;
+    uint8_t currentTimeout;
     void initDTM();
 
 

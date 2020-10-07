@@ -1,0 +1,72 @@
+swagger: '2.0'
+
+info:
+  version: NA
+  title: BLE HRS GATT service - Movesense core-API
+  description: |
+    API for creating and controlling  Movesense core HRS service module.
+  x-api-type: public
+  x-api-required: false
+  x-api-state: experimental
+
+paths:
+
+  /Comm/Ble/HRS:
+    post:
+      description: |
+        Send new HR and RR data update to client
+      parameters:
+        - name: data
+          in: body
+          description: Update to HRS data
+          required: true
+          schema:
+            $ref: '#/definitions/HRSData'
+      responses:
+        200:
+          description: Operation completed successfully
+
+  /Comm/Ble/HRS/Subscription:
+    post:
+      description: |
+        Subscribe to HRS service state changes.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-notification:
+          description: new characteristic value
+          schema:
+            $ref: '#/definitions/HRSState'
+
+    delete:
+        description: |
+            Unsubscribe from HRS service state changes.
+        responses:
+          200:
+            description: Operation completed successfully
+
+definitions:
+  HRSState:
+    type: object
+    required:
+      - notificationEnabled
+    properties:
+      notificationEnabled:
+        type: boolean
+
+  HRSData:
+    type: object
+    required:
+      - hr
+    properties:
+      hr:
+        description: HR value to send in beats per minute
+        type: integer
+        format: uint16
+      rr:
+        description: Optional array of RR values in ms
+        type: array
+        items:
+          type: integer
+          format: uint16
+          x-unit: millisecond

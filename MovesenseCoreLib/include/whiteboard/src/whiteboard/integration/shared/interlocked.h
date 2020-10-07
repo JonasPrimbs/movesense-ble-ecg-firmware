@@ -94,7 +94,7 @@ inline bool WbInterlockedCompareAndExchangePointer(void* volatile* ppTarget, voi
     return _InterlockedCompareExchangePointer(ppTarget, pExchange, pComparand) == pComparand;
 }
 
-#elif defined(__GNUC__)
+#elif defined(__GNUC__) && !defined(__hexagon__)
 
 ///////////////////////////////////
 // GNU C/C++ Compiler
@@ -181,7 +181,7 @@ inline bool WbInterlockedCompareAndExchangePointer(void* volatile* ppTarget, voi
     return __sync_bool_compare_and_swap(ppTarget, pComparand, pExchange);
 }
 
-#elif defined(__clang__)
+#elif defined(__clang__) && (__STDC_VERSION__ >= 201112L) && !defined(__STDC_NO_ATOMICS__)
 
 ///////////////////////////////////
 // C11 stdatomic
@@ -267,7 +267,7 @@ inline bool WbInterlockedCompareAndExchangePointer(void* volatile* ppTarget, voi
     return atomic_compare_exchange_strong(ppTarget, pExchange, pComparand);
 }
 
-#elif defined(__ICCARM__)
+#elif defined(__ICCARM__) || defined(__hexagon__)
 
 ////////////////////////////////////////////////////////////////////
 // IAR C/C++ Compiler - ARM Architecture

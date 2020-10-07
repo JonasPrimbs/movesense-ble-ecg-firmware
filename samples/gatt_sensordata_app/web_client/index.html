@@ -1,0 +1,487 @@
+<html>
+  <head>
+    <script src="https://code.jquery.com/jquery-1.11.3.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <style>
+      div.status {
+          color: aaaaaa;
+      }
+      div.btn {
+          display: inline-block;
+          color: #444;
+          border: 1px solid #ccc;
+          background: #ddd;
+          box-shadow: 0 0 5px -1px rgba(0, 0, 0, 0.2);
+          cursor: pointer;
+          vertical-align: middle;
+          max-width: 100px;
+          padding: 5px;
+          text-align: center;
+      }
+      div.btn:active {
+          color: red;
+          box-shadow: 0 0 5px -1px rgba(0, 0, 0, 0.6);
+      }
+      #connect {
+          visibility: hidden;
+      }
+      #disconnect {
+          visibility: hidden;
+      }
+      #selectDevice {
+          visibility: visible;
+      }
+      #hello {
+          visibility: hidden;
+      }
+      #subdata {
+          visibility: hidden;
+      }
+      #unsubdata {
+          visibility: hidden;
+      }
+      #sampleRate {
+          visibility: hidden;
+      }
+      #rateLabel {
+          visibility: hidden;
+      }
+      table {
+          font-family: arial, sans-serif;
+          border-collapse: collapse;
+          width: 100%;
+      }
+
+      td,th {
+          border: 1px solid #dddddd;
+          text-align: left;
+          padding: 8px;
+      }
+
+      tr:nth-child(even) {
+          background-color: #dddddd;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>BLE client for gatt_sensordata_app</h1>
+    <div class="btn" id="selectDevice" onclick="select_sensor()">Select device</div>
+    <div class="btn" id="disconnect" onclick="disconnect_sensor()">DISCONNECT</div>
+    <div class="status" id="connection_status">--</div>
+
+    <label for="sampleRate" id="rateLabel">Sample rate: </label>
+
+    <select id="sampleRate">
+      <option value="13" selected>13 Hz</option>
+      <option value="26">26 Hz</option>
+      <option value="52">52 Hz</option>
+      <option value="104">104 Hz</option>
+      <option value="208">208 Hz</option>
+      <option value="416">416 Hz</option>
+      <option value="833">833 Hz</option>
+    </select><br /><br />
+
+    <div class="btn" id="hello" onclick="send_hello()">Send Hello</div>
+    <div class="btn" id="subdata" onclick="subscribe_data()">Enable Datastream</div>
+    <div class="btn" id="unsubdata" onclick="unsubscribe_data()">Disable Datastream</div>
+    <div id="tableDiv" style="margin-top: 40px"></div>
+    <div id="graph" style="margin-top: 40px"></div>
+  </body>
+  <script lang="javascript">
+
+    var deviceNames = [];
+    var selectedDevice = {};
+    var connectionStatus = {};
+    var charData = {};
+    var charCommand = {};
+    var timeBuffer = {};
+    var xBuffer = {};
+    var yBuffer = {};
+    var zBuffer = {};
+
+    // Commands
+    var HELLO = 0;
+    var SUBSCRIBE = 1;
+    var UNSUBSCRIBE = 2;
+
+    // Responses
+    var COMMAND_RESULT = 1;
+    var DATA = 2;
+
+    // References
+    var HELLO_REFERENCE = 123;
+
+    var ACCDATA_REFERENCE = 99;
+
+    // Data rate
+    var rate = null;
+    var cnt = null;
+    
+    function updateTable() {
+        var table_body = '<table><tr><th>Name</th><th>Connection Status</th></tr>';
+        for(var i=0;i<deviceNames.length;i++){
+            table_body+='<tr>';
+            table_body +='<td>';
+            table_body +=deviceNames[i];
+            table_body +='</td>';
+            table_body +='<td>';
+            table_body +=connectionStatus[deviceNames[i]];
+            table_body +='</td>';
+            table_body+='</tr>';
+        }
+        table_body+='</table>';
+        $('#tableDiv').html(table_body);
+    };
+
+    function disconnect_sensor()
+    {
+
+        let name = deviceNames[deviceNames.length-1];
+        let device = selectedDevice[name];
+        selectedDevice[name] = null;
+        device.gatt.disconnect();
+        connectionStatus[name] = false;
+
+    }
+
+
+    function onDeviceDisconnected(event)
+    {
+        let device = event.target;
+        console.log('Device ' + device.name + ' is disconnected.');
+
+	// If a device with wrong characteristics is disconnected
+        if (!(Object.keys(selectedDevice).includes(device.name))) {
+            return;
+        }
+
+
+        $('#connection_status').html(device.mame+" disconnected");
+
+        charData[device.name] = null;
+        charCommand[device.name] = null;
+
+
+        if (selectedDevice[device.name] != null)
+        {
+            connectionStatus[device.name] = false;
+            connect_sensor(device.name);
+            $('#connection_status').html("Connection lost, reconnecting...");
+        }
+        else
+        {
+            delete charData[device.name];
+            delete connectionStatus[device.name];
+            delete charCommand[device.name];
+            delete selectedDevice[device.name];
+
+            var index = deviceNames.indexOf(device.name);
+            deviceNames.splice(index, 1);
+            console.log(deviceNames);
+            if (deviceNames.length == 0) {
+		// Disconnected on purpose
+                $('#connection_status').html("Disconnected");
+                $('#selectDevice').css('visibility', 'visible');
+                $('#disconnect').css('visibility', 'hidden');
+		$('#hello').css('visibility', 'hidden');
+		$('#subdata').css('visibility', 'hidden');
+		$('#unsubdata').css('visibility', 'hidden');
+		$('#sampleRate').css('visibility', 'hidden');
+		$('#rateLabel').css('visibility', 'hidden');
+            } else {
+		// Call disconnect_sensor until all the sensors are
+		// disconnected
+		disconnect_sensor();
+            }
+        }
+        updateTable();
+    }
+
+    // Update a subplot with new batch of data.
+    async function updatePlot(bt, bx, by, bz, dev) {
+
+        let graphIndex = deviceNames.indexOf(dev);
+        Plotly.extendTraces('graph', {
+            x: [bt, bt, bt],
+            y: [bx, by, bz]
+        }, [graphIndex*3, graphIndex*3+1, graphIndex*3+2])
+
+    }
+
+
+    function handleNotifications(event)
+    {
+        //console.log("Device: ", event.target.service.device.name);
+        let value = event.target.value;
+        //console.log("event.target.value: ", value);
+        var uint8View = new Uint8Array(value.buffer);
+
+        //console.log("incoming data: ", uint8View);
+        /*for(i=0; i<uint8View.byteLength;i++)
+         {
+         console.log("#" + i +": " + uint8View[i].toString(16));
+         }*/
+
+        let device = event.target.service.device.name;
+        let response = uint8View[0];
+        let reference = uint8View[1];
+        if (response == COMMAND_RESULT && reference == HELLO_REFERENCE)
+        {
+            let utf8decoder = new TextDecoder(); // default 'utf-8' or 'utf8'
+            let helloText = utf8decoder.decode(uint8View.slice(2));
+            console.log('Hello response: ' + helloText);
+        }
+        if (response == COMMAND_RESULT && reference == ACCDATA_REFERENCE)
+        {
+            let resultCode = (new Uint16Array(value))[1]; // bytes 2&3
+            console.log("Acc subscribe result: ", resultCode);
+        }
+        if (response == DATA && reference == ACCDATA_REFERENCE)
+        {
+
+            // Acc bin format:
+            // - timestamp [uint32]
+            // - [{x,y,z}...{x,y,z}] // array of 3dvectors of float32 values (12 bytes each)
+
+            //Timestamp at 2(cmd + reference) bytes (little endian=true)
+            let timestamp = value.getUint32(2, true);
+            // console.log("timestamp: " + timestamp);
+
+            // Float32 vectors start at 2(cmd + reference) + 4 (timestamp) bytes
+            let numOfSamples = (value.byteLength - 6) / (3*4);
+            for (i=0;i<numOfSamples;i++)
+            {
+                let x = value.getFloat32(6 + i * 12, true);
+                let y = value.getFloat32(6 + i * 12 + 4, true);
+                let z = value.getFloat32(6 + i * 12 + 8, true);
+
+		// console.log("x,y,z: " + x + ", " + y + ", " + z);
+		timeBuffer[device].push(timestamp/1000.0 + (1.0*i)/parseFloat(rate));
+		xBuffer[device].push(x);
+		yBuffer[device].push(y);
+		zBuffer[device].push(z);
+
+		if (timeBuffer[device].length > cnt) {
+		    let bt = timeBuffer[device];
+		    let bx = xBuffer[device];
+		    let by = yBuffer[device];
+		    let bz = zBuffer[device];
+
+		    updatePlot(bt, bx, by, bz, device);
+		    timeBuffer[device] = [];
+		    xBuffer[device] = [];
+		    yBuffer[device] = [];
+		    zBuffer[device] = [];
+		}
+            }
+        }
+    }
+
+
+    function send_hello()
+    {
+        for(var j=0;j<deviceNames.length;j++){
+            console.log(deviceNames, charCommand, charData);
+            if (charCommand[deviceNames[j]] == null || charData[deviceNames[j]] == null)
+                return;
+
+            let helloCmd = new Uint8Array([HELLO, HELLO_REFERENCE]);
+            charCommand[deviceNames[j]].writeValue(helloCmd)
+		.then( () => {console.log("HELLO sent");});
+        }
+    }
+
+
+    function addGraph() {
+        var data = [];
+        let axisNames = ["x", "y", "z"];
+        let lineColors = ["blue", "green", "red"];
+        for (var i = 0; i < deviceNames.length; i++) {
+            for (var j = 0; j < 3; j++) {
+		var trace = {
+		    x: [],
+		    y: [],
+		    xaxis: "x"+(i+1),
+		    yaxis: "y"+(i+1),
+		    name: axisNames[j]+" "+deviceNames[i],
+		    mode: 'lines',
+		    line: {color: lineColors[j]}
+		};
+		data.push(trace);
+            }
+        }
+
+        var layout = {
+            grid: {rows: deviceNames.length, columns: 1, pattern: 'independent'}
+        };
+
+        Plotly.newPlot('graph', data, layout);
+
+    }
+
+    function subscribe_data()
+    {
+
+	// Read the sample rate and decide how often the plot is updated
+        rate = document.getElementById("sampleRate").value;
+        cnt = parseInt(rate)/5;
+        let dataResource = "/Meas/Acc/"+rate;
+
+        let subscribeAccCmd = new Uint8Array([SUBSCRIBE, ACCDATA_REFERENCE]);
+        let subscribeRes =  new Uint8Array(new TextEncoder().encode(dataResource));
+        let fullCommand = new Uint8Array(subscribeAccCmd.length + subscribeRes.length);
+        fullCommand.set(subscribeAccCmd);
+        fullCommand.set(subscribeRes, subscribeAccCmd.length);
+
+        addGraph();
+
+        deviceNames.forEach(function(it){
+
+            if (charCommand[it] == null || charData[it] == null)
+                return;
+
+            timeBuffer[it] = [];
+            xBuffer[it] = [];
+            yBuffer[it] = [];
+            zBuffer[it] = [];
+
+            console.log("full command: ", fullCommand);
+            charCommand[it].writeValue(fullCommand)
+		.then( () => {
+		    console.log("Data SUBSCRIBE sent");
+		    $('#selectDevice').css('visibility', 'hidden');
+		    $('#disconnect').css('visibility', 'hidden');
+		});
+        });
+    }
+
+    function unsubscribe_data()
+    {
+        deviceNames.forEach(function(it){
+            if (charCommand[it] == null || charData[it] == null)
+                return;
+
+            let unsubscribeAccCmd = new Uint8Array([UNSUBSCRIBE, ACCDATA_REFERENCE]);
+
+            console.log("unsubscribeAccCmd command: ", unsubscribeAccCmd);
+            charCommand[it].writeValue(unsubscribeAccCmd)
+		.then( () => {
+		    console.log("Data UNSUBSCRIBE sent");
+		    $('#selectDevice').css('visibility', 'visible');
+		    $('#disconnect').css('visibility', 'visible');
+		});
+        });
+    }
+
+    function select_sensor()
+    {
+        console.log("jq: ", $('#connection_status'));
+        $('#connection_status').html("Selecting device...");
+        navigator.bluetooth.requestDevice({
+            filters: [{
+                namePrefix: ['Movesense'] // 175130000985
+            }],
+            optionalServices: ['34802252-7185-4d5d-b431-630e7050e8f0'], // sensordata-service
+        }).
+            then(device => {
+		deviceNames.push(device.name);
+		connectionStatus[device.name] = false;
+                selectedDevice[device.name] = device;
+		charData[device.name] = null;
+		charCommand[device.name] = null;
+                $('#connection_status').html("Device " + deviceNames + " selected.");
+		updateTable();
+		return connect_sensor(device.name);
+            })
+            .catch(error => {
+		console.log("select_sensor error: ", error.toString());
+		// TODO: replace this with a proper handler
+		if (!(error.toString().includes("cancelled"))) {
+		    pop_device();
+		}
+            });
+    }
+
+
+    // Remove device with wrong characteristics 
+    function pop_device() {
+        let name = deviceNames.pop();
+        let tmp = selectedDevice[name];
+        delete charData[name];
+        delete connectionStatus[name];
+        delete charCommand[name];
+        delete selectedDevice[name];
+        tmp.gatt.disconnect();
+        updateTable();
+    }
+
+
+    function connect_sensor(name) {
+        return new Promise(function(resolve, reject){
+            selectedDevice[name].addEventListener('gattserverdisconnected', onDeviceDisconnected);
+            selectedDevice[name].gatt.connect()
+		.then(server => {
+		    console.log("server: ", server);
+		    return server.getPrimaryService('34802252-7185-4d5d-b431-630e7050e8f0');
+		})
+		.then(service => {
+		    $('#connection_status').html("Getting Characteristics...");
+		    console.log('Getting Characteristics...');
+		    // Get all characteristics.
+
+		    return service.getCharacteristics();
+		})
+		.then(characteristics => {
+		    console.log(characteristics);
+		    console.log('> Characteristics: ' +
+				characteristics.map(c => c.uuid).join('\n' + ' '.repeat(19)));
+
+
+		    for (i=0;i<characteristics.length; i++)
+		    {
+			let char = characteristics[i];
+			if (char.uuid.length >= 36) {
+			    let uuid16 = char.uuid.slice(4,8);
+			    if (uuid16 == '0001') {
+				console.log("charCommand: ", uuid16);
+
+				charCommand[name] = char;
+			    }
+			    else if (uuid16 == '0002')
+			    {
+				console.log("charData: ", uuid16);
+				charData[name] = char;
+			    }
+			}
+		    }
+
+		    return charData[name].startNotifications();
+		})
+		.then(_ => {
+		    console.log('> Notifications started');
+		    charData[name].addEventListener('characteristicvaluechanged',
+						    handleNotifications);
+		})
+		.then( () => {
+		    console.log("Connected");
+		    connectionStatus[name] = true;
+		    $('#connection_status').html("Connected");
+		    $('#disconnect').css('visibility', 'visible');
+		    $('#hello').css('visibility', 'visible');
+		    $('#subdata').css('visibility', 'visible');
+		    $('#unsubdata').css('visibility', 'visible');
+		    $('#sampleRate').css('visibility', 'visible');
+		    $('#rateLabel').css('visibility', 'visible');
+
+		    updateTable();
+		    resolve(name);
+		})
+		.catch(error => {
+		    console.log("BLE error: ", error.toString());
+		    reject(error);
+		});
+        });
+    }
+    </script>
+</html>

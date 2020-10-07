@@ -26,7 +26,7 @@ OPTIONAL_CORE_MODULE(BleNordicUART, false)
 OPTIONAL_CORE_MODULE(CustomGattService, false)
 
 // NOTE: It is inadvisable to enable both Logbook/DataLogger and EepromService without
-// explicit definition of Logbook memory are (see LOGBOOK_MEMORY_AREA macro in movesense.h and eeprom_logbook_app).
+// explicit definition of Logbook memory are (see LOGBOOK_MEMORY_AREA macro in movesense.h).
 // Default setting is for Logbook to use the whole EEPROM memory area.
 
 // NOTE: If building a simulator build, these macros are obligatory!

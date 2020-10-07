@@ -6,6 +6,9 @@
 
 #include "whiteboard/integration/port.h"
 #include "whiteboard/ResourceTree.h"
+#ifdef WB_HAVE_ELASTIC_INTERFACE
+#include "whiteboard/elastic/IFile.h"
+#endif
 
 // Metadata of Whiteboard resources. This may contain also embedded application resources,
 // which is more optimal than having a separate resource tree for Whiteboard and application.
@@ -133,12 +136,17 @@ struct Config
 * @param rConfiguration Runtime configuration to use
 * @param pApplicationMetadata Optional. Metadata for the application.
 * @param hookInstaller Optional. Hook installer function.
+* @param fileInterfaceImplementation Optional. File interface for metadata cache.
 */
 WB_API void initialize(
     const char* serialNumber, 
     const Config& rConfiguration,
     const whiteboard::MetadataMap * const pApplicationMetadata = &WbMetadata,
-    ResourceTree::HookInstallerFunc* hookInstaller = NULL);
+    ResourceTree::HookInstallerFunc* hookInstaller = NULL
+#ifdef WB_HAVE_ELASTIC_INTERFACE
+    , elastic::IFile* fileInterfaceImplementation = NULL
+#endif
+);
 
 /** Shuts down whiteboard library
 */

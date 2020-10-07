@@ -205,6 +205,10 @@ http://www.exploringbinary.com/ten-ways-to-check-if-an-integer-is-a-power-of-two
   #define WB_HAVE_CPLUSPLUS_11
 #endif
 
+#if (__cplusplus >= 201402L) || _MSC_VER >= 1910
+  #define WB_HAVE_CPLUSPLUS_14
+#endif
+
 #if defined(WB_HAVE_CPLUSPLUS_11)
 
   /** C++11 override specifier that enforces virtual function override. */
@@ -233,6 +237,11 @@ http://www.exploringbinary.com/ten-ways-to-check-if-an-integer-is-a-power-of-two
     #define CONSTEXPR constexpr
   #endif
 
+  /** C++11 constexpr specifier to specify possible compile time data */
+  #ifndef CONSTEXPR_DATA
+    #define CONSTEXPR_DATA constexpr
+  #endif
+
 #else // WB_HAVE_CPLUSPLUS_11
 
   #ifndef OVERRIDE
@@ -253,6 +262,24 @@ http://www.exploringbinary.com/ten-ways-to-check-if-an-integer-is-a-power-of-two
 
   #ifndef CONSTEXPR
     #define CONSTEXPR /**/
+  #endif
+
+  #ifndef CONSTEXPR_DATA
+    #define CONSTEXPR_DATA const
+  #endif
+#endif // WB_HAVE_CPLUSPLUS_11
+
+#if defined(WB_HAVE_CPLUSPLUS_14)
+
+  /** C++14 extended constexpr specifier */
+  #ifndef CONSTEXPR_14
+    #define CONSTEXPR_14 constexpr
+  #endif
+
+#else // WB_HAVE_CPLUSPLUS_14
+
+  #ifndef CONSTEXPR_14
+    #define CONSTEXPR_14 /**/
   #endif
 
 #endif // WB_HAVE_CPLUSPLUS_11
@@ -292,7 +319,7 @@ http://www.exploringbinary.com/ten-ways-to-check-if-an-integer-is-a-power-of-two
     #define WB_API __declspec(dllimport)
     #define WB_INTERNAL
   #endif
-#elif defined(__GNUC__) || defined(__clang__)
+#elif defined(__GNUC__) || defined(__clang__) || defined(__hexagon__)
   #define WB_API __attribute__((visibility("default")))
   #define WB_INTERNAL __attribute__((visibility("hidden")))
 #endif
@@ -301,3 +328,12 @@ http://www.exploringbinary.com/ten-ways-to-check-if-an-integer-is-a-power-of-two
   #define WB_API
   #define WB_INTERNAL
 #endif
+
+// Used to force link static GTest symbols from libraries to unit test executables
+#define WB_FORCE_LINK_THIS(x) int force_link_##x = 0
+#define WB_FORCE_LINK_THAT(x)                                                                         \
+    do {                                                                                           \
+        extern int force_link_##x;                                                                 \
+        force_link_##x = 1;                                                                        \
+    } while (0)
+
