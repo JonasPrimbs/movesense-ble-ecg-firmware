@@ -35,7 +35,7 @@ DEBUG_EEPROM_MEMORY_AREA(false, 0, 0)
 
 // Reserve 256 bytes of EEPROM for app data storage
 // See OneWireClient.cpp for description of content
-LOGBOOK_MEMORY_AREA(256, 384 * 1024);
+LOGBOOK_MEMORY_AREA(256, MEMORY_SIZE_FILL_REST);
 
 APPINFO_NAME("Sample 1Wire Thermometer");
 APPINFO_VERSION("1.1.0");

@@ -15,6 +15,7 @@ namespace nea
 
 // X2_( id TEXT(2), subId, name_part_1, empty, name_part_2, offset REAL, dstrule INTEGER )
 // X3_( id TEXT(2), subId, name_part_1, name_part_2, name_part_3, offset REAL, dstrule INTEGER )
+// cppcheck-suppress preprocessorErrorDirective
 #define FOR_TIMEZONE_X_                                                                                                          \
     X3_(DZ, Algiers, Africa, Algeria, Algiers, 1, 0)                                                                             \
     X3_(AO, Luanda, Africa, Angola, Luanda, 1, 0)                                                                                \

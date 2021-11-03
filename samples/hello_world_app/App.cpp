@@ -19,7 +19,7 @@ OPTIONAL_CORE_MODULE(IndicationService, true)
 OPTIONAL_CORE_MODULE(BleService, true)
 OPTIONAL_CORE_MODULE(EepromService, true)
 OPTIONAL_CORE_MODULE(BypassService, false)
-OPTIONAL_CORE_MODULE(SystemMemoryService, false)
+OPTIONAL_CORE_MODULE(SystemMemoryService, true)
 OPTIONAL_CORE_MODULE(DebugService, true)
 OPTIONAL_CORE_MODULE(BleStandardHRS, false)
 OPTIONAL_CORE_MODULE(BleNordicUART, false)
@@ -32,7 +32,7 @@ OPTIONAL_CORE_MODULE(CustomGattService, false)
 // NOTE: If building a simulator build, these macros are obligatory!
 DEBUGSERVICE_BUFFER_SIZE(6, 120); // 6 lines, 120 characters total
 DEBUG_EEPROM_MEMORY_AREA(false, 0, 0)
-LOGBOOK_MEMORY_AREA(0, 384 * 1024);
+LOGBOOK_MEMORY_AREA(0, MEMORY_SIZE_FILL_REST);
 
 APPINFO_NAME("Sample HelloWorld");
 APPINFO_VERSION("1.1.0");

@@ -120,9 +120,10 @@ extern const char* g_appInfo_company;
 
 // Logbook memory area macro
 typedef void(*LogbookMemoryAreaOverride)(uint32_t &rOffset, uint32_t &rSize);
+constexpr uint32_t MEMORY_SIZE_FILL_REST = 0xFFFFFFFF;
 #define LOGBOOK_MEMORY_AREA(offset, size) \
 STATIC_VERIFY(((offset) & 0xff) == 0, Logbook_offset_must_be_multiple_of_256); \
-STATIC_VERIFY(((size) & 0xff) == 0, Logbook_size_must_be_multiple_of_256); \
+STATIC_VERIFY((((size) & 0xff) == 0 || size==MEMORY_SIZE_FILL_REST), Logbook_size_must_be_multiple_of_256_or_FILL_REST); \
 void __logbookMemoryAreaOverride(uint32_t &rOffset, uint32_t &rSize) {rOffset = (offset);rSize = (size);}
 
 #define DEBUG_EEPROM_MEMORY_AREA(enable, offset, size) \

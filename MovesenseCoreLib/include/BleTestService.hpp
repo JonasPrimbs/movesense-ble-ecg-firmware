@@ -10,6 +10,7 @@ All rights reserved.
 #include <whiteboard/ResourceProvider.h>
 
 #include "buildconfig/hal/features.h"
+#include "common/compiler/genType.h"
 
 class BleTestService FINAL :
     private whiteboard::ResourceProvider,
@@ -18,7 +19,7 @@ class BleTestService FINAL :
 {
 public:
     /** Name of this class. Used in StartupProvider list. */
-    static const char* const LAUNCHABLE_NAME;
+    static const char_t* const LAUNCHABLE_NAME;
     BleTestService();
     ~BleTestService();
 

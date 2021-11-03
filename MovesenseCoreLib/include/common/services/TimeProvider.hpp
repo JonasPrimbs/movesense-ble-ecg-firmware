@@ -7,6 +7,7 @@
 #include <whiteboard/DpcFunctor.h>
 #include <whiteboard/LaunchableModule.h>
 #include "common/time/TimeZone.hpp"
+#include "common/compiler/genType.h"
 
 namespace nea
 {
@@ -19,7 +20,7 @@ class TimeProvider : public whiteboard::ResourceProvider, public whiteboard::Lau
 {
 public:
     /** Name of this class. Used in StartupProvider list. */
-    static const char* const LAUNCHABLE_NAME;
+    static const char_t* const LAUNCHABLE_NAME;
 
     /** Constructor */
     TimeProvider();

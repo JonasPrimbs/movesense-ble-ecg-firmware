@@ -3,6 +3,7 @@
 #include <whiteboard/LaunchableModule.h>
 #include <whiteboard/ResourceClient.h>
 #include <whiteboard/DpcFunctor.h>
+#include "common/compiler/genType.h"
 
 class SecureBleApp FINAL : private whiteboard::ResourceClient,
                            public whiteboard::LaunchableModule

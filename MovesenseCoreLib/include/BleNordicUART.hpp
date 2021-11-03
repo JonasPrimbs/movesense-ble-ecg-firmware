@@ -10,15 +10,16 @@ All rights reserved.
 #include <whiteboard/ResourceProvider.h>
 #include <whiteboard/DpcFunctor.h>
 #include <whiteboard/containers/RequestQueue.h>
-
-
-#define NUS_MAX_DATA_LEN (161 - 2 - 1)
+#include "common/compiler/genType.h"
 
 class BleNordicUART FINAL : public whiteboard::LaunchableModule, private whiteboard::ResourceProvider
 {
 public:
+    static const size_t MAX_NUS_CLIENTS;
+    static constexpr size_t NUS_MAX_DATA_LEN = 161-2-1;
+
     /** Name of this class. Used in StartupProvider list. */
-    static const char* const LAUNCHABLE_NAME;
+    static const char_t* const LAUNCHABLE_NAME;
     BleNordicUART();
     ~BleNordicUART();
 

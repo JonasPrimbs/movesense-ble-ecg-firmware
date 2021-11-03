@@ -5,7 +5,7 @@
 #include <whiteboard/ResourceProvider.h>
 
 #include "ui_ind/resources.h"
-
+#include "common/compiler/genType.h"
 
 class IndicationService FINAL :
     private whiteboard::ResourceProvider,
@@ -14,7 +14,7 @@ class IndicationService FINAL :
 {
 public:
     /** Name of this class. Used in StartupProvider list. */
-    static const char* const LAUNCHABLE_NAME;
+    static const char_t* const LAUNCHABLE_NAME;
     IndicationService();
     ~IndicationService();
 
@@ -61,11 +61,11 @@ private:
                               const whiteboard::ParameterList& parameters) OVERRIDE;
 
 
-    inline void setIndicationType(WB_RES::VisualIndType newIndication);
+    void setIndicationType(const WB_RES::VisualIndType &newIndication);
 
 
     // single-blink indication if durationOFF == 0
-    void startIndication(size_t durationON, size_t durationOFF = 0);
+    void startIndication(const size_t durationON, const size_t durationOFF = 0);
 
     void stopIndication();
 

@@ -20,6 +20,33 @@ paths:
           schema:
             $ref: '#/definitions/ECGInfo'
 
+  /Meas/ECG/Config:
+    get:
+      description: |
+        Get current ECG configuration.
+      responses:
+        200:
+          description: Returns accelerometer configurations.
+          schema:
+            $ref: '#/definitions/ECGConfig'
+    put:
+      description: |
+        Set ECG configuration.
+      parameters:
+        - name: config
+          in: body
+          description: New configurations for the ECG.
+          required: true
+          schema:
+            $ref: '#/definitions/ECGConfig'
+      responses:
+        200:
+          description: Operation completed successfully
+        503:
+          description: |
+            Not allowed to change configuration at the moment. E.g. when
+            active subcriptions exist.
+
   /Meas/ECG/{RequiredSampleRate}/Subscription:
     parameters:
       - $ref: '#/parameters/RequiredSampleRate'
@@ -58,6 +85,8 @@ definitions:
       - CurrentSampleRate
       - AvailableSampleRates
       - ArraySize
+      - LowPass
+      - HighPass
     properties:
       CurrentSampleRate:
         description: Sample Per Second for the ECG data
@@ -77,6 +106,34 @@ definitions:
         example: 16
         type: integer
         format: uint16
+      LowPass:
+        description: Available user settable low-pass filters. Optional in cases device does not support filters.
+        type: array
+        items:
+          type: integer
+          format: uint16
+          x-unit: Hz
+      HighPass:
+        description: Available user settable high-pass filter. Optional in case device does not support filters.
+        type: array
+        items:
+          type: number
+          format: float
+          x-unit: Hz
+
+  ECGConfig:
+    properties:
+      LowPass:
+        description: |
+         Low pass filter setting. If set must be one of values returned by /Meas/ECG/Info. If set null, disables filter
+        type: integer
+        format: uint16
+      HighPass:
+        description: |
+         High pass filter setting. If set must be one of values returned by /Meas/ECG/Info.. If set null, disables filter
+        type: number
+        format: float
+  
   ECGData:
     required:
       - Samples
