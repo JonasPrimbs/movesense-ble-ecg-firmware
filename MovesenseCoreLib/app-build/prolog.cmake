@@ -11,6 +11,16 @@ if(NOT DEFINED APPLICATION)
 endif()
 add_definitions(-DCMAKE_APPLICATION="${APPLICATION}")
 
+# Set default HWCONFIG if not yet set
+if(NOT DEFINED HWCONFIG)
+    if(COMPILER MATCHES "GCCARM")
+        set(HWCONFIG "SS2" CACHE STRING "HWConfig")
+    elseif(COMPILER MATCHES "VisualC")
+        set(HWCONFIG "SS2_Simu" CACHE STRING "HWConfig")
+    endif()
+    message("Using default HWCONFIG: ${HWCONFIG}")
+endif()
+
 # Horrific hack until we get cstdint properly in
 # (UINT32_MAX etc won't work without this)
 add_definitions(-D__STDC_LIMIT_MACROS)

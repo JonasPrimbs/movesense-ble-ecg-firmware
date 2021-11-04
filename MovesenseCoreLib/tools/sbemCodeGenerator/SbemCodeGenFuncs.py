@@ -480,6 +480,12 @@ def generateDescriptorArray(hpp_file, cpp_file, items, arrayGroupStartItems, roo
             plusPosition = grpId.rfind('_', 0, len(grpId)-1)
             if plusPosition>=0:
                 itemPath[plusPosition] = '+'
+            else:
+                itemPath.insert(0,'+') # deals with one piece path e.g. "/MyService/Subscription"
+
+        # Set primitive item values (e.g. "/Time") arrayable
+        if (item['__property'] == '/'):
+            itemPath += '+'
 
         from sbemCodeGen import dataLoggerConfig
         conversionConf = seekConversionConfig(dataLoggerConfig, "resources", "/" + item["id"].replace("_","/"), True)
@@ -524,6 +530,7 @@ def generateDescriptorArray(hpp_file, cpp_file, items, arrayGroupStartItems, roo
     print('    {ARRAY_END, \"<PTH>]\"},', file=cpp_file)
     count += 2
     # end SBEM DescriptionItems array
+    print('    {ID_DESCRIPTOR_ARRAY_END_MARKER, NULL}', file=cpp_file)
     print("};", file=cpp_file)
     return count, descriptorItemIds, itemIndexes
 

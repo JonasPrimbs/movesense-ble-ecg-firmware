@@ -1,3 +1,35 @@
+## Version 2.1.0.acccfdce5ef4d9 ##
+
+### Whats new:
+- Feature: Improved Logbook GET speed
+- Feature: Support for flash mem HW
+- Feature: Support HW-variants with no EEPROMs
+- Feature: Set size property to Logbook/Entries
+- Feature: ECG/HR LeadsOff detection
+- Feature: Per-product & Per-HW bootloaders
+- Feature: Binary releases of 3rd party modules
+- Feature: Filter settings to ECG API
+####
+- Bugfix: Random Bad Logbook Entry timestamp
+- Bugfix: Gyro doesnt accept 125 dps config
+- Bugfix: DFU mode switch via ble returning bad gateway instead of accepted
+- Bugfix: Timestamp jitter on ECG
+- Bugfix: Slow Logbook/Entries with many logs
+- Bugfix: DataLogger returns json log with just one value (Mobile-lib issue #86)
+- Bugfix: Timestamps jump backward on ECG error case
+####
+- Technical: RTT log cleanup
+- Technical: Updated fixed Nordic command line tools in build env docker (mergehex issue)
+
+
+### Known Bugs:
+- /Comm/Ble/Scan only returns one result (since 2.0)
+
+
+### Notes:
+- This is a combined medical and sport release. For medical clients, please download the 
+default firmware and library from the [medical releases repository](https://bitbucket.org/suunto/movesense-medical-sw).
+
 ## Version 2.0.0.faefabe6891488 ##
 
 ### Whats new:

@@ -9,7 +9,7 @@ class SystemProvider : private whiteboard::ResourceProvider
 {
 public:
     static const int8_t HEAP_CHECK_NOT_DONE_YET = -1;
-
+    static SystemProvider* spInstance;
     /** Constructor */
     SystemProvider();
 

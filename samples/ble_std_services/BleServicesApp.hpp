@@ -3,6 +3,7 @@
 #include <whiteboard/LaunchableModule.h>
 #include <whiteboard/ResourceClient.h>
 #include "BleStandardHRS.hpp"
+#include "common/compiler/genType.h"
 
 class BleServicesApp FINAL : 
     private wb::ResourceClient, 

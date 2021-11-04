@@ -11,12 +11,12 @@ wbres:
 # According to needs the configurations of these may be changed and also new contexts added below these.
 executionContexts:
   application:
-    numberOfDpcs: 8
+    numberOfDpcs: 10
     numberOfRequests: 20
     numberOfResponses: 25
     externalThread: true # we run this execution context in main thread
     stackSize: 768
-    priority: normal
+    priority: low
   meas:
     numberOfDpcs: 9
     numberOfRequests: 25

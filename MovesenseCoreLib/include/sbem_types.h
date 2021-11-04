@@ -22,28 +22,47 @@ enum CommonValueIds_e {
     COMMON_DESCRIPTORS_COUNT
 };
 
+
+constexpr uint16_t ID_DESCRIPTOR_ARRAY_END_MARKER = 0xFFFFu;
+constexpr uint16_t MAX_DESCRIPTORS_COUNT = 80;
+constexpr uint16_t MAX_DESCRIPTOR_LENGTH = 256;
+
 struct DescriptorItem_t {
-    const int id;
-    const char* const path;
+    int id;
+    const char* path;
 };
 
 struct DescriptorGroup_t {
-    const uint16_t id;
-    const uint16_t numOfValueIds;
-    const uint16_t* const valueIds;
+    uint16_t id;
+    uint16_t numOfValueIds;
+    const uint16_t* valueIds;
 };
 
 struct SbemResID2GrpIdMapping {
     const whiteboard::LocalResourceId wbResId;
     const size_t sbemBytes;
-    const DescriptorGroup_t &sbemGrp;
+    const DescriptorGroup_t *pSbemGrp;
 };
 
 struct SbemResID2ItemIdMapping {
     const whiteboard::LocalResourceId wbResId;
-    const DescriptorItem_t &sbemItem;
+    const DescriptorItem_t *pSbemItem;
 };
 
+// These will be generated as a part of firmware build process
+extern const DescriptorItem_t s_possibleSbemItems[];
+extern const DescriptorGroup_t s_possibleSbemGroups[];
+extern const SbemResID2ItemIdMapping s_sbemResID2ItemIdMap[];
+extern const SbemResID2GrpIdMapping s_sbemResID2GrpIdMap[];
+
+constexpr SbemResID2ItemIdMapping ITEM_MAPPING_END_MARKER = {wb::ID_INVALID_LOCAL_RESOURCE, nullptr};
+constexpr SbemResID2GrpIdMapping GROUP_MAPPING_END_MARKER = {wb::ID_INVALID_LOCAL_RESOURCE, 0, nullptr};
+
+typedef void (*SbemNodeVisited_t)(uint16_t nodeId, bool isGroup);
+
+uint16_t traverseSbemDefinition(uint16_t startNodeId, SbemNodeVisited_t callback);
+
+uint16_t getSbemDescriptorIdsFromResource(whiteboard::LocalResourceId localResourceId, uint16_t idsOut[],  size_t bufSize);
 uint16_t getSbemDescriptorIdFromResource(whiteboard::LocalResourceId localResourceId, size_t dataLength);
 
 size_t getSbemLength(whiteboard::LocalResourceId localResId, const whiteboard::Value &data);

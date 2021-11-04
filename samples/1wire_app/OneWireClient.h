@@ -3,6 +3,8 @@
 #include <whiteboard/LaunchableModule.h>
 #include <whiteboard/ResourceClient.h>
 
+#include "common/compiler/genType.h"
+
 class OneWireClient FINAL : private wb::ResourceClient, public wb::LaunchableModule
 {
 public:
