@@ -1,3 +1,15 @@
+## Version 2.1.1.cd637625e009 ##
+
+### Whats new:
+- Bugfix: No advertising after disconnect of bonded connection
+
+### Known Bugs:
+- /Comm/Ble/Scan only returns one result (since 2.0)
+
+### Notes:
+- This will be a combined medical and sport release. For medical clients, please download the 
+default firmware and library from the [medical releases repository](https://bitbucket.org/suunto/movesense-medical-sw).
+
 ## Version 2.1.0.acccfdce5ef4d9 ##
 
 ### Whats new:
