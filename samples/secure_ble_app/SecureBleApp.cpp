@@ -145,24 +145,25 @@ void SecureBleApp::onTimer(whiteboard::TimerId timerId)
 
     if (mCounter < AVAILABILITY_TIME)
     {
-        asyncPut(WB_RES::LOCAL::UI_IND_VISUAL::ID,
-            AsyncRequestOptions::Empty, (uint16_t)2); // SHORT_VISUAL_INDICATION
+        asyncPut(WB_RES::LOCAL::UI_IND_VISUAL(),
+            AsyncRequestOptions::Empty, 
+            WB_RES::VisualIndTypeValues::SHORT_VISUAL_INDICATION);
         return;
     }
 
     if (mCounter < AVAILABILITY_TIME + WAKE_PREPARATION_TIME)
     {
         // Prepare AFE to wake-up mode
-        asyncPut(WB_RES::LOCAL::COMPONENT_MAX3000X_WAKEUP::ID,
+        asyncPut(WB_RES::LOCAL::COMPONENT_MAX3000X_WAKEUP(),
             AsyncRequestOptions(NULL, 0, true), (uint8_t) 1);
         return;
     }
 
     // Make PUT request to switch LED on
-    asyncPut(WB_RES::LOCAL::COMPONENT_LED::ID, AsyncRequestOptions::Empty, true);
+    asyncPut(WB_RES::LOCAL::COMPONENT_LED(), AsyncRequestOptions::Empty, true);
 
-    // Make PUT request to eneter power off mode
-    asyncPut(WB_RES::LOCAL::SYSTEM_MODE::ID,
+    // Make PUT request to enter power off mode
+    asyncPut(WB_RES::LOCAL::SYSTEM_MODE(),
         AsyncRequestOptions(NULL, 0, true), // Force async
-        (uint8_t)1U);                       // WB_RES::SystemMode::FULLPOWEROFF
+        WB_RES::SystemModeValues::FULLPOWEROFF);
 }
