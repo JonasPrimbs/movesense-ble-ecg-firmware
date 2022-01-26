@@ -1,3 +1,16 @@
+## Version 2.1.2.c9ef0545b42d82 ##
+
+### Whats new:
+- Bugfix: High current after DFU and poweroff in some custom firmwares
+- Bugfix: CMake fails if source-only modules are used
+
+### Known Bugs:
+- /Comm/Ble/Scan only returns one result (since 2.0)
+
+### Notes:
+- This will be a combined medical and sport release. For medical clients, please download the 
+default firmware and library from the [medical releases repository](https://bitbucket.org/suunto/movesense-medical-sw).
+
 ## Version 2.1.1.cd637625e009 ##
 
 ### Whats new:
@@ -7,8 +20,7 @@
 - /Comm/Ble/Scan only returns one result (since 2.0)
 
 ### Notes:
-- This will be a combined medical and sport release. For medical clients, please download the 
-default firmware and library from the [medical releases repository](https://bitbucket.org/suunto/movesense-medical-sw).
+- Medical release was postponed to 2.1.2
 
 ## Version 2.1.0.acccfdce5ef4d9 ##
 
@@ -39,8 +51,7 @@ default firmware and library from the [medical releases repository](https://bitb
 
 
 ### Notes:
-- This is a combined medical and sport release. For medical clients, please download the 
-default firmware and library from the [medical releases repository](https://bitbucket.org/suunto/movesense-medical-sw).
+- Medical release was postponed to 2.1.2
 
 ## Version 2.0.0.faefabe6891488 ##
 
