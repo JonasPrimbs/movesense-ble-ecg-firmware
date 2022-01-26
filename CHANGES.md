@@ -1,4 +1,4 @@
-## Version 2.1.2rc1.c9ef0545b42d82 ##
+## Version 2.1.2.c9ef0545b42d82 ##
 
 ### Whats new:
 - Bugfix: High current after DFU and poweroff in some custom firmwares
