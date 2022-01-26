@@ -56,11 +56,12 @@ foreach(module_dir ${MOVESENSE_MODULES})
     # Add pre-built static library
     set(MODULE_LIB_NAME "Module_${module_idx}")
     file(GLOB MOD_LIB  ${module_dir}/lib/${COMPILER}/${CMAKE_BUILD_TYPE}/*.*)
-    add_library(${MODULE_LIB_NAME} STATIC IMPORTED)
-    SET_PROPERTY(TARGET ${MODULE_LIB_NAME} PROPERTY IMPORTED_LOCATION ${MOD_LIB})
-
-    list(APPEND MODULE_LIBRARIES "${MODULE_LIB_NAME}")
-
+    if (MOD_LIB)
+        add_library(${MODULE_LIB_NAME} STATIC IMPORTED)
+        SET_PROPERTY(TARGET ${MODULE_LIB_NAME} PROPERTY IMPORTED_LOCATION ${MOD_LIB})
+        list(APPEND MODULE_LIBRARIES "${MODULE_LIB_NAME}")
+    endif()
+    
     set(module_idx ${module_idx}+1)
 endforeach(module_dir)
 

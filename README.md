@@ -1,8 +1,8 @@
 ## Announcements
   
-**(24th Nov 2021) Sensor firmware 2.1.1 is out!**  
+**(26th Jan 2022) Sensor firmware 2.1.2 is out!**  
 
-This is a bugfix release that fixes an issue that was found out just after 2.1 release. Please test 
+This is a bugfix release that fixes an issue that was found out just after 2.1.1 release. Please test 
 your software thoroughly before committing to the 2.x since the sensors cannot be rolled back to 1.9.x!
 
 **Known issues**  
