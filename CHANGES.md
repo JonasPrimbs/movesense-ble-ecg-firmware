@@ -1,3 +1,15 @@
+## Version 2.1.3.e71681333dc3d1 ##
+
+### Whats new:
+- Bugfix: Fetching Logbook log with MDS >=1.68 causes sensor reset (v. 2.1.x)
+
+### Known Bugs:
+- /Comm/Ble/Scan only returns one result (since 2.0)
+
+### Notes:
+- This will be a combined medical and sport release. For medical clients, please download the 
+default firmware and library from the [medical releases repository](https://bitbucket.org/suunto/movesense-medical-sw).
+
 ## Version 2.1.2.c9ef0545b42d82 ##
 
 ### Whats new:
@@ -8,8 +20,7 @@
 - /Comm/Ble/Scan only returns one result (since 2.0)
 
 ### Notes:
-- This will be a combined medical and sport release. For medical clients, please download the 
-default firmware and library from the [medical releases repository](https://bitbucket.org/suunto/movesense-medical-sw).
+- Medical release was postponed to 2.1.3
 
 ## Version 2.1.1.cd637625e009 ##
 
