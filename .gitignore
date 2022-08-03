@@ -1,6 +1,7 @@
 /MovesenseCoreLib/tools/portable-python/App/Lib/*.pyc
 /MovesenseCoreLib/tools/portable-python/App/Lib/encodings/*.pyc
 /MovesenseCoreLib/tools/portable-python/App/Lib/site-packages/yaml/*.pyc
-/build
 .vagrant
 /*.log
+*.pyc
+/build/*
