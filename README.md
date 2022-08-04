@@ -1,81 +1,87 @@
-## Announcements
-  
-**(6th Oct 2020) Sensor firmware 2.0 is (finally) out!**  
+# Movesense BLE ECG Firmware
 
-This is a major new version that contains lots of improvements and bugfixes. Please test 
-your software thoroughly before committing to the 2.0 since the sensors cannot be rolled back to 1.9!
+A custom firmware for [Movesense ECG devices](https://www.movesense.com/) which implements a Bluetooth Low Energy (BLE) GATT electrocardiograph (ECG) voltage measurements.
 
-**Known issues**  
-Please refer to [CHANGES.md](CHANGES.md) for a list of changes & known issues.
+This Repository is forked from the [official Movesense Device Library](https://bitbucket.org/movesense/movesense-device-lib/).
 
-**IMPORTANT!! The build environment has changed to be docker based. Please read the instruction at http://movesense.com/docs/esw/getting_started/**
+**Warning: Due to some issues with firmware v2.1.X, the connections via Web Bluetooth are currently not possible. See [this issue](https://bitbucket.org/movesense/movesense-device-lib/issues/104/ble-connection-fails-for-latest-v21x) for more infos.**
 
+## Getting Started
 
-## Overview
+To use the Movesense ECG devices with the BLE GATT ECG Voltage service, you must flash the firmware on your Movesense sensor with the firmware whose source code is provided in this repository.
+To get this custom firmware, you have two choices:
 
-[Movesense sensor](https://www.movesense.com/developers/technology/#developers) is a programmable multi-purpose device comprising of accelerometer, gyroscope, magnetometer and thermometer together with optional heartrate/IBI (inter-beat interval) and intelligent gear ID APIs.  
+- [Build it from source](#build-from-source) or
+- [Download it from releases](#download-from-releases)
 
-Movesense APIs follow well-known REST principle and can be used both internally by the sensor app or externally via the iOS/Android libraries. The [API specification](https://bitbucket.org/suunto/movesense-device-lib/src/master/MovesenseCoreLib/resources/movesense-api/) is based on Swagger 2.0 syntax.
+### Build from Source
 
-You can order Movesense sensors and Movesense Developer Kit on our online [shop](https://www.movesense.com/shop/).
+To build the firmware from source, first pull the official Docker image:
 
-Check also [Movesense mobile library](https://bitbucket.org/suunto/movesense-mobile-lib) for developing own Android and iOS applications to interact with the Movesense sensor.  
+```bash
+docker pull movesense/sensor-build-env:latest
+```
 
-## Documentation
+Then clone this repository:
 
-Movesense developer documentation can be found in:
+```bash
+git clone https://github.com/JonasPrimbs/movesense-ble-ecg-firmware.git
+```
 
-[README.md](README.md): this document, with latest important information and links to other documentation.  
-[CHANGES.md](CHANGES.md): version history of Movesense releases.  
-[Movesense developer documentation](https://movesense.com/docs).  
+Then run the Docker image and mount the directory to the image:
 
-## Movesense APIs
+Linux or MacOS:
+```bash
+docker run -it --rm -v /path/to/repo/movesense-ble-ecg-firmware:/movesense:delegated movesense/sensor-build-env:latest
+```
 
-The main documentation of sensor API's is in [our documentation pages](http://movesense.com/docs/esw/api_reference/).
+Windows:
+```powershell
+docker run -it --rm -v C:\path\to\repo\movesense-ble-ecg-firmware:/movesense:delegated movesense/sensor-build-env:latest
+```
 
-However here's a short and incomplete list on what is available:
+When the Docker container starts, and navigate to `/movesense/build`:
 
-Resource | Description
----------|------------
-/Comm/Ble|API for managing BLE.  
-/Component/Eeprom|API for writing and reading the EEPROM memory/ies. 
-/Info|API for accessing generic device information.
-/Meas/Acc|API enabling subscribing linear acceleration data (based on accelerometer).
-/Meas/ECG|API for the electrocardiography measurement.
-/Meas/Gyro|API enabling subscribing angular velocity data (based on gyroscope).
-/Meas/HR|API enabling subscribing heart rate data.
-/Meas/Imu|API for synchronous access to motion data (accelerometer, gyroscope, magnetometer)
-/Meas/Magn|API enabling subscribing magnetic field data (based on magnetometer).
-/Meas/Temp|API enabling reading or subscribing temperature data (based on thermometer).
-/Mem/DataLogger|Generic logger capable of logging max. 8 different resources.
-/Mem/Logbook|Generic Logbook from where the logged data can be read.
-/Misc/Gear| API to get the globally unique Movesense ID associated with the physical gear.
-/System/Debug|API for subscribing messages from device.
-/System/Energy|API for reading the battery state.
-/System/Memory|API for reading memory state.
-/System/Mode|API for controlling the main system state (e.g. factory sleep).
-/System/Settings| Settings API for a Movesense device.
-/System/State|API for reading some states.
-/Time|API for accessing different time related services.
-/Ui/Ind|API for controlling the LED.
+```bash
+cd /movesense/build
+```
 
-## Setting up the development environment  
+To prepare for building in **debug** mode, prompt:
 
-The latest information about setting up the toolchain can be found in [documentation](http://movesense.com/docs/esw/getting_started/).
+```bash
+cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../ble-ecg
+```
 
-## Bug reports and other feedback
+To prepare for building in **production** mode, prompt:
 
-Please report all bugs by [raising an Issue](https://bitbucket.org/suunto/movesense-device-lib/issues/new) on Bitbucket. 
+```bash
+cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake -DCMAKE_BUILD_TYPE=Release ../ble-ecg
+```
 
-You can also discuss Movesense related topics on [stack overflow](http://stackoverflow.com/search?q=movesense). If your topic is not already addressed, 
-please [post](http://stackoverflow.com/questions/ask) a new one, tagging it with 'movesense' (i.e. include [tag:movesense] in the question body).  
+To build in prepared mode, prompt:
 
-All feedback is welcome and helps to improve our offering!  
+```bash
+ninja pkgs
+```
 
-## Contributions to the source code
+This will build the firmware to `/movesense/build`.
+The important files to deploy the firmware are:
 
-Your input is appreciated and we encourage you to post your contributions as pull requests to this repository.
+- `Movesense_dfu_w_bootloader.zip`: The bootloader required to flash Movesense sensors for the first time.
+- `Movesense_dfu.zip`: The actual firmware.
 
-## License
+With these files, you can go on with section [Download from Releases](#download-from-releases).
 
-See [LICENSE.pdf](LICENSE.pdf) for details on Movesense license.
+### Download from Releases
+
+Go to [Releases](https://github.com/JonasPrimbs/movesense-ble-ecg-firmware/releases) and download the latest versions of the following files:
+
+- `Movesense_dfu_w_bootloader.zip`
+- `Movesense_dfu.zip`
+
+To flash the firmware, install the Movesense Showcase App for [Android](https://bitbucket.org/movesense/movesense-mobile-lib/downloads/) or [iOS](https://apps.apple.com/de/app/movesense-showcase/id1439876677) and use its DFU tool as described [here](https://www.movesense.com/docs/esw/dfu_update/).
+
+**Warning: We are using Firmware Version 2 as basis! This requires also a Bootloader of Version 2. Flashing the sensor with this Bootloader requires an updated Showcase App (Android: from 1.9.8, iOS: from 1.0.5)!** Otherwise you will consider a file corrupted error.
+
+**Hint: If you haven't flashed the firmware since buying your Movesense sensor, you must first flash it with the `Movesense_dfu_w_bootloader.zip` file.**
+After that, you can directly flash the firmware with `Movesense_dfu.zip`.
