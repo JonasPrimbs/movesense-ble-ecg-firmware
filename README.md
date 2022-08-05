@@ -2,9 +2,36 @@
 
 A custom firmware for [Movesense ECG devices](https://www.movesense.com/) which implements a Bluetooth Low Energy (BLE) GATT electrocardiograph (ECG) voltage measurements.
 
-This Repository is forked from the [official Movesense Device Library](https://bitbucket.org/movesense/movesense-device-lib/).
+This Repository is forked from **version 2.0.0** of the [official Movesense Device Library](https://bitbucket.org/movesense/movesense-device-lib/).
 
-**Warning: Due to some issues with firmware v2.1.X, the connections via Web Bluetooth are currently not possible. See [this issue](https://bitbucket.org/movesense/movesense-device-lib/issues/104/ble-connection-fails-for-latest-v21x) for more infos.**
+*Due to some issues with firmware v2.1.X, the connections via Web Bluetooth are not possible.*
+*Therefore, we are currently not planning to upgrade to v2.1.X.*
+*See [this issue](https://bitbucket.org/movesense/movesense-device-lib/issues/104/ble-connection-fails-for-latest-v21x) for more details.*
+
+## Documentation
+
+### Provided GATT Services and Characteristics
+
+Our custom firmware provides the following GATT Services:
+
+- **Heart Rate Service**: Provides access to R-R intervals in milliseconds. See the [Bluetooth SIG specification](https://www.bluetooth.com/de/specifications/specs/heart-rate-service-1-0/) for more details.
+- **Electrocardiograph Service**: Provides access to the measured ECG voltage measurements.
+  - **ECG Voltage Characteristic**: Provides *NOTIFY* access to a relative *timestamp* and a series of *n* *voltages*.
+  - **Object Size Characteristic**: Provides *READ* and *WRITE* access to the length *n* of the voltage series. Default value: 16.
+  - **Measurement Interval Characteristic**: Provides *READ* and *WRITE* access to the measurement interval in milliseconds. Allowed values: 1 (1000 Hz), 2 (500 Hz), 4 (250 Hz), 8 (500 Hz).
+
+
+### Lifecycle
+
+The sensor powers on when either the battery is inserted or the ECG measures activity.
+
+Then the sensor is on and announces Bluetooth connectivity with an interval of 100 milliseconds.
+While the sensor is on, the red LED blinks with an interval of 5 seconds.
+After 30 seconds without any Bluetooth connection to a device, the red LED lights up for 3 seconds before it shuts down.
+When the sensor disconnects from a connected Bluetooth device, this sequence is repeated and the sensor shuts down after 30 + 3 seconds without any connection.
+
+The shutdown can be only prevented within the time window of 30 seconds.
+As soon as the sensor enters the 3 second shutdown sequence with a lighted LED, the shutdown cannot be prevented anymore.
 
 ## Getting Started
 
@@ -40,9 +67,10 @@ Windows:
 docker run -it --rm -v C:\path\to\repo\movesense-ble-ecg-firmware:/movesense:delegated movesense/sensor-build-env:latest
 ```
 
-When the Docker container starts, and navigate to `/movesense/build`:
+When the Docker container starts, create the directory `/movesense/build` and navigate to it:
 
 ```bash
+mkdir /movesense/build
 cd /movesense/build
 ```
 
