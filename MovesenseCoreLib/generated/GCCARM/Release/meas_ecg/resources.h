@@ -39,7 +39,6 @@
 namespace WB_RES {
 
 struct WB_ALIGN(4) ECGInfo;
-struct WB_ALIGN(4) ECGConfig;
 struct WB_ALIGN(4) ECGData;
 
 struct WB_ALIGN(4) ECGInfo
@@ -51,25 +50,13 @@ struct WB_ALIGN(4) ECGInfo
 	WB_ALIGN(2) uint16 currentSampleRate;
 	WB_ALIGN(4) whiteboard::Array< uint16 > availableSampleRates;
 	WB_ALIGN(2) uint16 arraySize;
-	WB_ALIGN(4) whiteboard::Array< uint16 > lowPass;
-	WB_ALIGN(4) whiteboard::Array< float > highPass;
-};
-
-struct WB_ALIGN(4) ECGConfig
-{
-	// Structure type identification and serialization
-	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 17153;
-
-	WB_ALIGN(2) whiteboard::Optional< uint16 > lowPass;
-	WB_ALIGN(4) whiteboard::Optional< float > highPass;
 };
 
 struct WB_ALIGN(4) ECGData
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 17154;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 17153;
 
 	WB_ALIGN(4) whiteboard::Array< int32 > samples;
 	WB_ALIGN(4) uint32 timestamp;
@@ -84,97 +71,11 @@ struct MEAS;
 
 struct MEAS_ECG;
 
-struct MEAS_ECG_CONFIG
+struct MEAS_ECG_INFO
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 17152, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 17152;
-
-	struct GET
-	{
-		typedef whiteboard::StronglyTypedResult<const ECGConfig&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
-
-		struct Parameters
-		{
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck()
-		{
-		}
-	};
-
-	struct PUT
-	{
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_SERVICE_UNAVAILABLE> HTTP_CODE_SERVICE_UNAVAILABLE;
-
-		struct Parameters
-		{
-			struct CONFIG
-			{
-				static const whiteboard::ParameterIndex Index = 0;
-
-				typedef ECGConfig Type;
-				typedef const Type& ConstReferenceType;
-			};
-
-			typedef CONFIG Parameter1;
-
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
-		};
-
-		/** Reference wrapper for strongly typed parameter list for /Meas/ECG/Config */
-		class ParameterListRef
-		{
-		private:
-			/** Prevent use of default constructor */
-			ParameterListRef() DELETED;
-
-			/** Prevent use of copy constructor */
-			ParameterListRef(const ParameterListRef&) DELETED;
-
-			/** Prevent use of assignment operator */
-			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
-
-		public:
-			/** Constructor that initializes this class from existing parameter list
-			*
-			* @param rParameterList Reference to parameter list that contains untyped parameters
-			*/
-			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
-				: mrParameterList(rParameterList)
-			{
-			}
-
-			/** Gets CONFIG parameter value
-			*
-			* @return Current parameter value
-			*/
-			inline Parameters::CONFIG::ConstReferenceType getConfig() const
-			{
-				return mrParameterList[Parameters::CONFIG::Index].convertTo<Parameters::CONFIG::ConstReferenceType>();
-			}
-
-		private:
-			/** Reference to actual parameter list */
-			const whiteboard::ParameterList& mrParameterList;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck(
-			Parameters::CONFIG::ConstReferenceType)
-		{
-		}
-	};
-};
-
-struct MEAS_ECG_INFO
-{
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 17153, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 17153;
 
 	struct GET
 	{
@@ -195,8 +96,8 @@ struct MEAS_ECG_INFO
 struct MEAS_ECG_REQUIREDSAMPLERATE
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 17154, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 17154;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 17153, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 17153;
 
 	struct SUBSCRIBE
 	{

@@ -5,7 +5,6 @@
 #include <whiteboard/ResourceProvider.h>
 #include "buildconfig/movesense-core/features.h"
 #include "hal/manufacturingdata/manufacturingdata.h"
-#include "common/compiler/genType.h"
 
 #define STEPDATA_OFFSET         0x70B00
 #define CALIBRATIONDATA_OFFSET  0x70500
@@ -41,7 +40,7 @@ class ManufacturingService FINAL :
 {
 public:
     /** Name of this class. Used in StartupProvider list. */
-    static const char_t* const LAUNCHABLE_NAME;
+    static const char* const LAUNCHABLE_NAME;
     ManufacturingService();
     ~ManufacturingService();
 

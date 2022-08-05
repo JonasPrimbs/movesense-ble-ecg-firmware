@@ -40,7 +40,6 @@ namespace WB_RES {
 
 struct WB_ALIGN(8) LogEntry;
 struct WB_ALIGN(4) LogEntries;
-struct WB_ALIGN(4) LogDataNotification;
 
 struct WB_ALIGN(8) LogEntry
 {
@@ -60,16 +59,6 @@ struct WB_ALIGN(4) LogEntries
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 13313;
 
 	WB_ALIGN(4) whiteboard::Array< LogEntry > elements;
-};
-
-struct WB_ALIGN(4) LogDataNotification
-{
-	// Structure type identification and serialization
-	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 13314;
-
-	WB_ALIGN(4) uint32 offset;
-	WB_ALIGN(4) whiteboard::Array< uint8 > bytes;
 };
 
 namespace LOCAL 
@@ -184,7 +173,6 @@ struct MEM_LOGBOOK_ENTRIES
 	struct DELETE
 	{
 		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_CONFLICT> HTTP_CODE_CONFLICT;
 
 		struct Parameters
 		{
@@ -336,11 +324,86 @@ struct MEM_LOGBOOK_ISOPEN
 	};
 };
 
-struct MEM_LOGBOOK_LOGGING
+struct MEM_LOGBOOK_LOG;
+
+struct MEM_LOGBOOK_LOG_LOGINDEX;
+
+struct MEM_LOGBOOK_LOG_LOGINDEX_REMOVE
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
 	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 13315, EXECUTION_CONTEXT);
 	static const whiteboard::LocalResourceId LID = 13315;
+
+	struct PUT
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_RANGE_NOT_SATISFIABLE> HTTP_CODE_RANGE_NOT_SATISFIABLE;
+
+		struct Parameters
+		{
+			struct LOGINDEX
+			{
+				static const whiteboard::ParameterIndex Index = 0;
+
+				typedef int32 Type;
+				typedef Type ConstReferenceType;
+			};
+
+			typedef LOGINDEX Parameter1;
+
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
+		};
+
+		/** Reference wrapper for strongly typed parameter list for /Mem/Logbook/Log/{LogIndex}/Remove */
+		class ParameterListRef
+		{
+		private:
+			/** Prevent use of default constructor */
+			ParameterListRef() DELETED;
+
+			/** Prevent use of copy constructor */
+			ParameterListRef(const ParameterListRef&) DELETED;
+
+			/** Prevent use of assignment operator */
+			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
+
+		public:
+			/** Constructor that initializes this class from existing parameter list
+			*
+			* @param rParameterList Reference to parameter list that contains untyped parameters
+			*/
+			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
+				: mrParameterList(rParameterList)
+			{
+			}
+
+			/** Gets LOGINDEX parameter value
+			*
+			* @return Current parameter value
+			*/
+			inline Parameters::LOGINDEX::ConstReferenceType getLogIndex() const
+			{
+				return mrParameterList[Parameters::LOGINDEX::Index].convertTo<Parameters::LOGINDEX::ConstReferenceType>();
+			}
+
+		private:
+			/** Reference to actual parameter list */
+			const whiteboard::ParameterList& mrParameterList;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::LOGINDEX::ConstReferenceType)
+		{
+		}
+	};
+};
+
+struct MEM_LOGBOOK_LOGGING
+{
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 13316, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 13316;
 
 	struct GET
 	{
@@ -410,76 +473,7 @@ struct MEM_LOGBOOK_LOGGING
 
 struct MEM_LOGBOOK_BYID;
 
-struct MEM_LOGBOOK_BYID_LOGID
-{
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 13316, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 13316;
-
-	struct DELETE
-	{
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_CONFLICT> HTTP_CODE_CONFLICT;
-
-		struct Parameters
-		{
-			struct LOGID
-			{
-				static const whiteboard::ParameterIndex Index = 0;
-
-				typedef int32 Type;
-				typedef Type ConstReferenceType;
-			};
-
-			typedef LOGID Parameter1;
-
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
-		};
-
-		/** Reference wrapper for strongly typed parameter list for /Mem/Logbook/byId/{LogId} */
-		class ParameterListRef
-		{
-		private:
-			/** Prevent use of default constructor */
-			ParameterListRef() DELETED;
-
-			/** Prevent use of copy constructor */
-			ParameterListRef(const ParameterListRef&) DELETED;
-
-			/** Prevent use of assignment operator */
-			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
-
-		public:
-			/** Constructor that initializes this class from existing parameter list
-			*
-			* @param rParameterList Reference to parameter list that contains untyped parameters
-			*/
-			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
-				: mrParameterList(rParameterList)
-			{
-			}
-
-			/** Gets LOGID parameter value
-			*
-			* @return Current parameter value
-			*/
-			inline Parameters::LOGID::ConstReferenceType getLogId() const
-			{
-				return mrParameterList[Parameters::LOGID::Index].convertTo<Parameters::LOGID::ConstReferenceType>();
-			}
-
-		private:
-			/** Reference to actual parameter list */
-			const whiteboard::ParameterList& mrParameterList;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck(
-			Parameters::LOGID::ConstReferenceType)
-		{
-		}
-	};
-};
+struct MEM_LOGBOOK_BYID_LOGID;
 
 struct MEM_LOGBOOK_BYID_LOGID_DATA
 {
@@ -492,7 +486,6 @@ struct MEM_LOGBOOK_BYID_LOGID_DATA
 		typedef whiteboard::StronglyTypedResult<const whiteboard::ByteStream&, whiteboard::HTTP_CODE_CONTINUE> HTTP_CODE_CONTINUE;
 		typedef whiteboard::StronglyTypedResult<const whiteboard::ByteStream&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_FOUND> HTTP_CODE_NOT_FOUND;
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_CONFLICT> HTTP_CODE_CONFLICT;
 
 		struct Parameters
 		{
@@ -583,211 +576,6 @@ struct MEM_LOGBOOK_BYID_LOGID_DATA
 		inline static void typeCheck(
 			Parameters::LOGID::ConstReferenceType,
 			const whiteboard::Api::OptionalParameter<Parameters::OFFSET::ConstReferenceType>& = whiteboard::NoType::NoValue)
-		{
-		}
-	};
-
-	struct SUBSCRIBE
-	{
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
-
-		struct Parameters
-		{
-			struct LOGID
-			{
-				static const whiteboard::ParameterIndex Index = 0;
-
-				typedef int32 Type;
-				typedef Type ConstReferenceType;
-			};
-
-			typedef LOGID Parameter1;
-
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
-		};
-
-		/** Reference wrapper for strongly typed parameter list for /Mem/Logbook/byId/{LogId}/Data */
-		class ParameterListRef
-		{
-		private:
-			/** Prevent use of default constructor */
-			ParameterListRef() DELETED;
-
-			/** Prevent use of copy constructor */
-			ParameterListRef(const ParameterListRef&) DELETED;
-
-			/** Prevent use of assignment operator */
-			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
-
-		public:
-			/** Constructor that initializes this class from existing parameter list
-			*
-			* @param rParameterList Reference to parameter list that contains untyped parameters
-			*/
-			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
-				: mrParameterList(rParameterList)
-			{
-			}
-
-			/** Gets LOGID parameter value
-			*
-			* @return Current parameter value
-			*/
-			inline Parameters::LOGID::ConstReferenceType getLogId() const
-			{
-				return mrParameterList[Parameters::LOGID::Index].convertTo<Parameters::LOGID::ConstReferenceType>();
-			}
-
-		private:
-			/** Reference to actual parameter list */
-			const whiteboard::ParameterList& mrParameterList;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck(
-			Parameters::LOGID::ConstReferenceType)
-		{
-		}
-	};
-
-	struct EVENT
-	{
-		typedef LogDataNotification NotificationType;
-		typedef const NotificationType& ConstReferenceNotificationType;
-
-		struct Parameters
-		{
-			struct LOGID
-			{
-				static const whiteboard::ParameterIndex Index = 0;
-
-				typedef int32 Type;
-				typedef Type ConstReferenceType;
-			};
-
-			typedef LOGID Parameter1;
-
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
-		};
-
-		/** Reference wrapper for strongly typed parameter list for /Mem/Logbook/byId/{LogId}/Data */
-		class ParameterListRef
-		{
-		private:
-			/** Prevent use of default constructor */
-			ParameterListRef() DELETED;
-
-			/** Prevent use of copy constructor */
-			ParameterListRef(const ParameterListRef&) DELETED;
-
-			/** Prevent use of assignment operator */
-			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
-
-		public:
-			/** Constructor that initializes this class from existing parameter list
-			*
-			* @param rParameterList Reference to parameter list that contains untyped parameters
-			*/
-			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
-				: mrParameterList(rParameterList)
-			{
-			}
-
-			/** Checks whether optional parameter LOGID has a value
-			*
-			* @return A value indicating whether the parameter has a value
-			*/
-			inline bool hasLogId() const
-			{
-				if (mrParameterList.getNumberOfParameters() <= Parameters::LOGID::Index)
-				{
-					return false;
-				}
-
-				return mrParameterList[Parameters::LOGID::Index].getType() != whiteboard::WB_TYPE_NONE;
-			}
-
-			/** Gets LOGID parameter value
-			*
-			* @return Current parameter value
-			*/
-			inline Parameters::LOGID::ConstReferenceType getLogId() const
-			{
-				return mrParameterList[Parameters::LOGID::Index].convertTo<Parameters::LOGID::ConstReferenceType>();
-			}
-
-		private:
-			/** Reference to actual parameter list */
-			const whiteboard::ParameterList& mrParameterList;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck(
-			const whiteboard::Api::OptionalParameter<ConstReferenceNotificationType>&,
-			const whiteboard::Api::OptionalParameter<Parameters::LOGID::ConstReferenceType>& = whiteboard::NoType::NoValue)
-		{
-		}
-	};
-
-	struct UNSUBSCRIBE
-	{
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
-
-		struct Parameters
-		{
-			struct LOGID
-			{
-				static const whiteboard::ParameterIndex Index = 0;
-
-				typedef int32 Type;
-				typedef Type ConstReferenceType;
-			};
-
-			typedef LOGID Parameter1;
-
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
-		};
-
-		/** Reference wrapper for strongly typed parameter list for /Mem/Logbook/byId/{LogId}/Data */
-		class ParameterListRef
-		{
-		private:
-			/** Prevent use of default constructor */
-			ParameterListRef() DELETED;
-
-			/** Prevent use of copy constructor */
-			ParameterListRef(const ParameterListRef&) DELETED;
-
-			/** Prevent use of assignment operator */
-			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
-
-		public:
-			/** Constructor that initializes this class from existing parameter list
-			*
-			* @param rParameterList Reference to parameter list that contains untyped parameters
-			*/
-			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
-				: mrParameterList(rParameterList)
-			{
-			}
-
-			/** Gets LOGID parameter value
-			*
-			* @return Current parameter value
-			*/
-			inline Parameters::LOGID::ConstReferenceType getLogId() const
-			{
-				return mrParameterList[Parameters::LOGID::Index].convertTo<Parameters::LOGID::ConstReferenceType>();
-			}
-
-		private:
-			/** Reference to actual parameter list */
-			const whiteboard::ParameterList& mrParameterList;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck(
-			Parameters::LOGID::ConstReferenceType)
 		{
 		}
 	};

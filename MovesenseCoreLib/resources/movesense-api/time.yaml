@@ -13,7 +13,7 @@ paths:
     get:
       description: |
         Gets current time in number of microseconds since epoch 1.1.1970 (UTC).
-        If not explicitly set, contains time 2015-01-01 0:00 or earlier depending on the implementation.
+        If not explicitly set, contains number of seconds since reset.
       responses:
         200:
           description: Operation completed successfully

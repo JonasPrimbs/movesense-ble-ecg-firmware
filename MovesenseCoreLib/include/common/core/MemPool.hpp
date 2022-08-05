@@ -35,7 +35,7 @@ private:
 template <unsigned SZ, typename T> class ObjPool : private MemPool
 {
 public:
-    ObjPool() : mBuffer({0}), MemPool(mBuffer, sizeof(uint32) * ((MAX(sizeof(ListNode), sizeof(T)) + 3) >> 2), SZ) {}
+    ObjPool() : MemPool(mBuffer, sizeof(uint32) * ((MAX(sizeof(ListNode), sizeof(T)) + 3) >> 2), SZ) {}
 
     T* reserve()
     {

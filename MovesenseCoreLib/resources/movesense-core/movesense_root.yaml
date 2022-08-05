@@ -6,7 +6,7 @@ wbres:
 # Execution context definitions
 executionContexts:
   application:
-#    numberOfDpcs: 10
+#    numberOfDpcs: 8
 #    numberOfRequests: 20
 #    numberOfResponses: 25
 #    externalThread: true # we run this execution context in main thread

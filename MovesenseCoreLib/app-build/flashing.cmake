@@ -12,20 +12,10 @@ set(NRFJPROG_CMD nrfjprog)
 set(PING_CMD ping -c 6)
 endif()
 
-# Choose which key and bootloader to use
-if (NOT PRODUCT_KEY_ID)
-set(BOOTLOADER_KEY_ID ${HWCONFIG})
-else()
-set(BOOTLOADER_KEY_ID ${PRODUCT_KEY_ID})
-endif()
-
 set(APPLICATION_VERSION 2)
 set(BOOTLOADER_VERSION 3)
 set(BL_SETTINGS_VERSION 2)
 set(SOFTDEVICE_ID "0xB7")
-set(BOOTLOADER_HEX_PATH ${MOVESENSE_CORE_LIBRARY}/bootloader/bootloader-${BOOTLOADER_KEY_ID}.hex)
-set(PRIVATE_KEY_PATH ${MOVESENSE_CORE_LIBRARY}/privatekeys/privatekey-${BOOTLOADER_KEY_ID}.pem)
-
 set(BL_REQUIRED_SOFTDEVICES_WITH_BOOTLOADER "0x9F,0xB7")
 set(BL_REQUIRED_SOFTDEVICES_WITHOUT_BOOTLOADER ${SOFTDEVICE_ID})
 
@@ -68,8 +58,8 @@ add_custom_command(
 # Create Movesense_manuf.hex
 add_custom_command(
         OUTPUT ${COMBINED_HEX}
-        DEPENDS ${WITH_SETTINGS_HEX} ${MOVESENSE_CORE_LIBRARY}/softdevice/${MOVESENSE_INTENDED_SOFTDEVICE_HEX_FILE} ${BOOTLOADER_HEX_PATH}
-        COMMAND ${MERGEHEX_CMD} -m ${WITH_SETTINGS_HEX} ${MOVESENSE_CORE_LIBRARY}/softdevice/${MOVESENSE_INTENDED_SOFTDEVICE_HEX_FILE} ${BOOTLOADER_HEX_PATH} -o ${COMBINED_HEX}
+        DEPENDS ${WITH_SETTINGS_HEX} ${MOVESENSE_CORE_LIBRARY}/softdevice/${MOVESENSE_INTENDED_SOFTDEVICE_HEX_FILE} ${MOVESENSE_CORE_LIBRARY}/bootloader/bootloader.hex
+        COMMAND ${MERGEHEX_CMD} -m ${WITH_SETTINGS_HEX} ${MOVESENSE_CORE_LIBRARY}/softdevice/${MOVESENSE_INTENDED_SOFTDEVICE_HEX_FILE} ${MOVESENSE_CORE_LIBRARY}/bootloader/bootloader.hex -o ${COMBINED_HEX}
         COMMENT "Prepare combined hex-file"
 )
 
@@ -77,18 +67,18 @@ add_custom_command(
 add_custom_command(
         OUTPUT ${DFU_PACKAGE_NAME}
         DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}.hex
-        COMMAND ${NRFUTIL_CMD} pkg generate --hw-version 52 --sd-req ${BL_REQUIRED_SOFTDEVICES_WITH_BOOTLOADER} --application-version ${APPLICATION_VERSION} --application ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}.hex --sd-id ${SOFTDEVICE_ID} --softdevice ${MOVESENSE_CORE_LIBRARY}/softdevice/${MOVESENSE_INTENDED_SOFTDEVICE_HEX_FILE} --bootloader ${BOOTLOADER_HEX_PATH} --bootloader-version ${BOOTLOADER_VERSION} --key-file ${PRIVATE_KEY_PATH} ${EXECUTABLE_NAME}_dfu_w_bootloader.zip
-        COMMAND ${NRFUTIL_CMD} pkg generate --hw-version 52 --sd-req ${BL_REQUIRED_SOFTDEVICES_WITHOUT_BOOTLOADER} --application-version ${APPLICATION_VERSION} --application ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}.hex --key-file ${PRIVATE_KEY_PATH} ${DFU_PACKAGE_NAME}
+        COMMAND ${NRFUTIL_CMD} pkg generate --hw-version 52 --sd-req ${BL_REQUIRED_SOFTDEVICES_WITH_BOOTLOADER} --application-version ${APPLICATION_VERSION} --application ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}.hex --sd-id ${SOFTDEVICE_ID} --softdevice ${MOVESENSE_CORE_LIBRARY}/softdevice/${MOVESENSE_INTENDED_SOFTDEVICE_HEX_FILE} --bootloader ${MOVESENSE_CORE_LIBRARY}/bootloader/bootloader.hex --bootloader-version ${BOOTLOADER_VERSION} --key-file ${MOVESENSE_CORE_LIBRARY}/privatekey_debug.pem ${EXECUTABLE_NAME}_dfu_w_bootloader.zip
+        COMMAND ${NRFUTIL_CMD} pkg generate --hw-version 52 --sd-req ${BL_REQUIRED_SOFTDEVICES_WITHOUT_BOOTLOADER} --application-version ${APPLICATION_VERSION} --application ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}.hex --key-file ${MOVESENSE_CORE_LIBRARY}/privatekey_debug.pem ${DFU_PACKAGE_NAME}
         COMMENT "Creating DFU packages"
 )
 
 # flash & reset commands, dummy output file
 add_custom_command(
         OUTPUT cmd.flash_with_erase
-        DEPENDS ${WITH_SETTINGS_HEX} ${MOVESENSE_CORE_LIBRARY}/softdevice/${MOVESENSE_INTENDED_SOFTDEVICE_HEX_FILE} ${BOOTLOADER_HEX_PATH}
+        DEPENDS ${WITH_SETTINGS_HEX} ${MOVESENSE_CORE_LIBRARY}/softdevice/${MOVESENSE_INTENDED_SOFTDEVICE_HEX_FILE} ${MOVESENSE_CORE_LIBRARY}/bootloader/bootloader.hex
         COMMAND ${NRFJPROG_CMD} --family NRF52 --program ${MOVESENSE_CORE_LIBRARY}/softdevice/${MOVESENSE_INTENDED_SOFTDEVICE_HEX_FILE} --chiperase --verify
         COMMAND ${NRFJPROG_CMD} --family NRF52 --program ${WITH_SETTINGS_HEX} --verify
-        COMMAND ${NRFJPROG_CMD} --family NRF52 --program ${BOOTLOADER_HEX_PATH} --verify
+        COMMAND ${NRFJPROG_CMD} --family NRF52 --program ${MOVESENSE_CORE_LIBRARY}/bootloader/bootloader.hex --verify
         COMMENT "Erasing and flashing Softdevice, app & bootloader to device"
 )
 

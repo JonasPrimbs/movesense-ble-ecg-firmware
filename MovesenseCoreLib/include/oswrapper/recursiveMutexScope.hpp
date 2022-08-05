@@ -16,7 +16,7 @@ namespace nea
 class RecursiveMutexScope
 {
 public:
-    explicit RecursiveMutexScope(MutexHandle handle) : mHandle(handle) { mutexLockRecursive(mHandle); }
+    RecursiveMutexScope(MutexHandle handle) : mHandle(handle) { mutexLockRecursive(mHandle); }
     ~RecursiveMutexScope(void) { mutexUnlockRecursive(mHandle); }
 
 private:

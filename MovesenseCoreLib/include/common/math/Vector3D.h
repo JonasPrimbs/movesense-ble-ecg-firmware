@@ -1,6 +1,6 @@
 #pragma once
 /******************************************************************************
-    Copyright ï¿½ Suunto Oy 2013.
+    Copyright © Suunto Oy 2013.
 
     All rights reserved.
 
@@ -45,7 +45,7 @@ public:
 
        @param pData	Pointer to float array [3]
      */
-    explicit Vector3D(const float* pData) : mX(pData[0]), mY(pData[1]), mZ(pData[2]) {}
+    Vector3D(const float* pData) : mX(pData[0]), mY(pData[1]), mZ(pData[2]) {}
 
     /**
        Copy constructor
@@ -61,7 +61,7 @@ public:
      *
      * @param rVector, sori Aimo, taa on valiaikainen valppa.
      */
-    explicit Vector3D(const Vector3DInt32& rVector) : mX((float)rVector.x), mY((float)rVector.y), mZ((float)rVector.z) {}
+    Vector3D(const Vector3DInt32& rVector) : mX((float)rVector.x), mY((float)rVector.y), mZ((float)rVector.z) {}
 
     /**
        Destructor

@@ -49,9 +49,9 @@ function(INIT_SIMULATOR_ENVIRONMENT)
             endif()
 
             file(GLOB VS_DLLS
-                "${MOVESENSE_CORE_LIBRARY}/lib/VisualC/${HWCONFIG}/*.dll")
+                "${MOVESENSE_CORE_LIBRARY}/lib/VisualC/*.dll")
             file(GLOB VS_FONTS
-                "${MOVESENSE_CORE_LIBRARY}/lib/VisualC/${HWCONFIG}/*.ttf")
+                "${MOVESENSE_CORE_LIBRARY}/lib/VisualC/*.ttf")
             foreach(f ${VS_DLLS} ${VS_FONTS})
                 # Visual studio builds into either Debug or Release folder,
                 # copy the necessary files into both.

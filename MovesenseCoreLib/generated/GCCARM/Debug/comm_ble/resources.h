@@ -76,7 +76,7 @@ struct WB_ALIGN(2) ScanParams;
 struct WB_ALIGN(4) ScanResult;
 struct WB_ALIGN(4) BondEntry;
 struct WB_ALIGN(4) BondList;
-struct WB_ALIGN(2) BondingSettings;
+struct WB_ALIGN(1) BondingSettings;
 
 struct WB_ALIGN(4) BleConfig
 {
@@ -203,14 +203,14 @@ struct WB_ALIGN(4) BondList
 	WB_ALIGN(4) whiteboard::Array< BondEntry > bondedDevices;
 };
 
-struct WB_ALIGN(2) BondingSettings
+struct WB_ALIGN(1) BondingSettings
 {
 	// Structure type identification and serialization
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 14094;
 
 	WB_ALIGN(1) BondingPolicy policy;
-	WB_ALIGN(2) uint16 recoveryTime;
+	WB_ALIGN(1) int8 recoveryTime;
 };
 
 namespace LOCAL 

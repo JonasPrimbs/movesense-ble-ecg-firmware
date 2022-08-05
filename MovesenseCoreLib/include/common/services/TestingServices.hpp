@@ -3,7 +3,6 @@
 
 #include <whiteboard/LaunchableModule.h>
 #include "common/services/DebugProvider.hpp"
-#include "common/compiler/genType.h"
 
 namespace nea
 {
@@ -16,12 +15,12 @@ class TestingServices FINAL : private whiteboard::LaunchableModule
 {
 public:
     /** Name of this class. Used in StartupProvider list. */
-    static const char_t* const LAUNCHABLE_NAME;
+    static const char* const LAUNCHABLE_NAME;
 
     /** Constructor
         @param execCtxId ID of the execution context in which to start up.
     */
-    explicit TestingServices(wb::ExecutionContextId execCtxId);
+    TestingServices(wb::ExecutionContextId execCtxId);
 
     /** Destructor */
     ~TestingServices();

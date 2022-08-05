@@ -4,8 +4,6 @@
 #include <whiteboard/LaunchableModule.h>
 #include <whiteboard/ResourceProvider.h>
 
-#include "common/compiler/genType.h"
-
 class LedService FINAL :
     private whiteboard::ResourceProvider,
     public whiteboard::LaunchableModule
@@ -13,7 +11,7 @@ class LedService FINAL :
 {
 public:
     /** Name of this class. Used in StartupProvider list. */
-    static const char_t* const LAUNCHABLE_NAME;
+    static const char* const LAUNCHABLE_NAME;
     LedService();
     ~LedService();
 

@@ -33,7 +33,7 @@ if (MSVC)
     endif()
 
 
-    set(SDL_LIB_PATH ${MOVESENSE_CORE_LIBRARY}/lib/VisualC/${HWCONFIG})
+    set(SDL_LIB_PATH ${MOVESENSE_CORE_LIBRARY}/lib/VisualC)
     link_libraries(${SDL_LIB_PATH}/SDL2.lib)
     link_libraries(${SDL_LIB_PATH}/SDL2_net.lib)
     link_libraries(${SDL_LIB_PATH}/SDL2_ttf.lib)

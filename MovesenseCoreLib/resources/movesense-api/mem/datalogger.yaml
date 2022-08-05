@@ -63,10 +63,6 @@ paths:
           description: Operation completed successfully
         400:
           description: Bad request.
-        403:
-          description: Forbidden state change.
-        507:
-          description: Insufficient storage for operation.
     post:
       description: |
         Flush the DataLogger state (RAM-buffers etc.) to storage

@@ -4,7 +4,7 @@
 # compatibility. Maybe it can be removed later when this change propagates
 # to all branhces.
 # Generates alse the list of supported HWCONFIGs.
-set(SUPPORTED_HWCONFIGS "SS2_Simu" "SS2_NAND_Simu")
+set(SUPPORTED_HWCONFIGS "SS2_Simu")
 
 if(NOT DEFINED VARIANT)
     set(DEFAULT_HWCONFIG "SS2_Simu")
