@@ -1,4 +1,5 @@
 #include "EcgGATTSvcClient.h"
+#include "WakeClient.h"
 
 #include "movesense.h"
 
@@ -6,11 +7,12 @@ MOVESENSE_APPLICATION_STACKSIZE(1024)
 
 // Add Providers:
 
-MOVESENSE_PROVIDERS_BEGIN(1)
+MOVESENSE_PROVIDERS_BEGIN(2)
 
 MOVESENSE_PROVIDER_DEF(EcgGATTSvcClient)
+MOVESENSE_PROVIDER_DEF(WakeClient)
 
-MOVESENSE_PROVIDERS_END(1)
+MOVESENSE_PROVIDERS_END(2)
 
 // Load Features:
 
@@ -25,7 +27,7 @@ OPTIONAL_CORE_MODULE(EepromService, false)
 OPTIONAL_CORE_MODULE(BypassService, false)
 OPTIONAL_CORE_MODULE(SystemMemoryService, false)
 OPTIONAL_CORE_MODULE(DebugService, false)
-OPTIONAL_CORE_MODULE(BleStandardHRS, false)
+OPTIONAL_CORE_MODULE(BleStandardHRS, true)
 OPTIONAL_CORE_MODULE(BleNordicUART, false)
 OPTIONAL_CORE_MODULE(CustomGattService, true)
 
