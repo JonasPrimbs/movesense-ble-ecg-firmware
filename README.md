@@ -98,7 +98,7 @@ The important files to deploy the firmware are:
 - `Movesense_dfu_w_bootloader.zip`: The bootloader required to flash Movesense sensors for the first time.
 - `Movesense_dfu.zip`: The actual firmware.
 
-With these files, you can go on with section [Download from Releases](#download-from-releases).
+With these files, you can go on with section [Install Firmware](#install-firmware).
 
 ### Download from Releases
 
@@ -107,9 +107,16 @@ Go to [Releases](https://github.com/JonasPrimbs/movesense-ble-ecg-firmware/relea
 - `Movesense_dfu_w_bootloader.zip`
 - `Movesense_dfu.zip`
 
+Now go on with section [Install Firmware](#install-firmware).
+
+### Install Firmware
+
 To flash the firmware, install the Movesense Showcase App for [Android](https://bitbucket.org/movesense/movesense-mobile-lib/downloads/) or [iOS](https://apps.apple.com/de/app/movesense-showcase/id1439876677) and use its DFU tool as described [here](https://www.movesense.com/docs/esw/dfu_update/).
 
-**Warning: We are using Firmware Version 2 as basis! This requires also a Bootloader of Version 2. Flashing the sensor with this Bootloader requires an updated Showcase App (Android: from 1.9.8, iOS: from 1.0.5)!** Otherwise you will consider a file corrupted error.
+**Warning: We are using Firmware Version 2 as basis!**
+**This requires also a Bootloader of Version 2.**
+**Flashing the sensor with this Bootloader requires an updated Showcase App (Android: from 1.9.8, iOS: from 1.0.5)!**
+Otherwise you will consider a file corrupted error.
 
 **Hint: If you haven't flashed the firmware since buying your Movesense sensor, you must first flash it with the `Movesense_dfu_w_bootloader.zip` file.**
 After that, you can directly flash the firmware with `Movesense_dfu.zip`.
