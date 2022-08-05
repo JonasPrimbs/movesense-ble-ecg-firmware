@@ -78,7 +78,6 @@ private:
                           const wb::Value& rValue,
                           const wb::ParameterList& rParameters);
 
-
 private:
 
     // GATT Service:
