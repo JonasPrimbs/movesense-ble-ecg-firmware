@@ -16,7 +16,7 @@ executionContexts:
     numberOfResponses: 25
     externalThread: true # we run this execution context in main thread
     stackSize: 768
-    priority: low
+    priority: normal
   meas:
     numberOfDpcs: 9
     numberOfRequests: 25

@@ -16,10 +16,10 @@ public:
     /**
      * @brief Constructs a new Series Buffer.
      * 
-     * @param length Number of samples in one buffer.
-     * @param count Number of buffers. Must be >= 2!
+     * @param bufferLength Number of samples in one buffer.
+     * @param bufferCount Number of buffers. Must be >= 2!
      */
-    SeriesBuffer(size_t length, size_t count);
+    SeriesBuffer(size_t bufferLength, size_t bufferCount);
     /**
      * @brief Destructs the Series Buffer.
      */

@@ -4,6 +4,7 @@
 #include <whiteboard/ResourceClient.h>
 
 #include "SeriesBuffer.h"
+#include "config.h"
 
 // ECG value definitions:
 
@@ -15,22 +16,6 @@ const ecg_t ECG_MAX_VALUE = 32767; // 0x7FFF = 2^15 - 1;
 const ecg_t ECG_MIN_VALUE = -32767; // 0x8001 = -(2^15 - 1);
 /** Invalid ECG value. */
 const ecg_t ECG_INVALID_VALUE = -32768; // 0x8000 = -2^15;
-
-
-// ECG GATT Services and Characteristics UUIDs:
-
-/** 16-bit UUID for ECG Service. */
-const uint16_t ecgSvcUUID16 = 0x1857;
-
-/** 16-bit UUID for ECG Voltage Characteristic. */
-const uint16_t ecgVoltageCharUUID16 = 0x2BDD;
-/** 16-bit UUID for sample interval Characteristic. */
-const uint16_t measurementIntervalCharUUID16 = 0x2A21;
-/** 16-bit UUID for object size Characteristic. */
-const uint16_t objectSizeCharUUID16 = 0x2BDE;
-
-/** Number of message buffers. Must be > 1. */
-const size_t numberOfEcgMessageBuffers = 2;
 
 
 // ECG GATT Service:
@@ -122,7 +107,7 @@ private:
      * @brief Converts the sensor's ECG value to a BLE ECG value.
      * 
      * @param ecgValue Sensor's ECG value to convert.
-     * @return ecg_val Converted BLE ECG value.
+     * @return ecg_t Converted BLE ECG value.
      */
     ecg_t convertEcgSample(int32 ecgValue);
 
@@ -162,6 +147,7 @@ private:
      * @param value ECG measurement interval in milliseconds.
      */
     void setMeasurementInterval(uint16_t value);
+
     /**
      * @brief Subscribes to ECG samples.
      */

@@ -8,7 +8,6 @@
 
 #include "comm_ble_gattsvc/resources.h"
 #include "comm_ble/resources.h"
-#include "meas_temp/resources.h"
 
 
 // At compile-time adjustable constants:
@@ -21,10 +20,10 @@
  *  - 4 ms =  250 Hz
  *  - 8 ms =  125 Hz
  */
-const int DEFAULT_MEASUREMENT_INTERVAL = 4;
+const int DEFAULT_ECG_MEASUREMENT_INTERVAL = 4;
 
 /** Default number of ECG samples per message. */
-const uint16_t DEFAULT_OBJECT_SIZE = 16;
+const uint16_t DEFAULT_ECG_OBJECT_SIZE = 16;
 
 
 // ECG GATT Service implementations:
@@ -41,10 +40,10 @@ EcgGATTSvcClient::EcgGATTSvcClient() :
     mMeasurementIntervalCharResource(wb::ID_INVALID_RESOURCE),
     mObjectSizeCharHandle(0),
     mObjectSizeCharResource(wb::ID_INVALID_RESOURCE),
-    measurementInterval(DEFAULT_MEASUREMENT_INTERVAL),
-    objectSize(DEFAULT_OBJECT_SIZE)
+    measurementInterval(DEFAULT_ECG_MEASUREMENT_INTERVAL),
+    objectSize(DEFAULT_ECG_OBJECT_SIZE)
 {
-    this->ecgBuffer = new SeriesBuffer<ecg_t>(this->objectSize, 2);
+    this->ecgBuffer = new SeriesBuffer<ecg_t>(this->objectSize, numberOfEcgBuffers);
 }
 
 EcgGATTSvcClient::~EcgGATTSvcClient()
@@ -74,9 +73,9 @@ bool EcgGATTSvcClient::startModule()
     this->mModuleState = WB_RES::ModuleStateValues::STARTED;
 
     // Set object size and allocate ECG Voltages buffer.
-    this->setObjectSize(DEFAULT_OBJECT_SIZE);
+    this->setObjectSize(DEFAULT_ECG_OBJECT_SIZE);
     // Set measurement interval to compute ECG sampling frequency.
-    this->setMeasurementInterval(DEFAULT_MEASUREMENT_INTERVAL);
+    this->setMeasurementInterval(DEFAULT_ECG_MEASUREMENT_INTERVAL);
     // Subscribe to ECG samples with computed ECG sampling frequency.
     this->subscribeToEcgSamples();
 
@@ -119,6 +118,10 @@ void EcgGATTSvcClient::onGetResult(wb::RequestId requestId,
             DEBUGLOG("EcgGATTSvcClient::onGetResult - COMM_BLE_GATTSVC_SVCHANDLE");
 
             const WB_RES::GattSvc &svc = rResultData.convertTo<const WB_RES::GattSvc&>();
+            // if (svc.uuid[0] != ecgSvcUUID16)
+            // {
+            //     break;
+            // }
             for (size_t i = 0; i < svc.chars.size(); i++)
             {
                 const WB_RES::GattChar &c = svc.chars[i];
@@ -310,22 +313,23 @@ ecg_t EcgGATTSvcClient::convertEcgSample(int32 ecgValue)
 bool EcgGATTSvcClient::sendEcgBuffer()
 {
     // Get the current buffer and its size.
-    // uint8_t*& ecgBuffer = this->ecgBuffer->getCurrentBuffer();
     size_t size = this->ecgBuffer->getSingleBufferSize();
+
+    uint8_t* currentBuffer = this->ecgBuffer->getCurrentBuffer();
 
     // Move to next message buffer.
     this->ecgBuffer->switchBuffer();
 
     // Generate ECG Voltage Characteristics value to send.
     WB_RES::Characteristic ecgVoltageCharacteristic;
-    ecgVoltageCharacteristic.bytes = wb::MakeArray<uint8_t>(this->ecgBuffer->getCurrentBuffer(), size);
+    ecgVoltageCharacteristic.bytes = wb::MakeArray<uint8_t>(currentBuffer, size);
 
     // Send ECG Voltage characteristics value.
     this->asyncPut(
         WB_RES::LOCAL::COMM_BLE_GATTSVC_SVCHANDLE_CHARHANDLE(),
         AsyncRequestOptions::Empty,
-        mEcgSvcHandle,
-        mEcgVoltageCharHandle,
+        this->mEcgSvcHandle,
+        this->mEcgVoltageCharHandle,
         ecgVoltageCharacteristic
     );
     return true;
@@ -338,7 +342,7 @@ uint32_t EcgGATTSvcClient::getSampleRate()
 
 void EcgGATTSvcClient::setMeasurementInterval(uint16_t value)
 {
-    // Ensure that value is valid or fall back to `DEFAULT_MEASUREMENT_INTERVAL`.
+    // Ensure that value is valid or fall back to `DEFAULT_ECG_MEASUREMENT_INTERVAL`.
     switch (value)
     {
         case 1: // 1000 Hz
@@ -347,7 +351,7 @@ void EcgGATTSvcClient::setMeasurementInterval(uint16_t value)
         case 8: // 125 Hz
             break;
         default:
-            value = DEFAULT_MEASUREMENT_INTERVAL;
+            value = DEFAULT_ECG_MEASUREMENT_INTERVAL;
             break;
     }
 
