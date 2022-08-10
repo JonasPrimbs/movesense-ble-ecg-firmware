@@ -49,6 +49,14 @@ async function getSamplingInterval(gattService) {
   const value = await characteristic.readValue();
   return parseInterval(value);
 }
+async function setSamplingInterval(gattService, value) {
+  const characteristic = await gattService.getCharacteristic(measurementIntervalCharUUID16);
+  const buffer = new ArrayBuffer(2);
+  const dataView = new DataView(buffer);
+  dataView.setUint16(0, value, true);
+  await characteristic.writeValue(buffer);
+  return await getSamplingInterval(gattService);
+}
 
 async function getPacketSize(gattService) {
   const characteristic = await gattService.getCharacteristic(objectSizeCharUUID16);
@@ -103,13 +111,32 @@ async function connect() {
   server = await connectToDevice();
   service = await server.getPrimaryService(ecgSvcUUID16);
   size = await getPacketSize(service);
+  console.log('connected');
+}
+
+async function disconnect() {
+  if (ecgListener) {
+    stop();
+  }
+  await server.disconnect();
+}
+
+async function setDelta() {
+  const input = document.getElementById('interval');
+  const value = parseInt(input.value);
+  const setValue = await setSamplingInterval(service, value);
+  input.value = setValue.toString();
+}
+
+async function record() {
+  result = 't\tv\n';
   interval = await getSamplingInterval(service);
   ecgListener = await subscribeToEcg(service, onEcgData);
 }
 
-async function disconnect() {
+async function stop() {
   await unsubscribeFromEcg(ecgListener);
-  await service.disconnect();
+  ecgListener = null;
 }
 
 function copy() {
