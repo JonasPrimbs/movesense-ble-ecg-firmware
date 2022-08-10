@@ -44,10 +44,12 @@ EcgGATTSvcClient::EcgGATTSvcClient() :
     measurementInterval(DEFAULT_MEASUREMENT_INTERVAL),
     objectSize(DEFAULT_OBJECT_SIZE)
 {
+    this->ecgBuffer = new SeriesBuffer<ecg_t>(this->objectSize, 2);
 }
 
 EcgGATTSvcClient::~EcgGATTSvcClient()
 {
+    delete this->ecgBuffer;
 }
 
 bool EcgGATTSvcClient::initModule()
@@ -136,22 +138,6 @@ void EcgGATTSvcClient::onGetResult(wb::RequestId requestId,
                 }
             }
 
-            /*
-            if (!this->mEcgVoltageCharHandle || !this->mMeasurementIntervalCharHandle || !this->mObjectSizeCharHandle)
-            {
-                DEBUGLOG("ERROR: Not all chars were configured!");
-                return;
-            }
-
-            char pathBuffer[32]= {'\0'};
-            snprintf(pathBuffer, sizeof(pathBuffer), "/Comm/Ble/GattSvc/%d/%d", this->mEcgSvcHandle, this->mEcgVoltageCharHandle);
-            this->getResource(pathBuffer, this->mEcgVoltageCharResource);
-            snprintf(pathBuffer, sizeof(pathBuffer), "/Comm/Ble/GattSvc/%d/%d", this->mEcgSvcHandle, this->mMeasurementIntervalCharHandle);
-            this->getResource(pathBuffer, this->mMeasurementIntervalCharResource);
-            snprintf(pathBuffer, sizeof(pathBuffer), "/Comm/Ble/GattSvc/%d/%d", this->mEcgSvcHandle, this->mObjectSizeCharHandle);
-            this->getResource(pathBuffer, this->mObjectSizeCharResource);
-            */
-
             // Force subscriptions asynchronously to save stack (will have stack overflow if not) 
 
             // Subscribe to listen to ECG Voltage Characteristics notifications (someone enables/disables the NOTIFY characteristic)
@@ -162,33 +148,6 @@ void EcgGATTSvcClient::onGetResult(wb::RequestId requestId,
             this->asyncSubscribe(this->mObjectSizeCharResource,  AsyncRequestOptions(NULL, 0, true));
             break;
         }
-
-        // case WB_RES::LOCAL::MEAS_TEMP::LID:
-        // {
-        //     // Temperature result or error
-        //     if (resultCode == wb::HTTP_CODE_OK)
-        //     {
-        //         WB_RES::TemperatureValue value = rResultData.convertTo<WB_RES::TemperatureValue>();
-        //         float temperature = value.measurement;
-
-        //         // Convert K to C
-        //         temperature -= 273.15f;
-
-        //         // Return data
-        //         uint8_t buffer[5]; // 1 byte or flags, 4 for FLOAT "in Celsius" value
-        //         buffer[0]=0;
-
-        //         // convert normal float to IEEE-11073 "medical" FLOAT type into buffer
-        //         floatToFLOAT(temperature, &buffer[1]);
-
-        //         // Write the result to measChar. This results INDICATE to be triggered in GATT service
-        //         WB_RES::Characteristic newMeasCharValue;
-        //         newMeasCharValue.bytes = wb::MakeArray<uint8_t>(buffer, sizeof(buffer));
-        //         asyncPut(WB_RES::LOCAL::COMM_BLE_GATTSVC_SVCHANDLE_CHARHANDLE(), AsyncRequestOptions::Empty,
-        //                  mTemperatureSvcHandle, mMeasCharHandle, newMeasCharValue);
-        //     }
-        //     break;
-        // }
     }
 }
 
@@ -224,17 +183,11 @@ void EcgGATTSvcClient::onNotify(wb::ResourceId resourceId,
     {
         case WB_RES::LOCAL::MEAS_ECG_REQUIREDSAMPLERATE::LID:
         {
-            // Verify that ECG message buffer is allocated.
-            if (this->ecgCharacteristicsBuffers == nullptr)
-            {
-                break;
-            }
-
             // Get ECG Data.
             auto ecgData = value.convertTo<const WB_RES::ECGData&>();
 
             // Parse timestamp.
-            uint32_t timestamp = (uint32_t)ecgData.timestamp;
+            timestamp_t timestamp = (timestamp_t)ecgData.timestamp;
 
             // Parse samples and put them into sample buffer.
             size_t numberOfSamples = ecgData.samples.getNumberOfItems();
@@ -243,15 +196,15 @@ void EcgGATTSvcClient::onNotify(wb::ResourceId resourceId,
                 // Convert ECG sample.
                 auto ecgSample = this->convertEcgSample(ecgData.samples[i]);
                 // Add converted sample to ECG buffer.
-                this->addEcgSample(ecgSample);
+                this->ecgBuffer->addSample(ecgSample);
 
                 // If buffer is full, add timestamp and send samples.
-                if (this->bufferedEcgSamples == this->objectSize)
+                if (!this->ecgBuffer->canAddSample())
                 {
                     // Compute timestamp.
-                    uint32_t t = timestamp - ((numberOfSamples - i - 1) * this->measurementInterval);
+                    timestamp_t t = timestamp - ((numberOfSamples - i - 1) * this->measurementInterval);
                     // Set timestamp to timestamp of last sample in buffer.
-                    this->setTimestamp(t);
+                    this->ecgBuffer->setTimestamp(t);
                     // Send samples.
                     this->sendEcgBuffer();
                 }
@@ -338,57 +291,7 @@ void EcgGATTSvcClient::configGattSvc()
     this->asyncPost(WB_RES::LOCAL::COMM_BLE_GATTSVC(), AsyncRequestOptions::Empty, ecgGattSvc);
 }
 
-size_t EcgGATTSvcClient::getSingleEcgBufferSize()
-{
-    return sizeof(uint32_t) + (sizeof(ecg_val) * this->objectSize);
-}
-
-uint8_t* EcgGATTSvcClient::getEcgBuffer(size_t i)
-{
-    size_t size = this->getSingleEcgBufferSize();
-    return &this->ecgCharacteristicsBuffers[i * size];
-}
-
-uint8_t* EcgGATTSvcClient::getCurrentEcgBuffer()
-{
-    return this->getEcgBuffer(this->ecgBufferIndex);
-}
-
-void EcgGATTSvcClient::switchMessageBuffer()
-{
-    size_t size = this->getSingleEcgBufferSize();
-    this->ecgBufferIndex = (this->ecgBufferIndex + 1) % size;
-    this->bufferedEcgSamples = 0;
-}
-
-bool EcgGATTSvcClient::clearEcgBuffer(size_t i)
-{
-    // Ensure that ECG buffer is initialized.
-    if (this->ecgCharacteristicsBuffers == nullptr)
-    {
-        return false;
-    }
-
-    // Override all buffers with zero-bytes.
-    size_t size = this->getSingleEcgBufferSize();
-    size_t bufferIndex = i * size;
-    for (size_t j = 0; j < size; j++)
-    {
-        this->ecgCharacteristicsBuffers[bufferIndex + j] = 0;
-    }
-
-    // Reset buffered ECG samples counter.
-    this->bufferedEcgSamples = 0;
-
-    return true;
-}
-
-bool EcgGATTSvcClient::clearCurrentEcgBuffer()
-{
-    return this->clearEcgBuffer(this->ecgBufferIndex);
-}
-
-ecg_val EcgGATTSvcClient::convertEcgSample(int32 ecgValue)
+ecg_t EcgGATTSvcClient::convertEcgSample(int32 ecgValue)
 {
     if (ecgValue > ECG_MAX_VALUE)
     {
@@ -400,72 +303,22 @@ ecg_val EcgGATTSvcClient::convertEcgSample(int32 ecgValue)
     }
     else
     {
-        return (ecg_val)ecgValue;
+        return (ecg_t)ecgValue;
     }
-}
-
-bool EcgGATTSvcClient::addEcgSample(ecg_val sample)
-{
-    // Cancel if ECG buffer is not initialized.
-    if (this->ecgCharacteristicsBuffers == nullptr)
-    {
-        return false;
-    }
-
-    // Get the current ECG buffer.
-    uint8_t* ecgBuffer = this->getCurrentEcgBuffer();
-
-    // Compute target index in ECG buffer.
-    size_t index = sizeof(uint32_t) + (this->bufferedEcgSamples * sizeof(ecg_val));
-    // Write ECG sample to buffer.
-    ecg_val* sampleAddress = &sample;
-    uint8_t* sampleData = (uint8_t*)sampleAddress;
-    ecgBuffer[index] = sampleData[0];
-    ecgBuffer[index + 1] = sampleData[1];
-    // Increase number of buffered ECG samples.
-    this->bufferedEcgSamples++;
-    return true;
-}
-
-bool EcgGATTSvcClient::setTimestamp(uint32_t timestamp)
-{
-    // Cancel if ECG buffer is not initialized.
-    if (this->ecgCharacteristicsBuffers == nullptr)
-    {
-        return false;
-    }
-
-    // Get the current ECG buffer.
-    uint8_t* ecgBuffer = this->getCurrentEcgBuffer();
-
-    // Write timestamp to the start of the ECG buffer.
-    uint32_t* timestampAddress = &timestamp;
-    uint8_t* timestampData = (uint8_t*)timestampAddress;
-    ecgBuffer[0] = timestampData[0];
-    ecgBuffer[1] = timestampData[1];
-    ecgBuffer[2] = timestampData[2];
-    ecgBuffer[3] = timestampData[3];
-    return true;
 }
 
 bool EcgGATTSvcClient::sendEcgBuffer()
 {
-    // Cancel if message buffers not initialized.
-    if (this->ecgCharacteristicsBuffers == nullptr)
-    {
-        return false;
-    }
-
     // Get the current buffer and its size.
-    uint8_t* ecgBuffer = this->getCurrentEcgBuffer();
-    size_t size = this->getSingleEcgBufferSize();
+    // uint8_t*& ecgBuffer = this->ecgBuffer->getCurrentBuffer();
+    size_t size = this->ecgBuffer->getSingleBufferSize();
 
     // Move to next message buffer.
-    this->switchMessageBuffer();
+    this->ecgBuffer->switchBuffer();
 
     // Generate ECG Voltage Characteristics value to send.
     WB_RES::Characteristic ecgVoltageCharacteristic;
-    ecgVoltageCharacteristic.bytes = wb::MakeArray<uint8_t>(ecgBuffer, size);
+    ecgVoltageCharacteristic.bytes = wb::MakeArray<uint8_t>(this->ecgBuffer->getCurrentBuffer(), size);
 
     // Send ECG Voltage characteristics value.
     this->asyncPut(
@@ -505,15 +358,15 @@ void EcgGATTSvcClient::setMeasurementInterval(uint16_t value)
     // Set measurement interval to GATT Characteristics value.
     WB_RES::Characteristic measurementIntervalChar;
     measurementIntervalChar.bytes = wb::MakeArray<uint8_t>((uint8_t*)&this->measurementInterval, sizeof(uint16_t));
-    asyncPut(
+    this->asyncPut(
         WB_RES::LOCAL::COMM_BLE_GATTSVC_SVCHANDLE_CHARHANDLE(),
         AsyncRequestOptions::Empty,
         this->mEcgSvcHandle,
-        mMeasurementIntervalCharHandle,
+        this->mMeasurementIntervalCharHandle,
         measurementIntervalChar
     );
     // Reset current ECG buffer and start over.
-    this->clearCurrentEcgBuffer();
+    this->ecgBuffer->resetCurrentBuffer();
     // Subscribe to new ECG subscription.
     this->subscribeToEcgSamples();
 }
@@ -544,13 +397,10 @@ void EcgGATTSvcClient::unsubscribeFromEcgSamples()
 
 void EcgGATTSvcClient::setObjectSize(uint16_t value)
 {
-    // Delete message buffers if exists.
-    if (this->ecgCharacteristicsBuffers != nullptr)
-    {
-        delete[] this->ecgCharacteristicsBuffers;
-    }
     // Set new object size.
     this->objectSize = value;
+    // Change object size in buffer.
+    this->ecgBuffer->setLength((size_t)value);
     // Set object size to GATT Characteristics value.
     if (this->mObjectSizeCharHandle != 0) {
         WB_RES::Characteristic objectSizeChar;
@@ -563,11 +413,4 @@ void EcgGATTSvcClient::setObjectSize(uint16_t value)
             objectSizeChar
         );
     }
-    // Compute size of one single message buffer.
-    size_t singleBufferSize = this->getSingleEcgBufferSize();
-    // Allocate new message buffers.
-    this->ecgCharacteristicsBuffers = new uint8_t[numberOfMessageBuffers * singleBufferSize] { 0 };
-    // Reset number of buffered samples.
-    this->bufferedEcgSamples = 0;
-    this->ecgBufferIndex = 0;
 }

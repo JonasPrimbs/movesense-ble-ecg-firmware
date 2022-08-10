@@ -3,17 +3,18 @@
 #include <whiteboard/LaunchableModule.h>
 #include <whiteboard/ResourceClient.h>
 
+#include "SeriesBuffer.h"
 
-// ECG Value definitions:
+// ECG value definitions:
 
-/** Type definition of ECG Value. */
-typedef int16_t ecg_val;
-/** Maximum ECG Value. */
-const ecg_val ECG_MAX_VALUE = 32767; // 0x7FFF = 2^15 - 1;
-/** Minimum ECG Value. */
-const ecg_val ECG_MIN_VALUE = -32767; // 0x8001 = -(2^15 - 1);
-/** Invalid ECG Value. */
-const ecg_val ECG_INVALID_VALUE = -32768; // 0x8000 = -2^15;
+/** Type definition of ECG value. */
+typedef int16_t ecg_t;
+/** Maximum ECG value. */
+const ecg_t ECG_MAX_VALUE = 32767; // 0x7FFF = 2^15 - 1;
+/** Minimum ECG value. */
+const ecg_t ECG_MIN_VALUE = -32767; // 0x8001 = -(2^15 - 1);
+/** Invalid ECG value. */
+const ecg_t ECG_INVALID_VALUE = -32768; // 0x8000 = -2^15;
 
 
 // ECG GATT Services and Characteristics UUIDs:
@@ -29,7 +30,7 @@ const uint16_t measurementIntervalCharUUID16 = 0x2A21;
 const uint16_t objectSizeCharUUID16 = 0x2BDE;
 
 /** Number of message buffers. Must be > 1. */
-const size_t numberOfMessageBuffers = 2;
+const size_t numberOfEcgMessageBuffers = 2;
 
 
 // ECG GATT Service:
@@ -109,52 +110,10 @@ private:
     wb::ResourceId mObjectSizeCharResource;
 
 
-    // ECG Buffer:
+    // Buffers:
 
-    /** Index of current ECG buffer. */
-    size_t ecgBufferIndex = 0;
-    /** Array of available ECG buffers to switch between them. */
-    uint8_t* ecgCharacteristicsBuffers = nullptr;
-    /** Number of samples in ECG buffer. */
-    size_t bufferedEcgSamples;
-    /**
-     * @brief Gets the size of a single ECG buffer.
-     * 
-     * @return size_t Size of one ECG buffer.
-     */
-    size_t getSingleEcgBufferSize();
-    /**
-     * @brief Gets a pointer to the start of the i-th ECG buffer.
-     * 
-     * @param i Index of requested ECG buffer.
-     * @return uint8_t* Pointer to start of requested ECG buffer.
-     */
-    uint8_t* getEcgBuffer(size_t i);
-    /**
-     * @brief Gets a pointer to the current ECG buffer.
-     * 
-     * @return uint8_t* Pointer to the start of the current ECG buffer.
-     */
-    uint8_t* getCurrentEcgBuffer();
-    /**
-     * @brief Switches the current active message buffer to the next active message buffer.
-     */
-    void switchMessageBuffer();
-    /**
-     * @brief Clears the ECG buffer at index i.
-     * 
-     * @param i Index of ECG buffer to clear.
-     * @return true Clearing ECG buffer was successful.
-     * @return false Clearing ECG buffer was not successful due to not initialized buffer.
-     */
-    bool clearEcgBuffer(size_t i);
-    /**
-     * @brief Clears the current ECG buffer.
-     * 
-     * @return true Clearing ECG buffer was successful.
-     * @return false Clearing ECG buffer was not successful due to not initialized buffer.
-     */
-    bool clearCurrentEcgBuffer();
+    /** Buffer to hold ECG samples. */
+    SeriesBuffer<ecg_t>* ecgBuffer;
 
 
     // ECG Samples:
@@ -165,25 +124,7 @@ private:
      * @param ecgValue Sensor's ECG value to convert.
      * @return ecg_val Converted BLE ECG value.
      */
-    ecg_val convertEcgSample(int32 ecgValue);
-
-    /**
-     * @brief Adds an ECG sample to the current ECG buffer.
-     * 
-     * @param sample ECG sample to add.
-     * @return true Adding was successful.
-     * @return false Adding was not successful since ECG buffer is not initialized.
-     */
-    bool addEcgSample(ecg_val sample);
-
-    /**
-     * @brief Sets the relative timestamp of the last sample in ECG buffer.
-     * 
-     * @param timestamp Timestamp to set.
-     * @return true Setting was successful.
-     * @return false Setting was not successful since ECG buffer is not initialized.
-     */
-    bool setTimestamp(uint32_t timestamp);
+    ecg_t convertEcgSample(int32 ecgValue);
 
     /**
      * @brief Sends the ECG buffer via BLE.
