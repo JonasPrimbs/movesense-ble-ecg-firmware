@@ -13,8 +13,6 @@
 #include "comm_ble_gattsvc/resources.h"
 #include "comm_ble/resources.h"
 
-#include "config.h"
-
 
 // Movement GATT Service implementations:
 
@@ -26,10 +24,10 @@ MovGATTSvcClient::MovGATTSvcClient() :
     mMovSvcHandle(0),
     mMovAccCharHandle(0),
     mMovAccCharResource(wb::ID_INVALID_RESOURCE),
-    // mMovGyrCharHandle(0),
-    // mMovGyrCharResource(wb::ID_INVALID_RESOURCE),
-    // mMovMagCharHandle(0),
-    // mMovMagCharResource(wb::ID_INVALID_RESOURCE),
+    mMovGyrCharHandle(0),
+    mMovGyrCharResource(wb::ID_INVALID_RESOURCE),
+    mMovMagCharHandle(0),
+    mMovMagCharResource(wb::ID_INVALID_RESOURCE),
     mMeasurementIntervalCharHandle(0),
     mMeasurementIntervalCharResource(wb::ID_INVALID_RESOURCE),
     mObjectSizeCharHandle(0),
@@ -122,10 +120,6 @@ void MovGATTSvcClient::onGetResult(wb::RequestId requestId,
             DEBUGLOG("MovGATTSvcClient::onGetResult - COMM_BLE_GATTSVC_SVCHANDLE");
 
             const WB_RES::GattSvc &svc = rResultData.convertTo<const WB_RES::GattSvc&>();
-            // if (svc.uuid[0] != movSvcUUID16)
-            // {
-            //     break;
-            // }
             for (size_t i = 0; i < svc.chars.size(); i++)
             {
                 const WB_RES::GattChar &c = svc.chars[i];
@@ -488,37 +482,28 @@ bool MovGATTSvcClient::sendMagBuffer()
 
 uint32_t MovGATTSvcClient::getSampleRate()
 {
-    switch (this->measurementInterval)
+    return this->toSampleRate(this->measurementInterval);
+}
+
+uint32_t MovGATTSvcClient::toSampleRate(uint16_t interval)
+{
+    switch (interval)
     {
+        case 5:
+            return 208;
         case 10:
             return 104;
         case 20:
+            return 52;
+        case 40:
+            return 26;
         default:
             return 52;
     }
-    // return (uint32_t)(1000 / this->measurementInterval);
 }
 
 void MovGATTSvcClient::setMeasurementInterval(uint16_t value)
 {
-    // Ensure that value is valid or fall back to `DEFAULT_MOV_MEASUREMENT_INTERVAL`.
-    switch (value)
-    {
-        case 1:  // 1000 Hz
-        case 2:  //  500 Hz
-        case 4:  //  250 Hz
-        case 8:  //  125 Hz
-        case 10: //  100 Hz
-            value = 104;
-            break;
-        case 20: //   50 Hz
-            value = 52;
-            break;
-        default:
-            value = DEFAULT_MOV_MEASUREMENT_INTERVAL;
-            break;
-    }
-
     // Unsubscribe from current Movement subscriptions.
     this->unsubscribeFromAccSamples();
     this->unsubscribeFromGyrSamples();

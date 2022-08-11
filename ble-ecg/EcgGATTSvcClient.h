@@ -6,17 +6,6 @@
 #include "SeriesBuffer.h"
 #include "config.h"
 
-// ECG value definitions:
-
-/** Type definition of ECG value. */
-typedef int16_t ecg_t;
-/** Maximum ECG value. */
-const ecg_t ECG_MAX_VALUE = 32767; // 0x7FFF = 2^15 - 1;
-/** Minimum ECG value. */
-const ecg_t ECG_MIN_VALUE = -32767; // 0x8001 = -(2^15 - 1);
-/** Invalid ECG value. */
-const ecg_t ECG_INVALID_VALUE = -32768; // 0x8000 = -2^15;
-
 
 // ECG GATT Service:
 

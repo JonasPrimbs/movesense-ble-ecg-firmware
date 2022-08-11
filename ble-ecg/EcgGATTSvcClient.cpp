@@ -10,22 +10,6 @@
 #include "comm_ble/resources.h"
 
 
-// At compile-time adjustable constants:
-
-/**
- * @brief Default ECG Measurement Interval in milliseconds.
- * Must be one of the following: 
- *  - 1 ms = 1000 Hz
- *  - 2 ms =  500 Hz
- *  - 4 ms =  250 Hz
- *  - 8 ms =  125 Hz
- */
-const int DEFAULT_ECG_MEASUREMENT_INTERVAL = 4;
-
-/** Default number of ECG samples per message. */
-const uint16_t DEFAULT_ECG_OBJECT_SIZE = 16;
-
-
 // ECG GATT Service implementations:
 
 const char* const EcgGATTSvcClient::LAUNCHABLE_NAME = "EcgGattSvc";
@@ -118,10 +102,6 @@ void EcgGATTSvcClient::onGetResult(wb::RequestId requestId,
             DEBUGLOG("EcgGATTSvcClient::onGetResult - COMM_BLE_GATTSVC_SVCHANDLE");
 
             const WB_RES::GattSvc &svc = rResultData.convertTo<const WB_RES::GattSvc&>();
-            // if (svc.uuid[0] != ecgSvcUUID16)
-            // {
-            //     break;
-            // }
             for (size_t i = 0; i < svc.chars.size(); i++)
             {
                 const WB_RES::GattChar &c = svc.chars[i];

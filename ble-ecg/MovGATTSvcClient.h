@@ -4,31 +4,7 @@
 #include <whiteboard/ResourceClient.h>
 
 #include "SeriesBuffer.h"
-
-// Movement value definitions:
-
-template<class T>
-struct Vector3
-{
-    T x;
-    T y;
-    T z;
-};
-
-/** Type definition of Acceleration value. */
-typedef float acc_t;
-/** Type definition of Acceleration vector. */
-typedef Vector3<acc_t> acc_vec_t;
-
-/** Type definition of Gyroscope value. */
-typedef float gyr_t;
-/** Type definition of Gyroscope vector. */
-typedef Vector3<gyr_t> gyr_vec_t;
-
-/** Type definition of Magnetic Field value. */
-typedef float mag_t;
-/** Type definition of Magnetic Field vector. */
-typedef Vector3<mag_t> mag_vec_t;
+#include "config.h"
 
 
 // Movement GATT Service:
@@ -122,10 +98,8 @@ private:
 
     /** Buffer to hold Acceleration samples. */
     SeriesBuffer<acc_vec_t>* accBuffer;
-
     /** Buffer to hold Gyroscope samples. */
     SeriesBuffer<gyr_vec_t>* gyrBuffer;
-
     /** Buffer to hold Magnetic Field samples. */
     SeriesBuffer<mag_vec_t>* magBuffer;
 
@@ -192,26 +166,33 @@ private:
     /**
      * @brief Interval between two Movement measurements in milliseconds.
      * Must be one of the following: 
-     *  -  1 ms = 1000 Hz
-     *  -  2 ms =  500 Hz
-     *  -  4 ms =  250 Hz
-     *  -  8 ms =  125 Hz
-     *  - 10 ms =  100 Hz
-     *  - 20 ms =   50 Hz
+     *  -  5 ms = 208 Hz
+     *  - 10 ms = 104 Hz
+     *  - 20 ms =  52 Hz
+     *  - 40 ms =  26 Hz
      */
     uint16_t measurementInterval;
     /**
      * @brief Gets the desired sampling rate.
-     *  - 1000 Hz =  1 ms
-     *  -  500 Hz =  2 ms
-     *  -  250 Hz =  4 ms
-     *  -  125 Hz =  8 ms
-     *  -  100 Hz = 10 ms
-     *  -   50 Hz = 20 ms
+     *  - 208 Hz =   5 ms
+     *  - 104 Hz =  10 ms
+     *  -  52 Hz =  20 ms
+     *  -  26 Hz =  40 ms
      * 
      * @return uint32_t Desired sampling rate.
      */
     uint32_t getSampleRate();
+    /**
+     * @brief Converts a measurement interval to a sampling rate.
+     *  - 208 Hz =   5 ms
+     *  - 104 Hz =  10 ms
+     *  -  52 Hz =  20 ms
+     *  -  26 Hz =  40 ms
+     * 
+     * @param interval measurement interval.
+     * @return uint32_t Sampling rate.
+     */
+    uint32_t toSampleRate(uint16_t interval);
     /**
      * @brief Set the interval between two Movement measurements in milliseconds.
      * 

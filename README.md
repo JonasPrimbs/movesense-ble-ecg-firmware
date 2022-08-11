@@ -1,6 +1,6 @@
-# Movesense BLE ECG Firmware
+# Movesense BLE Firmware
 
-A custom firmware for [Movesense ECG devices](https://www.movesense.com/) which implements a Bluetooth Low Energy (BLE) GATT electrocardiograph (ECG) voltage measurements.
+A custom firmware for [Movesense Sensor devices](https://www.movesense.com/) which implements a Bluetooth Low Energy (BLE) GATT electrocardiograph (ECG) voltage and movement measurements.
 
 This Repository is forked from **version 2.0.0** of the [official Movesense Device Library](https://bitbucket.org/movesense/movesense-device-lib/).
 
@@ -15,11 +15,16 @@ This Repository is forked from **version 2.0.0** of the [official Movesense Devi
 Our custom firmware provides the following GATT Services:
 
 - **Heart Rate Service**: Provides access to R-R intervals in milliseconds. See the [Bluetooth SIG specification](https://www.bluetooth.com/de/specifications/specs/heart-rate-service-1-0/) for more details.
-- **Electrocardiograph Service**: Provides access to the measured ECG voltage measurements.
+- **Electrocardiograph Service**: Provides access to the ECG voltage measurements.
   - **ECG Voltage Characteristic**: Provides *NOTIFY* access to a relative *timestamp* and a series of *n* *voltages*.
   - **Object Size Characteristic**: Provides *READ* and *WRITE* access to the length *n* of the voltage series. Default value: 16.
-  - **Measurement Interval Characteristic**: Provides *READ* and *WRITE* access to the measurement interval in milliseconds. Allowed values: 1 (1000 Hz), 2 (500 Hz), 4 (250 Hz), 8 (500 Hz).
-
+  - **Measurement Interval Characteristic**: Provides *READ* and *WRITE* access to the ECG measurement interval in milliseconds. Allowed values: 1 (1000 Hz), 2 (500 Hz), 4 (250 Hz), 8 (500 Hz).
+- **Movement Service**: Provides access to the movement measurements.
+  - **Acceleration Characteristic**: Provides *NOTIFY* access to a relative *timestamp* and a series of *n* *3D acceleration vectors*.
+  - **Gyroscope Characteristic**: Provides *NOTIFY* access to a relative *timestamp* and a series of *n* *3D gyroscope vectors*.
+  - **Magnetic Field Characteristic**: Provides *NOTIFY* access to a relative *timestamp* and a series of *n* *3D magnetic field vectors*.
+  - **Object Size Characteristic**: Provides *READ* and *WRITE* access to the length *n* of the acceleration, gyroscope, and magnetic field series. Default value: 8.
+  - **Measurement Interval Characteristic**: Provides *READ* and *WRITE* access to the movement measurement interval in milliseconds. Allowed values:  5 (208 Hz), 10 (104 Hz), 20 (52 Hz), 40 (26 Hz).
 
 ### Lifecycle
 
