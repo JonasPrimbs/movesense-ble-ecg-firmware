@@ -73,6 +73,20 @@ const size_t numberOfMovGyrBuffers = 2;
 const size_t numberOfMovMagBuffers = 2;
 
 
+// Activity GATT Services and Characteristics UUIDs:
+
+/** 16-bit UUID for Activity Service. */
+const uint16_t activitySvcUUID16 = 0x1859;
+
+/** 16-bit UUID for Movement Characteristic. */
+const uint16_t movCharUUID16 = 0x2BE2;
+
+/** 16-bit UUID for ECG Measurement Interval Characteristic. */
+const uint16_t ecgMeasurementIntervalCharUUID16 = 0x2BE3;
+/** 16-bit UUID for Movement Measurement Interval Characteristic. */
+const uint16_t movMeasurementIntervalCharUUID16 = 0x2BE4;
+
+
 // ECG value definitions:
 
 /** Type definition of ECG value. */
@@ -110,7 +124,13 @@ typedef float mag_t;
 /** Type definition of Magnetic Field vector. */
 typedef Vector3<mag_t> mag_vec_t;
 
-struct MovementData
+/** Number of Movement buffers. Must be > 1. */
+const size_t numberOfMovBuffers = 2;
+
+/** Size of the movement buffer. DEFAULT_MOV_OBJECT_SIZE must be a multiple of this. */
+const size_t movBufferSize = 4;
+
+struct mov_t
 {
     acc_vec_t acc;
     gyr_vec_t gyr;

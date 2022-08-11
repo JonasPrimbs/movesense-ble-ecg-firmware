@@ -6,6 +6,8 @@ const movSvcUUID16 = 0x1858;
 const movAccCharUUID16 = 0x2BDF;
 const movGyrCharUUID16 = 0x2BE0;
 const movMagCharUUID16 = 0x2BE1;
+const activitySvcUUID16 = 0x1859;
+const movCharUUID16 = 0x2BE2;
 
 function parseEcg(dataView) {
   if (dataView.byteLength <= 4) {
@@ -14,8 +16,7 @@ function parseEcg(dataView) {
   }
   const time = dataView.getUint32(0, true);
   const voltages = [];
-  const size = (dataView.byteLength - 4) / 2;
-  const n = size * 2 + 4;
+  const n = dataView.byteLength;
   for (let i = 4; i < n; i += 2) {
     const voltage = dataView.getInt16(i, true);
     voltages.push(voltage);
@@ -23,6 +24,41 @@ function parseEcg(dataView) {
   return {
     t: time,
     v: voltages,
+  };
+}
+
+function parseMovement(dataView) {
+  if (dataView.byteLength <= 4) {
+    console.error(`Invalid Movement frame: Length of ${dataView.byteLength}`, dataView);
+    return null;
+  }
+  const time = dataView.getUint32(0, true);
+  const movement = [];
+  const n = dataView.byteLength;
+  for (let i = 4; i < n; i += (4 * 3 * 3)) {
+    const mov = {
+      acc: {
+        x: dataView.getFloat32(i+0, true),
+        y: dataView.getFloat32(i+4, true),
+        z: dataView.getFloat32(i+8, true),
+      },
+      gyr: {
+        x: dataView.getFloat32(i+12, true),
+        y: dataView.getFloat32(i+16, true),
+        z: dataView.getFloat32(i+20, true),
+      },
+      mag: {
+        x: dataView.getFloat32(i+24, true),
+        y: dataView.getFloat32(i+28, true),
+        z: dataView.getFloat32(i+32, true),
+      },
+    };
+
+    movement.push(mov);
+  }
+  return {
+    t: time,
+    m: movement,
   };
 }
 
@@ -38,6 +74,24 @@ function reduceEcg(packet, delta) {
     result.push(value);
   }
   return result;
+}
+function reduceMovement(packet, delta) {
+  const time = packet.t;
+  const movement = packet.m;
+  const n = movement.length;
+  const result = [];
+  for (let i = 0; i < n; i++) {
+    const m = movement[i];
+    const t = time - (n - i - 1) * delta;
+    const value = { t, m };
+    // console.log(value);
+    result.push(value);
+  }
+  return result;
+}
+function movToLine(mov) {
+  // console.log(mov);
+  return `${mov.t}\t${mov.m.acc.x}\t${mov.m.acc.y}\t${mov.m.acc.z}\t${mov.m.gyr.x}\t${mov.m.gyr.y}\t${mov.m.gyr.z}\t${mov.m.mag.x}\t${mov.m.mag.y}\t${mov.m.mag.z}\n`;
 }
 
 function parseInterval(dataView) {
@@ -88,15 +142,11 @@ async function unsubscribeFromEcg(listener) {
 async function connectToDevice() {
   const device = await navigator.bluetooth.requestDevice({
     filters: [
-      /*{
-      services: [ecgSvcUUID16]
-    }, {
-      services: [movSvcUUID16]
-    }*/
     {namePrefix: 'Movesense'}],
     optionalServices: [
       ecgSvcUUID16,
       movSvcUUID16,
+      activitySvcUUID16,
     ]
   });
   return await device.gatt.connect();
@@ -117,12 +167,26 @@ var interval;
 var ecgListener;
 var size;
 
-var result = 't\tv\n';
+// var result = 't\tv\n';
+var result = 't\tacc_x\tacc_y\tacc_z\tgyr_x\tgyr_y\tgyr_z\tmag_x\tmag_y\tmag_z\n';
 
 async function connect() {
   server = await connectToDevice();
-  service = await server.getPrimaryService(ecgSvcUUID16);
-  size = await getPacketSize(service);
+  // service = await server.getPrimaryService(ecgSvcUUID16);
+  // size = await getPacketSize(service);
+  let s = await server.getPrimaryService(activitySvcUUID16);
+  let c = await s.getCharacteristic(movCharUUID16);
+  c.addEventListener('characteristicvaluechanged', (evt) => {
+    const dv = evt.target.value;
+    const data = parseMovement(dv);
+    const m = reduceMovement(data, 20);
+    for (let d of m) {
+        const s = movToLine(d);
+        result += s;
+        console.log(s.replaceAll('\t', '\n'));
+    }
+  });
+  c.startNotifications();
   console.log('connected');
 }
 

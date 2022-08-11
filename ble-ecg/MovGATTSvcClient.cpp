@@ -7,8 +7,6 @@
 #include "MovGATTSvcClient.h"
 #include "common/core/debug.h"
 #include "oswrapper/thread.h"
-#include "component_led/resources.h"
-#include "ui_ind/resources.h"
 
 #include "comm_ble_gattsvc/resources.h"
 #include "comm_ble/resources.h"
@@ -201,11 +199,7 @@ void MovGATTSvcClient::onNotify(wb::ResourceId resourceId,
             timestamp_t timestamp = (timestamp_t)accData.timestamp;
 
             // Parse samples and put them into sample buffer.
-            size_t numberOfSamples = accData.arrayAcc.size();//.getNumberOfItems();
-            if (numberOfSamples <= 0)
-            {
-                break;
-            }
+            size_t numberOfSamples = accData.arrayAcc.getNumberOfItems();
             for (size_t i = 0; i < numberOfSamples; i++)
             {
                 // Convert Acceleration sample.
