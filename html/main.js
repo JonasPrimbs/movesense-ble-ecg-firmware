@@ -2,6 +2,10 @@ const ecgSvcUUID16 = 0x1857;
 const ecgVoltageCharUUID16 = 0x2BDD;
 const measurementIntervalCharUUID16 = 0x2A21;
 const objectSizeCharUUID16 = 0x2BDE;
+const movSvcUUID16 = 0x1858;
+const movAccCharUUID16 = 0x2BDF;
+const movGyrCharUUID16 = 0x2BE0;
+const movMagCharUUID16 = 0x2BE1;
 
 function parseEcg(dataView) {
   if (dataView.byteLength <= 4) {
@@ -83,9 +87,17 @@ async function unsubscribeFromEcg(listener) {
 
 async function connectToDevice() {
   const device = await navigator.bluetooth.requestDevice({
-    filters: [{
+    filters: [
+      /*{
       services: [ecgSvcUUID16]
-    }]
+    }, {
+      services: [movSvcUUID16]
+    }*/
+    {namePrefix: 'Movesense'}],
+    optionalServices: [
+      ecgSvcUUID16,
+      movSvcUUID16,
+    ]
   });
   return await device.gatt.connect();
 }
