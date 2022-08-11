@@ -2,6 +2,11 @@
 
 A custom firmware for [Movesense Sensor devices](https://www.movesense.com/) which implements a Bluetooth Low Energy (BLE) GATT electrocardiograph (ECG) voltage and movement measurements.
 
+
+### **WARNING: DUE TO RESTRICTIONS IN THE MOVESENSE FIRMWARE, THE ECG SERVICE AND THE MOVEMENT OBJECT SIZE CHARACTERISTIC ARE DISABLED!**
+A workaround is provided in branch `movement-workaround`.
+
+
 This Repository is forked from **version 2.0.0** of the [official Movesense Device Library](https://bitbucket.org/movesense/movesense-device-lib/).
 
 *Due to some issues with firmware v2.1.X, the connections via Web Bluetooth are not possible.*
