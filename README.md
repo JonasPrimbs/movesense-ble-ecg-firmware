@@ -3,8 +3,8 @@
 A custom firmware for [Movesense Sensor devices](https://www.movesense.com/) which implements a Bluetooth Low Energy (BLE) GATT electrocardiograph (ECG) voltage and movement measurements.
 
 
-### **WARNING: DUE TO RESTRICTIONS IN THE MOVESENSE FIRMWARE, THE ECG SERVICE AND THE MOVEMENT OBJECT SIZE CHARACTERISTIC ARE DISABLED!**
-A workaround is provided in branch `movement-workaround`.
+### **WARNING: DUE TO RESTRICTIONS IN THE MOVESENSE FIRMWARE, THIS BRANCH IMPLEMENTS A WORKAROUND TO PROVIDE MOVEMENT AND ECG ACCESS AT ONCE!**
+Read the [Documentation](#provided-gatt-services-and-characteristics) to learn more about the workaround.
 
 
 This Repository is forked from **version 2.0.0** of the [official Movesense Device Library](https://bitbucket.org/movesense/movesense-device-lib/).
@@ -17,7 +17,7 @@ This Repository is forked from **version 2.0.0** of the [official Movesense Devi
 
 ### Provided GATT Services and Characteristics
 
-Our custom firmware provides the following GATT Services:
+Our custom firmware *should* provide the following GATT Services:
 
 - **Heart Rate Service**: Provides access to R-R intervals in milliseconds. See the [Bluetooth SIG specification](https://www.bluetooth.com/de/specifications/specs/heart-rate-service-1-0/) for more details.
 - **Electrocardiograph Service**: Provides access to the ECG voltage measurements.
@@ -30,6 +30,20 @@ Our custom firmware provides the following GATT Services:
   - **Magnetic Field Characteristic**: Provides *NOTIFY* access to a relative *timestamp* and a series of *n* *3D magnetic field vectors*.
   - **Object Size Characteristic**: Provides *READ* and *WRITE* access to the length *n* of the acceleration, gyroscope, and magnetic field series. Default value: 8.
   - **Measurement Interval Characteristic**: Provides *READ* and *WRITE* access to the movement measurement interval in milliseconds. Allowed values:  5 (208 Hz), 10 (104 Hz), 20 (52 Hz), 40 (26 Hz).
+
+Due to restrictions in the Movesense firmware, we replaced them by the following GATT Services:
+
+- **Heart Rate Service**: Provides access to R-R intervals in milliseconds. See the [Bluetooth SIG specification](https://www.bluetooth.com/de/specifications/specs/heart-rate-service-1-0/) for more details.
+- **Activity Data Service**: Provides access to the ECG voltage and movement measurements.
+  - **ECG Voltage Characteristic**: Provides *NOTIFY* access to a relative *timestamp* and a series of *n* *voltages*.
+  - **ECG Measurement Interval Characteristic**: Provides *READ* and *WRITE* access to the ECG measurement interval in milliseconds. Allowed values: 1 (1000 Hz), 2 (500 Hz), 4 (250 Hz), 8 (500 Hz).
+  - **Movement Characteristic**: Provides *NOTIFY* access to a relative *timestamp* and a series of *n* *3-tuples of 3D vectors of acceleration, gyroscope, and magnetic field values*.
+  - **Movement Measurement Interval Characteristic**: Provides *READ* and *WRITE* access to the movement measurement interval in milliseconds. Allowed values:  5 (208 Hz), 10 (104 Hz), 20 (52 Hz), 40 (26 Hz).
+
+So the restrictions of the workaround are as follows:
+- ECG and Movement Services are combined to one Activity Data Service.
+- Object sizes are fixed to 16 samples for ECG and 8 samples for movement. Related Characteristics are omitted.
+- Acceleration, Gyroscope, and Magnetic Field Characteristics are combined to one Movement Characteristic. This reduces the timestamp accuracy of the individual samples, since one Acceleration, Gyroscope, and Magnetic Field sample which are theoretically measured independently, are merged to the same timestamp.
 
 ### Lifecycle
 
