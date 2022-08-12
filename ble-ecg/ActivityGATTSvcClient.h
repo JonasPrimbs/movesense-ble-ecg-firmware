@@ -171,17 +171,17 @@ private:
     /**
      * @brief Interval between two ECG measurements in milliseconds.
      * Must be one of the following: 
-     *  - 1 ms = 1000 Hz
      *  - 2 ms =  500 Hz
      *  - 4 ms =  250 Hz
+     *  - 5 ms =  200 Hz
      *  - 8 ms =  125 Hz
      */
     uint16_t ecgMeasurementInterval;
     /**
      * @brief Gets the desired ECG sampling rate.
-     *  - 1000 Hz = 1 ms
      *  -  500 Hz = 2 ms
      *  -  250 Hz = 4 ms
+     *  -  200 Hz = 5 ms
      *  -  125 Hz = 8 ms
      * 
      * @return uint32_t Desired ECG sampling rate.
@@ -208,19 +208,19 @@ private:
 
     /**
      * @brief Interval between two Movement measurements in milliseconds.
-     * Must be one of the following: 
-     *  - 1 ms = 1000 Hz
-     *  - 2 ms =  500 Hz
-     *  - 4 ms =  250 Hz
-     *  - 8 ms =  125 Hz
+     * Must be one of the following:
+     *  -  5 ms = 208 Hz
+     *  - 10 ms = 104 Hz
+     *  - 20 ms =  52 Hz
+     *  - 40 ms =  26 Hz
      */
     uint16_t movMeasurementInterval;
     /**
      * @brief Gets the desired Movement sampling rate.
-     *  - 1000 Hz = 1 ms
-     *  -  500 Hz = 2 ms
-     *  -  250 Hz = 4 ms
-     *  -  125 Hz = 8 ms
+     *  - 208 Hz =  5 ms
+     *  - 104 Hz = 10 ms
+     *  -  52 Hz = 20 ms
+     *  -  26 Hz = 40 ms
      * 
      * @return uint32_t Desired Movement sampling rate.
      */

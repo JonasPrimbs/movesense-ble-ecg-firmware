@@ -569,9 +569,9 @@ void ActivityGATTSvcClient::setEcgMeasurementInterval(uint16_t value)
     // Ensure that value is valid or fall back to `DEFAULT_ECG_MEASUREMENT_INTERVAL`.
     switch (value)
     {
-        case 1: // 1000 Hz
         case 2: // 500 Hz
         case 4: // 250 Hz
+        case 5: // 200 Hz
         case 8: // 125 Hz
             break;
         default:

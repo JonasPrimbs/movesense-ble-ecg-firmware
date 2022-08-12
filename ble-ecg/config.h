@@ -8,10 +8,11 @@
 /**
  * @brief Default ECG Measurement Interval in milliseconds.
  * Must be one of the following: 
- *  - 1 ms = 1000 Hz
- *  - 2 ms =  500 Hz
- *  - 4 ms =  250 Hz
- *  - 8 ms =  125 Hz
+ *  -  2 ms =  500 Hz
+ *  -  4 ms =  250 Hz
+ *  -  5 ms =  200 Hz
+ *  -  8 ms =  125 Hz
+ *  - 10 ms =  100 Hz
  */
 const int DEFAULT_ECG_MEASUREMENT_INTERVAL = 4;
 
@@ -21,12 +22,10 @@ const uint16_t DEFAULT_ECG_OBJECT_SIZE = 16;
 /**
  * @brief Default Movement Measurement Interval in milliseconds.
  * Must be one of the following: 
- *  -  1 ms = 1000 Hz
- *  -  2 ms =  500 Hz
- *  -  4 ms =  250 Hz
- *  -  8 ms =  125 Hz
- *  - 10 ms =  100 Hz
- *  - 20 ms =   50 Hz
+ *  -  5 ms = 208 Hz
+ *  - 10 ms = 104 Hz
+ *  - 20 ms =  52 Hz
+ *  - 40 ms =  26 Hz
  */
 const int DEFAULT_MOV_MEASUREMENT_INTERVAL = 20;
 
