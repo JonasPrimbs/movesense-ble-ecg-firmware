@@ -171,18 +171,20 @@ private:
     /**
      * @brief Interval between two ECG measurements in milliseconds.
      * Must be one of the following: 
-     *  - 2 ms =  500 Hz
-     *  - 4 ms =  250 Hz
-     *  - 5 ms =  200 Hz
-     *  - 8 ms =  125 Hz
+     *  -  2 ms =  500 Hz
+     *  -  4 ms =  250 Hz
+     *  -  5 ms =  200 Hz
+     *  -  8 ms =  125 Hz
+     *  - 10 ms =  100 Hz
      */
     uint16_t ecgMeasurementInterval;
     /**
      * @brief Gets the desired ECG sampling rate.
-     *  -  500 Hz = 2 ms
-     *  -  250 Hz = 4 ms
-     *  -  200 Hz = 5 ms
-     *  -  125 Hz = 8 ms
+     *  -  500 Hz =  2 ms
+     *  -  250 Hz =  4 ms
+     *  -  200 Hz =  5 ms
+     *  -  125 Hz =  8 ms
+     *  -  100 Hz = 10 ms
      * 
      * @return uint32_t Desired ECG sampling rate.
      */

@@ -624,6 +624,7 @@ void ActivityGATTSvcClient::setEcgMeasurementInterval(uint16_t value)
         case 4: // 250 Hz
         case 5: // 200 Hz
         case 8: // 125 Hz
+        case 10: // 100 Hz
             break;
         default:
             value = DEFAULT_ECG_MEASUREMENT_INTERVAL;
@@ -693,6 +694,19 @@ uint32_t ActivityGATTSvcClient::getMovSampleRate()
 
 void ActivityGATTSvcClient::setMovMeasurementInterval(uint16_t value)
 {
+        // Ensure that value is valid or fall back to `DEFAULT_MOV_MEASUREMENT_INTERVAL`.
+    switch (value)
+    {
+        case 5: // 208 Hz
+        case 10: // 104 Hz
+        case 20: // 52 Hz
+        case 40: // 26 Hz
+            break;
+        default:
+            value = DEFAULT_MOV_MEASUREMENT_INTERVAL;
+            break;
+    }
+
     // Unsubscribe from current Movement subscriptions.
     this->unsubscribeFromAccSamples();
     this->unsubscribeFromGyrSamples();
