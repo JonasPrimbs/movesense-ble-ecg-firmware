@@ -109,25 +109,46 @@ struct Vector3
 };
 
 /** Type definition of Acceleration value. */
-typedef float acc_t;
+typedef int16_t acc_t;
 /** Type definition of Acceleration vector. */
 typedef Vector3<acc_t> acc_vec_t;
 
+/** Maximum value of acceleration. */
+const acc_t MAX_ACC = +32767;
+/** Minimum value of acceleration. */
+const acc_t MIN_ACC = -32767;
+/** Error value of acceleration. Used when value is out of range. */
+const acc_t ERR_ACC = -32768;
+
 /** Type definition of Gyroscope value. */
-typedef float gyr_t;
+typedef int16_t gyr_t;
 /** Type definition of Gyroscope vector. */
 typedef Vector3<gyr_t> gyr_vec_t;
 
+/** Maximum value of Gyroscope. */
+const gyr_t MAX_GYR = +32767;
+/** Minimum value of Gyroscope. */
+const gyr_t MIN_GYR = -32767;
+/** Error value of Gyroscope. Used when value is out of range. */
+const gyr_t ERR_GYR = -32768;
+
 /** Type definition of Magnetic Field value. */
-typedef float mag_t;
+typedef int16_t mag_t;
 /** Type definition of Magnetic Field vector. */
 typedef Vector3<mag_t> mag_vec_t;
+
+/** Maximum value of Magnetic Field. */
+const mag_t MAX_MAG = +32767;
+/** Minimum value of Magnetic Field. */
+const mag_t MIN_MAG = -32767;
+/** Error value of Magnetic Field. Used when value is out of range. */
+const mag_t ERR_MAG = -32768;
 
 /** Number of Movement buffers. Must be > 1. */
 const size_t numberOfMovBuffers = 2;
 
 /** Size of the movement buffer. DEFAULT_MOV_OBJECT_SIZE must be a multiple of this. */
-const size_t movBufferSize = 4;
+const size_t movBufferSize = 8;
 
 struct mov_t
 {
@@ -135,3 +156,10 @@ struct mov_t
     gyr_vec_t gyr;
     mag_vec_t mag;
 };
+
+/** Scaling factor of acceleration. Applied before converting to integers. */
+const float accScale = 100.0f;
+/** Scaling factor of gyroscope. Applied before converting to integers. */
+const float gyrScale = 10.0f;
+/** Scaling factor of magnetic field. Applied before converting to integers. */
+const float magScale = 100.0f;

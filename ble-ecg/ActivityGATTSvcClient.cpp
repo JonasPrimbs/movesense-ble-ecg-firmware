@@ -276,7 +276,7 @@ void ActivityGATTSvcClient::onNotify(wb::ResourceId resourceId,
             for (size_t i = 0; i < numberOfSamples; i++)
             {
                 // Convert Gyroscope sample.
-                auto gyrSample = this->convertAccSample(gyrData.arrayGyro[i]);
+                auto gyrSample = this->convertGyrSample(gyrData.arrayGyro[i]);
 
                 // Verify that cache does not overflow.
                 if (this->movGyrCount >= DEFAULT_MOV_OBJECT_SIZE) {
@@ -509,28 +509,79 @@ void ActivityGATTSvcClient::finishMovementSeries(timestamp_t t, size_t n, size_t
 
 acc_vec_t ActivityGATTSvcClient::convertAccSample(whiteboard::FloatVector3D accVector)
 {
+    float accX = accVector.x * accScale;
+    float accY = accVector.y * accScale;
+    float accZ = accVector.z * accScale;
+
+    if (accX > MAX_ACC || accX < MIN_ACC)
+    {
+        accX = ERR_ACC;
+    }
+    if (accY > MAX_ACC || accY < MIN_ACC)
+    {
+        accY = ERR_ACC;
+    }
+    if (accZ > MAX_ACC || accZ < MIN_ACC)
+    {
+        accZ = ERR_ACC;
+    }
+    
     acc_vec_t value;
-    value.x = (acc_t)accVector.x;
-    value.y = (acc_t)accVector.y;
-    value.z = (acc_t)accVector.z;
+    value.x = static_cast<acc_t>(accX);
+    value.y = static_cast<acc_t>(accY);
+    value.z = static_cast<acc_t>(accZ);
     return value;
 }
 
 gyr_vec_t ActivityGATTSvcClient::convertGyrSample(whiteboard::FloatVector3D gyrVector)
 {
+    float gyrX = gyrVector.x * gyrScale;
+    float gyrY = gyrVector.y * gyrScale;
+    float gyrZ = gyrVector.z * gyrScale;
+
+    if (gyrX > MAX_GYR || gyrX < MIN_GYR)
+    {
+        gyrX = ERR_GYR;
+    }
+    if (gyrY > MAX_GYR || gyrY < MIN_GYR)
+    {
+        gyrY = ERR_GYR;
+    }
+    if (gyrZ > MAX_GYR || gyrZ < MIN_GYR)
+    {
+        gyrZ = ERR_GYR;
+    }
+    
     gyr_vec_t value;
-    value.x = (gyr_t)gyrVector.x;
-    value.y = (gyr_t)gyrVector.y;
-    value.z = (gyr_t)gyrVector.z;
+    value.x = static_cast<gyr_t>(gyrX);
+    value.y = static_cast<gyr_t>(gyrY);
+    value.z = static_cast<gyr_t>(gyrZ);
     return value;
 }
 
 mag_vec_t ActivityGATTSvcClient::convertMagSample(whiteboard::FloatVector3D magVector)
 {
+    float magX = magVector.x * magScale;
+    float magY = magVector.y * magScale;
+    float magZ = magVector.z * magScale;
+
+    if (magX > MAX_MAG || magX < MIN_MAG)
+    {
+        magX = ERR_MAG;
+    }
+    if (magY > MAX_MAG || magY < MIN_MAG)
+    {
+        magY = ERR_MAG;
+    }
+    if (magZ > MAX_MAG || magZ < MIN_MAG)
+    {
+        magZ = ERR_MAG;
+    }
+    
     mag_vec_t value;
-    value.x = (mag_t)magVector.x;
-    value.y = (mag_t)magVector.y;
-    value.z = (mag_t)magVector.z;
+    value.x = static_cast<mag_t>(magX);
+    value.y = static_cast<mag_t>(magY);
+    value.z = static_cast<mag_t>(magZ);
     return value;
 }
 

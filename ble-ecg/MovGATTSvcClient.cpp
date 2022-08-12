@@ -233,7 +233,7 @@ void MovGATTSvcClient::onNotify(wb::ResourceId resourceId,
             for (size_t i = 0; i < numberOfSamples; i++)
             {
                 // Convert Gyroscope sample.
-                auto gyrSample = this->convertAccSample(gyrData.arrayGyro[i]);
+                auto gyrSample = this->convertGyrSample(gyrData.arrayGyro[i]);
                 // Add converted sample to Gyroscope buffer.
                 this->gyrBuffer->addSample(gyrSample);
 

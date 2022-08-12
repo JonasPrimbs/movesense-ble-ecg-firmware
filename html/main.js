@@ -11,6 +11,11 @@ const movCharUUID16 = 0x2BE2;
 const ecgMeasurementIntervalCharUUID16 = 0x2BE3;
 const movMeasurementIntervalCharUUID16 = 0x2BE4;
 
+const accScale = 100.0;
+const gyrScale = 10.0;
+const magScale = 100.0;
+
+
 function parseEcg(dataView) {
   if (dataView.byteLength <= 4) {
     console.error(`Invalid ECG frame: Length of ${dataView.byteLength}`, dataView);
@@ -37,22 +42,22 @@ function parseMovement(dataView) {
   const time = dataView.getUint32(0, true);
   const movement = [];
   const n = dataView.byteLength;
-  for (let i = 4; i < n; i += (4 * 3 * 3)) {
+  for (let i = 4; i < n; i += (2 * 3 * 3)) {
     const mov = {
       acc: {
-        x: dataView.getFloat32(i+0, true),
-        y: dataView.getFloat32(i+4, true),
-        z: dataView.getFloat32(i+8, true),
+        x: dataView.getInt16(i+0, true) / accScale,
+        y: dataView.getInt16(i+2, true) / accScale,
+        z: dataView.getInt16(i+4, true) / accScale,
       },
       gyr: {
-        x: dataView.getFloat32(i+12, true),
-        y: dataView.getFloat32(i+16, true),
-        z: dataView.getFloat32(i+20, true),
+        x: dataView.getInt16(i+6, true) / gyrScale,
+        y: dataView.getInt16(i+8, true) / gyrScale,
+        z: dataView.getInt16(i+10, true) / gyrScale,
       },
       mag: {
-        x: dataView.getFloat32(i+24, true),
-        y: dataView.getFloat32(i+28, true),
-        z: dataView.getFloat32(i+32, true),
+        x: dataView.getInt16(i+12, true) / magScale,
+        y: dataView.getInt16(i+14, true) / magScale,
+        z: dataView.getInt16(i+16, true) / magScale,
       },
     };
 
