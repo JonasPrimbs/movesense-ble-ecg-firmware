@@ -2,11 +2,6 @@
 
 A custom firmware for [Movesense Sensor devices](https://www.movesense.com/) which implements a Bluetooth Low Energy (BLE) GATT electrocardiograph (ECG) voltage and movement measurements.
 
-
-### **WARNING: DUE TO RESTRICTIONS IN THE MOVESENSE FIRMWARE, THIS BRANCH IMPLEMENTS A WORKAROUND TO PROVIDE MOVEMENT AND ECG ACCESS AT ONCE!**
-Read the [Documentation](#provided-gatt-services-and-characteristics) to learn more about the workaround.
-
-
 This Repository is forked from **version 2.0.0** of the [official Movesense Device Library](https://bitbucket.org/movesense/movesense-device-lib/).
 
 *Due to some issues with firmware v2.1.X, the connections via Web Bluetooth are not possible.*
@@ -17,21 +12,7 @@ This Repository is forked from **version 2.0.0** of the [official Movesense Devi
 
 ### Provided GATT Services and Characteristics
 
-Our custom firmware *should* provide the following GATT Services:
-
-- **Heart Rate Service**: Provides access to R-R intervals in milliseconds. See the [Bluetooth SIG specification](https://www.bluetooth.com/de/specifications/specs/heart-rate-service-1-0/) for more details.
-- **Electrocardiograph Service**: Provides access to the ECG voltage measurements.
-  - **ECG Voltage Characteristic**: Provides *NOTIFY* access to a relative *timestamp* and a series of *n* *voltages*. Each voltage is encoded as a 16-bit integer where -32768 is interpreted as an invalid value.
-  - **Object Size Characteristic**: Provides *READ* and *WRITE* access to the length *n* of the voltage series. Default value: 16.
-  - **Measurement Interval Characteristic**: Provides *READ* and *WRITE* access to the ECG measurement interval in milliseconds. Allowed values: 1 (1000 Hz), 2 (500 Hz), 4 (250 Hz), 8 (500 Hz).
-- **Movement Service**: Provides access to the movement measurements.
-  - **Acceleration Characteristic**: Provides *NOTIFY* access to a relative *timestamp* and a series of *n* *3D acceleration vectors*. Each value is encoded as a 32-bit floating point value.
-  - **Gyroscope Characteristic**: Provides *NOTIFY* access to a relative *timestamp* and a series of *n* *3D gyroscope vectors*. Each value is encoded as a 32-bit floating point value.
-  - **Magnetic Field Characteristic**: Provides *NOTIFY* access to a relative *timestamp* and a series of *n* *3D magnetic field vectors*. Each value is encoded as a 32-bit floating point value.
-  - **Object Size Characteristic**: Provides *READ* and *WRITE* access to the length *n* of the acceleration, gyroscope, and magnetic field series. Default value: 8.
-  - **Measurement Interval Characteristic**: Provides *READ* and *WRITE* access to the movement measurement interval in milliseconds. Allowed values:  5 (208 Hz), 10 (104 Hz), 20 (52 Hz), 40 (26 Hz).
-
-Due to restrictions in the Movesense firmware, we replaced them by the following GATT Services:
+Our custom firmware provides the following GATT Services:
 
 - **Heart Rate Service**: Provides access to R-R intervals in milliseconds. See the [Bluetooth SIG specification](https://www.bluetooth.com/de/specifications/specs/heart-rate-service-1-0/) for more details.
 - **Activity Data Service**: Provides access to the ECG voltage and movement measurements.
