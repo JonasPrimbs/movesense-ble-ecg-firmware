@@ -10,13 +10,19 @@
     <button onclick="disconnect()">Disconnect</button>
     <br>
     <label>
-      <span>Interval:</span>
-      <input id="interval" type="number" value="4">
+      <span>ECG Interval:</span>
+      <input id="ecgInterval" type="number" value="8">
     </label>
-    <button onclick="setDelta()">Apply</button>
+    <button onclick="setEcgDelta()">Apply</button>
     <br>
-    <button onclick="record()">Record</button>
-    <button onclick="stop()">Stop</button>
+    <label>
+      <span>Movement Interval:</span>
+      <input id="movInterval" type="number" value="20">
+    </label>
+    <button onclick="setMovDelta()">Apply</button>
+    <br>
+    <button onclick="subscribeEcg()">Subscribe ECG</button>
+    <button onclick="subscribeMov()">Subscribe Movement</button>
     <br>
     <button onclick="copyEcg()">Copy ECG to Clipboard</button>
     <button onclick="copyMov()">Copy Mov to Clipboard</button>

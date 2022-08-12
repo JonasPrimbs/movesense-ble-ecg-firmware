@@ -8,6 +8,8 @@ const movGyrCharUUID16 = 0x2BE0;
 const movMagCharUUID16 = 0x2BE1;
 const activitySvcUUID16 = 0x1859;
 const movCharUUID16 = 0x2BE2;
+const ecgMeasurementIntervalCharUUID16 = 0x2BE3;
+const movMeasurementIntervalCharUUID16 = 0x2BE4;
 
 function parseEcg(dataView) {
   if (dataView.byteLength <= 4) {
@@ -102,18 +104,31 @@ function parseSize(dataView) {
   return dataView.getUint16(0, true);
 }
 
-async function getSamplingInterval(gattService) {
-  const characteristic = await gattService.getCharacteristic(measurementIntervalCharUUID16);
+async function getEcgSamplingInterval(gattService) {
+  const characteristic = await gattService.getCharacteristic(ecgMeasurementIntervalCharUUID16);
   const value = await characteristic.readValue();
   return parseInterval(value);
 }
-async function setSamplingInterval(gattService, value) {
-  const characteristic = await gattService.getCharacteristic(measurementIntervalCharUUID16);
+async function setEcgSamplingInterval(gattService, value) {
+  const characteristic = await gattService.getCharacteristic(ecgMeasurementIntervalCharUUID16);
   const buffer = new ArrayBuffer(2);
   const dataView = new DataView(buffer);
   dataView.setUint16(0, value, true);
   await characteristic.writeValue(buffer);
-  return await getSamplingInterval(gattService);
+  return await getEcgSamplingInterval(gattService);
+}
+async function getMovSamplingInterval(gattService) {
+  const characteristic = await gattService.getCharacteristic(movMeasurementIntervalCharUUID16);
+  const value = await characteristic.readValue();
+  return parseInterval(value);
+}
+async function setMovSamplingInterval(gattService, value) {
+  const characteristic = await gattService.getCharacteristic(movMeasurementIntervalCharUUID16);
+  const buffer = new ArrayBuffer(2);
+  const dataView = new DataView(buffer);
+  dataView.setUint16(0, value, true);
+  await characteristic.writeValue(buffer);
+  return await getMovSamplingInterval(gattService);
 }
 
 // async function getPacketSize(gattService) {
@@ -169,7 +184,8 @@ var server;
 var service;
 var movChar;
 var ecgChar;
-var interval;
+var ecgInterval;
+var movInterval;
 var ecgListener;
 var size;
 
@@ -179,29 +195,43 @@ var resultMov = 't\tacc_x\tacc_y\tacc_z\tgyr_x\tgyr_y\tgyr_z\tmag_x\tmag_y\tmag_
 async function connect() {
   server = await connectToDevice();
   service = await server.getPrimaryService(activitySvcUUID16);
-  movChar = await service.getCharacteristic(movCharUUID16);
+  console.log('connected');
+}
+async function subscribeEcg() {
+  if (ecgChar) return;
+  const interval = await getEcgSamplingInterval(service);
+  document.getElementById('ecgInterval').value = interval;
+  ecgInterval = interval;
   ecgChar = await service.getCharacteristic(ecgVoltageCharUUID16);
-  movChar.addEventListener('characteristicvaluechanged', (evt) => {
-    const dataView = evt.target.value;
-    const dataPacket = parseMovement(dataView);
-    const movementData = reduceMovement(dataPacket, 20);
-    for (let data of movementData) {
-        const line = movToLine(data);
-        resultMov += line;
-    }
-  });
   ecgChar.addEventListener('characteristicvaluechanged', (evt) => {
     const dataView = evt.target.value;
     const dataPacket = parseEcg(dataView);
-    const ecgData = reduceEcg(dataPacket, 4);
+    const ecgData = reduceEcg(dataPacket, ecgInterval);
     for (let data of ecgData) {
         const line = ecgToLine(data);
         resultEcg += line;
     }
   });
-  ecgChar.startNotifications();
-  movChar.startNotifications();
-  console.log('connected');
+  await ecgChar.startNotifications();
+  console.log('ECG subscribed');
+}
+async function subscribeMov() {
+  if (movChar) return;
+  const interval = await getMovSamplingInterval(service);
+  document.getElementById('movInterval').value = interval;
+  movInterval = interval;
+  movChar = await service.getCharacteristic(movCharUUID16);
+  movChar.addEventListener('characteristicvaluechanged', (evt) => {
+    const dataView = evt.target.value;
+    const dataPacket = parseMovement(dataView);
+    const movementData = reduceMovement(dataPacket, movInterval);
+    for (let data of movementData) {
+        const line = movToLine(data);
+        resultMov += line;
+    }
+  });
+  await movChar.startNotifications();
+  console.log('Mov subscribed');
 }
 
 async function disconnect() {
@@ -211,23 +241,20 @@ async function disconnect() {
   await server.disconnect();
 }
 
-async function setDelta() {
-  const input = document.getElementById('interval');
+async function setEcgDelta() {
+  const input = document.getElementById('ecgInterval');
   const value = parseInt(input.value);
-  const setValue = await setSamplingInterval(service, value);
+  const setValue = await setEcgSamplingInterval(service, value);
   input.value = setValue.toString();
+  console.log(`Set ecg interval to ${setValue}`);
 }
 
-async function record() {
-  resultEcg = 't\tv\n';
-  resultMov = 't\tacc_x\tacc_y\tacc_z\tgyr_x\tgyr_y\tgyr_z\tmag_x\tmag_y\tmag_z\n';
-  interval = await getSamplingInterval(service);
-  ecgListener = await subscribeToEcg(service, onEcgData);
-}
-
-async function stop() {
-  await unsubscribeFromEcg(ecgListener);
-  ecgListener = null;
+async function setMovDelta() {
+  const input = document.getElementById('movInterval');
+  const value = parseInt(input.value);
+  const setValue = await setMovSamplingInterval(service, value);
+  input.value = setValue.toString();
+  console.log(`Set mov interval to ${setValue}`);
 }
 
 function copyEcg() {
