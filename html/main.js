@@ -156,7 +156,7 @@ async function unsubscribeFromEcg(listener) {
   const characteristic = listener.characteristic;
   const callback = listener.characteristic;
   await characteristic.stopNotifications();
-  characteristic.removeEventListener('charachteristicvaluechagned', callback);
+  characteristic.removeEventListener('characteristicvaluechanged', callback);
 }
 
 async function connectToDevice() {
