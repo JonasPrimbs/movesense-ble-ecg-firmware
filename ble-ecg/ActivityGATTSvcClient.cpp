@@ -654,7 +654,7 @@ void ActivityGATTSvcClient::setEcgMeasurementInterval(uint16_t value)
 void ActivityGATTSvcClient::subscribeToEcgSamples()
 {
     // Compute desired sample rate.
-    uint32_t sampleRate = this->getEcgSampleRate();
+    int32_t sampleRate = this->getEcgSampleRate();
     // Subscribe to ECG samples with the desired ECG sample rate.
     this->asyncSubscribe(
         WB_RES::LOCAL::MEAS_ECG_REQUIREDSAMPLERATE(),
@@ -666,7 +666,7 @@ void ActivityGATTSvcClient::subscribeToEcgSamples()
 void ActivityGATTSvcClient::unsubscribeFromEcgSamples()
 {
     // Compute desired sample rate.
-    uint32_t sampleRate = this->getEcgSampleRate();
+    int32_t sampleRate = this->getEcgSampleRate();
     // Unsubscribe from ECG samples with desired ECG sample rate.
     this->asyncUnsubscribe(
         WB_RES::LOCAL::MEAS_ECG_REQUIREDSAMPLERATE(),
@@ -694,7 +694,7 @@ uint32_t ActivityGATTSvcClient::getMovSampleRate()
 
 void ActivityGATTSvcClient::setMovMeasurementInterval(uint16_t value)
 {
-        // Ensure that value is valid or fall back to `DEFAULT_MOV_MEASUREMENT_INTERVAL`.
+    // Ensure that value is valid or fall back to `DEFAULT_MOV_MEASUREMENT_INTERVAL`.
     switch (value)
     {
         case 5: // 208 Hz
