@@ -9,6 +9,7 @@ All rights reserved.
 #include <whiteboard/LaunchableModule.h>
 #include <whiteboard/ResourceProvider.h>
 #include <whiteboard/DpcFunctor.h>
+#include "common/compiler/genType.h"
 
 class BleStandardHRS FINAL :
     public whiteboard::LaunchableModule,
@@ -16,7 +17,7 @@ class BleStandardHRS FINAL :
 {
 public:
     /** Name of this class. Used in StartupProvider list. */
-    static const char* const LAUNCHABLE_NAME;
+    static const char_t* const LAUNCHABLE_NAME;
     BleStandardHRS();
     ~BleStandardHRS();
 

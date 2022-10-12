@@ -13,11 +13,15 @@
 #define PACK_END() __pragma(pack(pop))
 #define PACKED
 
+#define ALIGNED(x)  
+
 #elif defined(__GNUC__) || defined(__clang__)
 
 #define PACK_BEGIN() _Pragma("pack(push, 1)")
 #define PACK_END() _Pragma("pack(pop)")
 #define PACKED __attribute__((packed))
+
+#define ALIGNED(x)  __attribute__((aligned(x)))
 
 #elif defined(__IAR_SYSTEMS_ICC__)
 

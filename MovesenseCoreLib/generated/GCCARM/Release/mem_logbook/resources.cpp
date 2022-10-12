@@ -13,5 +13,8 @@ WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(LogEntries) == 4, AlignmentOfStructure_LogEnt
 WB_STATIC_VERIFY(sizeof(LogEntry) == 24, SizeOfStructure_LogEntry_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(LogEntry) == 8, AlignmentOfStructure_LogEntry_IsNotWhatExpected);
 
+WB_STATIC_VERIFY(sizeof(LogDataNotification) == 12, SizeOfStructure_LogDataNotification_IsNotWhatExpected);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(LogDataNotification) == 4, AlignmentOfStructure_LogDataNotification_IsNotWhatExpected);
+
 
 } // namespace WB_RES

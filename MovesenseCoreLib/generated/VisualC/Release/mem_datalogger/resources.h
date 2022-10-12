@@ -203,6 +203,8 @@ struct MEM_DATALOGGER_STATE
 	{
 		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_BAD_REQUEST> HTTP_CODE_BAD_REQUEST;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_FORBIDDEN> HTTP_CODE_FORBIDDEN;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INSUFFICIENT_STORAGE> HTTP_CODE_INSUFFICIENT_STORAGE;
 
 		struct Parameters
 		{

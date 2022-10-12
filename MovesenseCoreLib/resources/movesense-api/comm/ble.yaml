@@ -488,7 +488,7 @@ definitions:
         $ref: '#/definitions/BondingPolicy'
       RecoveryTime:
         type: integer
-        format: int8
+        format: uint16
         minimum: 0
         maximum: 180
         description: Time in seconds after restart when bonding is always enabled

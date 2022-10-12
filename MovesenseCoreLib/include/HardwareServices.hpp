@@ -78,7 +78,7 @@ public:
         }
 
     const char *const*getProviderNames() const {
-        static const char* const moduleList[] = {
+        static const char_t* const moduleList[] = {
 #ifdef BUILD_HAL_PMIC_DRIVER_BQ25120
             BQPmicService::LAUNCHABLE_NAME,
 #endif
@@ -134,7 +134,7 @@ public:
     }
 
     const char *const*getProviderNames() const {
-        static const char* const moduleList[] = {
+        static const char_t* const moduleList[] = {
 #ifdef BUILD_HAL_WANT_PRESSURE
             hal::PressureProvider::LAUNCHABLE_NAME,
 #endif

@@ -3,6 +3,7 @@
 #include <whiteboard/LaunchableModule.h>
 #include <whiteboard/ResourceProvider.h>
 #include <whiteboard/ResourceClient.h>
+#include "common/compiler/genType.h"
 
 class SettingsService FINAL :
     private whiteboard::ResourceProvider,
@@ -12,7 +13,7 @@ class SettingsService FINAL :
 {
 public:
     /** Name of this class. Used in StartupProvider list. */
-    static const char* const LAUNCHABLE_NAME;
+    static const char_t* const LAUNCHABLE_NAME;
     SettingsService();
     ~SettingsService();
 

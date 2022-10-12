@@ -7,6 +7,3 @@
 #include "hwconfig.h"
 
 #include <whiteboard/LaunchableModule.h>
-
-#include "MeasStorage.h"
-#include "ExtflashChunkStorage.h"

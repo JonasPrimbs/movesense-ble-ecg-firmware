@@ -7,8 +7,8 @@
 static const unsigned short MEM_LOGBOOK_ENTRIES_LID = 13312;
 static const unsigned short MEM_LOGBOOK_ISFULL_LID = 13313;
 static const unsigned short MEM_LOGBOOK_ISOPEN_LID = 13314;
-static const unsigned short MEM_LOGBOOK_LOG_LOGINDEX_REMOVE_LID = 13315;
-static const unsigned short MEM_LOGBOOK_LOGGING_LID = 13316;
+static const unsigned short MEM_LOGBOOK_LOGGING_LID = 13315;
+static const unsigned short MEM_LOGBOOK_BYID_LOGID_LID = 13316;
 static const unsigned short MEM_LOGBOOK_BYID_LOGID_DATA_LID = 13317;
 static const unsigned short MEM_LOGBOOK_BYID_LOGID_DESCRIPTORS_LID = 13318;
 

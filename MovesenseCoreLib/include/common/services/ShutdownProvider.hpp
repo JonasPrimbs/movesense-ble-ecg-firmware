@@ -79,9 +79,15 @@ private:
      */
     void systemShutdown();
 
+    // first part of shutdown logic. triggered by timer from PUT
+    void shutdownProcedure_part1();
+    // 2nd part of shutdown procedure. triggered by 1st part or last unsubscribe or timeout timer
+    void shutdownProcedure_part2();
+
+    // Shutdown timer and state
     whiteboard::TimerId mTimerId;
-    uint32 mSubscriberCount;
     uint32 mShutdownStartTime;
+    uint16 mSubscriberCount;
 };
 
 } // namespace nea

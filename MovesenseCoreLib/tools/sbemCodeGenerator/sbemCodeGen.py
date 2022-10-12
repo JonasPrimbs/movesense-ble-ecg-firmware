@@ -504,7 +504,7 @@ with open("sbem_definitions.h", 'wb') as f_h:
         #  declaration in h, implementation in cpp
         count, descriptorItemIds, itemIndexes = generateDescriptorArray(f_h, f_cpp, items, arrayGroupStartItems, rootGroupStartItems)
 
-        print('\nextern const DescriptorItem_t s_possibleSbemItems[' +str(count) + '];', file=f_h)
+#        print('\nextern const DescriptorItem_t s_possibleSbemItems[' +str(count) + '];', file=f_h)
 
         # Generate descriptorItem list enum in h-file
         # start with stock SBEM id's
@@ -532,6 +532,7 @@ with open("sbem_definitions.h", 'wb') as f_h:
         f_h.write("".join(groupIdEntries))
 
         # end SBEM groups id array
+        print("    SbemAllIds_COUNT", file=f_h)
         print("};", file=f_h)
 
 
@@ -572,9 +573,10 @@ with open("sbem_definitions.h", 'wb') as f_h:
 
                 print("    " + groupId + "_Group,", file=f_cpp)
 
+        print("    {ID_DESCRIPTOR_ARRAY_END_MARKER, 0, NULL}", file=f_cpp)
         print("};", file=f_cpp)
 
-        print("\nextern const DescriptorGroup_t s_possibleSbemGroups[" + str(count) + "];", file=f_h)        
+        #print("\nextern const DescriptorGroup_t s_possibleSbemGroups[" + str(count) + "];", file=f_h)        
 
         resourcesThatNeedSbemMethods = {}
 
@@ -730,7 +732,7 @@ with open("sbem_definitions.h", 'wb') as f_h:
 
 
         # Generate resourceId => SbemItem mapping table (single items)
-        tableString = "\nconst SbemResID2ItemIdMapping s_sbemResID2ItemIdMap[] = {"
+        tableString = "\nconst SbemResID2ItemIdMapping s_sbemResID2ItemIdMap[] = {\r\n"
         count = 0
         for k,v in sorted(resourcesThatNeedSbemMethods.iteritems()):
             if 'SBEM_GRP' in v:
@@ -738,15 +740,17 @@ with open("sbem_definitions.h", 'wb') as f_h:
 
             if 'SBEM_ID' in v:
                 count += 1
-                tableString += "    {WB_RES::LOCAL::" + cppNameFromResName(k) + "::LID, s_possibleSbemItems[" + str(itemIndexes[v['SBEM_ID']]) + "] },"
+                tableString += "    {WB_RES::LOCAL::" + cppNameFromResName(k) + "::LID, &s_possibleSbemItems[" + str(itemIndexes[v['SBEM_ID']]) + "] },\r\n"
+
+        tableString += "    ITEM_MAPPING_END_MARKER\r\n"
         tableString += "};"
 
         if (count > 0):
             print(tableString, file=f_cpp)
-            print("\nextern const SbemResID2ItemIdMapping s_sbemResID2ItemIdMap[" + str(count) + "];", file=f_h)
+            #print("\nextern const SbemResID2ItemIdMapping s_sbemResID2ItemIdMap[" + str(count) + "];", file=f_h)
         else:
             print("const SbemResID2ItemIdMapping s_sbemResID2ItemIdMap[] = { 0, {0, 0} };", file=f_cpp) # no data, inject dummy table
-            print("\nextern const SbemResID2ItemIdMapping s_sbemResID2ItemIdMap[1];", file=f_h)
+            #print("\nextern const SbemResID2ItemIdMapping s_sbemResID2ItemIdMap[1];", file=f_h)
 
 
         # Generate resourceId => SbemGrp mapping table
@@ -795,32 +799,33 @@ with open("sbem_definitions.h", 'wb') as f_h:
                     groupId = v['SBEM_GRP']['id'] + "_Group"
                 else:
                     groupId = v['SBEM_GRP']['id'] + str(i) + "_Group"
-                print("    { WB_RES::LOCAL::" + cppNameFromResName(k) + "::LID, " + lengthInBytesExpr + ", " + groupId + " },", file=f_cpp)
+                print("    { WB_RES::LOCAL::" + cppNameFromResName(k) + "::LID, " + lengthInBytesExpr + ", &" + groupId + " },", file=f_cpp)
+        print("    GROUP_MAPPING_END_MARKER", file=f_cpp)
         print("};", file=f_cpp)
 
-        print("extern const SbemResID2GrpIdMapping s_sbemResID2GrpIdMap[" + str(count) + "];", file=f_h)
+        #print("extern const SbemResID2GrpIdMapping s_sbemResID2GrpIdMap[" + str(count) + "];", file=f_h)
 
 
         # Generate resourceId => sbemId mapper function
 
-        print("\nuint16_t getSbemDescriptorIdFromResource(whiteboard::LocalResourceId localResourceId, size_t dataLength)", file=f_cpp)
-        print("{", file=f_cpp)
-        print("    for (size_t i=0; i<ELEMENTS(s_sbemResID2ItemIdMap); i++)", file=f_cpp)
-        print("    {", file=f_cpp)
-        print("        if (s_sbemResID2ItemIdMap[i].wbResId == localResourceId)", file=f_cpp)
-        print("        {", file=f_cpp)
-        print("            return s_sbemResID2ItemIdMap[i].sbemItem.id;", file=f_cpp)
-        print("        }", file=f_cpp)
-        print("    }\n", file=f_cpp)
-        print("    for (size_t i=0; i<ELEMENTS(s_sbemResID2GrpIdMap); i++)", file=f_cpp)
-        print("    {", file=f_cpp)
-        print("        if (s_sbemResID2GrpIdMap[i].wbResId == localResourceId && s_sbemResID2GrpIdMap[i].sbemBytes == dataLength)", file=f_cpp)
-        print("        {", file=f_cpp)
-        print("            return s_sbemResID2GrpIdMap[i].sbemGrp.id;", file=f_cpp)
-        print("        }", file=f_cpp)
-        print("    }", file=f_cpp)
-        print("    return 0;", file=f_cpp)
-        print("}", file=f_cpp)
+        # print("\nuint16_t getSbemDescriptorIdFromResource(whiteboard::LocalResourceId localResourceId, size_t dataLength)", file=f_cpp)
+        # print("{", file=f_cpp)
+        # print("    for (size_t i=0; i<ELEMENTS(s_sbemResID2ItemIdMap); i++)", file=f_cpp)
+        # print("    {", file=f_cpp)
+        # print("        if (s_sbemResID2ItemIdMap[i].wbResId == localResourceId)", file=f_cpp)
+        # print("        {", file=f_cpp)
+        # print("            return s_sbemResID2ItemIdMap[i].sbemItem.id;", file=f_cpp)
+        # print("        }", file=f_cpp)
+        # print("    }\n", file=f_cpp)
+        # print("    for (size_t i=0; i<ELEMENTS(s_sbemResID2GrpIdMap); i++)", file=f_cpp)
+        # print("    {", file=f_cpp)
+        # print("        if (s_sbemResID2GrpIdMap[i].wbResId == localResourceId && s_sbemResID2GrpIdMap[i].sbemBytes == dataLength)", file=f_cpp)
+        # print("        {", file=f_cpp)
+        # print("            return s_sbemResID2GrpIdMap[i].sbemGrp.id;", file=f_cpp)
+        # print("        }", file=f_cpp)
+        # print("    }", file=f_cpp)
+        # print("    return 0;", file=f_cpp)
+        # print("}", file=f_cpp)
 
         # Generate item & group accessors
 
@@ -831,7 +836,7 @@ with open("sbem_definitions.h", 'wb') as f_h:
 
         print("\nuint16_t getSbemGroupsCount()", file=f_cpp)
         print("{", file=f_cpp)
-        print("    return ELEMENTS(s_possibleSbemGroups);", file=f_cpp)
+        print("    return SbemAllIds_COUNT - SbemValueIds_COUNT;", file=f_cpp)
         print("}", file=f_cpp)
 
         print("\nuint16_t getFirstSbemGroupId()", file=f_cpp)

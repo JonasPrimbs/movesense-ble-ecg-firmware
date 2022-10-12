@@ -6,11 +6,12 @@
 
 #include <stdint.h>
 
+// Character definition (for MISRA-2008)
+typedef char char_t;
+
 /**
  * Sized integer types.
  */
-typedef uint8_t byte;  // TODO: remove
-typedef uint16_t word; // TODO: remove
 
 typedef int8_t int8;   /**< 8-bit integer type. */
 typedef uint8_t uint8; /**< 8-bit unsigned integer type. */

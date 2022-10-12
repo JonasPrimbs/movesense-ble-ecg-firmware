@@ -43,8 +43,8 @@ WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(BondEntry) == 4, AlignmentOfStructure_BondEnt
 WB_STATIC_VERIFY(sizeof(BondList) == 8, SizeOfStructure_BondList_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(BondList) == 4, AlignmentOfStructure_BondList_IsNotWhatExpected);
 
-WB_STATIC_VERIFY(sizeof(BondingSettings) == 2, SizeOfStructure_BondingSettings_IsNotWhatExpected);
-WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(BondingSettings) == 1, AlignmentOfStructure_BondingSettings_IsNotWhatExpected);
+WB_STATIC_VERIFY(sizeof(BondingSettings) == 4, SizeOfStructure_BondingSettings_IsNotWhatExpected);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(BondingSettings) == 2, AlignmentOfStructure_BondingSettings_IsNotWhatExpected);
 
 
 } // namespace WB_RES

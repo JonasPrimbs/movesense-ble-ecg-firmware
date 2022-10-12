@@ -7,6 +7,7 @@
 #endif
 #include <cstring>
 
+#include "common/compiler/genType.h"
 namespace settings
 {
 class InputArchive;
@@ -67,7 +68,7 @@ public:
     /**
             A random access iterator to const char.
     */
-    typedef const char* const_iterator;
+    typedef const char_t* const_iterator;
 
     /**
             Create a text object.
@@ -367,7 +368,7 @@ public:
     /**
             Create a text.
     */
-    Text(const char* initial = NULL) : BText(mText, SZ, initial) {}
+    Text(const char* initial = NULL) : BText(mText, SZ), mText{} { *this = initial; }
 
     /**
        Copy constructor. Note that this must be here
@@ -375,14 +376,14 @@ public:
 
        @param rhs Text initial source
      */
-    Text(const Text& rhs) : BText(mText, SZ, rhs.c_str()) {}
+    Text(const Text& rhs) : BText(mText, SZ), mText{} { *this = rhs.c_str(); }
 
     /**
        Copy constructor.
 
        @param rhs Text initial source
      */
-    Text(const BText& rhs) : BText(mText, SZ, rhs.c_str()) {}
+    explicit Text(const BText& rhs) : BText(mText, SZ), mText{} { *this = rhs.c_str(); }
 
     //////////////////////////////////
     // Allow text object assignment.

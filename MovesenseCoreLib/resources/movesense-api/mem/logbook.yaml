@@ -24,7 +24,7 @@ paths:
   /Mem/Logbook/Logging/Subscription:
     post:
       description: |
-        Subscribes the client and opens new log file if client is the first subscriber.
+        Subscribes the client and opens new log file if client is the first subscriber. 
       responses:
         200:
           description: Operation completed successfully
@@ -50,7 +50,7 @@ paths:
   /Mem/Logbook/IsOpen:
     get:
       description: |
-        Is log open
+        Is log open (Note: Not implemented in all devices)
       responses:
         200:
           description:
@@ -60,7 +60,7 @@ paths:
   /Mem/Logbook/IsOpen/Subscription:
     post:
       description: |
-        Is log open
+        Is log open (Note: Not implemented in all devices)
       responses:
         200:
           description: Operation completed successfully
@@ -151,6 +151,18 @@ paths:
       responses:
         200:
           description: Operation completed successfully
+        409:
+          description: Logbook cannot be erased due to ongoing operation (e.g. DataLogger logging)
+
+  /Mem/Logbook/byId/{LogId}:
+    delete:
+      description: |
+        Deletes the individual log from the Logbook. (Note: Not implemented in all devices)
+      responses:
+        200:
+          description: Operation completed successfully
+        409:
+          description: Log cannot be deleted due to ongoing operation (e.g. DataLogger logging)
 
   /Mem/Logbook/byId/{LogId}/Descriptors:
     get:
@@ -213,21 +225,34 @@ paths:
             $ref: 'http://localhost:9000/builtinTypes.yaml#/definitions/ByteStream'
         404:
           description: Referenced log not found in LogBook.
+        409:
+          description: Log cannot be accessed due to ongoing operation (e.g. DataLogger logging)
 
     parameters:
        - $ref: '#/parameters/LogId'
 
-  /Mem/Logbook/Log/{LogIndex}/Remove:
-    put:
+  /Mem/Logbook/byId/{LogId}/Data/Subscription:
+    parameters:
+       - $ref: '#/parameters/LogId'
+    post:
       description: |
-        Remove given Logbook entry.
+        Subscribe to flow of log data (improved speed). The end of 
+        log data is indicated with multiple notifications with empty array.
+        Client SHOULD unsubscribe when empty packet is received or after small
+        timeout without updates.
       responses:
         200:
           description: Operation completed successfully
-        416:
-          description: Bad request. LogIndex not in range.
-    parameters:
-      - $ref: '#/parameters/LogIndex'
+        x-notification:
+          description: Data packet. Empty array signals end of transfer
+          schema:
+            $ref: '#/definitions/LogDataNotification'
+    delete:
+      description: |
+        Unsubscribe from log data transfer.
+      responses:
+        200:
+          description: Operation completed successfully
 
 definitions:
   LogEntries:
@@ -260,6 +285,22 @@ definitions:
       Size:
         type: integer
         format: uint64
+
+  LogDataNotification:
+    required:
+      - offset
+      - bytes
+    properties:
+      offset:
+        description: Offset of this data from beginning of the log.
+        type: integer
+        format: uint32
+      bytes:
+        type: array
+        description: The bytes of data starting from offset.
+        items:
+          type: integer
+          format: uint8
 
 parameters:
   LogId:

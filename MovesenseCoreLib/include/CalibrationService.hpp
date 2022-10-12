@@ -7,6 +7,7 @@
 #include <whiteboard/ResourceProvider.h>
 
 #include "misc_calibration/resources.h"
+#include "common/compiler/genType.h"
 
 enum class CalibrationState : uint8_t {
     IDLE = 0,
@@ -32,7 +33,7 @@ class CalibrationService FINAL : private whiteboard::ResourceClient,
 {
 public:
     /** Name of this class. Used in StartupProvider list. */
-    static const char* const LAUNCHABLE_NAME;
+    static const char_t* const LAUNCHABLE_NAME;
     CalibrationService();
     ~CalibrationService();
 

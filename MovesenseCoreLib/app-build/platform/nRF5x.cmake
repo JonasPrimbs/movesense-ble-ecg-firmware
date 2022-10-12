@@ -26,9 +26,9 @@ add_definitions(-DCPU_SPEED_HZ_ACTUAL=64000000)
 add_definitions(-DCPU_SPEED_HZ=64000000)
 
 # HWConfig to target
-set(HWCONFIG "SS2_B1" CACHE STRING "HWConfig")
+set(HWCONFIG "SS2" CACHE STRING "HWConfig")
 set_property(CACHE HWCONFIG PROPERTY STRINGS
-             "SS2_B1")
+             "SS2")
 
 # Link target (bootloader or regular app, they start at different addresses)
 set(BSP_LINKTO "appflash" CACHE STRING "Link to")
@@ -40,7 +40,3 @@ set(NEA_OS "freertos" CACHE STRING "Operating system")
 set_property(CACHE NEA_OS PROPERTY STRINGS
              "freertos" "sekos" "Posix" "kernel_win32")
 mark_as_advanced(NEA_OS)
-
-# Filesystem configuration
-set(USED_FILESYSTEM "None" CACHE STRING "Used filesystem")
-set_property(CACHE USED_FILESYSTEM PROPERTY STRINGS "None" "hcc" "spiffs")
