@@ -1,3 +1,14 @@
+# Changelog
+
+## Version 0.4.0
+
+- Update to Firmware based on version 2.1.4
+- Removed 200 Hz sampling rate from ECG measurement
+
+## Version 0.3.0
+
+- Adds movement data (acceleration, angular velocity, and magnetic field) with int16 precision
+
 ## Version 0.2.0
 
 - HR Service added

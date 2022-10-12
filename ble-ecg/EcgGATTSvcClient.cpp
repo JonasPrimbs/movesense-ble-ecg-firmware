@@ -24,7 +24,7 @@ EcgGATTSvcClient::EcgGATTSvcClient() :
     mMeasurementIntervalCharResource(wb::ID_INVALID_RESOURCE),
     mObjectSizeCharHandle(0),
     mObjectSizeCharResource(wb::ID_INVALID_RESOURCE),
-    measurementInterval(DEFAULT_ECG_MEASUREMENT_INTERVAL),
+    measurementInterval(ECG_BASE_MEASUREMENT_INTERVAL),
     objectSize(DEFAULT_ECG_OBJECT_SIZE)
 {
     this->ecgBuffer = new SeriesBuffer<ecg_t>(this->objectSize, numberOfEcgBuffers);

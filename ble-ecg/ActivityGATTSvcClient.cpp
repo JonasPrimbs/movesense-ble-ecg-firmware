@@ -34,6 +34,8 @@ ActivityGATTSvcClient::ActivityGATTSvcClient() :
     movAccCount(0),
     movGyrCount(0),
     movMagCount(0),
+    ecgSampleCounter(0),
+    ecgSampleSkipCount(2),
     ecgMeasurementInterval(DEFAULT_ECG_MEASUREMENT_INTERVAL),
     movMeasurementInterval(DEFAULT_MOV_MEASUREMENT_INTERVAL)
 {
@@ -200,22 +202,29 @@ void ActivityGATTSvcClient::onNotify(wb::ResourceId resourceId,
 
             // Parse samples and put them into sample buffer.
             size_t numberOfSamples = ecgData.samples.getNumberOfItems();
+            size_t j = 0;
             for (size_t i = 0; i < numberOfSamples; i++)
             {
-                // Convert ECG sample.
-                auto ecgSample = this->convertEcgSample(ecgData.samples[i]);
-                // Add converted sample to ECG buffer.
-                this->ecgBuffer->addSample(ecgSample);
+                // Update ECG sample counter.
+                this->ecgSampleCounter = (this->ecgSampleCounter + 1) % this->ecgSampleSkipCount;
+                if (this->ecgSampleCounter == 0) {
+                    // Convert ECG sample.
+                    auto ecgSample = this->convertEcgSample(ecgData.samples[j]);
+                    // Add converted sample to ECG buffer.
+                    this->ecgBuffer->addSample(ecgSample);
 
-                // If buffer is full, add timestamp and send samples.
-                if (!this->ecgBuffer->canAddSample())
-                {
-                    // Compute timestamp.
-                    timestamp_t t = timestamp - ((numberOfSamples - i - 1) * this->ecgMeasurementInterval);
-                    // Set timestamp to timestamp of last sample in buffer.
-                    this->ecgBuffer->setTimestamp(t);
-                    // Send samples.
-                    this->sendEcgBuffer();
+                    // If buffer is full, add timestamp and send samples.
+                    if (!this->ecgBuffer->canAddSample())
+                    {
+                        // Compute timestamp.
+                        timestamp_t t = timestamp - ((numberOfSamples - i - 1) * ECG_BASE_MEASUREMENT_INTERVAL);
+                        // Set timestamp to timestamp of last sample in buffer.
+                        this->ecgBuffer->setTimestamp(t);
+                        // Send samples.
+                        this->sendEcgBuffer();
+                    }
+
+                    j++;
                 }
             }
             break;
@@ -612,7 +621,7 @@ bool ActivityGATTSvcClient::sendMovBuffer()
 
 uint32_t ActivityGATTSvcClient::getEcgSampleRate()
 {
-    return (uint32_t)(1000 / this->ecgMeasurementInterval);
+    return (uint32_t)(1000 / ECG_BASE_MEASUREMENT_INTERVAL);
 }
 
 void ActivityGATTSvcClient::setEcgMeasurementInterval(uint16_t value)
@@ -622,7 +631,6 @@ void ActivityGATTSvcClient::setEcgMeasurementInterval(uint16_t value)
     {
         case 2: // 500 Hz
         case 4: // 250 Hz
-        case 5: // 200 Hz
         case 8: // 125 Hz
         case 10: // 100 Hz
             break;
@@ -631,13 +639,21 @@ void ActivityGATTSvcClient::setEcgMeasurementInterval(uint16_t value)
             break;
     }
 
-    // Unsubscribe from current ECG subscription.
-    this->unsubscribeFromEcgSamples();
+    // // Unsubscribe from current ECG subscription.
+    // this->unsubscribeFromEcgSamples();
     // Update measurement interval.
     this->ecgMeasurementInterval = value;
+    // Update ECG sample skip count.
+    this->ecgSampleSkipCount = 4;//value / ECG_BASE_MEASUREMENT_INTERVAL;
+    // Reset ecg sample counter.
+    // this->ecgSampleCounter = 0;
+    // Reset current ECG buffer and start over.
+    this->ecgBuffer->resetCurrentBuffer();
     // Set measurement interval to GATT Characteristics value.
     WB_RES::Characteristic measurementIntervalChar;
     measurementIntervalChar.bytes = wb::MakeArray<uint8_t>((uint8_t*)&this->ecgMeasurementInterval, sizeof(uint16_t));
+    // // Subscribe to new ECG subscription.
+    // this->subscribeToEcgSamples();
     this->asyncPut(
         WB_RES::LOCAL::COMM_BLE_GATTSVC_SVCHANDLE_CHARHANDLE(),
         AsyncRequestOptions::Empty,
@@ -645,16 +661,12 @@ void ActivityGATTSvcClient::setEcgMeasurementInterval(uint16_t value)
         this->mEcgMeasurementIntervalCharHandle,
         measurementIntervalChar
     );
-    // Reset current ECG buffer and start over.
-    this->ecgBuffer->resetCurrentBuffer();
-    // Subscribe to new ECG subscription.
-    this->subscribeToEcgSamples();
 }
 
 void ActivityGATTSvcClient::subscribeToEcgSamples()
 {
     // Compute desired sample rate.
-    int32_t sampleRate = this->getEcgSampleRate();
+    uint32_t sampleRate = this->getEcgSampleRate();
     // Subscribe to ECG samples with the desired ECG sample rate.
     this->asyncSubscribe(
         WB_RES::LOCAL::MEAS_ECG_REQUIREDSAMPLERATE(),
@@ -666,7 +678,7 @@ void ActivityGATTSvcClient::subscribeToEcgSamples()
 void ActivityGATTSvcClient::unsubscribeFromEcgSamples()
 {
     // Compute desired sample rate.
-    int32_t sampleRate = this->getEcgSampleRate();
+    uint32_t sampleRate = this->getEcgSampleRate();
     // Unsubscribe from ECG samples with desired ECG sample rate.
     this->asyncUnsubscribe(
         WB_RES::LOCAL::MEAS_ECG_REQUIREDSAMPLERATE(),

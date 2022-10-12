@@ -109,8 +109,8 @@ Now go on with section [Install Firmware](#install-firmware).
 
 To flash the firmware, install the Movesense Showcase App for [Android](https://bitbucket.org/movesense/movesense-mobile-lib/downloads/) or [iOS](https://apps.apple.com/de/app/movesense-showcase/id1439876677) and use its DFU tool as described [here](https://www.movesense.com/docs/esw/dfu_update/).
 
-**Warning: We are using Firmware version 2.0.0 as basis!**
-**This requires also a Bootloader of version 2.0.0.**
+**Warning: We are using Firmware version 2.1.4 as basis!**
+**This requires also a Bootloader of version 2.1.4.**
 **Flashing the sensor with this Bootloader requires an updated Showcase App (Android: from 1.9.8, iOS: from 1.0.5)!**
 Otherwise you will consider a file corrupted error.
 

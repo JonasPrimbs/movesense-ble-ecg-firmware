@@ -10,11 +10,16 @@
  * Must be one of the following: 
  *  -  2 ms =  500 Hz
  *  -  4 ms =  250 Hz
- *  -  5 ms =  200 Hz
  *  -  8 ms =  125 Hz
  *  - 10 ms =  100 Hz
  */
 const int DEFAULT_ECG_MEASUREMENT_INTERVAL = 4;
+
+/**
+ * @brief Measurement interval of the sensor.
+ * Must be the least common multiple of the allowed ECG measurement intervals.
+ */
+const uint16_t ECG_BASE_MEASUREMENT_INTERVAL = 2;
 
 /** Default number of ECG samples per message. */
 const uint16_t DEFAULT_ECG_OBJECT_SIZE = 16;

@@ -91,13 +91,11 @@ function reduceMovement(packet, delta) {
     const m = movement[i];
     const t = time - (n - i - 1) * delta;
     const value = { t, m };
-    // console.log(value);
     result.push(value);
   }
   return result;
 }
 function movToLine(mov) {
-  // console.log(mov);
   return `${mov.t}\t${mov.m.acc.x}\t${mov.m.acc.y}\t${mov.m.acc.z}\t${mov.m.gyr.x}\t${mov.m.gyr.y}\t${mov.m.gyr.z}\t${mov.m.mag.x}\t${mov.m.mag.y}\t${mov.m.mag.z}\n`;
 }
 
@@ -112,7 +110,9 @@ function parseSize(dataView) {
 async function getEcgSamplingInterval(gattService) {
   const characteristic = await gattService.getCharacteristic(ecgMeasurementIntervalCharUUID16);
   const value = await characteristic.readValue();
-  return parseInterval(value);
+  const interval = parseInterval(value);
+  console.log('Received ECG interval: ', interval);
+  return interval;
 }
 async function setEcgSamplingInterval(gattService, value) {
   const characteristic = await gattService.getCharacteristic(ecgMeasurementIntervalCharUUID16);
@@ -170,15 +170,6 @@ async function connectToDevice() {
     ]
   });
   return await device.gatt.connect();
-}
-
-function onEcgData(evt) {
-  const ecg = parseEcg(evt.target.value);
-  const ecgReduced = reduceEcg(ecg, interval);
-  console.log('ecg', ecg, evt.target.value, ecgReduced);
-  for (const value of ecgReduced) {
-    result += ecgToLine(value);
-  }
 }
 
 function ecgToLine(value) {

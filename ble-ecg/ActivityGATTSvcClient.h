@@ -98,6 +98,9 @@ private:
 
     // ECG Samples:
 
+    uint16_t ecgSampleCounter;
+    uint16_t ecgSampleSkipCount;
+
     /**
      * @brief Converts the sensor's ECG value to a BLE ECG value.
      * 

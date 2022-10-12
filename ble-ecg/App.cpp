@@ -37,7 +37,7 @@ OPTIONAL_CORE_MODULE(CustomGattService, true)
 // Define Application Specification:
 
 APPINFO_NAME("ActivityGATTSvc");
-APPINFO_VERSION("0.3.0");
+APPINFO_VERSION("0.4.0");
 APPINFO_COMPANY("Jonas Primbs");
 
 // Enable Bluetooth Low Energy Communication:
