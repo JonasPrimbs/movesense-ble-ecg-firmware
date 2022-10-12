@@ -243,7 +243,10 @@ async function disconnect() {
   if (ecgListener) {
     stop();
   }
-  await server.disconnect();
+  if (server) {
+    await server.disconnect();
+  }
+  console.log('Disconnected');
 }
 
 async function setEcgDelta() {

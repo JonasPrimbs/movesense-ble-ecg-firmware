@@ -10,14 +10,25 @@
     <button onclick="disconnect()">Disconnect</button>
     <br>
     <label>
-      <span>ECG Interval:</span>
-      <input id="ecgInterval" type="number" value="8">
+      <span>ECG Sampling Rate:</span>
+      <select id="ecgInterval">
+        <option value="2">500 Hz</option>
+        <option value="4" selected>250 Hz</option>
+        <option value="5">200 Hz</option>
+        <option value="8">125 Hz</option>
+        <option value="10">100 Hz</option>
+      </select>
     </label>
     <button onclick="setEcgDelta()">Apply</button>
     <br>
     <label>
-      <span>Movement Interval:</span>
-      <input id="movInterval" type="number" value="20">
+      <span>Movement Sampling Rate:</span>
+      <select id="movInterval">
+        <option value="5">208 Hz</option>
+        <option value="10">104 Hz</option>
+        <option value="20" selected>52 Hz</option>
+        <option value="40">26 Hz</option>
+      </select>
     </label>
     <button onclick="setMovDelta()">Apply</button>
     <br>
