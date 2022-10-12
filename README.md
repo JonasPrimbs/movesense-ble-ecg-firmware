@@ -2,11 +2,7 @@
 
 A custom firmware for [Movesense Sensor devices](https://www.movesense.com/) which implements a Bluetooth Low Energy (BLE) GATT electrocardiograph (ECG) voltage and movement measurements.
 
-This Repository is forked from **version 2.0.0** of the [official Movesense Device Library](https://bitbucket.org/movesense/movesense-device-lib/).
-
-*Due to some issues with firmware v2.1.X, the connections via Web Bluetooth are not possible.*
-*Therefore, we are currently not planning to upgrade to v2.1.X.*
-*See [this issue](https://bitbucket.org/movesense/movesense-device-lib/issues/104/ble-connection-fails-for-latest-v21x) for more details.*
+This Repository is forked from **version 2.1.4** of the [official Movesense Device Library](https://bitbucket.org/movesense/movesense-device-lib/).
 
 ## Documentation
 
@@ -14,17 +10,12 @@ This Repository is forked from **version 2.0.0** of the [official Movesense Devi
 
 Our custom firmware provides the following GATT Services:
 
-- **Heart Rate Service**: Provides access to R-R intervals in milliseconds. See the [Bluetooth SIG specification](https://www.bluetooth.com/de/specifications/specs/heart-rate-service-1-0/) for more details.
-- **Activity Data Service**: Provides access to the ECG voltage and movement measurements.
-  - **ECG Voltage Characteristic**: Provides *NOTIFY* access to a relative *timestamp* and a series of *n* *voltages*. Each voltage is encoded as a 16-bit integer where -32768 is interpreted as an invalid value.
-  - **ECG Measurement Interval Characteristic**: Provides *READ* and *WRITE* access to the ECG measurement interval in milliseconds. Allowed values: 2 (500 Hz), 4 (250 Hz), 5 (150 Hz), 8 (125 Hz), and 10 (100 Hz).
-  - **Movement Characteristic**: Provides *NOTIFY* access to a relative *timestamp* and a series of *n* *3-tuples of 3D vectors of acceleration, gyroscope, and magnetic field values*. Each value is encoded as a 16-bit integer where -32768 is interpreted as an invalid value.
-  - **Movement Measurement Interval Characteristic**: Provides *READ* and *WRITE* access to the movement measurement interval in milliseconds. Allowed values:  5 (208 Hz), 10 (104 Hz), 20 (52 Hz), 40 (26 Hz).
-
-So the restrictions of the workaround are as follows:
-- ECG and Movement Services are combined to one Activity Data Service.
-- Object sizes are fixed to 16 samples for ECG and 8 samples for movement. Related Characteristics are omitted.
-- Acceleration, Gyroscope, and Magnetic Field Characteristics are combined to one Movement Characteristic. This reduces the timestamp accuracy of the individual samples, since one Acceleration, Gyroscope, and Magnetic Field sample which are theoretically measured independently, are merged to the same timestamp.
+- **Heart Rate Service** with 16-bit UUID `0x180D`: Provides access to R-R intervals in milliseconds. See the [Bluetooth SIG specification](https://www.bluetooth.com/de/specifications/specs/heart-rate-service-1-0/) for more details.
+- **Activity Data Service** with 16-bit UUID `0x1859`: Provides access to the ECG voltage and movement measurements.
+  - **ECG Voltage Characteristic** with 16-bit UUID `0x2BDD`: Provides *NOTIFY* access to a relative *timestamp* and a series of *n* *voltages*. Each voltage is encoded as a 16-bit integer where -32768 is interpreted as an invalid value.
+  - **ECG Measurement Interval Characteristic** with 16-bit UUID `0x2BE3`: Provides *READ* and *WRITE* access to the ECG measurement interval in milliseconds. Allowed values: 2 (500 Hz), 4 (250 Hz), 5 (150 Hz), 8 (125 Hz), and 10 (100 Hz).
+  - **Movement Characteristic** with 16-bit UUID `0x2BE2`: Provides *NOTIFY* access to a relative *timestamp* and a series of *n* *3-tuples of 3D vectors of acceleration, gyroscope, and magnetic field values*. Each value is encoded as a 16-bit integer where -32768 is interpreted as an invalid value.
+  - **Movement Measurement Interval Characteristic** with 16-bit UUID `0x2BE4`: Provides *READ* and *WRITE* access to the movement measurement interval in milliseconds. Allowed values:  5 (208 Hz), 10 (104 Hz), 20 (52 Hz), 40 (26 Hz).
 
 ### Lifecycle
 
