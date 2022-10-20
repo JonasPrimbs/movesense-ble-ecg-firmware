@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.5.0
+
+- Changing sampling frequency of ECG and movement is now working
+
 ## Version 0.4.0
 
 - Update to Firmware based on version 2.1.4

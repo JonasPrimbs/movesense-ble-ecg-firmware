@@ -13,7 +13,7 @@ Our custom firmware provides the following GATT Services:
 - **Heart Rate Service** with 16-bit UUID `0x180D`: Provides access to R-R intervals in milliseconds. See the [Bluetooth SIG specification](https://www.bluetooth.com/de/specifications/specs/heart-rate-service-1-0/) for more details.
 - **Activity Data Service** with 16-bit UUID `0x1859`: Provides access to the ECG voltage and movement measurements.
   - **ECG Voltage Characteristic** with 16-bit UUID `0x2BDD`: Provides *NOTIFY* access to a relative *timestamp* and a series of *n* *voltages*. Each voltage is encoded as a 16-bit integer where -32768 is interpreted as an invalid value.
-  - **ECG Measurement Interval Characteristic** with 16-bit UUID `0x2BE3`: Provides *READ* and *WRITE* access to the ECG measurement interval in milliseconds. Allowed values: 2 (500 Hz), 4 (250 Hz), 5 (150 Hz), 8 (125 Hz), and 10 (100 Hz).
+  - **ECG Measurement Interval Characteristic** with 16-bit UUID `0x2BE3`: Provides *READ* and *WRITE* access to the ECG measurement interval in milliseconds. Allowed values: 2 (500 Hz), 4 (250 Hz), 8 (125 Hz), and 10 (100 Hz).
   - **Movement Characteristic** with 16-bit UUID `0x2BE2`: Provides *NOTIFY* access to a relative *timestamp* and a series of *n* *3-tuples of 3D vectors of acceleration, gyroscope, and magnetic field values*. Each value is encoded as a 16-bit integer where -32768 is interpreted as an invalid value.
   - **Movement Measurement Interval Characteristic** with 16-bit UUID `0x2BE4`: Provides *READ* and *WRITE* access to the movement measurement interval in milliseconds. Allowed values:  5 (208 Hz), 10 (104 Hz), 20 (52 Hz), 40 (26 Hz).
 
