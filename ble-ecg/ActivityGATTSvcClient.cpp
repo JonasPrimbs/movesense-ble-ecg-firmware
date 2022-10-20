@@ -118,7 +118,7 @@ void ActivityGATTSvcClient::onGetResult(wb::RequestId requestId,
 {
     DEBUGLOG("ActivityGATTSvcClient::onGetResult");
 
-    switch(resourceId.localResourceId)
+    switch (resourceId.localResourceId)
     {
         case WB_RES::LOCAL::COMM_BLE_GATTSVC_SVCHANDLE::LID:
         {
@@ -146,6 +146,22 @@ void ActivityGATTSvcClient::onGetResult(wb::RequestId requestId,
                         break;
                 }
             }
+
+            if (!mEcgVoltageCharHandle || !mEcgMeasurementIntervalCharHandle || !mMovCharHandle || !mMovMeasurementIntervalCharHandle)
+            {
+                DEBUGLOG("ERROR: Not all characteristics were configured!");
+                return;
+            }
+
+            char pathBuffer[32]= {'\0'};
+            snprintf(pathBuffer, sizeof(pathBuffer), "/Comm/Ble/GattSvc/%d/%d", mActivitySvcHandle, mEcgVoltageCharHandle);
+            getResource(pathBuffer, mEcgVoltageCharResource);
+            snprintf(pathBuffer, sizeof(pathBuffer), "/Comm/Ble/GattSvc/%d/%d", mActivitySvcHandle, mEcgMeasurementIntervalCharHandle);
+            getResource(pathBuffer, mEcgMeasurementIntervalCharResource);
+            snprintf(pathBuffer, sizeof(pathBuffer), "/Comm/Ble/GattSvc/%d/%d", mActivitySvcHandle, mMovCharHandle);
+            getResource(pathBuffer, mMovCharResource);
+            snprintf(pathBuffer, sizeof(pathBuffer), "/Comm/Ble/GattSvc/%d/%d", mActivitySvcHandle, mMovMeasurementIntervalCharHandle);
+            getResource(pathBuffer, mMovMeasurementIntervalCharResource);
 
             // Force subscriptions asynchronously to save stack (will have stack overflow if not) 
 
@@ -190,7 +206,7 @@ void ActivityGATTSvcClient::onNotify(wb::ResourceId resourceId,
 {
     DEBUGLOG("ActivityGATTSvcClient::onNotify");
 
-    switch(resourceId.localResourceId)
+    switch (resourceId.localResourceId)
     {
         case WB_RES::LOCAL::MEAS_ECG_REQUIREDSAMPLERATE::LID:
         {
@@ -644,9 +660,9 @@ void ActivityGATTSvcClient::setEcgMeasurementInterval(uint16_t value)
     // Update measurement interval.
     this->ecgMeasurementInterval = value;
     // Update ECG sample skip count.
-    this->ecgSampleSkipCount = 4;//value / ECG_BASE_MEASUREMENT_INTERVAL;
+    this->ecgSampleSkipCount = value / ECG_BASE_MEASUREMENT_INTERVAL;
     // Reset ecg sample counter.
-    // this->ecgSampleCounter = 0;
+    this->ecgSampleCounter = 0;
     // Reset current ECG buffer and start over.
     this->ecgBuffer->resetCurrentBuffer();
     // Set measurement interval to GATT Characteristics value.

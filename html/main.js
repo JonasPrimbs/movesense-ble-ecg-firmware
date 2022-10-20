@@ -136,12 +136,6 @@ async function setMovSamplingInterval(gattService, value) {
   return await getMovSamplingInterval(gattService);
 }
 
-// async function getPacketSize(gattService) {
-//   const characteristic = await gattService.getCharacteristic(objectSizeCharUUID16);
-//   const value = await characteristic.readValue();
-//   return parseSize(value);
-// }
-
 async function subscribeToEcg(gattService, callback) {
   const characteristic = await gattService.getCharacteristic(ecgVoltageCharUUID16);
   characteristic.addEventListener('characteristicvaluechanged', callback);
@@ -245,6 +239,7 @@ async function setEcgDelta() {
   const value = parseInt(input.value);
   const setValue = await setEcgSamplingInterval(service, value);
   input.value = setValue.toString();
+  ecgInterval = setValue;
   console.log(`Set ecg interval to ${setValue}`);
 }
 
@@ -253,6 +248,7 @@ async function setMovDelta() {
   const value = parseInt(input.value);
   const setValue = await setMovSamplingInterval(service, value);
   input.value = setValue.toString();
+  movInterval = setValue;
   console.log(`Set mov interval to ${setValue}`);
 }
 
