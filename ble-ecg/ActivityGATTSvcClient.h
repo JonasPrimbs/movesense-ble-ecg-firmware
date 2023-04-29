@@ -4,6 +4,7 @@
 #include <whiteboard/ResourceClient.h>
 
 #include "SeriesBuffer.h"
+#include "BleStandardHRS.hpp"
 #include "config.h"
 
 
@@ -167,6 +168,24 @@ private:
      * @return false Sending was not successful since Movement buffer is not initialized.
      */
     bool sendMovBuffer();
+
+
+    // HR Service:
+
+    /**
+     * @brief Indicates whether HR service is enabled (true) or not (false)
+     */
+    uint16_t hrsEnabled = 0;
+
+    /**
+     * @brief Subscribes to HR Service notifications.
+     */
+    void subscribeToHrService();
+
+    /**
+     * @brief Handles changed HR notification.
+     */
+    void hrsNotificationChanged(bool enabled);
 
 
     // ECG Measurement Interval:

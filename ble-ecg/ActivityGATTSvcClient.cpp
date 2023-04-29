@@ -4,6 +4,7 @@
 #include <meas_acc/resources.h>
 #include <meas_gyro/resources.h>
 #include <meas_magn/resources.h>
+#include <meas_hr/resources.h>
 
 #include "ActivityGATTSvcClient.h"
 #include "common/core/debug.h"
@@ -12,6 +13,7 @@
 #include "ui_ind/resources.h"
 
 #include "comm_ble_gattsvc/resources.h"
+#include "comm_ble_hrs/resources.h"
 #include "comm_ble/resources.h"
 
 
@@ -82,6 +84,9 @@ bool ActivityGATTSvcClient::startModule()
     this->subscribeToGyrSamples();
     this->subscribeToMagSamples();
 
+    // Subscribe to HR service.
+    this->subscribeToHrService();
+
     // Configure Activity GATT Service.
     this->configGattSvc();
 
@@ -91,6 +96,9 @@ bool ActivityGATTSvcClient::startModule()
 void ActivityGATTSvcClient::stopModule()
 {
     DEBUGLOG("ActivityGATTSvcClient::stopModule");
+
+    // un-Subscribe from HRS state notifications
+    asyncUnsubscribe(WB_RES::LOCAL::COMM_BLE_HRS());
 
     // Unsubscribe from ECG samples.
     this->unsubscribeFromEcgSamples();
@@ -208,6 +216,34 @@ void ActivityGATTSvcClient::onNotify(wb::ResourceId resourceId,
 
     switch (resourceId.localResourceId)
     {
+        case WB_RES::LOCAL::MEAS_HR::LID:
+        {
+            // Get average heart rate data
+            const WB_RES::HRData& hrData = value.convertTo<const WB_RES::HRData&>();
+            uint16_t hr = hrData.average;
+
+            DEBUGLOG("HRS update: %d, rr_count: %d", hr, hrData.rrData.size());
+
+            // Forward hr + rr data to HRS module
+            WB_RES::HRSData hrsData;
+            hrsData.hr = hr;
+            if (hrData.rrData.size() > 0)
+            {
+                hrsData.rr = wb::MakeArray<uint16_t>(&(hrData.rrData[0]), hrData.rrData.size());
+            }
+            asyncPost(WB_RES::LOCAL::COMM_BLE_HRS(), AsyncRequestOptions::Empty, hrsData);
+            break;
+        }
+        // HRS state change notification
+        case WB_RES::LOCAL::COMM_BLE_HRS::LID:
+        {
+            // Get whiteboard routing table notification
+            const bool hrsNotificationsEnabled = value.convertTo<const WB_RES::HRSState&>().notificationEnabled;
+            DEBUGLOG("COMM_BLE_HRS: hrsNotificationsEnabled: %d", hrsNotificationsEnabled);
+
+            hrsNotificationChanged(hrsNotificationsEnabled);
+            break;
+        }
         case WB_RES::LOCAL::MEAS_ECG_REQUIREDSAMPLERATE::LID:
         {
             // Get ECG Data.
@@ -760,6 +796,32 @@ void ActivityGATTSvcClient::setMovMeasurementInterval(uint16_t value)
     this->subscribeToAccSamples();
     this->subscribeToGyrSamples();
     this->subscribeToMagSamples();
+}
+
+void ActivityGATTSvcClient::subscribeToHrService()
+{
+    // Subscribe to HRS state notifications.
+    this->asyncSubscribe(WB_RES::LOCAL::COMM_BLE_HRS());
+}
+
+void ActivityGATTSvcClient::hrsNotificationChanged(bool enabled)
+{
+    // Do not subscribe or unsubscribe if subscription state did not change.
+    if (enabled == this->hrsEnabled) return;
+
+    if (enabled)
+    {
+        // Subscribe to HR data.
+        this->asyncSubscribe(WB_RES::LOCAL::MEAS_HR());
+    }
+    else
+    {
+        // Unsubscribe from HR data.
+        this->asyncUnsubscribe(WB_RES::LOCAL::MEAS_HR());
+    }
+
+    // Update subscription state.
+    this->hrsEnabled = enabled;
 }
 
 void ActivityGATTSvcClient::subscribeToAccSamples()
