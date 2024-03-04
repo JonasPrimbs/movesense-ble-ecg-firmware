@@ -225,6 +225,8 @@ definitions:
         format: uint32
       EnumValue:
         $ref: 'types.yaml#/definitions/ResetReasonEnum'
+      StrValue:
+        type: string
 
   FaultInfo:
     required:

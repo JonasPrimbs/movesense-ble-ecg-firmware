@@ -19,12 +19,6 @@ WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(WbInfo) == 4, AlignmentOfStructure_WbInfo_IsN
 WB_STATIC_VERIFY(sizeof(CommStats) == 8, SizeOfStructure_CommStats_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(CommStats) == 4, AlignmentOfStructure_CommStats_IsNotWhatExpected);
 
-WB_STATIC_VERIFY(sizeof(ThreadInfo) == 28, SizeOfStructure_ThreadInfo_IsNotWhatExpected);
-WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ThreadInfo) == 4, AlignmentOfStructure_ThreadInfo_IsNotWhatExpected);
-
-WB_STATIC_VERIFY(sizeof(ThreadInfoList) == 8, SizeOfStructure_ThreadInfoList_IsNotWhatExpected);
-WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ThreadInfoList) == 4, AlignmentOfStructure_ThreadInfoList_IsNotWhatExpected);
-
 WB_STATIC_VERIFY(sizeof(RoutingTable) == 12, SizeOfStructure_RoutingTable_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(RoutingTable) == 4, AlignmentOfStructure_RoutingTable_IsNotWhatExpected);
 

@@ -88,13 +88,13 @@ public:
     */
     inline ExecutionContextId getExecutionContextId() const { return mExecutionContextId; }
 
-protected:
-    /** Current module state */
-    uint8 mModuleState; // In order to avoid exposing generated code out of the dll, stored as uint8
-
 private:
     /// name of the launchable module, will be used as an identifier for starting/stopping
     const char* mpModuleName;
+
+protected:
+    /** Current module state */
+    uint8 mModuleState; // In order to avoid exposing generated code out of the dll, stored as uint8
 
 private:
     /** StartupProvider has direct access to these members */

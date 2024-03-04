@@ -17,6 +17,13 @@ struct WB_API RoutingTableEntryHandle
 
     union
     {
+#if __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic" // Pedantic warning about anonymous structs
+#elif _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4201) // warning C4201: nonstandard extension used: nameless struct/union
+#endif
         struct
         {
             /** ID of remote Whiteboard */
@@ -25,6 +32,11 @@ struct WB_API RoutingTableEntryHandle
             /** Version of the routing table entry */
             uint8 version;
         };
+#if __GNUC__
+#pragma GCC diagnostic pop
+#elif _MSC_VER
+#pragma warning(pop)
+#endif
 
         /** Primitive type that stores RoutingTableEntryHandle information */
         uint16 value;

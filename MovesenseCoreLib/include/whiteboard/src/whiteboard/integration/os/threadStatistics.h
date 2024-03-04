@@ -7,7 +7,7 @@
 namespace WB_RES
 {
     struct ThreadInfo;
-};
+}
 
 /** Gets thread runtime statistics
 *

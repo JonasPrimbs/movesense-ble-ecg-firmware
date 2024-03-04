@@ -369,15 +369,57 @@ public:
      */
     const ResourceId getResourceId() const { return mpResource->getId(); }
 
+protected:
+    class NotifyStatus
+    {
+    public:
+        NotifyStatus(ResourceProvider& provider, ResourceId resourceId, const T& rValue)
+            : mProvider(provider), mResourceId(resourceId), mrValue(rValue),
+#if WB_HAVE_OPERATION_TIMESTAMP
+            mNotificationTimestamp(0),
+#endif
+            mComplete(WbSemaphoreCreate(0, 1))
+        {
+        }
+        ~NotifyStatus() { WbSemaphoreDelete(mComplete); }
+
+        ResourceProvider& mProvider;
+        ResourceId mResourceId;
+        const T& mrValue;
+#if WB_HAVE_OPERATION_TIMESTAMP
+        /** Optional timestamp value */
+        uint32 mNotificationTimestamp;
+#endif
+        WbSemaphoreHandle mComplete;
+    };
+
+public:
     /**
      *	Function to notify subscribers. Will pass value of member variable mValue.
      */
     void notifySubscribers()
     {
-        NotifyStatus status(*this, mpResource->getId(), mValue);
-        DpcFunctor::queueOnce(getExecutionContextId(), mrWhiteboard, &TestProvider::notifyDpcHandler, &status);
-        WbSemaphoreTryWait(status.mComplete, 500);
+        // Extend the scope of value reference, at least X code release build needs this
+        const T& val = mValue;
+
+        NotifyStatus status(*this, mpResource->getId(), val);
+        notifySubscribersCommon(&TestProvider::notifyDpcHandler, status);
     }
+
+#if WB_HAVE_OPERATION_TIMESTAMP
+    /**
+    *	Function to notify subscribers with whiteboard::ValueWithTimestamp.
+    */
+    void notifySubscribersWithTimestamp(uint32 timestamp)
+    {
+        // Extend the scope of value reference, at least X code release build needs this
+        const T& val = mValue;
+
+        NotifyStatus status(*this, mpResource->getId(), val);
+        status.mNotificationTimestamp = timestamp;
+        notifySubscribersCommon(&TestProvider::notifyWithTimestampDpcHandler, status);
+    }
+#endif
 
     /**
      *  Test helper for waiting GET requests.
@@ -543,6 +585,20 @@ public:
     }
 
 private:
+    /**
+    *	Function to notify subscribers. Will pass value of member variable mValue.
+    */
+    template <class Tp>
+    void notifySubscribersCommon(void(*pFunction)(Tp), NotifyStatus& rNotificationStatus)
+    {
+        DpcFunctor::queueOnce(getExecutionContextId(), mrWhiteboard, pFunction, &rNotificationStatus);
+
+        // A pointer to status is given to the DPC. If this function exits due to timeout before the DPC
+        // is complete, the DPC may access already freed memory. Still, use a timeout to prevent unit test jams.
+        const bool success = WbSemaphoreTryWait(rNotificationStatus.mComplete, 20000000);
+        WB_ASSERT(success);
+    }
+
     /** Helper function for waiting requests to be received */
     bool waitUntilReceivedRequests(volatile int32& counter, const int32 requests, const int32 timeoutMs)
     {
@@ -610,27 +666,22 @@ protected:
     /** Counter for incoming UNSUBSCRIBE requests */
     volatile int32 mUnsubscribeRequestCounter;
 
-    class NotifyStatus
-    {
-    public:
-        NotifyStatus(ResourceProvider& provider, ResourceId resourceId, const T& rValue)
-            : mProvider(provider), mResourceId(resourceId), mrValue(rValue), mComplete(WbSemaphoreCreate(0, 1))
-        {
-        }
-        ~NotifyStatus() { WbSemaphoreDelete(mComplete); }
-
-        ResourceProvider& mProvider;
-        ResourceId mResourceId;
-        const T& mrValue;
-        WbSemaphoreHandle mComplete;
-    };
-
     static void notifyDpcHandler(NotifyStatus* status)
     {
         status->mProvider.updateResource(
             status->mResourceId.localResourceId, ResourceProvider::ResponseOptions::Empty, status->mrValue);
         WbSemaphoreRelease(status->mComplete);
     }
+
+#if WB_HAVE_OPERATION_TIMESTAMP
+    static void notifyWithTimestampDpcHandler(NotifyStatus* status)
+    {
+        wb::ValueWithTimestamp value(wb::Value(status->mrValue), status->mNotificationTimestamp);
+        status->mProvider.updateResourceVariant(
+            status->mResourceId.localResourceId, ResourceProvider::ResponseOptions::Empty, value, wb::ParameterList::Empty);
+        WbSemaphoreRelease(status->mComplete);
+    }
+#endif
 };
 
 } // namespace whiteboard

@@ -28,3 +28,12 @@ WB_API WbTimestamp WbTimestampIncrementMs(WbTimestamp timestamp, size_t millisec
 * @return Timestamp difference (end - start) in milliseconds
 */
 WB_API int WbTimestampDifferenceMs(WbTimestamp start, WbTimestamp end);
+
+/** Gets current platform timestamp
+*
+* @note: Timestamp is not in any specific units, but should not wrap for at least a day
+*        The timestamp may advance different speed than real time in enviroments where
+*        the time acceleration is used to speed up simulations.
+*
+* @return Current timestamp */
+WB_API WbTimestamp WbRelativeTimeGet();

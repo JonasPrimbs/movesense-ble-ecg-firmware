@@ -22,7 +22,7 @@ WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(DebugLogConfig) == 4, AlignmentOfStructure_De
 WB_STATIC_VERIFY(sizeof(DebugLogResult) == 8, SizeOfStructure_DebugLogResult_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(DebugLogResult) == 4, AlignmentOfStructure_DebugLogResult_IsNotWhatExpected);
 
-WB_STATIC_VERIFY(sizeof(ResetReason) == 8, SizeOfStructure_ResetReason_IsNotWhatExpected);
+WB_STATIC_VERIFY(sizeof(ResetReason) == 16, SizeOfStructure_ResetReason_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ResetReason) == 4, AlignmentOfStructure_ResetReason_IsNotWhatExpected);
 
 WB_STATIC_VERIFY(sizeof(FaultInfo) == 48, SizeOfStructure_FaultInfo_IsNotWhatExpected);

@@ -48,7 +48,7 @@ struct WB_ALIGN(4) ECGInfo
 	typedef int Structure;
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 17152;
 
-	WB_ALIGN(2) uint16 currentSampleRate;
+	WB_ALIGN(2) whiteboard::Optional< uint16 > currentSampleRate;
 	WB_ALIGN(4) whiteboard::Array< uint16 > availableSampleRates;
 	WB_ALIGN(2) uint16 arraySize;
 	WB_ALIGN(4) whiteboard::Array< uint16 > lowPass;

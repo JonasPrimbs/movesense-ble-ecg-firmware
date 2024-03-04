@@ -47,6 +47,20 @@ INIT_SIMULATOR_ENVIRONMENT()
 # Options
 ################################
 
+# default heap size and set as macro
+if (NOT MOVESENSE_HEAP_SIZE)
+    set(MOVESENSE_HEAP_SIZE 0xAC80 CACHE STRING "Set movesense HEAP size")
+endif()
+add_definitions(-DMOVESENSE_HEAP_SIZE=${MOVESENSE_HEAP_SIZE})
+
+if (NOT MOVESENSE_APP_RAM_SIZE)
+    set(MOVESENSE_APP_RAM_SIZE 0xD410 CACHE STRING "Set movesense linker RAM size")
+endif()
+
+add_definitions(-DMOVESENSE_APP_RAM_ORIGIN=0x20010000-0x80-${MOVESENSE_APP_RAM_SIZE})
+add_definitions(-DMOVESENSE_APP_RAM_LENGTH=${MOVESENSE_APP_RAM_SIZE})
+
+
 #set(WB_UNITTEST_BUILD OFF CACHE BOOL "Enable this to link against Whiteboard library that has extended support for unit tests. This has a minor performance penalty and additional ROM usage.")
 
 ################################
@@ -57,6 +71,7 @@ INIT_SIMULATOR_ENVIRONMENT()
 include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR})
 
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
+include_directories(${CMAKE_CURRENT_LIST_DIR}/include/nea)
 
 include_directories(${MOVESENSE_CORE_LIBRARY}/include/whiteboard/src)
 include_directories(${MOVESENSE_CORE_LIBRARY}/include/whiteboard)
@@ -80,34 +95,17 @@ set(MOVESENSE_INCLUDE_DIRECTORIES
     whiteboard/devicediscovery
     whiteboard/integration
     whiteboard/integration/bsp
-    whiteboard/integration/bsp/android
-    whiteboard/integration/bsp/external
-    whiteboard/integration/bsp/ios
-    whiteboard/integration/bsp/linux
-    whiteboard/integration/bsp/macosx
-    whiteboard/integration/bsp/nea
-    whiteboard/integration/bsp/nrf
-    whiteboard/integration/bsp/shared
-    whiteboard/integration/bsp/windows
     whiteboard/integration/os
-    whiteboard/integration/os/android
-    whiteboard/integration/os/freertos
-    whiteboard/integration/os/ios
-    whiteboard/integration/os/linux
-    whiteboard/integration/os/macosx
-    whiteboard/integration/os/nea
-    whiteboard/integration/os/windows
-    whiteboard/integration/shared
     whiteboard/services
     whiteboard/unittest
 )
 
-# Set up WB_BSP & WB_PORT
-set(WB_BSP nea CACHE STRING "WB_BSP")
-set(WB_PORT nea CACHE STRING "WB_PORT")
+# Set up WB_BSP & WB_PORT to point to plugin folders
+set(WB_BSP "${CMAKE_CURRENT_LIST_DIR}/include/wbintegration-bsp" CACHE STRING "WB_BSP")
+set(WB_PORT "${CMAKE_CURRENT_LIST_DIR}/include/wbintegration-os" CACHE STRING "WB_PORT")
 
-add_definitions(-DWB_BSP="bsp/${WB_BSP}/bsp.h")
-add_definitions(-DWB_PORT="os/${WB_PORT}/port.h")
+add_definitions(-DWB_BSP="${WB_BSP}/bsp.h")
+add_definitions(-DWB_PORT="${WB_PORT}/port.h")
 
 add_definitions(-DWB_HAVE_UNKNOWN_STRUCTURES=1)
 
@@ -244,6 +242,9 @@ include(${BUILD_CONFIG_PATH}/sbem.cmake)
 # Source files
 ####################################
 
+# Movesense core sources (heap implementation)
+set(SOURCES ${SOURCES} ${MOVESENSE_CORE_LIBRARY}/src/movesense_heap.c)
+
 # Application sources in current folder (app)
 aux_source_directory(. APP_SOURCES)
 set(APP_SOURCES ${APP_SOURCES} ${SOURCES})
@@ -253,16 +254,41 @@ set(APP_SOURCES ${APP_SOURCES} ${SOURCES})
 # Source files
 ####################################
 
+if (${BSP} MATCHES "SDL")
+    # Simple case for simulator
+    set(LINKER_SCRIPT ${LINKER_SCRIPT_NAME})
+else()
+    # Actual device linking
+    set(LINKER_SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/movesense.ld)
+
+
+    # Pre-process linker script with the dynamic values (SD RAM size)
+    add_c_preprocessor_command(OUTPUT ${LINKER_SCRIPT} SOURCE "${LINKER_SCRIPTS_PATH}/${LINKER_SCRIPT_NAME}.ld.S" TARGET ${EXECUTABLE_NAME} EXTRA_C_FLAGS "")
+
+    # trigger linker script processing
+    set_property(SOURCE ${MOVESENSE_CORE_LIBRARY}/src/movesense_heap.c PROPERTY OBJECT_DEPENDS ${LINKER_SCRIPT})
+endif()
+
 # Create exe
 add_executable(${EXECUTABLE_NAME} ${APP_SOURCES} ${MODULES_SOURCES} ${APP_RESOURCE_SOURCES} ${MODULES_RESOURCE_SOURCES} ${APP_METADATA_SOURCES} ${WB_HEADERS})
-CONFIGURE_EXECUTABLE(${EXECUTABLE_NAME} ${LINK_STARTAT} ${LINKER_SCRIPT_NAME})
+
+
+# configure the exe (linker details etc.)
+CONFIGURE_EXECUTABLE(${EXECUTABLE_NAME} ${LINK_STARTAT} ${LINKER_SCRIPT})
+
+
+get_cmake_property(_variableNames VARIABLES)
+foreach (_variableName ${_variableNames})
+    message(STATUS "${_variableName}=${${_variableName}}")
+endforeach()
 
 # With C++11 support if available
 set_property(TARGET ${EXECUTABLE_NAME} PROPERTY CXX_STANDARD 11)
 
+
 # Link with Movesense-core library
 target_link_libraries(${EXECUTABLE_NAME} movesense-core ${LIBRARIES})
-
+message(STATUS "LIBRARIES=${LIBRARIES}")
 
 # Link with possible module libraries (exported from modules.cmake)
 target_link_libraries(${EXECUTABLE_NAME} ${MODULE_LIBRARIES})

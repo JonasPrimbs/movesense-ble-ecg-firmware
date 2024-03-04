@@ -26,9 +26,12 @@ paths:
         Combined subscription to average HR and R-R data.
       responses:
         200:
-          description: Operation completed successfully
+          description: Operation completed successfully. HR data attached.
           schema:
             $ref: 'types.yaml#/definitions/HRData'
+        204:
+          description: Operation completed successfully. Measurement only starting, no data to send yet.
+
         x-notification:
           description: |
             Notifications comprise average HR (Hz) with the latest RR (ms) data

@@ -22,12 +22,6 @@ static const unsigned short META_STRING_LID = 12;
 static const unsigned short NET_LID = 256;
 static const unsigned short WHITEBOARD_INFO_LID = 257;
 static const unsigned short WHITEBOARD_METRICS_COMM_LID = 258;
-static const unsigned short WHITEBOARD_METRICS_THREADS_LID = 259;
-static const unsigned short WHITEBOARD_METRICS_THREADS_COUNT_LID = 260;
-static const unsigned short WHITEBOARD_METRICS_THREADS_INDEX_NAME_LID = 261;
-static const unsigned short WHITEBOARD_METRICS_THREADS_INDEX_PROGRAMCOUNTER_LID = 262;
-static const unsigned short WHITEBOARD_METRICS_THREADS_INDEX_RETURNADDRESS_LID = 263;
-static const unsigned short WHITEBOARD_SYSTEM_LAUNCHER_LID = 264;
-static const unsigned short WHITEBOARD_TEST_BYPASS_LID = 265;
-static const unsigned short WHITEBOARD_TIME_LID = 266;
+static const unsigned short WHITEBOARD_SYSTEM_LAUNCHER_LID = 259;
+static const unsigned short WHITEBOARD_TIME_LID = 260;
 

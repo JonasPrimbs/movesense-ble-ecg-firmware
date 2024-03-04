@@ -101,8 +101,10 @@ public:
 
         ~ResourceIdOrPath()
         {
-            // Release resource on exit
-            if (mResourcePath && mpClient)
+            // Release resource on exit if we did a getResource for it and it is not subscribed.
+            // Releasing a subscribed resource might ruin the notifications.
+            if (mResourcePath && mpClient && mResourceId != ID_INVALID_RESOURCE &&
+                !mpClient->isPathParameterResourceSubscribed(mResourceId))
             {
                 mpClient->callAsyncReleaseResourceAndWaitResult(mResourceId);
             }
@@ -125,11 +127,14 @@ public:
                 mpClient = &rClient;
 
                 TestResult<NoType> result = rClient.callGetResourceInternal(mResourcePath);
-                return result ? result.mResourceId : ResourceId(ID_INVALID_RESOURCE);
+
+                // Save resolved resourceId to the member variable so that it can be released in destructor.
+                mResourceId = result ? result.mResourceId : ResourceId(ID_INVALID_RESOURCE);
+                return mResourceId;
             }
         }
 
-        ResourceId mResourceId;
+        mutable ResourceId mResourceId;
         const char* mResourcePath;
         mutable TestClientWithDefaults* mpClient;
     };

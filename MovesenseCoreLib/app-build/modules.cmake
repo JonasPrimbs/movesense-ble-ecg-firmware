@@ -41,14 +41,20 @@ foreach(module_dir ${MOVESENSE_MODULES})
     # Remove folders with special meaning
     list(REMOVE_ITEM MODULE_SUBDIRS "wbresources")
     list(REMOVE_ITEM MODULE_SUBDIRS "lib")
-
+    list(REMOVE_ITEM MODULE_SUBDIRS "unittests")
+    
     set(ABS_SUBDIRS "")
     foreach(path ${MODULE_SUBDIRS})
         if(NOT IS_ABSOLUTE ${path})
-            list(APPEND ABS_SUBDIRS "${module_dir}/${path}")
+            set(ABS_SUBDIR_PATH "${module_dir}/${path}")
         else()
-            list(APPEND ABS_SUBDIRS "${path}")
+            set(ABS_SUBDIR_PATH "${path}")
         endif()
+        list(APPEND ABS_SUBDIRS "${ABS_SUBDIR_PATH}")
+
+        # Add sources in subdirs
+        file(GLOB SUBDIR_SOURCES  ${ABS_SUBDIR_PATH}/*.cpp ${ABS_SUBDIR_PATH}/*.c)
+        set(MODULES_SOURCES ${MODULES_SOURCES} ${SUBDIR_SOURCES})    
     endforeach()
 
     include_directories(${ABS_SUBDIRS})
@@ -71,7 +77,7 @@ if (MOVESENSE_MODULE_YAML_FILES)
     set(MODULES_RESOURCES ${CMAKE_BINARY_DIR}/modules-resources.wbo)
     generate_wb_resources(
         modules-resources MODULES_RESOURCE_SOURCES
-        INCLUDE_DIRECTORIES ${WB_DIRECTORY}/include/whiteboard/builtinTypes
+        INCLUDE_DIRECTORIES ${MOVESENSE_CORE_LIBRARY}/resources/whiteboard/builtinTypes
         SOURCE_GROUP modules ${MOVESENSE_MODULE_YAML_FILES} ${CMAKE_CURRENT_SOURCE_DIR}/*_root.yaml
         GENERATE CPP LIB
         CPP_DEPENDS wb-resources)

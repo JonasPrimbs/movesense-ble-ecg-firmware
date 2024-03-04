@@ -65,6 +65,8 @@ paths:
           description: Bad request.
         403:
           description: Forbidden state change.
+        409:
+          description: Conflict. Probably simultaneous read operation or similar.
         507:
           description: Insufficient storage for operation.
     post:

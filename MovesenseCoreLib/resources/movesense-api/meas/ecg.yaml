@@ -82,7 +82,6 @@ parameters:
 definitions:
   ECGInfo:
     required:
-      - CurrentSampleRate
       - AvailableSampleRates
       - ArraySize
       - LowPass

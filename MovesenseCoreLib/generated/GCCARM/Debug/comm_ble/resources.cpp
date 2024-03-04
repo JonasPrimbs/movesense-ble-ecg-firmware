@@ -10,6 +10,12 @@ namespace WB_RES {
 WB_STATIC_VERIFY(sizeof(BleConfig) == 8, SizeOfStructure_BleConfig_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(BleConfig) == 4, AlignmentOfStructure_BleConfig_IsNotWhatExpected);
 
+WB_STATIC_VERIFY(sizeof(ConnConfig) == 20, SizeOfStructure_ConnConfig_IsNotWhatExpected);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ConnConfig) == 2, AlignmentOfStructure_ConnConfig_IsNotWhatExpected);
+
+WB_STATIC_VERIFY(sizeof(DL) == 6, SizeOfStructure_DL_IsNotWhatExpected);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(DL) == 2, AlignmentOfStructure_DL_IsNotWhatExpected);
+
 WB_STATIC_VERIFY(sizeof(AdvParams) == 8, SizeOfStructure_AdvParams_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(AdvParams) == 4, AlignmentOfStructure_AdvParams_IsNotWhatExpected);
 
@@ -36,6 +42,9 @@ WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ScanParams) == 2, AlignmentOfStructure_ScanPa
 
 WB_STATIC_VERIFY(sizeof(ScanResult) == 24, SizeOfStructure_ScanResult_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ScanResult) == 4, AlignmentOfStructure_ScanResult_IsNotWhatExpected);
+
+WB_STATIC_VERIFY(sizeof(ConnParams) == 8, SizeOfStructure_ConnParams_IsNotWhatExpected);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ConnParams) == 2, AlignmentOfStructure_ConnParams_IsNotWhatExpected);
 
 WB_STATIC_VERIFY(sizeof(BondEntry) == 4, SizeOfStructure_BondEntry_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(BondEntry) == 4, AlignmentOfStructure_BondEntry_IsNotWhatExpected);

@@ -1,4 +1,0 @@
-[console_scripts]
-pasteurize = libpasteurize.main:main
-futurize = libfuturize.main:main
-

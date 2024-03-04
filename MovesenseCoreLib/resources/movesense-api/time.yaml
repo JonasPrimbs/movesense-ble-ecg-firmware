@@ -66,6 +66,25 @@ paths:
             $ref: '#/definitions/DetailedTime'
 
 
+  /Time/Detailed/Subscription:
+    post:
+      description: |
+        Subscription to the device and UTC time difference. Notifications are given when mapping changes (PUT /Time).
+      responses:
+        200:
+          description: Operation completed successfully
+        x-notification:
+          description: |
+            Current time in microseconds since epoch 1.1.1970 (UTC) and timestamp (relative time)
+          schema:
+            $ref: '#/definitions/TimeSync'
+    delete:
+      description: |
+        Unsubscribes an active subscription.
+      responses:
+        200:
+          description: Operation completed successfully
+
 definitions:
 
   DetailedTime:
@@ -94,3 +113,18 @@ definitions:
           The actual accuracy depends on many things (device temperature, vibration environment etc.).
         type: integer
         format: uint32
+
+  TimeSync:
+    required:
+      - utcTime
+      - relativeTime
+    properties:
+      utcTime:
+        description: UTC time of the device, number of microseconds since epoch 1.1.1970 (UTC).
+        type: integer
+        format: int64
+      relativeTime:
+        description: Local time of the device, milliseconds since device reset.
+        type: integer
+        format: uint32
+        x-unit: millisecond

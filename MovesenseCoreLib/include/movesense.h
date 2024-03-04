@@ -8,6 +8,7 @@
 #include <whiteboard/Initialization.h>
 #include "whiteboard/LaunchableModule.h"
 #include "common/compiler/genDef.h"
+#include "platform/bsp/ble_conf.h"
 
 #if __cplusplus
 extern "C" {
@@ -95,7 +96,6 @@ public:\
 __MovesenseAppModuleHolder __launchableModuleHolder; const char * __MovesenseAppModuleHolder::__moduleNames[NumModules+1]; whiteboard::LaunchableModule* __MovesenseAppModuleHolder::__moduleObjs[NumModules+1];\
 const char *const *__MOVESENSE_APP_SPECIFIC_MODULES = __MovesenseAppModuleHolder::__moduleNames;
 
-extern const bool g_enableBLEComm;
 extern const bool g_enableProductionTestSerial;
 
 extern const char* g_appInfo_name;
@@ -114,17 +114,22 @@ extern const char* g_appInfo_company;
 #define SERIAL_COMMUNICATION(enable) \
     _Pragma("message \"DEPRECATED: SERIAL_COMMUNICATION macro is now deprecated.\"")
 
-#define BLE_COMMUNICATION(enable) const bool g_enableBLEComm = (enable);
+#define BLE_COMMUNICATION(enable) \
+    _Pragma("message \"DEPRECATED: BLE_COMMUNICATION macro is now deprecated.\"")
+
 #define BLE_REQUIRE_BONDING(enable) bool __requireBonding() { return (enable); }
 #define PRODUCTION_TEST_SERIAL_COMMUNICATION(enable) const bool g_enableProductionTestSerial = (enable);
 
 // Logbook memory area macro
 typedef void(*LogbookMemoryAreaOverride)(uint32_t &rOffset, uint32_t &rSize);
 constexpr uint32_t MEMORY_SIZE_FILL_REST = 0xFFFFFFFF;
-#define LOGBOOK_MEMORY_AREA(offset, size) \
+#define LOGBOOK_EEPROM_MEMORY_AREA(offset, size) \
 STATIC_VERIFY(((offset) & 0xff) == 0, Logbook_offset_must_be_multiple_of_256); \
-STATIC_VERIFY((((size) & 0xff) == 0 || size==MEMORY_SIZE_FILL_REST), Logbook_size_must_be_multiple_of_256_or_FILL_REST); \
+STATIC_VERIFY(((((size) & 0xff) == 0 && (size > 0)) || size==MEMORY_SIZE_FILL_REST), Logbook_size_must_be_multiple_of_256_or_FILL_REST_and_NOT_zero); \
 void __logbookMemoryAreaOverride(uint32_t &rOffset, uint32_t &rSize) {rOffset = (offset);rSize = (size);}
+
+// Old definition. Use more descriptive define LOGBOOK_EEPROM_MEMORY_AREA instead
+#define LOGBOOK_MEMORY_AREA(offset, size)  LOGBOOK_EEPROM_MEMORY_AREA(offset, size)
 
 #define DEBUG_EEPROM_MEMORY_AREA(enable, offset, size) \
 STATIC_VERIFY(!(enable) || (((offset) & 0xff) == 0), Debug_storage_offset_must_be_multiple_of_256); \
@@ -142,5 +147,18 @@ void __debugBufferConfigOverride(uint32_t &rHeaders, uint32_t &rBytes) {rHeaders
 g_appInfo_name = name;
 #define APPINFO_VERSION(version) g_appInfo_version = version;
 #define APPINFO_COMPANY(company) g_appInfo_company = company;}
+
+
+#define MOVESENSE_BLE_CONFIG_2PERIPHERALS \
+    const BleConfig __ble_Config(27,2,0,2,10,23,1896,6);\
+    const BleConfig *g_BLE_ConfigPtr = &__ble_Config;
+
+#define MOVESENSE_BLE_CONFIG_1PERIPHERAL_1CENTRAL \
+    const BleConfig __ble_Config(96,1,1,2,20,92,1896,6);\
+    const BleConfig *g_BLE_ConfigPtr = &__ble_Config;
+
+// To define your own BLE configuration, apply with this macro
+#define MOVESENSE_BLE_CONFIG(bleConfig) \
+    const BleConfig *g_BLE_ConfigPtr = &(bleConfig);
 
 #define MOVESENSE_FEATURES_END()

@@ -1,5 +1,5 @@
 
-# Code for flashing resulting nrf hex file to the target. Requires installation of python2.7 & nrfutil package
+# Code for flashing resulting nrf hex file to the target. Requires installation of python & nrfutil package
 if(CMAKE_HOST_WIN32)
 set(NRFUTIL_CMD nrfutil.exe)
 set(MERGEHEX_CMD mergehex.exe)
@@ -45,12 +45,13 @@ set (WITH_SETTINGS_HEX ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}_w_settings
 set (COMBINED_HEX ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}_combined.hex)
 set (DFU_PACKAGE_NAME ${EXECUTABLE_NAME}_dfu.zip)
 set (MANUFACTURING_DATA_NAME ${EXECUTABLE_NAME}_manufacturing_data.txt)
-# Command for converting ELF to Intel-HEX. results Movesense.hex
+# Command for converting ELF to Intel-HEX. results Movesense.hex (and Movesense.elf)
 if(${COMPILER} STREQUAL "GCCARM")
     add_custom_command(
         OUTPUT ${EXECUTABLE_NAME}.hex
         DEPENDS ${EXECUTABLE_NAME}
         COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_NAME} ${EXECUTABLE_NAME}.hex
+        COMMAND ${CMAKE_COMMAND} -E copy ${EXECUTABLE_NAME} ${EXECUTABLE_NAME}.elf
         )
 endif()
 

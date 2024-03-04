@@ -5,9 +5,15 @@ set(GCCARM_USE_LTO True CACHE BOOL "Enable link-time optimization in GCC build")
 set(LINKER_SCRIPTS_PATH ${CMAKE_CURRENT_LIST_DIR}/../platform/${BSP}/linker/gcc )
 
 # Check that the relevant linker file exists
-if(NOT EXISTS ${LINKER_SCRIPTS_PATH}/${BSP_LINKTO}.ld)
+if(NOT EXISTS ${LINKER_SCRIPTS_PATH}/${BSP_LINKTO}.ld.S)
     message(FATAL_ERROR "BSP_LINKTO not chosen or invalid (cannot find ${LINKER_SCRIPTS_PATH}/${BSP_LINKTO}.ld or is not valid)")
 endif()
+
+
+# Get rid of default release optimization flag -O3 that comes from
+# CMake_installation_dir/share/.../Modules/Compiler/GNU.cmake
+set(CMAKE_C_FLAGS_RELEASE "-DNDEBUG" CACHE STRING "" FORCE)
+set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG" CACHE STRING "" FORCE)
 
 # redefine the types to use for INT32 and UINT32 (driving the stdint.h setup)
 # otherwise int32_t and uint32_t are based on long, and while it's also 32-bit

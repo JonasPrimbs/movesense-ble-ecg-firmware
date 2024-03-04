@@ -150,7 +150,7 @@ struct SYSTEM_STATES_STATEID
 
 	struct SUBSCRIBE
 	{
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const StateChange&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_IMPLEMENTED> HTTP_CODE_NOT_IMPLEMENTED;
 
 		struct Parameters

@@ -47,7 +47,9 @@ paths:
         is returned.
       responses:
         200:
-          description: Operation completed successfully
+          description: Operation completed successfully. Current state info for given StateId attached.
+          schema:
+            $ref: '#/definitions/StateChange'
         501:
           description: Not implemented
         x-notification:

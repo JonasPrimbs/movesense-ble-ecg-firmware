@@ -34,24 +34,9 @@
 
 namespace WB_RES {
 
-struct ThreadStateValues
-{
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 258;
-
-	enum Type
-	{
-		READY = 0U,
-		RUNNING = 1U,
-		BLOCKED = 2U,
-		SUSPENDED = 3U,
-		TERMINATED = 4U
-	};
-};
-typedef whiteboard::TypedEnum<ThreadStateValues, ThreadStateValues::Type, uint8> ThreadState;
-
 struct RouteStateValues
 {
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 262;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 259;
 
 	enum Type
 	{
@@ -69,7 +54,7 @@ typedef whiteboard::TypedEnum<RouteStateValues, RouteStateValues::Type, uint8> R
 
 struct RoutingTableNotificationTypeValues
 {
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 263;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 260;
 
 	enum Type
 	{
@@ -82,7 +67,7 @@ typedef whiteboard::TypedEnum<RoutingTableNotificationTypeValues, RoutingTableNo
 
 struct ModuleCommandValues
 {
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 265;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 262;
 
 	enum Type
 	{
@@ -96,7 +81,7 @@ typedef whiteboard::TypedEnum<ModuleCommandValues, ModuleCommandValues::Type, ui
 
 struct ModuleStateValues
 {
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 266;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 263;
 
 	enum Type
 	{
@@ -112,7 +97,7 @@ typedef whiteboard::TypedEnum<ModuleStateValues, ModuleStateValues::Type, uint8>
 
 struct ThreadPriorityValues
 {
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 270;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 267;
 
 	enum Type
 	{
@@ -157,7 +142,7 @@ typedef whiteboard::TypedEnum<DataTypeTypeValues, DataTypeTypeValues::Type, uint
 
 struct ScalarTypeValues
 {
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 271;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 268;
 
 	enum Type
 	{
@@ -196,14 +181,11 @@ struct WB_ALIGN(2) SecurityTagMetadata;
 struct WB_ALIGN(4) StringMetadata;
 struct WB_ALIGN(4) WbInfo;
 struct WB_ALIGN(4) CommStats;
-struct WB_ALIGN(4) ThreadInfo;
-struct WB_ALIGN(4) ThreadInfoList;
 struct WB_ALIGN(4) RoutingTable;
 struct WB_ALIGN(1) CompactWbVersion;
 struct WB_ALIGN(4) LaunchableModule;
 struct WB_ALIGN(4) LaunchableList;
 
-typedef int8 ThreadPriorityLevel;
 typedef uint16 StringId;
 typedef uint8 SecurityTagId;
 typedef uint8 ResourceInstanceId;
@@ -376,38 +358,11 @@ struct WB_ALIGN(4) CommStats
 	WB_ALIGN(4) uint32 receivedBytes;
 };
 
-struct WB_ALIGN(4) ThreadInfo
-{
-	// Structure type identification and serialization
-	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 259;
-
-	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > name;
-	WB_ALIGN(1) ThreadState state;
-	WB_ALIGN(1) ThreadPriorityLevel basePriority;
-	WB_ALIGN(1) ThreadPriorityLevel currentPriority;
-	WB_ALIGN(1) uint8 runTimePercentage;
-	WB_ALIGN(4) uint32 runTimeTicks;
-	WB_ALIGN(4) uint32 contextSwitches;
-	WB_ALIGN(4) uint32 freeStack;
-	WB_ALIGN(4) uint32 programCounter;
-	WB_ALIGN(4) uint32 returnAddress;
-};
-
-struct WB_ALIGN(4) ThreadInfoList
-{
-	// Structure type identification and serialization
-	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 260;
-
-	WB_ALIGN(4) whiteboard::Array< ThreadInfo > threads;
-};
-
 struct WB_ALIGN(4) RoutingTable
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 261;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 258;
 
 	WB_ALIGN(1) uint8 version;
 	WB_ALIGN(4) ListOfStrings serialNumbers;
@@ -417,7 +372,7 @@ struct WB_ALIGN(1) CompactWbVersion
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 264;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 261;
 
 	WB_ALIGN(1) uint8 majorVersion;
 	WB_ALIGN(1) uint8 minorVersion;
@@ -428,7 +383,7 @@ struct WB_ALIGN(4) LaunchableModule
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 267;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 264;
 
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > name;
 	WB_ALIGN(1) ModuleState state;
@@ -438,7 +393,7 @@ struct WB_ALIGN(4) LaunchableList
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 268;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 265;
 
 	WB_ALIGN(4) whiteboard::Array< LaunchableModule > modules;
 };
@@ -2196,272 +2151,13 @@ struct WHITEBOARD_METRICS_COMM
 	};
 };
 
-struct WHITEBOARD_METRICS_THREADS
-{
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 259, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 259;
-
-	struct GET
-	{
-		typedef whiteboard::StronglyTypedResult<const ThreadInfoList&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
-
-		struct Parameters
-		{
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck()
-		{
-		}
-	};
-};
-
-struct WHITEBOARD_METRICS_THREADS_COUNT
-{
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 260, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 260;
-
-	struct GET
-	{
-		typedef whiteboard::StronglyTypedResult<uint8, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
-
-		struct Parameters
-		{
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck()
-		{
-		}
-	};
-};
-
-struct WHITEBOARD_METRICS_THREADS_INDEX;
-
-struct WHITEBOARD_METRICS_THREADS_INDEX_NAME
-{
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 261, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 261;
-
-	struct GET
-	{
-		typedef whiteboard::StronglyTypedResult<const char*, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_RANGE_NOT_SATISFIABLE> HTTP_CODE_RANGE_NOT_SATISFIABLE;
-
-		struct Parameters
-		{
-			struct INDEX
-			{
-				static const whiteboard::ParameterIndex Index = 0;
-
-				typedef int32 Type;
-				typedef Type ConstReferenceType;
-			};
-
-			typedef INDEX Parameter1;
-
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
-		};
-
-		/** Reference wrapper for strongly typed parameter list for /Whiteboard/Metrics/Threads/{index}/Name */
-		class ParameterListRef
-		{
-		private:
-			/** Prevent use of default constructor */
-			ParameterListRef() DELETED;
-
-			/** Prevent use of copy constructor */
-			ParameterListRef(const ParameterListRef&) DELETED;
-
-			/** Prevent use of assignment operator */
-			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
-
-		public:
-			/** Constructor that initializes this class from existing parameter list
-			*
-			* @param rParameterList Reference to parameter list that contains untyped parameters
-			*/
-			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
-				: mrParameterList(rParameterList)
-			{
-			}
-
-			/** Gets INDEX parameter value
-			*
-			* @return Current parameter value
-			*/
-			inline Parameters::INDEX::ConstReferenceType getIndex() const
-			{
-				return mrParameterList[Parameters::INDEX::Index].convertTo<Parameters::INDEX::ConstReferenceType>();
-			}
-
-		private:
-			/** Reference to actual parameter list */
-			const whiteboard::ParameterList& mrParameterList;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck(
-			Parameters::INDEX::ConstReferenceType)
-		{
-		}
-	};
-};
-
-struct WHITEBOARD_METRICS_THREADS_INDEX_PROGRAMCOUNTER
-{
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 262, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 262;
-
-	struct GET
-	{
-		typedef whiteboard::StronglyTypedResult<uint32, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_RANGE_NOT_SATISFIABLE> HTTP_CODE_RANGE_NOT_SATISFIABLE;
-
-		struct Parameters
-		{
-			struct INDEX
-			{
-				static const whiteboard::ParameterIndex Index = 0;
-
-				typedef int32 Type;
-				typedef Type ConstReferenceType;
-			};
-
-			typedef INDEX Parameter1;
-
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
-		};
-
-		/** Reference wrapper for strongly typed parameter list for /Whiteboard/Metrics/Threads/{index}/ProgramCounter */
-		class ParameterListRef
-		{
-		private:
-			/** Prevent use of default constructor */
-			ParameterListRef() DELETED;
-
-			/** Prevent use of copy constructor */
-			ParameterListRef(const ParameterListRef&) DELETED;
-
-			/** Prevent use of assignment operator */
-			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
-
-		public:
-			/** Constructor that initializes this class from existing parameter list
-			*
-			* @param rParameterList Reference to parameter list that contains untyped parameters
-			*/
-			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
-				: mrParameterList(rParameterList)
-			{
-			}
-
-			/** Gets INDEX parameter value
-			*
-			* @return Current parameter value
-			*/
-			inline Parameters::INDEX::ConstReferenceType getIndex() const
-			{
-				return mrParameterList[Parameters::INDEX::Index].convertTo<Parameters::INDEX::ConstReferenceType>();
-			}
-
-		private:
-			/** Reference to actual parameter list */
-			const whiteboard::ParameterList& mrParameterList;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck(
-			Parameters::INDEX::ConstReferenceType)
-		{
-		}
-	};
-};
-
-struct WHITEBOARD_METRICS_THREADS_INDEX_RETURNADDRESS
-{
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 263, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 263;
-
-	struct GET
-	{
-		typedef whiteboard::StronglyTypedResult<uint32, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_RANGE_NOT_SATISFIABLE> HTTP_CODE_RANGE_NOT_SATISFIABLE;
-
-		struct Parameters
-		{
-			struct INDEX
-			{
-				static const whiteboard::ParameterIndex Index = 0;
-
-				typedef int32 Type;
-				typedef Type ConstReferenceType;
-			};
-
-			typedef INDEX Parameter1;
-
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
-		};
-
-		/** Reference wrapper for strongly typed parameter list for /Whiteboard/Metrics/Threads/{index}/ReturnAddress */
-		class ParameterListRef
-		{
-		private:
-			/** Prevent use of default constructor */
-			ParameterListRef() DELETED;
-
-			/** Prevent use of copy constructor */
-			ParameterListRef(const ParameterListRef&) DELETED;
-
-			/** Prevent use of assignment operator */
-			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
-
-		public:
-			/** Constructor that initializes this class from existing parameter list
-			*
-			* @param rParameterList Reference to parameter list that contains untyped parameters
-			*/
-			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
-				: mrParameterList(rParameterList)
-			{
-			}
-
-			/** Gets INDEX parameter value
-			*
-			* @return Current parameter value
-			*/
-			inline Parameters::INDEX::ConstReferenceType getIndex() const
-			{
-				return mrParameterList[Parameters::INDEX::Index].convertTo<Parameters::INDEX::ConstReferenceType>();
-			}
-
-		private:
-			/** Reference to actual parameter list */
-			const whiteboard::ParameterList& mrParameterList;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck(
-			Parameters::INDEX::ConstReferenceType)
-		{
-		}
-	};
-};
-
 struct WHITEBOARD_SYSTEM;
 
 struct WHITEBOARD_SYSTEM_LAUNCHER
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 264, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 264;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 259, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 259;
 
 	struct GET
 	{
@@ -2630,187 +2326,11 @@ struct WHITEBOARD_SYSTEM_LAUNCHER
 	};
 };
 
-struct WHITEBOARD_TEST;
-
-struct WHITEBOARD_TEST_BYPASS
-{
-	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 265, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 265;
-
-	struct GET
-	{
-		typedef whiteboard::StronglyTypedResult<const char*, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_BAD_REQUEST> HTTP_CODE_BAD_REQUEST;
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_RANGE_NOT_SATISFIABLE> HTTP_CODE_RANGE_NOT_SATISFIABLE;
-
-		struct Parameters
-		{
-			struct INDEX
-			{
-				static const whiteboard::ParameterIndex Index = 0;
-
-				typedef uint16 Type;
-				typedef Type ConstReferenceType;
-			};
-
-			typedef INDEX Parameter1;
-
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
-		};
-
-		/** Reference wrapper for strongly typed parameter list for /Whiteboard/Test/Bypass */
-		class ParameterListRef
-		{
-		private:
-			/** Prevent use of default constructor */
-			ParameterListRef() DELETED;
-
-			/** Prevent use of copy constructor */
-			ParameterListRef(const ParameterListRef&) DELETED;
-
-			/** Prevent use of assignment operator */
-			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
-
-		public:
-			/** Constructor that initializes this class from existing parameter list
-			*
-			* @param rParameterList Reference to parameter list that contains untyped parameters
-			*/
-			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
-				: mrParameterList(rParameterList)
-			{
-			}
-
-			/** Gets INDEX parameter value
-			*
-			* @return Current parameter value
-			*/
-			inline Parameters::INDEX::ConstReferenceType getIndex() const
-			{
-				return mrParameterList[Parameters::INDEX::Index].convertTo<Parameters::INDEX::ConstReferenceType>();
-			}
-
-		private:
-			/** Reference to actual parameter list */
-			const whiteboard::ParameterList& mrParameterList;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck(
-			Parameters::INDEX::ConstReferenceType)
-		{
-		}
-	};
-
-	struct PUT
-	{
-		typedef whiteboard::StronglyTypedResult<const char*, whiteboard::HTTP_CODE_ACCEPTED> HTTP_CODE_ACCEPTED;
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_BAD_REQUEST> HTTP_CODE_BAD_REQUEST;
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_FOUND> HTTP_CODE_NOT_FOUND;
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_PRECOND_FAILED> HTTP_CODE_PRECOND_FAILED;
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_IMPLEMENTED> HTTP_CODE_NOT_IMPLEMENTED;
-		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_INSUFFICIENT_STORAGE> HTTP_CODE_INSUFFICIENT_STORAGE;
-
-		struct Parameters
-		{
-			struct PATHTOBYPASS
-			{
-				static const whiteboard::ParameterIndex Index = 0;
-
-				typedef const char* Type;
-				typedef Type ConstReferenceType;
-			};
-
-			typedef PATHTOBYPASS Parameter1;
-
-			struct REMOTEPATH
-			{
-				static const whiteboard::ParameterIndex Index = 1;
-
-				typedef const char* Type;
-				typedef Type ConstReferenceType;
-			};
-
-			typedef REMOTEPATH Parameter2;
-
-			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 2;
-		};
-
-		/** Reference wrapper for strongly typed parameter list for /Whiteboard/Test/Bypass */
-		class ParameterListRef
-		{
-		private:
-			/** Prevent use of default constructor */
-			ParameterListRef() DELETED;
-
-			/** Prevent use of copy constructor */
-			ParameterListRef(const ParameterListRef&) DELETED;
-
-			/** Prevent use of assignment operator */
-			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
-
-		public:
-			/** Constructor that initializes this class from existing parameter list
-			*
-			* @param rParameterList Reference to parameter list that contains untyped parameters
-			*/
-			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
-				: mrParameterList(rParameterList)
-			{
-			}
-
-			/** Gets PATHTOBYPASS parameter value
-			*
-			* @return Current parameter value
-			*/
-			inline Parameters::PATHTOBYPASS::ConstReferenceType getPathToBypass() const
-			{
-				return mrParameterList[Parameters::PATHTOBYPASS::Index].convertTo<Parameters::PATHTOBYPASS::ConstReferenceType>();
-			}
-
-			/** Checks whether optional parameter REMOTEPATH has a value
-			*
-			* @return A value indicating whether the parameter has a value
-			*/
-			inline bool hasRemotePath() const
-			{
-				if (mrParameterList.getNumberOfParameters() <= Parameters::REMOTEPATH::Index)
-				{
-					return false;
-				}
-
-				return mrParameterList[Parameters::REMOTEPATH::Index].getType() != whiteboard::WB_TYPE_NONE;
-			}
-
-			/** Gets REMOTEPATH parameter value
-			*
-			* @return Current parameter value
-			*/
-			inline Parameters::REMOTEPATH::ConstReferenceType getRemotePath() const
-			{
-				return mrParameterList[Parameters::REMOTEPATH::Index].convertTo<Parameters::REMOTEPATH::ConstReferenceType>();
-			}
-
-		private:
-			/** Reference to actual parameter list */
-			const whiteboard::ParameterList& mrParameterList;
-		};
-
-		/** Compile time type checking */
-		inline static void typeCheck(
-			Parameters::PATHTOBYPASS::ConstReferenceType,
-			const whiteboard::Api::OptionalParameter<Parameters::REMOTEPATH::ConstReferenceType>& = whiteboard::NoType::NoValue)
-		{
-		}
-	};
-};
-
 struct WHITEBOARD_TIME
 {
 	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_APPLICATION;
-	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 266, EXECUTION_CONTEXT);
-	static const whiteboard::LocalResourceId LID = 266;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 260, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 260;
 
 	struct GET
 	{

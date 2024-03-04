@@ -13,7 +13,7 @@ endfunction(EXPORT_DEF)
 
 # Set up the custom commands to do the necessary extra configuration for
 # cross-compiled binaries for the target hardware.
-function(CONFIGURE_EXECUTABLE executable_name link_address linker_script_name)
+function(CONFIGURE_EXECUTABLE executable_name link_address linker_script_path)
     if(${BSP} MATCHES "nRF5x")
         ASSERT_DEFINED(LINKER_SCRIPTS_PATH)
         ASSERT_DEFINED(PATH_TOOL_PYTHON)
@@ -21,8 +21,10 @@ function(CONFIGURE_EXECUTABLE executable_name link_address linker_script_name)
         if(${COMPILER} MATCHES "GCC")
             # Set link script
             set_target_properties(${executable_name} PROPERTIES
-                LINK_FLAGS "-T${LINKER_SCRIPTS_PATH}/${linker_script_name}.ld"
+                LINK_FLAGS "-T${linker_script_path}"
                 )
+            set_property(TARGET ${executable_name} APPEND PROPERTY
+                LINK_DEPENDS ${linker_script_path})
         else()
             message(FATAL_ERROR "Unsupported compiler for target platform")
         endif()
@@ -35,6 +37,36 @@ function(CONFIGURE_EXECUTABLE executable_name link_address linker_script_name)
     endif()
 
 endfunction(CONFIGURE_EXECUTABLE)
+
+# Add custom command to run C preprocessor.
+function(add_c_preprocessor_command)
+    # From: https://stackoverflow.com/questions/3562483/only-run-c-preprocessor-in-cmake#answer-66896673
+    #
+    # Arguments
+    #   OUTPUT          output file
+    #   SOURCE          input file
+    #   TARGET          CMake target to inherit compile definitions, include directories, and compile options
+    #   EXTRA_C_FLAGS   extra compiler flags added after all flags inherited from the TARGET
+
+    set(one_value_args TARGET SOURCE OUTPUT)
+    set(multi_value_args EXTRA_C_FLAGS)
+    cmake_parse_arguments(CPRE "" "${one_value_args}" "${multi_value_args}" ${ARGN})
+
+    string(TOUPPER ${CMAKE_BUILD_TYPE} build_type)
+    string(REPLACE " " ";" c_flags "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${build_type}}")
+    message("CPRE_SOURCE: ${CPRE_SOURCE}")
+    add_custom_command(
+        OUTPUT ${CPRE_OUTPUT}
+        COMMAND ${CMAKE_C_COMPILER}
+            ${CPRE_EXTRA_C_FLAGS}
+            "-D$<JOIN:$<TARGET_PROPERTY:${CPRE_TARGET},COMPILE_DEFINITIONS>,;-D>"
+            "-I$<JOIN:$<TARGET_PROPERTY:${CPRE_TARGET},INCLUDE_DIRECTORIES>,;-I>"
+            -E -P ${CPRE_SOURCE} -o ${CPRE_OUTPUT}
+        COMMAND_EXPAND_LISTS VERBATIM
+        IMPLICIT_DEPENDS C ${CPRE_SOURCE}
+        DEPENDS ${CPRE_SOURCE})
+
+endfunction(add_c_preprocessor_command)
 
 # Copy extra files needed by simulator to build directory.
 function(INIT_SIMULATOR_ENVIRONMENT)

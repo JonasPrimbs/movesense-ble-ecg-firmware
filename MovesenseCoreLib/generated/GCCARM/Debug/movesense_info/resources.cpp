@@ -16,7 +16,7 @@ WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ModuleStatus) == 4, AlignmentOfStructure_Modu
 WB_STATIC_VERIFY(sizeof(AppInfo) == 24, SizeOfStructure_AppInfo_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(AppInfo) == 4, AlignmentOfStructure_AppInfo_IsNotWhatExpected);
 
-WB_STATIC_VERIFY(sizeof(DeviceInfo) == 76, SizeOfStructure_DeviceInfo_IsNotWhatExpected);
+WB_STATIC_VERIFY(sizeof(DeviceInfo) == 80, SizeOfStructure_DeviceInfo_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(DeviceInfo) == 4, AlignmentOfStructure_DeviceInfo_IsNotWhatExpected);
 
 

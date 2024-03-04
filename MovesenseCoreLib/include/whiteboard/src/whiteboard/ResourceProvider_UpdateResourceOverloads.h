@@ -182,6 +182,21 @@ WB_FORCE_INLINE_ATTRIBUTE Result updateResource(
 WB_FORCE_INLINE
 template <typename RESOURCE, typename V,
     typename EnableIf<!IsSame<RESOURCE, ResourceId>::value && !IsSame<RESOURCE, ResourceId::Value>::value, int>::type = 0>
+    WB_FORCE_INLINE_ATTRIBUTE Result updateResource(
+        const RESOURCE,
+        const ResourceProvider_ResponseOptions_Empty& rEmptyOptions,
+        const V& rValue)
+{
+    WB_NOT_USED(rEmptyOptions);
+    RESOURCE::EVENT::typeCheck(rValue);
+    return updateResourceImpl(
+        RESOURCE::LID | TYPE_CHECKED,
+        WB_VALUE());
+}
+
+WB_FORCE_INLINE
+template <typename RESOURCE, typename V,
+    typename EnableIf<!IsSame<RESOURCE, ResourceId>::value && !IsSame<RESOURCE, ResourceId::Value>::value, int>::type = 0>
 WB_FORCE_INLINE_ATTRIBUTE Result updateResource(
     const RESOURCE,
     const ResponseOptions& rOptions,
@@ -387,6 +402,20 @@ WB_FORCE_INLINE_ATTRIBUTE Result updateResource(
 }
 
 private:
+
+template <typename V>
+inline Result updateResourceImpl(
+    uint32 localResourceId,
+    const V& rValue)
+{
+    WB_STATIC_VERIFY((IsSame<V, Value>::value == 0), Raw_value_must_be_given_NOT_the_Value_wrapper);
+    WB_STATIC_VERIFY((IsSame<V, ResponseOptions>::value == 0), Parameters_in_wrong_order);
+
+    return updateResourceInternal(
+        localResourceId,
+        Value(rValue),
+        ParameterList::Empty);
+}
 
 template <typename V>
 inline Result updateResourceImpl(

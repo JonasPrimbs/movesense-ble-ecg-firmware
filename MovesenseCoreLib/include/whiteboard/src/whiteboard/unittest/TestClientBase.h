@@ -90,6 +90,14 @@ public:
     /** Desctructor */
     virtual ~TestClientBase();
 
+    /**
+     *  Check if path parameter resource is subscribed.
+     *
+     *  @param ResourceId Id of the resource to be checked
+     *  @return True if the resource is subscribed
+     */
+    virtual bool isPathParameterResourceSubscribed(const ResourceId resourceId);
+
 protected:
     /** Gets the associated whiteboard instance
     *

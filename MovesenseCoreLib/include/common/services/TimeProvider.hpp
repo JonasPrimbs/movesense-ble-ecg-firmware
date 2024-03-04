@@ -46,12 +46,17 @@ public:
 private:
     friend class TimeProviderTest;
 
-    void onGetRequest(const whiteboard::Request& request, const whiteboard::ParameterList& parameters) OVERRIDE;
+    virtual void onGetRequest(const whiteboard::Request& request, const whiteboard::ParameterList& parameters) OVERRIDE;
 
     /// You can PUT new time with WB_RES_DEV_TIME (int64)
-    void onPutRequest(const whiteboard::Request& request, const whiteboard::ParameterList& parameters) OVERRIDE;
+    virtual void onPutRequest(const whiteboard::Request& request, const whiteboard::ParameterList& parameters) OVERRIDE;
+    virtual void onSubscribe(const wb::Request& request, const whiteboard::ParameterList& parameters) OVERRIDE;
 
     void updateTimeResource();
+    void updateTimeDetailedResource();
+    bool m_bDpcUpdatesTimeDetailed;
+
+    int64_t getUTC_us() const;
 
 #if !defined(APP_BOOTLOADER) && !defined(APP_SS2_APPLICATION)
     /** @see whiteboard::ResourceClient::onNotify */
@@ -72,6 +77,7 @@ private:
     // TODO: Volatile int64 is not atomic. Should probably instead use uint32_t
     //       since that is enough past year 2100
     volatile int64 mSeconds;
+
 #if !defined(APP_BOOTLOADER) && !defined(APP_SS2_APPLICATION)
     nea::TimeZone::Id mLocalTime;
     int mTimeZoneOffset;

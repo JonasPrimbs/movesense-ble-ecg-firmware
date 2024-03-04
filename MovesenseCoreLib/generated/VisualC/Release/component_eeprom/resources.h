@@ -295,6 +295,7 @@ struct COMPONENT_EEPROM_EEPROMINDEX_INFO
 	struct GET
 	{
 		typedef whiteboard::StronglyTypedResult<const EepromInfo&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_FOUND> HTTP_CODE_NOT_FOUND;
 		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_IMPLEMENTED> HTTP_CODE_NOT_IMPLEMENTED;
 
 		struct Parameters

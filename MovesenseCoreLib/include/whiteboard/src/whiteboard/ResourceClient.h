@@ -22,8 +22,8 @@
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs" // Caused by the WB_STATIC_VERIFY calls below
 #endif
 
-WB_HEADER_CHECK_DEFINE(WB_HAVE_DEBUG_NAMES);
-WB_HEADER_CHECK_DEFINE(WB_UNITTEST_BUILD);
+WB_HEADER_CHECK_DEFINE(WB_HAVE_DEBUG_NAMES)
+WB_HEADER_CHECK_DEFINE(WB_UNITTEST_BUILD)
 
 namespace whiteboard
 {
@@ -57,6 +57,9 @@ private:
     bool mDoPathParameterAllocation;
 };
 
+// Own type for empty options for differentiating specialializated functions
+class WB_API ResourceClient_AsyncRequestOptions_Empty;
+
 /** Options for the asynchronous operation can be given with this class. */
 class WB_API ResourceClient_AsyncRequestOptions
 {
@@ -77,19 +80,20 @@ public:
     onUnsubscribeResult handlers, with this optional flag the result messages can be omitted to tweak system performance. Only meaningful in 
     requests to another execution context or to remote whiteboard. Note: For safety reasons also no effect if the request returns a value
     with the response.
+    @param forceReceiverDatatype [in] Optional, default false. Treat sent datatypes of the request as receivers own.
     @param batchingParameters [in] Optional, default 0 ms. Local parameter only, not transfered in remote WB requests. Applicable for subscriptions
     only. Can be used by client to signal provider that no data in this subscription is time critical. It is up to the provider to decide if
     it wants to batch the data or not.
     */
     ResourceClient_AsyncRequestOptions(
         RequestId* pRequestId, 
-        size_t timeoutMs = 0, 
-        bool forceAsync = false, 
-        bool isCriticalSubscription = true,
-        bool noRequestResponse = false,
-        bool forceReceiverDatatype = false
+        size_t timeoutMs, 
+        bool forceAsync, 
+        bool isCriticalSubscription,
+        bool noRequestResponse,
+        bool forceReceiverDatatype
 #ifdef WB_HAVE_BATCHING_PARAMETERS
-        , BatchingParameters batchingParameters = BatchingParameters()
+        , const BatchingParameters& batchingParameters = BatchingParameters()
 #endif
     )
         : mpRequestId(pRequestId), 
@@ -105,6 +109,29 @@ public:
     {
         WB_NOT_USED(mReserved);
     }
+
+    ResourceClient_AsyncRequestOptions(
+        RequestId* pRequestId, size_t timeoutMs, bool forceAsync, bool isCriticalSubscription, bool noRequestResponse)
+        : ResourceClient_AsyncRequestOptions(pRequestId, timeoutMs, forceAsync, isCriticalSubscription, noRequestResponse, false)
+    {
+    }
+
+    ResourceClient_AsyncRequestOptions(RequestId* pRequestId, size_t timeoutMs, bool forceAsync, bool isCriticalSubscription)
+        : ResourceClient_AsyncRequestOptions(pRequestId, timeoutMs, forceAsync, isCriticalSubscription, false)
+    {
+    }
+
+    ResourceClient_AsyncRequestOptions(RequestId* pRequestId, size_t timeoutMs, bool forceAsync)
+        : ResourceClient_AsyncRequestOptions(pRequestId, timeoutMs, forceAsync, true)
+    {
+    }
+
+    ResourceClient_AsyncRequestOptions(RequestId* pRequestId, size_t timeoutMs)
+        : ResourceClient_AsyncRequestOptions(pRequestId, timeoutMs, false)
+    {
+    }
+
+    ResourceClient_AsyncRequestOptions(RequestId* pRequestId) : ResourceClient_AsyncRequestOptions(pRequestId, 0) {}
 
     /** @return pointer to the requestId */
     inline RequestId* getRequestId() const { return mpRequestId; }
@@ -138,11 +165,11 @@ public:
     /**
     @return Optional batching parameters.
     */
-    inline BatchingParameters getBatchingParameters() const { return mBatchingParameters; }
+    inline const BatchingParameters& getBatchingParameters() const { return mBatchingParameters; }
 #endif
 
     /// Empty async request options, that can be used if no options required for the operation
-    static const ResourceClient_AsyncRequestOptions Empty;
+    static const ResourceClient_AsyncRequestOptions_Empty Empty;
 
     /// "Force async" async request options for convenience
     static const ResourceClient_AsyncRequestOptions ForceAsync;
@@ -162,30 +189,37 @@ private:
 
 private:
     /** Optional pointer to variable where ID of the request will be saved. */
-    RequestId* mpRequestId;
+    RequestId* const mpRequestId;
 
     /** Request timeout in milliseconds. Ignore in local Whiteboard queries. */
-    size_t mTimeoutMs;
+    const size_t mTimeoutMs;
     
     /** A value indicating whether request should be always performed asynchronously */
-    uint8 mForceAsync : 1;
+    const uint8 mForceAsync : 1;
     
     /** A value indicating whether subscription request is considered critical */
-    uint8 mIsCriticalSub : 1;
+    const uint8 mIsCriticalSub : 1;
 
     /** A value indicating whether subscribe / unsubscribe result is required (0) or not (1) */
-    uint8 mNoRequestResponse : 1;
+    const uint8 mNoRequestResponse : 1;
 
     /** Force serialization to set bit to treat the sent datatypes of the request as receivers own. */
-    uint8 mForceReceiverDataType : 1;
+    const uint8 mForceReceiverDataType : 1;
 
     /** Reserved for future use */
-    uint8 mReserved : 4;
+    const uint8 mReserved : 4;
 
 #ifdef WB_HAVE_BATCHING_PARAMETERS
     /** Optional pass-through batching parameters. */
-    BatchingParameters mBatchingParameters;
+    const BatchingParameters mBatchingParameters;
 #endif
+};
+
+/** Empty response options to be used when no options are requires. */
+class WB_API ResourceClient_AsyncRequestOptions_Empty : public ResourceClient_AsyncRequestOptions
+{
+public:
+    EXPLICIT ResourceClient_AsyncRequestOptions_Empty(RequestId* pRequestId) : ResourceClient_AsyncRequestOptions(pRequestId) {}
 };
 
 /**
@@ -507,12 +541,19 @@ public:
     *   @param pResourceIds Array of resources to subscribe
     *   @param isCriticalSubscription A value indicating whether subscriptions are critical
     *   @param noResponseExpected A value indicating if subscription operation response is required (for optimization purposes)
+    *   @param batchingParameters Optional, default 0 ms. Local parameter only, not transfered in remote WB requests. Can be used
+    *          by client to signal provider that no data in this subscription is time critical. It is up to the provider to decide if
+    *          it wants to batch the data or not.
     */
 #ifdef WB_HAVE_MORE_VIRTUAL_RESOURCE_CLIENT
     virtual
 #endif
     void asyncSubscribeLocalResources(
-        size_t numberOfResources, const LocalResourceId* const pResourceIds, bool isCriticalSubscription = true, bool noResponseExpected = false);
+        size_t numberOfResources, const LocalResourceId* const pResourceIds, bool isCriticalSubscription = true, bool noResponseExpected = false
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+        , const BatchingParameters& batchingParameters = BatchingParameters()
+#endif
+    );
 
     /**
     *   Subscribes array of local Whiteboard resources
@@ -525,12 +566,23 @@ public:
     *   @param rResourceIds Array of resources to subscribe
     *   @param isCriticalSubscription A value indicating whether subscriptions are critical
     *   @param noResponseExpected A value indicating if subscription operation response is required (for optimization purposes)
+    *   @param batchingParameters Optional, default 0 ms. Local parameter only, not transfered in remote WB requests. Can be used
+    *          by client to signal provider that no data in this subscription is time critical. It is up to the provider to decide if
+    *          it wants to batch the data or not.
     */
     template <size_t NUMBER_OF_RESOURCES>
     inline void asyncSubscribeLocalResources(
-        const LocalResourceId(&rResourceIds)[NUMBER_OF_RESOURCES], bool isCriticalSubscription = true, bool noResponseExpected = false)
+        const LocalResourceId(&rResourceIds)[NUMBER_OF_RESOURCES], bool isCriticalSubscription = true, bool noResponseExpected = false
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+        , const BatchingParameters& batchingParameters = BatchingParameters()
+#endif
+    )
     {
-        asyncSubscribeLocalResources(NUMBER_OF_RESOURCES, &rResourceIds[0], isCriticalSubscription, noResponseExpected);
+        asyncSubscribeLocalResources(NUMBER_OF_RESOURCES, &rResourceIds[0], isCriticalSubscription, noResponseExpected
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+            , batchingParameters
+#endif
+        );
     }
 
     /**
@@ -544,10 +596,21 @@ public:
     *   @param localResourceId Resources to subscribe
     *   @param isCriticalSubscription A value indicating whether subscriptions are critical
     *   @param noResponseExpected A value indicating if subscription operation response is required (for optimization purposes)
+    *   @param batchingParameters Optional, default 0 ms. Local parameter only, not transfered in remote WB requests. Can be used
+    *          by client to signal provider that no data in this subscription is time critical. It is up to the provider to decide if
+    *          it wants to batch the data or not.
     */
-    inline void asyncSubscribeLocalResource(const LocalResourceId localResourceId, bool isCriticalSubscription = true, bool noResponseExpected = false)
+    inline void asyncSubscribeLocalResource(const LocalResourceId localResourceId, bool isCriticalSubscription = true, bool noResponseExpected = false
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+        , const BatchingParameters& batchingParameters = BatchingParameters()
+#endif
+    )
     {
-        asyncSubscribeLocalResources(1, &localResourceId, isCriticalSubscription, noResponseExpected);
+        asyncSubscribeLocalResources(1, &localResourceId, isCriticalSubscription, noResponseExpected
+#ifdef WB_HAVE_BATCHING_PARAMETERS
+            , batchingParameters
+#endif
+        );
     }
 
     /**
@@ -848,7 +911,11 @@ protected:
     *   @return ZERO if no reschedule required, a value in milliseconds to indicate time to next reschedule.
     */
     virtual size_t onTimedDpc(TimedDpcId timedDpcId);
-#endif
+
+#ifdef WB_HAVE_TIMED_DPC_DEBUGGING
+    void timedDpcSysEvDump();
+#endif // #ifdef WB_HAVE_TIMED_DPC_DEBUGGING
+#endif // #ifdef WB_HAVE_TIMED_DPC
 
     /***
     * Callback for POST operation result
@@ -943,6 +1010,22 @@ protected:
         RequestType requestType,
         const AsyncRequestOptions& rOptions,
         const ParameterList& rParameters);
+
+    Result asyncRequestInternal(
+        ResourceId resourceId,
+        RequestType requestType,
+        const ParameterList& rParameters)
+    {
+        return asyncRequestInternal(resourceId, requestType, AsyncRequestOptions::Empty, rParameters);
+    }
+
+    Result asyncRequestInternal(
+        ResourceId resourceId,
+        RequestType requestType)
+    {
+        return asyncRequestInternal(resourceId, requestType, AsyncRequestOptions::Empty, ParameterList::Empty);
+    }
+
 private:
 
 #ifdef WB_HAVE_DEPRECATED_BYTE_STREAM

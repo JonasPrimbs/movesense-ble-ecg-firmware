@@ -46,9 +46,14 @@ private:
     wb::RequestQueue<4, void> m_postReqQueue;
     bool initNus();
 
+    uint32_t sendNusData(uint16_t bytes, const uint8_t* pData);
+
 public:
     wb::DpcFunctor mEvtDpc;
     // Temp buffer for received data
     size_t mRxDataLen;
     uint8_t mRxDataBuffer[NUS_MAX_DATA_LEN];
+
+    uint16_t mCurrConnHandle;
+    size_t mSentCount;
 };

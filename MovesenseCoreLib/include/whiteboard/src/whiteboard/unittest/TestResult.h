@@ -74,6 +74,9 @@ public:
         return *this;
     }
 
+    /** Using default copy constructor */
+    CONSTEXPR TestResult(const TestResult&) = default;
+
     inline bool checkValue(const R& expectedValue) const
     {
         return mValidResponse && RETURN_OK(mCallResultCode) && mHasValue && (expectedValue == mValue);

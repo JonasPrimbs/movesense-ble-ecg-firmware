@@ -121,6 +121,7 @@ struct WB_ALIGN(4) ResetReason
 
 	WB_ALIGN(4) uint32 rawValue;
 	WB_ALIGN(4) ResetReasonEnum enumValue;
+	WB_ALIGN(4) whiteboard::Optional< whiteboard::WrapperFor32BitPointer< const char > > strValue;
 };
 
 struct WB_ALIGN(4) FaultInfo

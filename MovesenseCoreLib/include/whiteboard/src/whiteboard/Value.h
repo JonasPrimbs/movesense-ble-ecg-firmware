@@ -329,7 +329,7 @@ public:
     /** ValueWithTimestamp copy constructor
     * @param value The instance to copy from
     */
-    inline ValueWithTimestamp(const ValueWithTimestamp& value)
+    inline ValueWithTimestamp(const ValueWithTimestamp& value) : Value()
     {
         assign(value);
     }

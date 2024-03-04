@@ -187,7 +187,11 @@ template <typename Type> struct TypeAlignTest
  * @param type Type which alingment needs to be calculated
  * @return Data type alignment
  */
+#ifdef WB_HAVE_CPLUSPLUS_11
+#define WB_TYPE_ALIGNMENT(type)  alignof(type)
+#else
 #define WB_TYPE_ALIGNMENT(type)  WB_OFFSETOF(::whiteboard::TypeAlignTest<type>, data)
+#endif
 
 /** Template to get a type which size is given as template parameter and is aligned on that
   * same byte boundary. */

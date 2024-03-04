@@ -39,6 +39,7 @@
 namespace WB_RES {
 
 struct WB_ALIGN(8) DetailedTime;
+struct WB_ALIGN(8) TimeSync;
 
 struct WB_ALIGN(8) DetailedTime
 {
@@ -50,6 +51,16 @@ struct WB_ALIGN(8) DetailedTime
 	WB_ALIGN(4) uint32 relativeTime;
 	WB_ALIGN(4) uint32 tickRate;
 	WB_ALIGN(4) whiteboard::Optional< uint32 > accuracy;
+};
+
+struct WB_ALIGN(8) TimeSync
+{
+	// Structure type identification and serialization
+	typedef int Structure;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 1793;
+
+	WB_ALIGN(8) int64 utcTime;
+	WB_ALIGN(4) uint32 relativeTime;
 };
 
 namespace LOCAL 
@@ -198,6 +209,53 @@ struct TIME_DETAILED
 	struct GET
 	{
 		typedef whiteboard::StronglyTypedResult<const DetailedTime&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
+	};
+
+	struct SUBSCRIBE
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck()
+		{
+		}
+	};
+
+	struct EVENT
+	{
+		typedef TimeSync NotificationType;
+		typedef const NotificationType& ConstReferenceNotificationType;
+
+		struct Parameters
+		{
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 0;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			const whiteboard::Api::OptionalParameter<ConstReferenceNotificationType>&)
+		{
+		}
+	};
+
+	struct UNSUBSCRIBE
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
 
 		struct Parameters
 		{

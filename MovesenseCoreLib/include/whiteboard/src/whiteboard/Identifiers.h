@@ -155,7 +155,10 @@ struct WB_API ResourceId
 
     union
     {
-#if _MSC_VER
+#if __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic" // Pedantic warning about anonymous structs
+#elif _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4201) // warning C4201: nonstandard extension used: nameless struct/union
 #endif
@@ -173,7 +176,9 @@ struct WB_API ResourceId
             /** Resource ID of the resource in that whiteboard instance */
             LocalResourceId localResourceId;
         };
-#if _MSC_VER
+#if __GNUC__
+#pragma GCC diagnostic pop
+#elif _MSC_VER
 #pragma warning(pop)
 #endif
 
@@ -210,6 +215,18 @@ struct WB_API ResourceId
     {
         value = data;
     }
+
+    /** Constructor that initializes structure from integer
+    *
+    * @param data Structure data as integer
+    */
+    inline ResourceId(const int data)
+    {
+        value = data;
+    }
+
+    /** Delete constructor with LocalResourceId parameter */
+    ResourceId(const LocalResourceId data) DELETED;
 
     /** Explicit conversion operator to uint32
     *
@@ -280,7 +297,10 @@ struct WB_API ClientId
 
     union
     {
-#if _MSC_VER
+#if __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic" // Pedantic warning about anonymous structs
+#elif _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4201) // warning C4201: nonstandard extension used: nameless struct/union
 #endif
@@ -307,7 +327,9 @@ struct WB_API ClientId
             /** Client ID of the resource in that whiteboard instance */
             LocalEntityId localClientId;
         };
-#if _MSC_VER
+#if __GNUC__
+#pragma GCC diagnostic pop
+#elif _MSC_VER
 #pragma warning(pop)
 #endif
 
@@ -388,7 +410,10 @@ struct WB_API ProviderId
 
     union
     {
-#if _MSC_VER
+#if __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic" // Pedantic warning about anonymous structs
+#elif _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4201) // warning C4201: nonstandard extension used: nameless struct/union
 #endif
@@ -415,7 +440,9 @@ struct WB_API ProviderId
             /** Provider ID of the resource in that whiteboard instance */
             LocalEntityId localProviderId;
         };
-#if _MSC_VER
+#if __GNUC__
+#pragma GCC diagnostic pop
+#elif _MSC_VER
 #pragma warning(pop)
 #endif
 

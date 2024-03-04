@@ -2,6 +2,7 @@
 
 cmake_policy(SET CMP0005 NEW) # Preprocessor definition values are now escaped automatically.
 cmake_policy(SET CMP0011 NEW) # Included scripts do automatic cmake_policy PUSH and POP.
+cmake_policy(SET CMP0077 NEW) # option() honors normal variables
 
 # TODO: This is from when you used to have several applications you could make
 # from one build. The define is used in some places in code. Might just get rid
@@ -30,10 +31,19 @@ set(TOOLS_PATH ${MOVESENSE_CORE_LIBRARY}/tools)
 # check if the host is windows
 if (NOT CMAKE_HOST_WIN32)
     message(STATUS "PATH_TOOL_PYTHON will use python from shell PATH")
-    set(PATH_TOOL_PYTHON python)
+    set(PATH_TOOL_PYTHON python3)
 else()
-    message(STATUS "PATH_TOOL_PYTHON set to portable-python (win32 only)")
-    set(PATH_TOOL_PYTHON ${TOOLS_PATH}/portable-python/App/python.exe)
+	# get winpython tool from movesense-device-lib downloads
+	include(FetchContent)
+	FetchContent_Declare(
+		winpython
+		URL "https://bitbucket.org/movesense/movesense-device-lib/downloads/winpython-3.9.8.0.7z"
+	)
+	FetchContent_MakeAvailable(winpython)
+	
+    message(STATUS "PATH_TOOL_PYTHON set to winpython (windows only) downloaded from bitbucket:")
+    set(PATH_TOOL_PYTHON ${winpython_SOURCE_DIR}/python-3.9.8.amd64/python.exe)
+	message(STATUS "PATH_TOOL_PYTHON: ${PATH_TOOL_PYTHON}")
 endif()
 
 # helper functions

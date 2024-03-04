@@ -42,10 +42,10 @@ bool verifyFailed(const char* file, const size_t lineNumber);
 // No-op ASSERTs, but ones that "use" the result, to avoid extra compiler
 // complaints about unused variables
 #define ASSERT(cond)                                                                                                             \
-    do                                                                                                                           \
     {                                                                                                                            \
         (void)(cond);                                                                                                            \
-    } while (0);
+    }
+
 #define ASSERT_NO_SYSTEMEVENT(cond)                                                                                              \
     do                                                                                                                           \
     {                                                                                                                            \
@@ -55,22 +55,20 @@ bool verifyFailed(const char* file, const size_t lineNumber);
 #else // no NDEBUG
 
 #define ASSERT(cond)                                                                                                             \
-    do                                                                                                                           \
     {                                                                                                                            \
         if (!(cond))                                                                                                             \
         {                                                                                                                        \
             assertFailed(TRACE_FILENAME, __LINE__, true);                                                                        \
         }                                                                                                                        \
-    } while (0);
+    }
 
 #define ASSERT_NO_SYSTEMEVENT(cond)                                                                                              \
-    do                                                                                                                           \
     {                                                                                                                            \
         if (!(cond))                                                                                                             \
         {                                                                                                                        \
             assertFailed(TRACE_FILENAME, __LINE__, false);                                                                       \
         }                                                                                                                        \
-    } while (0);
+    }
 
 #endif // no NDEBUG
 

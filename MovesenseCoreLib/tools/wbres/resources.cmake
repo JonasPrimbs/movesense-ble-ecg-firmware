@@ -243,16 +243,23 @@ function (generate_wb_resources Name OutputVar)
   endforeach()
   _add_wb_resources_source_group(SOURCE_GROUP_NAME SOURCE_GROUP_SOURCES)
 
-  # Add command to generate outputs
+  # Add command to generate outputs (only write if changed)
   string(REPLACE ";" " " RESPONSE_FILE_CONTENTS "${CMDLINE} ${INPUTS}")
-  file(WRITE "${WBRES_RESPONSE_FILE}" "${RESPONSE_FILE_CONTENTS}")
+  
+  if (EXISTS "${WBRES_RESPONSE_FILE}")
+	file(READ "${WBRES_RESPONSE_FILE}"  OLD_RSP_FILE_CONTENTS)
+  endif()
+
+  if (NOT "${RESPONSE_FILE_CONTENTS}" STREQUAL "${OLD_RSP_FILE_CONTENTS}")
+    file(WRITE "${WBRES_RESPONSE_FILE}" "${RESPONSE_FILE_CONTENTS}")
+  endif()
+
   add_custom_command(
     OUTPUT ${OUTPUTS} ${HIDDEN_OUTPUTS}
     COMMAND "${WBRES_TOOL}" "@${WBRES_RESPONSE_FILE}"
     DEPENDS ${INPUTS} "${WBRES_TOOL}" "${WBRES_RESPONSE_FILE}"
     VERBATIM
   )
-
   source_group("Resources Files" FILES ${OUTPUTS})
   
   foreach(input ${INPUTS})

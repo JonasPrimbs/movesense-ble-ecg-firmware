@@ -14,8 +14,8 @@
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs" // Caused by the WB_STATIC_VERIFY calls below
 #endif
 
-WB_HEADER_CHECK_DEFINE(WB_HAVE_DEBUG_NAMES);
-WB_HEADER_CHECK_DEFINE(WB_UNITTEST_BUILD);
+WB_HEADER_CHECK_DEFINE(WB_HAVE_DEBUG_NAMES)
+WB_HEADER_CHECK_DEFINE(WB_UNITTEST_BUILD)
 
 namespace whiteboard
 {
@@ -23,6 +23,9 @@ namespace whiteboard
 // Forward declarations
 class ResourceProviderAccessor;
 class Whiteboard;
+
+// Own type for empty options for specialization purposes
+class WB_API ResourceProvider_ResponseOptions_Empty;
 
 /** Options for the response can be given with this class. */
 class WB_API ResourceProvider_ResponseOptions
@@ -44,7 +47,7 @@ public:
     inline bool getForceAsync() const { return mForceAsync; }
 
     /// Empty async request options, that can be used if no options required for the operation
-    static const ResourceProvider_ResponseOptions Empty;
+    static const ResourceProvider_ResponseOptions_Empty Empty;
 
     /// Convinience to set response as asynchronoys always
     static const ResourceProvider_ResponseOptions ForceAsync;
@@ -56,6 +59,15 @@ private:
 private:
     /** A value indicating whether request should be performed asynchronously */
     bool mForceAsync;
+};
+
+/** Empty response options to be used when no options are requires. */
+class WB_API ResourceProvider_ResponseOptions_Empty : public ResourceProvider_ResponseOptions
+{
+public:
+    EXPLICIT ResourceProvider_ResponseOptions_Empty(bool forceAsync)
+        : ResourceProvider_ResponseOptions(forceAsync)
+    {}
 };
 
 /**
@@ -217,12 +229,89 @@ public:
     /**
     *	Returns result for a request
     *
+    *	@param rRequest Request information
+    *	@param resultCode Result code of the request
+    */
+    void returnResult(const Request& rRequest, Result resultCode);
+
+    /**
+    *	Returns result for a request
+    *
+    *	@param rRequest Request information
+    *	@param resultCode Result code of the request
+    *	@param rEmptyOptions for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions_Empty
+    */
+    WB_FORCE_INLINE void returnResult(const Request& rRequest, Result resultCode, const ResourceProvider_ResponseOptions_Empty& rEmptyOptions)
+    {
+        WB_NOT_USED(rEmptyOptions);
+        returnResult(rRequest, resultCode);
+    }
+
+    /**
+    *	Returns result for a request
+    *
+    *	@tparam V Native type for the result to be returned
+    *
+    *	@param rRequest Request information
+    *	@param resultCode Result code of the request
+    *	@param rEmptyOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions_Empty
+    *	@param result Result data of the request
+    */
+    WB_FORCE_INLINE
+    template <typename V = NoType>
+    WB_FORCE_INLINE_ATTRIBUTE void returnResult(
+        const Request& rRequest,
+        Result resultCode,
+        const ResourceProvider_ResponseOptions_Empty& rEmptyOptions,
+        const V& result)
+    {
+        WB_NOT_USED(rEmptyOptions);
+        WB_STATIC_VERIFY((IsSame<V, Value>::value == 0), Raw_value_must_be_given_not_Value_wrapper);
+        return returnResultImpl(
+            rRequest,
+            resultCode,
+            static_cast<typename Api::ParameterType<V>::type>(result));
+    }
+
+    /**
+    *	Returns result for a request
+    *
+    *   @tparam RESPONSE Type of the response to be returned
+    *	@tparam V Native type for the result to be returned
+    *
+    *	@param rRequest Request information
+    *	@param resultCode Result code of the request
+    *	@param rEmptyOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions_Empty
+    *	@param result Result data of the request
+    */
+    WB_FORCE_INLINE
+        template <
+        typename RESPONSE, typename V = NoType,
+        typename EnableIf<!IsSame<RESPONSE, Result>::value, int>::type = 0>
+    WB_FORCE_INLINE_ATTRIBUTE void returnResult(
+            const Request& rRequest,
+            const RESPONSE& rResponse,
+            const ResourceProvider_ResponseOptions_Empty& rEmptyOptions,
+            const V& result = NoType::NoValue)
+    {
+        WB_NOT_USED(rEmptyOptions);
+        RESPONSE::typeCheck(result);
+        return returnResultImpl(
+            rRequest,
+            static_cast<Result>(rResponse) | TYPE_CHECKED,
+            static_cast<typename Api::OptionalParameterType<
+                V, typename Api::ParameterType<typename RESPONSE::Type>::type>::type>(result));
+    }
+
+    /**
+    *	Returns result for a request
+    *
     *	@tparam V Native type for the result to be returned
     *
     *	@param rRequest Request information
     *	@param resultCode Result code of the request
     *	@param rOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions
-    *	@param rResult Result data of the request
+    *	@param result Result data of the request
     */
     WB_FORCE_INLINE
     template <
@@ -242,6 +331,21 @@ public:
             static_cast<typename Api::OptionalParameterType<
                 V, typename Api::ParameterType<typename RESPONSE::Type>::type>::type>(result));
     }
+
+    /**
+    *	Sends resource changed notification for all subscribed clients
+    *
+    *	@tparam V Native type for the updateResource result.
+    *
+    *	@param resourceId ID of the associated resource
+    *	@param rEmptyOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions
+    *	@param rValue Current value of the resource
+    */
+    template <typename V>
+    inline Result updateResource(
+        LocalResourceId localResourceId,
+        const ResourceProvider_ResponseOptions_Empty& rEmptyOptions,
+        const V& rValue);
 
     /**
     *	Sends resource changed notification for all subscribed clients
@@ -395,20 +499,40 @@ public:
     /**
     *   This unsafe method is only for adapting other interfaces on top of Whiteboard!
     *
-    *	Sends resource changed notification for all subscribed clients
+    *   Sends resource changed notification for all subscribed clients
     *
-    *	@param localResourceId ID of the associated resource
+    *   @param localResourceId ID of the associated resource
     *   @param rOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions
-    *	@param rValue Current value of the resource
-    *	@param rParameterList If path parameters are used, add the path parameters to the parameter list. Path parameter closest to
+    *   @param rValue Current value of the resource
+    *   @param rParameterList If path parameters are used, add the path parameters to the parameter list. Path parameter closest to
     *   the root is first in the list.
-    *	@return Result of the operation
+    *   @return Result of the operation
     */
     WB_FORCE_INLINE
     Result WB_FORCE_INLINE_ATTRIBUTE updateResourceVariant(
         LocalResourceId localResourceId, const ResponseOptions& rOptions, const Value& rValue, const ParameterList& rParameterList)
     {
         return updateResourceInternal(localResourceId, rOptions, rValue, rParameterList);
+    }
+
+    /**
+    *   This unsafe method is only for adapting other interfaces on top of Whiteboard!
+    *
+    *	Sends resource changed notification for all (or to list of) subscribed clients
+    *
+    *	@param localResourceId ID of the associated resource
+    *   @param rOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions
+    *	@param rValue Current value of the resource
+    *	@param rParameterList If path parameters are used, add the path parameters to the parameter list. Path parameter closest to
+    *   the root is first in the list.
+    *   @param pClientList List of clients to notify (with ID_INVALID_CLIENT as last element), or NULL to notify all subscribers
+    *	@return Result of the operation
+    */
+    WB_FORCE_INLINE
+    Result WB_FORCE_INLINE_ATTRIBUTE updateResourceVariant(
+        LocalResourceId localResourceId, const ResponseOptions& rOptions, const Value& rValue, const ParameterList& rParameterList, const ClientId* pClientList)
+    {
+        return updateResourceInternal(localResourceId, rOptions, rValue, rParameterList, pClientList);
     }
 
 protected:
@@ -554,7 +678,11 @@ protected:
     *   @return ZERO if no reschedule required, a value in milliseconds to indicate time to next reschedule.
     */
     virtual size_t onTimedDpc(TimedDpcId timedDpcId);
-#endif
+
+#ifdef WB_HAVE_TIMED_DPC_DEBUGGING
+    void timedDpcSysEvDump();
+#endif // #ifdef WB_HAVE_TIMED_DPC_DEBUGGING
+#endif // #ifdef WB_HAVE_TIMED_DPC
 
     /**
     *  Whiteboard disconnect notification handler.
@@ -588,6 +716,27 @@ private:
     *
     *	@param rRequest Request information
     *	@param resultCode Result code of the request piggy backed with type check info
+    *	@param rResult Result data of the request
+    */
+    template <typename V = NoType>
+    inline void returnResultImpl(
+        const Request& rRequest,
+        uint32 resultCode,
+        const V& result = NoType::NoValue)
+    {
+        return returnResultInternal(
+            rRequest,
+            resultCode,
+            (IsSame<V, NoType>::value == 1) ? Value::Empty : Value(result));
+    }
+
+    /**
+    *	Returns result for a request
+    *
+    *	@tparam V Native type for the result to be returned
+    *
+    *	@param rRequest Request information
+    *	@param resultCode Result code of the request piggy backed with type check info
     *	@param rOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions
     *	@param rResult Result data of the request
     */
@@ -610,6 +759,16 @@ private:
     *
     *	@param rRequest Request information
     *	@param resultCode Result code of the request piggy backed with type check info
+    *	@param result Result data of the request
+    */
+    void returnResultInternal(
+        const Request& rRequest, uint32 resultCode, const Value& result);
+
+    /**
+    *	Returns result for a request
+    *
+    *	@param rRequest Request information
+    *	@param resultCode Result code of the request piggy backed with type check info
     *   @param rOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions
     *	@param rResult Result data of the request
     */
@@ -620,14 +779,40 @@ private:
     *	Sends resource changed notification for all subscribed clients
     *
     *	@param localResourceId ID of the associated resource piggy backed with type check info
-    *   @param rOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions
-    *	@param rValue Current value of the resource
+    *	@param value Current value of the resource
     *	@param rParameterList If path parameters are used, add the path parameters to the parameter list. Path parameter closest to
     *   the root is first in the list.
     *	@return Result of the operation
     */
     Result updateResourceInternal(
+        uint32 localResourceId, const Value& value, const ParameterList& rParameterList);
+
+    /**
+    *   Sends resource changed notification for all subscribed clients
+    *
+    *   @param localResourceId ID of the associated resource piggy backed with type check info
+    *   @param rOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions
+    *   @param rValue Current value of the resource
+    *   @param rParameterList If path parameters are used, add the path parameters to the parameter list. Path parameter closest to
+    *   the root is first in the list.
+    *   @return Result of the operation
+    */
+    Result updateResourceInternal(
         uint32 localResourceId, const ResponseOptions& rOptions, const Value& value, const ParameterList& rParameterList);
+
+    /**
+    *	Sends resource changed notification for all (or to list of) subscribed clients
+    *
+    *	@param localResourceId ID of the associated resource piggy backed with type check info
+    *   @param rOptions Options for the response delivery - @see whiteboard::ResourceProvider::ResponseOptions
+    *	@param rValue Current value of the resource
+    *	@param rParameterList If path parameters are used, add the path parameters to the parameter list. Path parameter closest to
+    *   the root is first in the list.
+    *   @param pClientList List of clients to notify (with ID_INVALID_CLIENT as last element), or NULL to notify all subscribers
+    *	@return Result of the operation
+    */
+    Result updateResourceInternal(
+        uint32 localResourceId, const ResponseOptions& rOptions, const Value& value, const ParameterList& rParameterList, const ClientId* pClientList);
 
 #ifdef WB_HAVE_DEPRECATED_BYTE_STREAM
     /**
@@ -681,6 +866,20 @@ private:
     ResourceProvider() DELETED;
     ResourceProvider(ResourceProvider&) DELETED;
 };
+
+
+template <typename V>
+inline Result ResourceProvider::updateResource(
+    LocalResourceId localResourceId,
+    const ResourceProvider_ResponseOptions_Empty& rEmptyOptions,
+    const V& rValue)
+{
+    WB_NOT_USED(rEmptyOptions);
+    return updateResourceImpl(
+        localResourceId,
+        static_cast<typename Api::ParameterType<V>::type>(rValue));
+}
+
 
 template <typename V, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
 inline Result ResourceProvider::updateResource(

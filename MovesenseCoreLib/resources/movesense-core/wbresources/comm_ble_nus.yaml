@@ -27,6 +27,10 @@ paths:
           description: Operation completed successfully
         400:
           description: Data-array too long
+        404:
+          description: No connection, cannot send
+        #429:
+        #  description: Too many packets, queue full
         500:
           description: Error sending data
         503:

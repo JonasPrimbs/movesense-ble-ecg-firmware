@@ -25,9 +25,30 @@ public:
 WB_FORCE_INLINE
 WB_FORCE_INLINE_ATTRIBUTE Result asyncGet(
     ResourceId resourceId,
-    const AsyncRequestOptions& rOptions = AsyncRequestOptions::Empty)
+    const AsyncRequestOptions& rOptions)
 {
     return asyncRequest(resourceId, REQUEST_GET, rOptions);
+}
+
+WB_FORCE_INLINE
+WB_FORCE_INLINE_ATTRIBUTE Result asyncGet(
+    ResourceId resourceId)
+{
+    return asyncRequest(resourceId, REQUEST_GET);
+}
+
+WB_FORCE_INLINE
+template <typename P1>
+WB_FORCE_INLINE_ATTRIBUTE Result asyncGet(
+    ResourceId resourceId,
+    const ResourceClient_AsyncRequestOptions_Empty& rEmptyOptions,
+    const P1& rP1)
+{
+    WB_NOT_USED(rEmptyOptions);
+    return asyncRequest_EmptyOptions(
+        resourceId,
+        REQUEST_GET,
+        WB_PARAM(1));
 }
 
 WB_FORCE_INLINE
@@ -175,11 +196,52 @@ template <
     typename RESOURCE,
     typename EnableIf<!IsSame<RESOURCE, ResourceId>::value && !IsSame<RESOURCE, ResourceId::Value>::value, int>::type = 0>
 WB_FORCE_INLINE_ATTRIBUTE Result asyncGet(
+    const RESOURCE)
+{
+    RESOURCE::GET::typeCheck();
+    return asyncRequest(RESOURCE::ID, typeChecked(REQUEST_GET));
+}
+
+WB_FORCE_INLINE
+template <
+    typename RESOURCE,
+    typename EnableIf<!IsSame<RESOURCE, ResourceId>::value && !IsSame<RESOURCE, ResourceId::Value>::value, int>::type = 0>
+WB_FORCE_INLINE_ATTRIBUTE Result asyncGet(
     const RESOURCE,
-    const AsyncRequestOptions& rOptions = AsyncRequestOptions::Empty)
+    const ResourceClient_AsyncRequestOptions_Empty& rEmptyOptions)
+{
+    WB_NOT_USED(rEmptyOptions); // TODO: uniform ordering
+    RESOURCE::GET::typeCheck();
+    return asyncRequest(RESOURCE::ID, typeChecked(REQUEST_GET));
+}
+
+WB_FORCE_INLINE
+template <
+    typename RESOURCE,
+    typename EnableIf<!IsSame<RESOURCE, ResourceId>::value && !IsSame<RESOURCE, ResourceId::Value>::value, int>::type = 0>
+WB_FORCE_INLINE_ATTRIBUTE Result asyncGet(
+    const RESOURCE,
+    const AsyncRequestOptions& rOptions)
 {
     RESOURCE::GET::typeCheck();
     return asyncRequest(RESOURCE::ID, typeChecked(REQUEST_GET), rOptions);
+}
+
+WB_FORCE_INLINE
+template <
+    typename RESOURCE, typename P1,
+    typename EnableIf<!IsSame<RESOURCE, ResourceId>::value && !IsSame<RESOURCE, ResourceId::Value>::value, int>::type = 0>
+WB_FORCE_INLINE_ATTRIBUTE Result asyncGet(
+    const RESOURCE,
+    const ResourceClient_AsyncRequestOptions_Empty& rEmptyOptions,
+    const P1& rP1)
+{
+    WB_NOT_USED(rEmptyOptions); // TODO: uniform ordering
+    RESOURCE::GET::typeCheck(rP1);
+    return asyncRequest_EmptyOptions(
+        RESOURCE::ID,
+        typeChecked(REQUEST_GET),
+        WB_TYPECHECKED_PARAM(GET, 1));
 }
 
 WB_FORCE_INLINE
@@ -376,10 +438,40 @@ WB_FORCE_INLINE_ATTRIBUTE Result asyncGet(
 
 WB_FORCE_INLINE
 WB_FORCE_INLINE_ATTRIBUTE Result asyncPut(
+    ResourceId resourceId)
+{
+    return asyncRequest(resourceId, REQUEST_PUT);
+}
+
+WB_FORCE_INLINE
+WB_FORCE_INLINE_ATTRIBUTE Result asyncPut(
     ResourceId resourceId,
-    const AsyncRequestOptions& rOptions = AsyncRequestOptions::Empty)
+    const AsyncRequestOptions& rOptions)
 {
     return asyncRequest(resourceId, REQUEST_PUT, rOptions);
+}
+
+WB_FORCE_INLINE
+WB_FORCE_INLINE_ATTRIBUTE Result asyncPut(
+    ResourceId resourceId,
+    const ResourceClient_AsyncRequestOptions_Empty& rEmptyOptions)
+{
+    WB_NOT_USED(rEmptyOptions);
+    return asyncRequest(resourceId, REQUEST_PUT);
+}
+
+WB_FORCE_INLINE
+template <typename P1>
+WB_FORCE_INLINE_ATTRIBUTE Result asyncPut(
+    ResourceId resourceId,
+    const ResourceClient_AsyncRequestOptions_Empty& rEmptyOptions,
+    const P1& rP1)
+{
+    WB_NOT_USED(rEmptyOptions);
+    return asyncRequest_EmptyOptions(
+        resourceId,
+        REQUEST_PUT,
+        WB_PARAM(1));
 }
 
 WB_FORCE_INLINE
@@ -527,11 +619,52 @@ template <
     typename RESOURCE,
     typename EnableIf<!IsSame<RESOURCE, ResourceId>::value && !IsSame<RESOURCE, ResourceId::Value>::value, int>::type = 0>
 WB_FORCE_INLINE_ATTRIBUTE Result asyncPut(
+    const RESOURCE)
+{
+    RESOURCE::PUT::typeCheck();
+    return asyncRequest(RESOURCE::ID, REQUEST_PUT);
+}
+
+WB_FORCE_INLINE
+template <
+    typename RESOURCE,
+    typename EnableIf<!IsSame<RESOURCE, ResourceId>::value && !IsSame<RESOURCE, ResourceId::Value>::value, int>::type = 0>
+WB_FORCE_INLINE_ATTRIBUTE Result asyncPut(
     const RESOURCE,
-    const AsyncRequestOptions& rOptions = AsyncRequestOptions::Empty)
+    const ResourceClient_AsyncRequestOptions_Empty& rEmptyOptions)
+{
+    RESOURCE::PUT::typeCheck();
+    WB_NOT_USED(rEmptyOptions);
+    return asyncRequest(RESOURCE::ID, REQUEST_PUT);
+}
+
+WB_FORCE_INLINE
+template <
+    typename RESOURCE,
+    typename EnableIf<!IsSame<RESOURCE, ResourceId>::value && !IsSame<RESOURCE, ResourceId::Value>::value, int>::type = 0>
+WB_FORCE_INLINE_ATTRIBUTE Result asyncPut(
+    const RESOURCE,
+    const AsyncRequestOptions& rOptions)
 {
     RESOURCE::PUT::typeCheck();
     return asyncRequest(RESOURCE::ID, REQUEST_PUT, rOptions);
+}
+
+WB_FORCE_INLINE
+template <
+    typename RESOURCE, typename P1,
+    typename EnableIf<!IsSame<RESOURCE, ResourceId>::value && !IsSame<RESOURCE, ResourceId::Value>::value, int>::type = 0>
+WB_FORCE_INLINE_ATTRIBUTE Result asyncPut(
+    const RESOURCE,
+    const ResourceClient_AsyncRequestOptions_Empty& rEmptyOptions,
+    const P1& rP1)
+{
+    RESOURCE::PUT::typeCheck(rP1);
+    WB_NOT_USED(rEmptyOptions);
+    return asyncRequest_EmptyOptions(
+        RESOURCE::ID,
+        REQUEST_PUT, 
+        WB_TYPECHECKED_PARAM(PUT, 1));
 }
 
 WB_FORCE_INLINE
@@ -1432,10 +1565,40 @@ WB_FORCE_INLINE_ATTRIBUTE Result asyncDelete(
 
 WB_FORCE_INLINE
 WB_FORCE_INLINE_ATTRIBUTE Result asyncSubscribe(
+    ResourceId resourceId)
+{
+    return asyncRequest(resourceId, REQUEST_SUBSCRIBE);
+}
+
+WB_FORCE_INLINE
+WB_FORCE_INLINE_ATTRIBUTE Result asyncSubscribe(
     ResourceId resourceId,
-    const AsyncRequestOptions& rOptions = AsyncRequestOptions::Empty)
+    const ResourceClient_AsyncRequestOptions_Empty& rEmptyOptions)
+{
+    WB_NOT_USED(rEmptyOptions);
+    return asyncRequest(resourceId, REQUEST_SUBSCRIBE);
+}
+
+WB_FORCE_INLINE
+WB_FORCE_INLINE_ATTRIBUTE Result asyncSubscribe(
+    ResourceId resourceId,
+    const AsyncRequestOptions& rOptions)
 {
     return asyncRequest(resourceId, REQUEST_SUBSCRIBE, rOptions);
+}
+
+WB_FORCE_INLINE
+template <typename P1>
+WB_FORCE_INLINE_ATTRIBUTE Result asyncSubscribe(
+    ResourceId resourceId,
+    const ResourceClient_AsyncRequestOptions_Empty& rEmptyOptions,
+    const P1& rP1)
+{
+    WB_NOT_USED(rEmptyOptions);
+    return asyncRequest_EmptyOptions(
+        resourceId,
+        REQUEST_SUBSCRIBE,
+        WB_PARAM(1));
 }
 
 WB_FORCE_INLINE
@@ -1583,11 +1746,53 @@ template <
     typename RESOURCE,
     typename EnableIf<!IsSame<RESOURCE, ResourceId>::value && !IsSame<RESOURCE, ResourceId::Value>::value, int>::type = 0>
 WB_FORCE_INLINE_ATTRIBUTE Result asyncSubscribe(
+    const RESOURCE)
+{
+    RESOURCE::SUBSCRIBE::typeCheck();
+    return asyncRequest(RESOURCE::ID, REQUEST_SUBSCRIBE);
+}
+
+
+WB_FORCE_INLINE
+template <
+    typename RESOURCE,
+    typename EnableIf<!IsSame<RESOURCE, ResourceId>::value && !IsSame<RESOURCE, ResourceId::Value>::value, int>::type = 0>
+WB_FORCE_INLINE_ATTRIBUTE Result asyncSubscribe(
     const RESOURCE,
-    const AsyncRequestOptions& rOptions = AsyncRequestOptions::Empty)
+    const ResourceClient_AsyncRequestOptions_Empty& rEmptyOptions)
+{
+    WB_NOT_USED(rEmptyOptions);
+    RESOURCE::SUBSCRIBE::typeCheck();
+    return asyncRequest(RESOURCE::ID, REQUEST_SUBSCRIBE);
+}
+
+WB_FORCE_INLINE
+template <
+    typename RESOURCE,
+    typename EnableIf<!IsSame<RESOURCE, ResourceId>::value && !IsSame<RESOURCE, ResourceId::Value>::value, int>::type = 0>
+WB_FORCE_INLINE_ATTRIBUTE Result asyncSubscribe(
+    const RESOURCE,
+    const AsyncRequestOptions& rOptions)
 {
     RESOURCE::SUBSCRIBE::typeCheck();
     return asyncRequest(RESOURCE::ID, REQUEST_SUBSCRIBE, rOptions);
+}
+
+WB_FORCE_INLINE
+template <
+    typename RESOURCE, typename P1,
+    typename EnableIf<!IsSame<RESOURCE, ResourceId>::value && !IsSame<RESOURCE, ResourceId::Value>::value, int>::type = 0>
+WB_FORCE_INLINE_ATTRIBUTE Result asyncSubscribe(
+    const RESOURCE,
+    const ResourceClient_AsyncRequestOptions_Empty& rEmptyOptions,
+    const P1& rP1)
+{
+    WB_NOT_USED(rEmptyOptions);
+    RESOURCE::SUBSCRIBE::typeCheck(rP1);
+    return asyncRequest_EmptyOptions(
+        RESOURCE::ID,
+        REQUEST_SUBSCRIBE,
+        WB_TYPECHECKED_PARAM(SUBSCRIBE, 1));
 }
 
 WB_FORCE_INLINE
@@ -1784,10 +1989,40 @@ WB_FORCE_INLINE_ATTRIBUTE Result asyncSubscribe(
 
 WB_FORCE_INLINE
 WB_FORCE_INLINE_ATTRIBUTE Result asyncUnsubscribe(
+    ResourceId resourceId)
+{
+    return asyncRequest(resourceId, REQUEST_UNSUBSCRIBE);
+}
+
+WB_FORCE_INLINE
+WB_FORCE_INLINE_ATTRIBUTE Result asyncUnsubscribe(
     ResourceId resourceId,
-    const AsyncRequestOptions& rOptions = AsyncRequestOptions::Empty)
+    const ResourceClient_AsyncRequestOptions_Empty& rEmptyOptions)
+{
+    WB_NOT_USED(rEmptyOptions);
+    return asyncRequest(resourceId, REQUEST_UNSUBSCRIBE);
+}
+
+WB_FORCE_INLINE
+WB_FORCE_INLINE_ATTRIBUTE Result asyncUnsubscribe(
+    ResourceId resourceId,
+    const AsyncRequestOptions& rOptions)
 {
     return asyncRequest(resourceId, REQUEST_UNSUBSCRIBE, rOptions);
+}
+
+WB_FORCE_INLINE
+template <typename P1>
+WB_FORCE_INLINE_ATTRIBUTE Result asyncUnsubscribe(
+    ResourceId resourceId,
+    const ResourceClient_AsyncRequestOptions_Empty& rEmptyOptions,
+    const P1& rP1)
+{
+    WB_NOT_USED(rEmptyOptions);
+    return asyncRequest_EmptyOptions(
+        resourceId,
+        REQUEST_UNSUBSCRIBE,
+        WB_PARAM(1));
 }
 
 WB_FORCE_INLINE
@@ -1935,8 +2170,32 @@ template <
     typename RESOURCE,
     typename EnableIf<!IsSame<RESOURCE, ResourceId>::value && !IsSame<RESOURCE, ResourceId::Value>::value, int>::type = 0>
 WB_FORCE_INLINE_ATTRIBUTE Result asyncUnsubscribe(
+    const RESOURCE)
+{
+    RESOURCE::UNSUBSCRIBE::typeCheck();
+    return asyncRequest(RESOURCE::ID, REQUEST_UNSUBSCRIBE);
+}
+
+WB_FORCE_INLINE
+template <
+    typename RESOURCE,
+    typename EnableIf<!IsSame<RESOURCE, ResourceId>::value && !IsSame<RESOURCE, ResourceId::Value>::value, int>::type = 0>
+WB_FORCE_INLINE_ATTRIBUTE Result asyncUnsubscribe(
     const RESOURCE,
-    const AsyncRequestOptions& rOptions = AsyncRequestOptions::Empty)
+    const ResourceClient_AsyncRequestOptions_Empty& rEmptyOptions)
+{
+    WB_NOT_USED(rEmptyOptions);
+    RESOURCE::UNSUBSCRIBE::typeCheck();
+    return asyncRequest(RESOURCE::ID, REQUEST_UNSUBSCRIBE);
+}
+
+WB_FORCE_INLINE
+template <
+    typename RESOURCE,
+    typename EnableIf<!IsSame<RESOURCE, ResourceId>::value && !IsSame<RESOURCE, ResourceId::Value>::value, int>::type = 0>
+WB_FORCE_INLINE_ATTRIBUTE Result asyncUnsubscribe(
+    const RESOURCE,
+    const AsyncRequestOptions& rOptions)
 {
     RESOURCE::UNSUBSCRIBE::typeCheck();
     return asyncRequest(RESOURCE::ID, REQUEST_UNSUBSCRIBE, rOptions);
@@ -2138,8 +2397,17 @@ private:
 
 inline Result asyncRequest(
     ResourceId resourceId,
+    RequestType requestType)
+{
+    return asyncRequestInternal(
+        resourceId,
+        requestType);
+}
+
+inline Result asyncRequest(
+    ResourceId resourceId,
     RequestType requestType,
-    const AsyncRequestOptions& rOptions = AsyncRequestOptions::Empty)
+    const AsyncRequestOptions& rOptions)
 {
     return asyncRequestInternal(
         resourceId,
@@ -2162,6 +2430,21 @@ inline Result asyncRequest(
         resourceId,
         requestType,
         rOptions,
+        parameters);
+}
+
+template <typename P1>
+inline Result asyncRequest_EmptyOptions(
+    ResourceId resourceId,
+    RequestType requestType,
+    const P1& rP1)
+{
+    ParameterListInstance<1> parameters;
+    new (&parameters[0]) Value(rP1);
+
+    return asyncRequestInternal(
+        resourceId,
+        requestType,
         parameters);
 }
 

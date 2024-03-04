@@ -343,7 +343,8 @@ standard names. */
 #endif
 
 #ifdef ARCH_SDL
-#define portEND_SWITCHING_ISR(taskWoken) (void)0
+// defined in: FreeRTOS\Source\portable\MSVC-MingW\portmacro.h
+//#define portEND_SWITCHING_ISR(taskWoken) (void)0
 #else
 #define vPortYieldFromISR() portEND_SWITCHING_ISR(1)
 #endif

@@ -80,6 +80,7 @@ definitions:
       - productName
       - variant
       - hwCompatibilityId
+      - hwConfig
       - serial
       - pcbaSerial
       - sw
@@ -89,11 +90,11 @@ definitions:
       manufacturerName:
         description:  Original Equipment Manufacturer (OEM)
         type:         string
-        example:      "Amer Sports"
+        example:      "Movesense Ltd"
       brandName:
         description:  Brand name of the device
         type:         string
-        example:      "Suunto"
+        example:      "Movesense"
       productName:
         description:  Official product name visible to the consumers
         type:         string
@@ -114,6 +115,11 @@ definitions:
           same HwCompatibilityId.
         type:         string
         example:      "A"
+      hwConfig:
+        description: |
+          Identifier of hardware configuration used when building the firmware.
+        type:         string
+        example:      "SS2_NAND"
       serial:
         description:  Globally unique device serial number (12 digit)
         type:         string

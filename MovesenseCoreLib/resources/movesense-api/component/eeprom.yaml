@@ -74,8 +74,10 @@ paths:
           description: EEPROM chip information
           schema:
             $ref: '#/definitions/EepromInfo'
-        501:
+        404:
           description: Chip with the given EepromIndex does not exist.
+        501:
+          description: Something went wrong in getting Eeprom chip info.
 
 parameters:
 

@@ -15,6 +15,8 @@ except:
 
 decapitalize = lambda s: s[:1].lower() + s[1:] if s else ''
 endNumRegex = re.compile(r'.*[^\d](\d+)$')
+regex_match_pathparam = r"\/\{[a-zA-Z_]+\}"
+
 
 # Function definitions
 def readInYamlFiles(yamlFiles):
@@ -23,14 +25,14 @@ def readInYamlFiles(yamlFiles):
     definitions = {}
 
     for f in yamlFiles:
-        stream = file(f, 'r')
-        obj = yaml.load(stream)
+        stream = open(f, 'r')
+        obj = yaml.safe_load(stream)
         obj["fromFile"] = f
 
         yamlTrees.append(obj)
 
         if 'paths' in obj:
-            for k, v in sorted(obj['paths'].iteritems()):
+            for k, v in sorted(obj['paths'].items()):
                 if k.endswith('/Subscription'):
                     k = k[:-len('/Subscription')]
                     if k not in resources:
@@ -41,7 +43,7 @@ def readInYamlFiles(yamlFiles):
                     resources[k] = v
 
         if ('definitions' in obj):
-            for k, v in obj['definitions'].iteritems():
+            for k, v in obj['definitions'].items():
                 definitions[k] = v
                 #print("yaml datatype: ", k, " ", v)
 
@@ -125,7 +127,6 @@ def seekPathInConfig(config, dictName, pathToMatch, forcePartialMatch=False):
 # return a list of enum values e.g. [2,4,8], default to [1,2,3,4,5,6,7,8] if nothing found
 def seekArrayElementsConfig(config, dictName, rscPath, isCppType=False):
     elements = range(1, 8+1) # default to 1 to 8 range for arrays
-
     # check if path has a match in resources (dict type), result will be None or the key (mathing path string)
     resultString = seekPathInConfig(config, dictName, rscPath, isCppType)
 
@@ -170,10 +171,24 @@ def seekConversionConfig(config, dictName, rscPath, isCppType=False):
     return conversion
 
 def cppNameFromResName(resName):
-    return resName[1:].replace('/','_').replace('{','').replace('}','').upper()
+    if not resName[0].isalpha():
+        resName = resName[1:]
+    cppName = resName.replace('/','_').replace('{','').replace('}','').upper()
+    return cppName
 
 def resourceToSbemPath(resourcePath):
-    return resourcePath[1:].replace('/','.').replace('{','').replace('}','')
+    match = re.search(regex_match_pathparam,resourcePath)
+    if match is not None:
+        print("match: ",  match.group(0))
+    path = re.sub(regex_match_pathparam, '', resourcePath)
+
+    path = path.replace('/','.')
+    if path[0] == '.':
+        sbemPth =  "Samples" + path
+    else:
+        sbemPth =  "Samples." + path
+
+    return sbemPth
 
 def frmFromResponse(response):
     return frmFromSchema(response['schema'])
@@ -241,14 +256,14 @@ def sizeExprFromItem(item):
     fullPath = item["SBEM_PTH"].replace("+",".")
     paramName = fullPath.split(".")[-1]
     from sbemCodeGen import dataLoggerConfig
-    conversionConf = seekConversionConfig(dataLoggerConfig, "resources", item['SBEM_PTH'], True)
+    conversionConf = seekConversionConfig(dataLoggerConfig, "resources", item['RES_PTH'], True)
+
     if conversionConf is not None and paramName in conversionConf and "to" in conversionConf[paramName]:
         frm = conversionConf[paramName]["to"]
     
     if frm.startswith('float') or frm.startswith('int') or frm.startswith('uint'):
         m = endNumRegex.match(frm)
-        sizeExpression = int(m.groups(1)[0])/8
-
+        sizeExpression = round(int(m.groups(1)[0])/8)
     elif frm == 'utf8':
         print("frm == 'utf8' item: " , item)
         propertyName = "XXXXX"
@@ -454,43 +469,69 @@ def generateDescriptorArray(hpp_file, cpp_file, items, arrayGroupStartItems, roo
     itemIndexes = {}
     alreadyPlussedResources = set()
     descriptorItemIds = []
+    current_root_level = 0
     for item in items:
         if (not 'SBEM_FRM' in item) or not item['SBEM_FRM']:
             #print("Skipping item without SBEM_FRM! item:", item)
             continue
 
         isNillable = itemIsOptional(item)
+        isArray = '__isArray' in item and item['__isArray']
         isFirstInArray = \
             bool(item['id'] in arrayGroupStartItems and arrayGroupStartItems[item['id']])
         isFirstInRootGroup = \
             bool(item['id'] in rootGroupStartItems and rootGroupStartItems[item['id']])
+        isSinglePropItem = not isFirstInRootGroup and not isFirstInArray and item['__property'] == "/"
         itemIndexes[item['id']] = count
 
         # All entries here have been preprocessed earlier
         # sample   {DUMMY8, "<PTH>Dummy8\n<FRM>uint8"},
         itemPath = item['SBEM_PTH']
+        property_level = itemPath.count('.')
         lastDotIdx=itemPath.rfind('.')
         itemPath = list(itemPath)
 
+        if isFirstInRootGroup:
+            current_root_level = property_level
+
         if isFirstInArray:
             itemPath[lastDotIdx] = '+'
-        if isFirstInRootGroup:
-            grpId = rootGroupStartItems[item['id']]['id']
-            # grpId is of style "MEAS_ACC_SAMPLERATE_", so we have to find position of second last _ and put + there in itemPath
-            plusPosition = grpId.rfind('_', 0, len(grpId)-1)
-            if plusPosition>=0:
-                itemPath[plusPosition] = '+'
-            else:
-                itemPath.insert(0,'+') # deals with one piece path e.g. "/MyService/Subscription"
-
-        # Set primitive item values (e.g. "/Time") arrayable
-        if (item['__property'] == '/'):
-            itemPath += '+'
+        elif isFirstInRootGroup or isSinglePropItem:
+            # First in root group should start a new entry in Samples -array, which is the first "." in the path
+           plus_position = itemPath.index('.')
+           if plus_position>=0:
+               itemPath[plus_position] = '+Array.'
+               #itemPath[plus_position] = '+'
+        elif not isFirstInRootGroup and current_root_level == property_level and not isArray:
+           ## If property is on same leve as root, add extra ".array." to make them go in same object (Why XXXX ???)
+           plus_position = itemPath.index('.')
+           if plus_position>=0:
+               itemPath[plus_position] = '.Array.'
+        
+        if not isSinglePropItem and not isFirstInRootGroup and not isArray and property_level > current_root_level:
+           ## If property is deeper and not array (like IMU9 AccData members), add extra ".Array."
+           plus_position = itemPath.index('.')
+           if plus_position>=0:
+               itemPath[plus_position] = '.Array.'
 
         from sbemCodeGen import dataLoggerConfig
-        conversionConf = seekConversionConfig(dataLoggerConfig, "resources", "/" + item["id"].replace("_","/"), True)
-
+        #conversionConf = seekConversionConfig(dataLoggerConfig, "resources", "/" + item["id"].replace("_","/"), True)
+        if "RES_PTH" not in item:
+            item["RES_PTH"] = item["id"].replace("_","/")
+        conversionConf = seekConversionConfig(dataLoggerConfig, "resources", "/" + item["RES_PTH"], True)
         itemPath = "".join(itemPath)
+
+        #if "MeasTemp" in itemPath:
+        # print("")
+        # print_group(item)
+        # print("itemPath:",itemPath)
+        # print("isArray:",isArray)
+        # print("isFirstInArray:",isFirstInArray)
+        # print("isFirstInRootGroup:",isFirstInRootGroup)
+        # print("isSinglePropItem:",isSinglePropItem)
+        # print("property_level:",property_level)
+        # print("")
+        
         entry = ""
         descriptorItemIds.append(item['id'])
 
@@ -502,7 +543,7 @@ def generateDescriptorArray(hpp_file, cpp_file, items, arrayGroupStartItems, roo
                 if "to" in conversionConf[paramName]:
                     itemFormat = conversionConf[paramName]["to"]
                 if "encoding" in conversionConf[paramName] and "decoding" in conversionConf[paramName]:
-                    modifier = "<MOD>" + conversionConf[paramName]["decoding"].replace(" ","").replace("value","x")
+                    modifier = "\\n<MOD>" + conversionConf[paramName]["decoding"].replace(" ","").replace("value","x")
                     modifier += "," +  conversionConf[paramName]["encoding"].replace(" ","").replace("value","y")
                     # add macros for encoding and decoding
                     encoderMacro = "#define ENCODE_" + item["id"] + "(value) (" + conversionConf[paramName]["encoding"] + ")"
@@ -528,7 +569,8 @@ def generateDescriptorArray(hpp_file, cpp_file, items, arrayGroupStartItems, roo
     # ARRAY_BEGIN & END tags
     print('    {ARRAY_BEGIN, \"<PTH>[\"},', file=cpp_file)
     print('    {ARRAY_END, \"<PTH>]\"},', file=cpp_file)
-    count += 2
+    print('    {SAMPLES_ARRAY_BEGIN, \"<PTH>+Samples.Array.ArrayBegin\\n<FRM>uint8\"},', file=cpp_file)
+    count += 3
     # end SBEM DescriptionItems array
     print('    {ID_DESCRIPTOR_ARRAY_END_MARKER, NULL}', file=cpp_file)
     print("};", file=cpp_file)
@@ -572,7 +614,10 @@ def generateWriteMethodCodeForItem(item, writeCodeArr, recursionLevel=1):
         #print("-----> ", frm) # datatype format
 
         from sbemCodeGen import dataLoggerConfig
-        conf = seekConversionConfig(dataLoggerConfig, "resources", "/" + item["id"].replace("_","/"), True)
+        #conf = seekConversionConfig(dataLoggerConfig, "resources", "/" + item["id"].replace("_","/"), True)
+        if "RES_PTH" not in item:
+            item["RES_PTH"] = item["id"].replace("_","/")
+        conf = seekConversionConfig(dataLoggerConfig, "resources", item["RES_PTH"], True)
 
         valType = "auto"
         castOper = ""
@@ -627,8 +672,14 @@ def generateGroupsForResAndDatatype(defs, resource, path, datatype, resourceGrou
     subGroups = []
     subItems = []
 
+    resource_path = resource['SBEM_PTH']
+    orig_res_path = resource_path
+    resource_path = re.sub(regex_match_pathparam, '', resource_path)
+    resource_path = resource_path.replace('/','')
+    wb_res_1 = resource['SBEM_PTH']
+
     # do each property, recurse into complex ones
-    for k,v in sorted(datatype['properties'].iteritems()):
+    for k,v in sorted(datatype['properties'].items()):
 
         if not 'SBEM_KIND' in v:
             print(" ERROR! v:",v)
@@ -638,10 +689,9 @@ def generateGroupsForResAndDatatype(defs, resource, path, datatype, resourceGrou
 
         kind = v['SBEM_KIND']
         if 'simple' == kind:
-
             propPath = path + k
 
-            longPath = resource['SBEM_PTH'] + propPath
+            longPath = "/" +resource_path + propPath
 
             # for simple properties make entry that is simple item
             # make sure that array indicators don't end up in sbem path
@@ -649,6 +699,7 @@ def generateGroupsForResAndDatatype(defs, resource, path, datatype, resourceGrou
             itemSubGroup = {'id': cppNameFromResName(longPath),
                          'SBEM_FRM': v['SBEM_FRM'],
                          'SBEM_PTH': resourceToSbemPath(longPath),
+                         'RES_PTH': orig_res_path + propPath,
                          '__property': k,
                          '__required': v['__required']
                          }
@@ -660,7 +711,6 @@ def generateGroupsForResAndDatatype(defs, resource, path, datatype, resourceGrou
         elif 'complex' == kind:
 
             propPath = path + k + "/"
-            #print("complex propPath: ", propPath)
 
             propGroup = generateGroupsForResAndDatatype(defs,
                                             resource,
@@ -674,13 +724,14 @@ def generateGroupsForResAndDatatype(defs, resource, path, datatype, resourceGrou
             resourceGroups.append(propGroup)
 
         elif 'array' == kind:
-            #print('array kind: ', k)
             # find what kind of items the array has
 
+            wb_res = resource['SBEM_PTH']
             itemdef = v['items']
             if '$ref' in itemdef:
                 datatypename = itemdef['$ref'].split('/')[-1]
-                #print('  - datatypename: ', datatypename)
+                #print("array ref:", path, " k:", k)
+
 
                 propPath = path + k + "/"
 
@@ -698,6 +749,7 @@ def generateGroupsForResAndDatatype(defs, resource, path, datatype, resourceGrou
                     # Mark "array" here
                     itemsGroup['__isArray'] = True
 
+                    itemsGroup['WB_RES'] = resource['SBEM_PTH']
                     subGroups.append(itemsGroup)
                     resourceGroups.append(itemsGroup)
                     #print("itemsGroup for array: ", itemsGroup)
@@ -708,15 +760,17 @@ def generateGroupsForResAndDatatype(defs, resource, path, datatype, resourceGrou
                 frmString = frmFromSchema(itemdef) 
 
                 propPath = path + k
-                longPath = resource['SBEM_PTH'] + propPath
+                longPath = resource_path + propPath
                 itemSubGroup = {'id': cppNameFromResName(longPath),
                                 'SBEM_FRM': frmString,
                                 'SBEM_PTH': resourceToSbemPath(longPath),
+                                'RES_PTH': orig_res_path + propPath,
+                                'WB_RES': wb_res,
                                 '__property': k,
                                 '__isArray': True,
                                 '__required': True
                          }
-                #print("simple array: ", itemSubGroup)
+
                 subItems.append(itemSubGroup)
                 resourceItems.append(itemSubGroup)
 
@@ -727,7 +781,7 @@ def generateGroupsForResAndDatatype(defs, resource, path, datatype, resourceGrou
             raise Exception("Unknown SBEM_KIND encountered:", kind)
 
     # make a parent group
-    longPath = resource['SBEM_PTH'] + path
+    longPath = resource_path + path
     required = path=='/' 
 
     # Make sure that the first item is not an array (causes bad json after conversion)
@@ -745,6 +799,7 @@ def generateGroupsForResAndDatatype(defs, resource, path, datatype, resourceGrou
     complexGroup = {'id': cppNameFromResName(longPath),
                     'subgroups': subItems + subGroups,
                     '__property': path,
+                    'WB_RES': wb_res_1,
 # required flag = true for root datatypes
                     '__required': required }
 
@@ -754,3 +809,23 @@ def generateGroupsForResAndDatatype(defs, resource, path, datatype, resourceGrou
 
     # return the group for this path
     return complexGroup
+
+def print_group(group, indent=0, prefix=""):
+
+    if type(group) is list:
+        for idx, v in enumerate(group):
+            p = (" "*indent) + prefix + "#" + str(idx) + ": "
+            if type(v) is dict or type(v) is list:
+                print_group(v, indent+2, p)
+            else:
+                print(p + str(v))
+        
+    elif type(group) is dict:
+        for k, v in group.items():
+            if k == "__parentGrp":
+                continue
+            if type(v) is dict or type(v) is list:
+                print((" "*indent) + prefix + "k:", k)
+                print_group(v, indent+2)
+            else:
+                print((" "*indent) + prefix + "k:", k, " =>", v)

@@ -104,6 +104,24 @@ paths:
         400:
           description: Error in parameters
 
+  /Comm/Ble/ConnParams:
+    put:
+      description: |
+        Request a change in preferred connection parameters for any new connections
+      parameters:
+        - name: params
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ConnParams'
+      responses:
+        200:
+          description: Preferred connection parameters accepted.
+        400:
+          description: Requested connection parameters were not valid. Request was ignored.
+        501:
+          description: Requested default params were not implemented by the device.
+
   /Comm/Ble/Peers:
     get:
       description: |
@@ -143,6 +161,73 @@ paths:
       responses:
         200:
           description: Operation completed successfully.
+
+  /Comm/Ble/Peers/{ConnHandle}/Params:
+    parameters:
+     - $ref: '#/parameters/ConnHandle'
+    get:
+      description: |
+        Get the current connection parameters. Note: min & max_conn_interval will be the same value
+      responses:
+        200:
+          description: Operation completed successfully.
+          schema:
+            $ref: '#/definitions/ConnParams'
+        404:
+          description: No such connection
+
+    put:
+      description: |
+        Request a change in connection parameters. Actual parameters can be later checked with the GET
+      parameters:
+        - name: params
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ConnParams'
+      responses:
+        200:
+          description: Connection parameters changed successfully.
+        400:
+          description: Requested connection parameters were not valid. Request was ignored.
+        404:
+          description: No such connection
+        501:
+          description: Requested connection parameter changes were not implemented by the device.
+
+  /Comm/Ble/Peers/{ConnHandle}/Config:
+    parameters:
+     - $ref: '#/parameters/ConnHandle'
+    get:
+      description: |
+        Get the current BLE configuration.
+      responses:
+        200:
+          description: Operation completed successfully.
+          schema:
+            $ref: '#/definitions/ConnConfig'
+        404:
+          description: No such connection
+
+    put:
+      description: |
+        Request a change in BLE configuration. Actual parameters can be later checked with the GET.
+        If a value is not set, that configuration stays the same. Actual values may differ from those requested.
+      parameters:
+        - name: config
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ConnConfig'
+      responses:
+        200:
+          description: Connection parameters changed successfully.
+        400:
+          description: Requested connection parameters were not valid. Request was ignored.
+        404:
+          description: No such connection
+        501:
+          description: Requested connection parameter changes were not implemented by the device.
 
   /Comm/Ble/Security/Bonds:
     get:
@@ -266,6 +351,39 @@ definitions:
         example: "Movesense 1234567890"
         minLength: 0
         maxLength: 31
+
+  ConnConfig:
+    type: object
+    properties:
+      mtu:
+        description: MTU of the connection (this is a read-only property).
+        type: integer
+        format: uint16
+        minimum: 23
+      dltx:
+        description: DataLength setting of the connection from sensor
+        $ref: '#/definitions/DL'
+      dlrx:
+        description: DataLength setting of the connection to sensor
+        $ref: '#/definitions/DL'
+
+  DL:
+    type: object
+    required:
+    - octets
+    properties:
+      octets:
+        description: BLE L2LDataLength octets setting of the connection (Max MTU+4 and 251)
+        type: integer
+        format: uint16
+        minimum: 27
+        maximum: 251
+      time:
+        description: BLE L2LDataLength time setting of the connection. Automatic if not given.
+        type: integer
+        format: uint16
+        x-unit: us
+
 
   AdvParams:
     type: object
@@ -452,6 +570,30 @@ definitions:
         type: string
         example: Movesense 123456789
 
+  ConnParams:
+    required:
+      - min_conn_interval
+      - max_conn_interval
+      - slave_latency
+      - sup_timeout
+    properties:
+      min_conn_interval:
+        description: Minimum Connection Interval in 1.25 ms units
+        type: integer
+        format: uint16
+      max_conn_interval:
+        description: Maximum Connection Interval in 1.25 ms units
+        type: integer
+        format: uint16
+      slave_latency:
+        description: Slave Latency in number of connection events
+        type: integer
+        format: uint16
+      sup_timeout:
+        description: Connection Supervision Timeout in 10 ms units
+        type: integer
+        format: uint16
+
   BondEntry:
     required:
     - Address
@@ -515,3 +657,16 @@ definitions:
         description: |
           Like BondingOnce, but rebonding to device with same MAC address is allowed.
         value: 3
+
+  PHY:
+    type: integer
+    format: uint8
+    minimum: 0
+    maximum: 4
+    enum:
+      - name: 'MBPS_1'
+        value: 1
+      - name: 'MBPS_2'
+        value: 2
+      - name: 'CODED'
+        value: 4

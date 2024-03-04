@@ -7,10 +7,6 @@
 #include "hal/manufacturingdata/manufacturingdata.h"
 #include "common/compiler/genType.h"
 
-#define STEPDATA_OFFSET         0x70B00
-#define CALIBRATIONDATA_OFFSET  0x70500
-#define PRODUCTDATA_OFFSET      0x70000
-
 #define PRODUCTDATA_SIZE        0x01000     // 4kB
 
 #define ERROR_NO_DATA           -2

@@ -86,6 +86,7 @@ struct WB_ALIGN(4) DeviceInfo
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > variant;
 	WB_ALIGN(4) whiteboard::Optional< whiteboard::WrapperFor32BitPointer< const char > > design;
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > hwCompatibilityId;
+	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > hwConfig;
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > serial;
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > pcbaSerial;
 	WB_ALIGN(4) whiteboard::WrapperFor32BitPointer< const char > sw;
