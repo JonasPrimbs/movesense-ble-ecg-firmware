@@ -4,6 +4,12 @@ A custom firmware for [Movesense Sensor devices](https://www.movesense.com/) whi
 
 This Repository is forked from **version 2.2.1** of the [official Movesense Device Library](https://bitbucket.org/movesense/movesense-device-lib/).
 
+## Citation
+
+This software was originally created for the SSTeP-KiZ Project. You may cite the software like this:
+
+Primbs, J.; et al. The SSTeP-KiZ System—Secure Real-Time Communication Based on Open Web Standards for Multimodal Sensor-Assisted Tele-Psychotherapy. Sensors 2022, 22, 9589. [https://doi.org/10.3390/s22249589](https://doi.org/10.3390/s22249589)
+
 ## Documentation
 
 ### Provided GATT Services and Characteristics
