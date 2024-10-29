@@ -48,7 +48,7 @@ To get this custom firmware, you have two choices:
 To build the firmware from source, first pull the official Docker image:
 
 ```bash
-docker pull movesense/sensor-build-env:latest
+docker pull movesense/sensor-build-env:2.2
 ```
 
 Then clone this repository:
@@ -79,13 +79,22 @@ cd /movesense/build
 To prepare for building in **debug** mode, prompt:
 
 ```bash
-cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake ../ble-ecg
+# For HR+/HR2/Medical sensor:
+cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake -DHWCONFIG=SS2 ../ble-ecg
+
+# For Flash sensor:
+cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake -DHWCONFIG=SS2_NAND ../ble-ecg
 ```
 
 To prepare for building in **production** mode, prompt:
 
 ```bash
+# For HR+/HR2/Medical sensor:
 cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake -DCMAKE_BUILD_TYPE=Release ../ble-ecg
+
+# For Flash sensor:
+# DO NOT USE PRODUCTION MODE FOR FLASH SENSOR AS THIS WILL BRICK THE SENSOR!
+# See https://www.movesense.com/docs/system/hw_variants/
 ```
 
 To build in prepared mode, prompt:
@@ -104,10 +113,17 @@ With these files, you can go on with section [Install Firmware](#install-firmwar
 
 ### Download from Releases
 
-Go to [Releases](https://github.com/JonasPrimbs/movesense-ble-ecg-firmware/releases) and download the latest versions of the following files:
+Go to [Releases](https://github.com/JonasPrimbs/movesense-ble-ecg-firmware/releases) and download the latest version.
+
+If you want to flash the Movesense HR+/HR2/Medical sensor, download these files:
 
 - `Movesense_dfu_w_bootloader.zip`
 - `Movesense_dfu.zip`
+
+If you want to flash the Movesense Flash sensor, download these files:
+
+- `Movesense_dfu_w_bootloader_NAND.zip`
+- `Movesense_dfu_NAND.zip`
 
 Now go on with section [Install Firmware](#install-firmware).
 
@@ -120,5 +136,5 @@ To flash the firmware, install the Movesense Showcase App for [Android](https://
 **Flashing the sensor with this Bootloader requires an updated Showcase App (Android: from 1.9.8, iOS: from 1.0.5)!**
 Otherwise you will consider a file corrupted error.
 
-**Hint: If you haven't flashed the firmware since buying your Movesense sensor, you must first flash it with the `Movesense_dfu_w_bootloader.zip` file.**
-After that, you can directly flash the firmware with `Movesense_dfu.zip`.
+**Hint: If you haven't flashed the firmware since buying your Movesense sensor, you must first flash it with the `Movesense_dfu_w_bootloader.zip` (or `Movesense_dfu_w_bootloader_NAND.zip` for Movesense Flash sensor) file.**
+After that, you can directly flash the firmware with `Movesense_dfu.zip` (or `Movesense_dfu_NAND.zip` for Movesense Flash sensor).
