@@ -79,7 +79,7 @@ cd /movesense/build
 To prepare for building in **debug** mode, prompt:
 
 ```bash
-# For HR+/HR2/Medical sensor:
+# For HR+/HR2/MD sensor:
 cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake -DHWCONFIG=SS2 ../ble-ecg
 
 # For Flash sensor:
@@ -89,7 +89,7 @@ cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_F
 To prepare for building in **production** mode, prompt:
 
 ```bash
-# For HR+/HR2/Medical sensor:
+# For HR+/HR2/MD sensor:
 cmake -G Ninja -DMOVESENSE_CORE_LIBRARY=../MovesenseCoreLib/ -DCMAKE_TOOLCHAIN_FILE=../MovesenseCoreLib/toolchain/gcc-nrf52.cmake -DCMAKE_BUILD_TYPE=Release ../ble-ecg
 
 # For Flash sensor:
@@ -115,7 +115,7 @@ With these files, you can go on with section [Install Firmware](#install-firmwar
 
 Go to [Releases](https://github.com/JonasPrimbs/movesense-ble-ecg-firmware/releases) and download the latest version.
 
-If you want to flash the Movesense HR+/HR2/Medical sensor, download these files:
+If you want to flash the Movesense HR+/HR2/MD sensor, download these files:
 
 - `Movesense_dfu_w_bootloader.zip`
 - `Movesense_dfu.zip`
