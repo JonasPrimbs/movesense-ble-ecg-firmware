@@ -14,7 +14,7 @@ public:
     InfoProvider();
 
     /** Destructor */
-    virtual ~InfoProvider();
+    virtual ~InfoProvider() OVERRIDE;
 
     // called from the launchable module
     bool wbRegister();

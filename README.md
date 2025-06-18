@@ -2,7 +2,7 @@
 
 A custom firmware for [Movesense Sensor devices](https://www.movesense.com/) which implements a Bluetooth Low Energy (BLE) GATT electrocardiograph (ECG) voltage and movement measurements.
 
-This Repository is forked from **version 2.2.1** of the [official Movesense Device Library](https://bitbucket.org/movesense/movesense-device-lib/).
+This Repository is forked from **version 2.3.1** of the [official Movesense Device Library](https://bitbucket.org/movesense/movesense-device-lib/).
 
 ## Citation
 
@@ -48,7 +48,7 @@ To get this custom firmware, you have two choices:
 To build the firmware from source, first pull the official Docker image:
 
 ```bash
-docker pull movesense/sensor-build-env:2.2
+docker pull movesense/sensor-build-env:2.3
 ```
 
 Then clone this repository:
@@ -61,12 +61,12 @@ Then run the Docker image and mount the directory to the image:
 
 Linux or MacOS:
 ```bash
-docker run -it --rm -v /path/to/repo/movesense-ble-ecg-firmware:/movesense:delegated movesense/sensor-build-env:2.2
+docker run -it --rm -v /path/to/repo/movesense-ble-ecg-firmware:/movesense:delegated movesense/sensor-build-env:2.3
 ```
 
 Windows:
 ```powershell
-docker run -it --rm -v C:\path\to\repo\movesense-ble-ecg-firmware:/movesense:delegated movesense/sensor-build-env:2.2
+docker run -it --rm -v C:\path\to\repo\movesense-ble-ecg-firmware:/movesense:delegated movesense/sensor-build-env:2.3
 ```
 
 When the Docker container starts, create the directory `/movesense/build` and navigate to it:
@@ -131,7 +131,7 @@ Now go on with section [Install Firmware](#install-firmware).
 
 To flash the firmware, install the Movesense Showcase App for [Android](https://bitbucket.org/movesense/movesense-mobile-lib/downloads/) or [iOS](https://apps.apple.com/de/app/movesense-showcase/id1439876677) and use its DFU tool as described [here](https://www.movesense.com/docs/esw/dfu_update/).
 
-**Warning: We are using Firmware version 2.2.1 as basis!**
+**Warning: We are using Firmware version 2.3.1 as basis!**
 **This requires also a Bootloader of version 2.x.**
 **Flashing the sensor with this Bootloader requires an updated Showcase App (Android: from 1.9.8, iOS: from 1.0.5)!**
 Otherwise you will consider a file corrupted error.

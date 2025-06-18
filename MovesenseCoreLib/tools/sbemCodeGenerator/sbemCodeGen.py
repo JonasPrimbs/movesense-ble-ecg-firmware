@@ -809,7 +809,7 @@ with open("sbem_definitions.h", 'w') as f_h:
         print("\nconst SbemResID2GrpIdMapping s_sbemResID2GrpIdMap[] = {", file=f_cpp)
         count = 0
         for k,v in sorted(resourcesThatNeedSbemMethods.items()):
-            if not 'SBEM_GRP' in v:
+            if 'SBEM_GRP' not in v:
                 continue
 
             for item in v['SBEM_GRP']['SBEM_GRP_ITEMS']:
@@ -855,29 +855,6 @@ with open("sbem_definitions.h", 'w') as f_h:
         print("    GROUP_MAPPING_END_MARKER", file=f_cpp)
         print("};", file=f_cpp)
 
-        #print("extern const SbemResID2GrpIdMapping s_sbemResID2GrpIdMap[" + str(count) + "];", file=f_h)
-
-
-        # Generate resourceId => sbemId mapper function
-
-        # print("\nuint16_t getSbemDescriptorIdFromResource(whiteboard::LocalResourceId localResourceId, size_t dataLength)", file=f_cpp)
-        # print("{", file=f_cpp)
-        # print("    for (size_t i=0; i<ELEMENTS(s_sbemResID2ItemIdMap); i++)", file=f_cpp)
-        # print("    {", file=f_cpp)
-        # print("        if (s_sbemResID2ItemIdMap[i].wbResId == localResourceId)", file=f_cpp)
-        # print("        {", file=f_cpp)
-        # print("            return s_sbemResID2ItemIdMap[i].sbemItem.id;", file=f_cpp)
-        # print("        }", file=f_cpp)
-        # print("    }\n", file=f_cpp)
-        # print("    for (size_t i=0; i<ELEMENTS(s_sbemResID2GrpIdMap); i++)", file=f_cpp)
-        # print("    {", file=f_cpp)
-        # print("        if (s_sbemResID2GrpIdMap[i].wbResId == localResourceId && s_sbemResID2GrpIdMap[i].sbemBytes == dataLength)", file=f_cpp)
-        # print("        {", file=f_cpp)
-        # print("            return s_sbemResID2GrpIdMap[i].sbemGrp.id;", file=f_cpp)
-        # print("        }", file=f_cpp)
-        # print("    }", file=f_cpp)
-        # print("    return 0;", file=f_cpp)
-        # print("}", file=f_cpp)
 
         # Generate item & group accessors
 

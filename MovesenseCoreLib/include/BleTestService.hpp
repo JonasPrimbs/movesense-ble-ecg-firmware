@@ -21,7 +21,7 @@ public:
     /** Name of this class. Used in StartupProvider list. */
     static const char_t* const LAUNCHABLE_NAME;
     BleTestService();
-    ~BleTestService();
+    virtual ~BleTestService() OVERRIDE;
 
 private:
     uint8_t currentCommand;

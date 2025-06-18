@@ -590,6 +590,8 @@ struct MEM_LOGBOOK_BYID_LOGID_DATA
 	struct SUBSCRIBE
 	{
 		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_FOUND> HTTP_CODE_NOT_FOUND;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_CONFLICT> HTTP_CODE_CONFLICT;
 
 		struct Parameters
 		{

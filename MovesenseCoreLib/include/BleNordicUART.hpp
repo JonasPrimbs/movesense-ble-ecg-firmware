@@ -21,7 +21,7 @@ public:
     /** Name of this class. Used in StartupProvider list. */
     static const char_t* const LAUNCHABLE_NAME;
     BleNordicUART();
-    ~BleNordicUART();
+    virtual ~BleNordicUART() OVERRIDE;
 
     static BleNordicUART* spInstance;
 
@@ -55,5 +55,4 @@ public:
     uint8_t mRxDataBuffer[NUS_MAX_DATA_LEN];
 
     uint16_t mCurrConnHandle;
-    size_t mSentCount;
 };

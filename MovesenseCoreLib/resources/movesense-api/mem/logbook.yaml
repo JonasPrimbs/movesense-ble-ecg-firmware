@@ -240,6 +240,8 @@ paths:
         log data is indicated with multiple notifications with empty array.
         Client SHOULD unsubscribe when empty packet is received or after small
         timeout without updates.
+        If there is an error fetching the data packet, the last packet before empty datapacket 
+        contains offset 0xFFFFFFFF and error code in the first two bytes of the data (int16 little endian).
       responses:
         200:
           description: Operation completed successfully
@@ -247,6 +249,10 @@ paths:
           description: Data packet. Empty array signals end of transfer
           schema:
             $ref: '#/definitions/LogDataNotification'
+        404:
+          description: Referenced log not found in LogBook.
+        409:
+          description: Logbook is already transferring data.
     delete:
       description: |
         Unsubscribe from log data transfer.

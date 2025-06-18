@@ -15,7 +15,7 @@ public:
     /** Name of this class. Used in StartupProvider list. */
     static const char_t* const LAUNCHABLE_NAME;
     SettingsService();
-    ~SettingsService();
+    virtual ~SettingsService() OVERRIDE;
 
 private:
     /** @see whiteboard::ILaunchableModule::initModule */

@@ -14,7 +14,7 @@ public:
     SystemProvider();
 
     /** Destructor */
-    virtual ~SystemProvider();
+    virtual ~SystemProvider() OVERRIDE;
 
     /** Update Firmware update progress */
     void updateProgress(const uint8 progress);

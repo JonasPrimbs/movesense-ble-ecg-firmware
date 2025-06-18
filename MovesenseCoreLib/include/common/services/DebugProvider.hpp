@@ -11,7 +11,7 @@ class DebugProvider FINAL : private wb::ResourceProvider
 {
 public:
     DebugProvider();
-    virtual ~DebugProvider();
+    virtual ~DebugProvider() OVERRIDE;
 
     // called from the launchable module
     bool wbRegister();

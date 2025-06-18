@@ -24,7 +24,7 @@ public:
     explicit TestingServices(wb::ExecutionContextId execCtxId);
 
     /** Destructor */
-    ~TestingServices();
+    virtual ~TestingServices() OVERRIDE;
 
 private:
     /// @see whiteboard::ILaunchableModule::initModule

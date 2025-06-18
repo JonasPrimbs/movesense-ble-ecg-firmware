@@ -13,7 +13,7 @@ WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(GattSvcList) == 4, AlignmentOfStructure_GattS
 WB_STATIC_VERIFY(sizeof(GattSvc) == 20, SizeOfStructure_GattSvc_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(GattSvc) == 4, AlignmentOfStructure_GattSvc_IsNotWhatExpected);
 
-WB_STATIC_VERIFY(sizeof(GattChar) == 32, SizeOfStructure_GattChar_IsNotWhatExpected);
+WB_STATIC_VERIFY(sizeof(GattChar) == 36, SizeOfStructure_GattChar_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(GattChar) == 4, AlignmentOfStructure_GattChar_IsNotWhatExpected);
 
 WB_STATIC_VERIFY(sizeof(Characteristic) == 12, SizeOfStructure_Characteristic_IsNotWhatExpected);

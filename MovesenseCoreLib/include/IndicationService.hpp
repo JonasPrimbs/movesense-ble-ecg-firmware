@@ -16,7 +16,7 @@ public:
     /** Name of this class. Used in StartupProvider list. */
     static const char_t* const LAUNCHABLE_NAME;
     IndicationService();
-    ~IndicationService();
+    virtual ~IndicationService() OVERRIDE;
 
 private:
 

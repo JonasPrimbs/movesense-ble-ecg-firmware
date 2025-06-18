@@ -14,7 +14,7 @@ class ShutdownProvider FINAL : private whiteboard::ResourceProvider, protected w
 {
 public:
     ShutdownProvider();
-    virtual ~ShutdownProvider();
+    virtual ~ShutdownProvider() OVERRIDE;
 
     // called from the launchable module
     bool wbRegister();

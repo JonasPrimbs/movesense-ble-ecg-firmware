@@ -39,7 +39,7 @@ public:
     /** Name of this class. Used in StartupProvider list. */
     static const char_t* const LAUNCHABLE_NAME;
     ManufacturingService();
-    ~ManufacturingService();
+    virtual ~ManufacturingService() OVERRIDE;
 
 private:
     /** @see whiteboard::ILaunchableModule::initModule */
@@ -101,7 +101,7 @@ private:
                               const whiteboard::ParameterList& parameters) OVERRIDE;
 
 
-    bool isEmpty(uint32_t *data, size_t size);
+    bool isEmpty(const uint32_t *data, size_t size);
     bool isEmpty(uint32_t offset, size_t size);
 
     void notData(uint32_t *data, size_t size);

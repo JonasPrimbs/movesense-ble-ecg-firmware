@@ -7,6 +7,7 @@
 #endif
 #include <cstring>
 
+
 #include "common/compiler/genType.h"
 namespace settings
 {
@@ -387,36 +388,42 @@ public:
 
     //////////////////////////////////
     // Allow text object assignment.
+    // cppcheck-suppress duplInheritedMember
     Text& operator=(const BText& rhs)
     {
         BText::operator=(rhs.c_str());
         return *this;
     }
 
+    // cppcheck-suppress duplInheritedMember
     Text& operator+=(const BText& rhs)
     {
         BText::operator+=(rhs.c_str());
         return *this;
     }
 
+    // cppcheck-suppress duplInheritedMember
     Text& operator=(const char* str)
     {
         BText::operator=(str);
         return *this;
     }
 
+    // cppcheck-suppress duplInheritedMember
     Text& operator+=(const char* str)
     {
         BText::operator+=(str);
         return *this;
     }
 
+    // cppcheck-suppress duplInheritedMember
     Text& operator=(char ch)
     {
         BText::operator+=(ch);
         return *this;
     }
 
+    // cppcheck-suppress duplInheritedMember
     Text& operator+=(char ch)
     {
         BText::operator+=(ch);

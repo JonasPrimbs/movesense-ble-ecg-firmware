@@ -101,7 +101,7 @@ def seekPathInConfig(config, dictName, pathToMatch, forcePartialMatch=False):
         pathToMatch = pathToMatch[1:]
     pathToMatch = pathToMatch.replace(".", "/").replace("+","/")
 
-    for rscPath in config[dictName]:
+    for rscPath in reversed(config[dictName]):
         tmpPath = rscPath.replace("{","").replace("}","")[1:] # remove path parameter braces, move this to config construction?
         # pathToMatch will also have brackets if read from yaml, if read from cpp/h then not
 
@@ -111,13 +111,13 @@ def seekPathInConfig(config, dictName, pathToMatch, forcePartialMatch=False):
             return rscPath
 
         # partial match from beginning
-        if tmpPath.endswith(".*") or forcePartialMatch:
-            # first try the one with brackets removed
-            if re.search(tmpPath[:-2], pathToMatch, re.IGNORECASE):
+        if "*"  in tmpPath or "+" in tmpPath or forcePartialMatch:
+            # first try tmpPath
+            if re.search(tmpPath, pathToMatch, re.IGNORECASE):
                 #print("MATCH 2 " + rscPath + " - " + pathToMatch)
                 return rscPath
             # second try the one that may have brackets
-            if re.search(rscPath[:-2], pathToMatch, re.IGNORECASE):
+            if re.search(rscPath, pathToMatch, re.IGNORECASE):
                 #print("MATCH 3 " + rscPath + " - " + pathToMatch)
                 return rscPath
 
@@ -165,7 +165,8 @@ def seekConversionConfig(config, dictName, rscPath, isCppType=False):
         # path matching the config found, check if array config available
         if "conversion" in config[dictName][resultString]:
             #if "parameters" in config[dictName][resultString]["conversion"]:
-            conversion = config[dictName][resultString]["conversion"]
+            # Return version that has lower case paramName (key) 
+            conversion = keys_lower(config[dictName][resultString]["conversion"])
 
     #print("CONV " + rscPath + " (match: " + str(resultString) + "): " + str(conversion))
     return conversion
@@ -254,11 +255,12 @@ def sizeExprFromItem(item):
 
     # swap format from conversion[param]["to"] spec if available
     fullPath = item["SBEM_PTH"].replace("+",".")
-    paramName = fullPath.split(".")[-1]
+    paramName = fullPath.split(".")[-1].lower()
     from sbemCodeGen import dataLoggerConfig
     conversionConf = seekConversionConfig(dataLoggerConfig, "resources", item['RES_PTH'], True)
 
     if conversionConf is not None and paramName in conversionConf and "to" in conversionConf[paramName]:
+        # print("frm from conversionConf: ", conversionConf[paramName]["to"], " paramName: ", paramName)
         frm = conversionConf[paramName]["to"]
     
     if frm.startswith('float') or frm.startswith('int') or frm.startswith('uint'):
@@ -461,6 +463,12 @@ def generateLengthMethodCodeForItem(item, writeCodeArr, lengthCodeArr):
 
     return True
 
+def keys_lower(test_dict):
+    res = dict()
+    for key in test_dict.keys():
+        res[key.lower()] = test_dict[key]
+    return res
+
 def generateDescriptorArray(hpp_file, cpp_file, items, arrayGroupStartItems, rootGroupStartItems):
     # generate DescriptorItem_t array start
     print('\nconst DescriptorItem_t s_possibleSbemItems[] = {', file=cpp_file)
@@ -538,7 +546,9 @@ def generateDescriptorArray(hpp_file, cpp_file, items, arrayGroupStartItems, roo
         itemFormat = item['SBEM_FRM']
         modifier = ""
         if conversionConf is not None:
-            paramName = itemPath.replace("+",".").split(".")[-1]
+            paramName = itemPath.replace("+",".").split(".")[-1].lower()
+            
+            # print("paramName: ", paramName, " conversionConf: ", conversionConf, " in conf:",paramName in conversionConf)
             if paramName in conversionConf:
                 if "to" in conversionConf[paramName]:
                     itemFormat = conversionConf[paramName]["to"]
@@ -623,7 +633,12 @@ def generateWriteMethodCodeForItem(item, writeCodeArr, recursionLevel=1):
         castOper = ""
 
         if conf is not None:
-            paramName = valExpr.split(".")[-1]
+            # Take last part after . in the path: e,g, "IMU9.AccData.x" -> "x"
+            paramName = valExpr.split(".")[-1].lower()
+            #print("paramName 1: ", paramName)
+            # If variable is array (like "samples[loopidx_1]"), remove the array part            
+            paramName = paramName.split("[")[0]
+            #print("paramName 2: ", paramName, " conf: ", conf)
             if paramName in conf:
                 #print(paramName + " --------> CONV " + str(conf))
                 if "to" in conf[paramName]:
