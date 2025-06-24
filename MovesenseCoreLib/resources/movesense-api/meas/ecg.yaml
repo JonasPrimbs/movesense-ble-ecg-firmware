@@ -71,6 +71,30 @@ paths:
         200:
           description: Operation completed successfully
 
+  /Meas/ECG/{RequiredSampleRate}/mV/Subscription:
+    parameters:
+      - $ref: '#/parameters/RequiredSampleRate'
+    post:
+      description: |
+        Subscription to ECG data.
+      responses:
+        200:
+          description: Operation completed successfully
+        501:
+          description: Required sample rate is not supported
+        x-notification:
+          description: |
+            Notifications comprise array of ECG data.
+            Array size between subscriptions is the same.
+          schema:
+            $ref: '#/definitions/ECGDataVoltage'
+    delete:
+      description: |
+        Unsubscribe ECG data stream
+      responses:
+        200:
+          description: Operation completed successfully
+
 parameters:
   RequiredSampleRate:
     name: RequiredSampleRate
@@ -143,6 +167,25 @@ definitions:
         items:
           type: integer
           format: int32
+      Timestamp:
+        description: Local relative timestamp of measurement.
+        type: integer
+        format: uint32
+        x-unit: millisecond
+  
+  ECGDataVoltage:
+    required:
+      - Samples
+      - Timestamp
+    properties:
+      Samples:
+        type: array
+        items:
+          type: number
+          format: float
+          x-unit: mV
+          description: Sample value in millivolts
+
       Timestamp:
         description: Local relative timestamp of measurement.
         type: integer

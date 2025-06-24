@@ -16,5 +16,8 @@ WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ECGConfig) == 4, AlignmentOfStructure_ECGConf
 WB_STATIC_VERIFY(sizeof(ECGData) == 12, SizeOfStructure_ECGData_IsNotWhatExpected);
 WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ECGData) == 4, AlignmentOfStructure_ECGData_IsNotWhatExpected);
 
+WB_STATIC_VERIFY(sizeof(ECGDataVoltage) == 12, SizeOfStructure_ECGDataVoltage_IsNotWhatExpected);
+WB_STATIC_VERIFY(WB_TYPE_ALIGNMENT(ECGDataVoltage) == 4, AlignmentOfStructure_ECGDataVoltage_IsNotWhatExpected);
+
 
 } // namespace WB_RES

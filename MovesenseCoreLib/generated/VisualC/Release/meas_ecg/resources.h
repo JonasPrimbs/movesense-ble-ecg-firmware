@@ -41,6 +41,7 @@ namespace WB_RES {
 struct WB_ALIGN(4) ECGInfo;
 struct WB_ALIGN(4) ECGConfig;
 struct WB_ALIGN(4) ECGData;
+struct WB_ALIGN(4) ECGDataVoltage;
 
 struct WB_ALIGN(4) ECGInfo
 {
@@ -72,6 +73,16 @@ struct WB_ALIGN(4) ECGData
 	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 17154;
 
 	WB_ALIGN(4) whiteboard::Array< int32 > samples;
+	WB_ALIGN(4) uint32 timestamp;
+};
+
+struct WB_ALIGN(4) ECGDataVoltage
+{
+	// Structure type identification and serialization
+	typedef int Structure;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 17155;
+
+	WB_ALIGN(4) whiteboard::Array< float > samples;
 	WB_ALIGN(4) uint32 timestamp;
 };
 
@@ -361,6 +372,219 @@ struct MEAS_ECG_REQUIREDSAMPLERATE
 		};
 
 		/** Reference wrapper for strongly typed parameter list for /Meas/ECG/{RequiredSampleRate} */
+		class ParameterListRef
+		{
+		private:
+			/** Prevent use of default constructor */
+			ParameterListRef() DELETED;
+
+			/** Prevent use of copy constructor */
+			ParameterListRef(const ParameterListRef&) DELETED;
+
+			/** Prevent use of assignment operator */
+			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
+
+		public:
+			/** Constructor that initializes this class from existing parameter list
+			*
+			* @param rParameterList Reference to parameter list that contains untyped parameters
+			*/
+			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
+				: mrParameterList(rParameterList)
+			{
+			}
+
+			/** Gets REQUIREDSAMPLERATE parameter value
+			*
+			* @return Current parameter value
+			*/
+			inline Parameters::REQUIREDSAMPLERATE::ConstReferenceType getRequiredSampleRate() const
+			{
+				return mrParameterList[Parameters::REQUIREDSAMPLERATE::Index].convertTo<Parameters::REQUIREDSAMPLERATE::ConstReferenceType>();
+			}
+
+		private:
+			/** Reference to actual parameter list */
+			const whiteboard::ParameterList& mrParameterList;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::REQUIREDSAMPLERATE::ConstReferenceType)
+		{
+		}
+	};
+};
+
+struct MEAS_ECG_REQUIREDSAMPLERATE_MV
+{
+	static const whiteboard::ExecutionContextId EXECUTION_CONTEXT = WB_EXEC_CTX_MEAS;
+	static const whiteboard::ResourceId::Value ID = WB_RESOURCE_VALUE(0, 17155, EXECUTION_CONTEXT);
+	static const whiteboard::LocalResourceId LID = 17155;
+
+	struct SUBSCRIBE
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_NOT_IMPLEMENTED> HTTP_CODE_NOT_IMPLEMENTED;
+
+		struct Parameters
+		{
+			struct REQUIREDSAMPLERATE
+			{
+				static const whiteboard::ParameterIndex Index = 0;
+
+				typedef int32 Type;
+				typedef Type ConstReferenceType;
+			};
+
+			typedef REQUIREDSAMPLERATE Parameter1;
+
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
+		};
+
+		/** Reference wrapper for strongly typed parameter list for /Meas/ECG/{RequiredSampleRate}/mV */
+		class ParameterListRef
+		{
+		private:
+			/** Prevent use of default constructor */
+			ParameterListRef() DELETED;
+
+			/** Prevent use of copy constructor */
+			ParameterListRef(const ParameterListRef&) DELETED;
+
+			/** Prevent use of assignment operator */
+			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
+
+		public:
+			/** Constructor that initializes this class from existing parameter list
+			*
+			* @param rParameterList Reference to parameter list that contains untyped parameters
+			*/
+			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
+				: mrParameterList(rParameterList)
+			{
+			}
+
+			/** Gets REQUIREDSAMPLERATE parameter value
+			*
+			* @return Current parameter value
+			*/
+			inline Parameters::REQUIREDSAMPLERATE::ConstReferenceType getRequiredSampleRate() const
+			{
+				return mrParameterList[Parameters::REQUIREDSAMPLERATE::Index].convertTo<Parameters::REQUIREDSAMPLERATE::ConstReferenceType>();
+			}
+
+		private:
+			/** Reference to actual parameter list */
+			const whiteboard::ParameterList& mrParameterList;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			Parameters::REQUIREDSAMPLERATE::ConstReferenceType)
+		{
+		}
+	};
+
+	struct EVENT
+	{
+		typedef ECGDataVoltage NotificationType;
+		typedef const NotificationType& ConstReferenceNotificationType;
+
+		struct Parameters
+		{
+			struct REQUIREDSAMPLERATE
+			{
+				static const whiteboard::ParameterIndex Index = 0;
+
+				typedef int32 Type;
+				typedef Type ConstReferenceType;
+			};
+
+			typedef REQUIREDSAMPLERATE Parameter1;
+
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
+		};
+
+		/** Reference wrapper for strongly typed parameter list for /Meas/ECG/{RequiredSampleRate}/mV */
+		class ParameterListRef
+		{
+		private:
+			/** Prevent use of default constructor */
+			ParameterListRef() DELETED;
+
+			/** Prevent use of copy constructor */
+			ParameterListRef(const ParameterListRef&) DELETED;
+
+			/** Prevent use of assignment operator */
+			const ParameterListRef& operator=(const ParameterListRef&) DELETED;
+
+		public:
+			/** Constructor that initializes this class from existing parameter list
+			*
+			* @param rParameterList Reference to parameter list that contains untyped parameters
+			*/
+			inline ParameterListRef(const whiteboard::ParameterList& rParameterList)
+				: mrParameterList(rParameterList)
+			{
+			}
+
+			/** Checks whether optional parameter REQUIREDSAMPLERATE has a value
+			*
+			* @return A value indicating whether the parameter has a value
+			*/
+			inline bool hasRequiredSampleRate() const
+			{
+				if (mrParameterList.getNumberOfParameters() <= Parameters::REQUIREDSAMPLERATE::Index)
+				{
+					return false;
+				}
+
+				return mrParameterList[Parameters::REQUIREDSAMPLERATE::Index].getType() != whiteboard::WB_TYPE_NONE;
+			}
+
+			/** Gets REQUIREDSAMPLERATE parameter value
+			*
+			* @return Current parameter value
+			*/
+			inline Parameters::REQUIREDSAMPLERATE::ConstReferenceType getRequiredSampleRate() const
+			{
+				return mrParameterList[Parameters::REQUIREDSAMPLERATE::Index].convertTo<Parameters::REQUIREDSAMPLERATE::ConstReferenceType>();
+			}
+
+		private:
+			/** Reference to actual parameter list */
+			const whiteboard::ParameterList& mrParameterList;
+		};
+
+		/** Compile time type checking */
+		inline static void typeCheck(
+			const whiteboard::Api::OptionalParameter<ConstReferenceNotificationType>&,
+			const whiteboard::Api::OptionalParameter<Parameters::REQUIREDSAMPLERATE::ConstReferenceType>& = whiteboard::NoType::NoValue)
+		{
+		}
+	};
+
+	struct UNSUBSCRIBE
+	{
+		typedef whiteboard::StronglyTypedResult<const whiteboard::NoType&, whiteboard::HTTP_CODE_OK> HTTP_CODE_OK;
+
+		struct Parameters
+		{
+			struct REQUIREDSAMPLERATE
+			{
+				static const whiteboard::ParameterIndex Index = 0;
+
+				typedef int32 Type;
+				typedef Type ConstReferenceType;
+			};
+
+			typedef REQUIREDSAMPLERATE Parameter1;
+
+			static const whiteboard::ParameterIndex NUMBER_OF_PARAMETERS = 1;
+		};
+
+		/** Reference wrapper for strongly typed parameter list for /Meas/ECG/{RequiredSampleRate}/mV */
 		class ParameterListRef
 		{
 		private:

@@ -23,7 +23,7 @@ public:
     explicit StandardServices(wb::ExecutionContextId execCtxId);
 
     /** Destructor */
-    ~StandardServices();
+    virtual ~StandardServices() OVERRIDE;
 
 private:
     /// @see whiteboard::ILaunchableModule::initModule

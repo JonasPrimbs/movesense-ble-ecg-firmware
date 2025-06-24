@@ -42,6 +42,7 @@ extern void WEAK __initAppInfoFields();
 extern void WEAK __logbookMemoryAreaOverride(uint32_t &offset, uint32_t &size);
 extern void WEAK __debugStorageAreaOverride(bool &enable, uint32_t &offset, uint32_t &size);
 extern void WEAK __debugBufferConfigOverride(uint32_t &rHeaders, uint32_t &rBytes);
+extern void WEAK __dfuEepromMemoryWipeSkip(uint32_t &rOffset, uint32_t &rSize);
 
 extern void getLogbookMemoryArea(uint32_t &offset, uint32_t &size);
 
@@ -141,6 +142,11 @@ void __debugStorageAreaOverride(bool& rEnable, uint32_t &rOffset, uint32_t &rSiz
 STATIC_VERIFY((headers) > 0, Debug_headers_storage_size_must_be_non_zero); \
 STATIC_VERIFY((bytes) > 0, Debug_messages_storage_size_must_be_non_zero); \
 void __debugBufferConfigOverride(uint32_t &rHeaders, uint32_t &rBytes) {rHeaders = (headers); rBytes = (bytes);}
+
+#define DFU_EEPROM_MEMORY_WIPE_SKIP(offset, size) \
+STATIC_VERIFY(((offset) & 0xff) == 0, Logbook_offset_must_be_multiple_of_256); \
+STATIC_VERIFY(((((size) & 0xff) == 0 && (size > 0)) || size==MEMORY_SIZE_FILL_REST), Logbook_size_must_be_multiple_of_256_or_FILL_REST_and_NOT_zero); \
+void __dfuEepromMemoryWipeSkip(uint32_t &rOffset, uint32_t &rSize) {rOffset = (offset);rSize = (size);}
 
 // Movesense application info
 #define APPINFO_NAME(name) void __initAppInfoFields() {\

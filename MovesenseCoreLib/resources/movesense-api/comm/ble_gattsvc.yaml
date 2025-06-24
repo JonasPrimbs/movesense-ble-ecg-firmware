@@ -181,8 +181,9 @@ definitions:
           format: uint8
         minLength: 0
         maxLength: 510
-
-
+      sec_mode:
+        description: Security mode of the characteristic (optional, defaults to open)
+        $ref: '#/definitions/SecurityMode'
 
   Characteristic:
     type: object
@@ -222,10 +223,37 @@ definitions:
       - name: 'WRITE_WO_RESP'
         value: 7
 
+  SecurityMode:
+    description: |
+      List of possible security modes for GATT characteristic. Note: Not all modes are supported by all implementations.
+      If secmode is not given, the characteristic is open by default (if enabled), or no access rights (if disabled).
+    type: integer
+    format: uint8
+    enum:
+      # - name: 'NO_ACCESS'
+      #   description: No access rights.
+      #   value: 0
+      # - name: 'OPEN'
+      #   description: No security needed. This is the default value if secmode is not given and the characteristic is enabled.
+      #   value: 1
+      - name: 'ENC_NO_MITM'
+        description: Encryption without MITM protection (lvl 2)
+        value: 2
+      - name: 'ENC_WITH_MITM'
+        description: Encryption with MITM protection (lvl 3)
+        value: 3
+      - name: 'LESC_ENC_WITH_MITM'
+        description: LESC encryption with MITM protection (lvl 4). Not supported
+        value: 4
+      # - name: 'SIGNED_NO_MITM'
+      #   description: Signed write without MITM protection (lvl 1). Not supported
+      #   value: 5
+      # - name: 'SIGNED_WITH_MITM'
+      #   description: Signed write with MITM protection (lvl 2). Not supported
+      #   value: 6
+
   GattSvcHandle:
     name: GattSvcHandle
-    in: path
-    required: true
     type: integer
     format: int32
 

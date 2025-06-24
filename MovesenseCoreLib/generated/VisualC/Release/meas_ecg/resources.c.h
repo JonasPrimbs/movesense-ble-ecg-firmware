@@ -7,4 +7,5 @@
 static const unsigned short MEAS_ECG_CONFIG_LID = 17152;
 static const unsigned short MEAS_ECG_INFO_LID = 17153;
 static const unsigned short MEAS_ECG_REQUIREDSAMPLERATE_LID = 17154;
+static const unsigned short MEAS_ECG_REQUIREDSAMPLERATE_MV_LID = 17155;
 

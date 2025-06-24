@@ -19,7 +19,7 @@ public:
     /** Name of this class. Used in StartupProvider list. */
     static const char_t* const LAUNCHABLE_NAME;
     BleStandardHRS();
-    ~BleStandardHRS();
+    virtual ~BleStandardHRS() OVERRIDE;
 
 private:
     /** @see whiteboard::ILaunchableModule::initModule */

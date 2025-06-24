@@ -55,6 +55,19 @@ struct GattPropertyValues
 };
 typedef whiteboard::TypedEnum<GattPropertyValues, GattPropertyValues::Type, uint8> GattProperty;
 
+struct SecurityModeValues
+{
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18689;
+
+	enum Type
+	{
+		ENC_NO_MITM = 2U,
+		ENC_WITH_MITM = 3U,
+		LESC_ENC_WITH_MITM = 4U
+	};
+};
+typedef whiteboard::TypedEnum<SecurityModeValues, SecurityModeValues::Type, uint8> SecurityMode;
+
 struct WB_ALIGN(4) GattChar;
 struct WB_ALIGN(4) GattSvc;
 struct WB_ALIGN(4) GattSvcList;
@@ -66,19 +79,20 @@ struct WB_ALIGN(4) GattChar
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18689;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18690;
 
 	WB_ALIGN(4) whiteboard::Array< uint8 > uuid;
 	WB_ALIGN(4) whiteboard::Array< GattProperty > props;
 	WB_ALIGN(2) whiteboard::Optional< uint16 > handle;
 	WB_ALIGN(4) whiteboard::Optional< whiteboard::Array< uint8 > > initial_value;
+	WB_ALIGN(1) whiteboard::Optional< SecurityMode > sec_mode;
 };
 
 struct WB_ALIGN(4) GattSvc
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18690;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18691;
 
 	WB_ALIGN(4) whiteboard::Array< uint8 > uuid;
 	WB_ALIGN(4) whiteboard::Array< GattChar > chars;
@@ -89,7 +103,7 @@ struct WB_ALIGN(4) GattSvcList
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18691;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18692;
 
 	WB_ALIGN(4) whiteboard::Array< GattSvc > services;
 };
@@ -98,7 +112,7 @@ struct WB_ALIGN(4) Characteristic
 {
 	// Structure type identification and serialization
 	typedef int Structure;
-	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18692;
+	static const whiteboard::LocalDataTypeId DATA_TYPE_ID = 18693;
 
 	WB_ALIGN(4) whiteboard::Array< uint8 > bytes;
 	WB_ALIGN(1) whiteboard::Optional< bool > notifications;

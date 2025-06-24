@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.7.0
+
+- Update to Firmware based on version 2.3.1
+
 ## Version 0.6.0
 
 - Update to Firmware based on version 2.2.1

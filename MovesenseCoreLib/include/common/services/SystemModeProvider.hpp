@@ -10,15 +10,20 @@ class SystemModeProvider FINAL : private whiteboard::ResourceProvider, private w
 {
 public:
     SystemModeProvider();
-    virtual ~SystemModeProvider();
+    virtual ~SystemModeProvider() OVERRIDE;
 
     // called from the launchable module
     bool wbRegister();
     void wbUnregister();
 
+protected:
+    virtual void onGetRequest(const whiteboard::Request& request, const whiteboard::ParameterList& parameters) OVERRIDE;
+    virtual void onPutRequest(const whiteboard::Request& request, const whiteboard::ParameterList& parameters) OVERRIDE;
+
+    virtual void onTimer(whiteboard::TimerId timerId) OVERRIDE;
+
 private:
-    void onGetRequest(const whiteboard::Request& request, const whiteboard::ParameterList& parameters) OVERRIDE;
-    void onPutRequest(const whiteboard::Request& request, const whiteboard::ParameterList& parameters) OVERRIDE;
+    uint8_t nextSysMode;
 };
 
 } // namespace nea

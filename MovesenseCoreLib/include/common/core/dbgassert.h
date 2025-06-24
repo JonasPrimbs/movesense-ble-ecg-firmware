@@ -12,11 +12,20 @@ extern "C" {
 #include <common/compiler/genDef.h>
 #include <stddef.h>  // size_t
 
-void systemAbort(void);
+void systemAbort(void)
+#ifdef __GNUC__
+    __attribute__((noreturn))
+#endif
+    ;
 
 void handleStackCorruption(const char* taskName);
 void kernelAssertFailed(const char* file, const size_t lineNumber);
-void assertFailed(const char* file, const size_t lineNumber, bool systemEvent);
+void assertFailed(const char* file, const size_t lineNumber, bool systemEvent)
+#ifdef __GNUC__
+    __attribute__((noreturn))
+#endif
+    ;
+
 bool verifyFailed(const char* file, const size_t lineNumber);
 
 #ifdef __cplusplus
