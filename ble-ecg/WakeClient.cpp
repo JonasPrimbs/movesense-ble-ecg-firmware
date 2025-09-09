@@ -13,6 +13,21 @@
 
 const char* const WakeClient::LAUNCHABLE_NAME = "Wake";
 
+// Static methods for external activation/deactivation
+
+void WakeClient::deactivate()
+{
+    WakeClient::isActive = false;
+}
+
+void WakeClient::activate()
+{
+    WakeClient::isActive = true;
+}
+
+// The static attribute managing the Wake-Clients behaviour
+bool WakeClient::isActive = true;
+
 WakeClient::WakeClient() :
     ResourceClient(WBDEBUG_NAME(__FUNCTION__), WB_EXEC_CTX_APPLICATION),
     LaunchableModule(LAUNCHABLE_NAME, WB_EXEC_CTX_APPLICATION),
@@ -160,8 +175,9 @@ void WakeClient::onTimer(wb::TimerId timerId)
         // Let LED blink.
         const WB_RES::VisualIndType type = WB_RES::VisualIndTypeValues::SHORT_VISUAL_INDICATION;
         this->asyncPut(WB_RES::LOCAL::UI_IND_VISUAL(), AsyncRequestOptions::Empty, type);
-    } else if (timerId == this->mShutdownTimer) {
-        // Shutdown timer.
+
+    } else if (timerId == this->mShutdownTimer && WakeClient::isActive) {
+        // Shutdown timer. But only if the WakeClient is active.
 
         // Shut down the device.
         // const AsyncRequestOptions reqOptsForceAsync(NULL, 0, true);
