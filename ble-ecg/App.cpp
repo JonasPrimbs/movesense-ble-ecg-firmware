@@ -1,7 +1,9 @@
 // #include "EcgGATTSvcClient.h"
 // #include "MovGATTSvcClient.h"
-#include "ActivityGATTSvcClient.h"
+// #include "ActivityGATTSvcClient.h"
+// #include "CommandClient.h"
 #include "WakeClient.h"
+#include "activity_logger/LoggingActivitySvcClient.h"
 
 #include "movesense.h"
 
@@ -12,8 +14,10 @@ MOVESENSE_APPLICATION_STACKSIZE(1024)
 MOVESENSE_PROVIDERS_BEGIN(2)
 
 // MOVESENSE_PROVIDER_DEF(EcgGATTSvcClient)
-MOVESENSE_PROVIDER_DEF(ActivityGATTSvcClient)
+// MOVESENSE_PROVIDER_DEF(ActivityGATTSvcClient)
 MOVESENSE_PROVIDER_DEF(WakeClient)
+// MOVESENSE_PROVIDER_DEF(CommandClient)
+MOVESENSE_PROVIDER_DEF(LoggingActivitySvcClient)
 
 MOVESENSE_PROVIDERS_END(2)
 
@@ -21,8 +25,8 @@ MOVESENSE_PROVIDERS_END(2)
 
 MOVESENSE_FEATURES_BEGIN()
 
-OPTIONAL_CORE_MODULE(DataLogger, false)
-OPTIONAL_CORE_MODULE(Logbook, false)
+OPTIONAL_CORE_MODULE(DataLogger, true)
+OPTIONAL_CORE_MODULE(Logbook, true)
 OPTIONAL_CORE_MODULE(LedService, true)
 OPTIONAL_CORE_MODULE(IndicationService, true)
 OPTIONAL_CORE_MODULE(BleService, true)
