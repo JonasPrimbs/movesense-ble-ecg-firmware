@@ -23,3 +23,10 @@ executionContexts:
     numberOfResponses: 10
     stackSize: 768
     priority: normal
+    priority: high
+
+apis:
+  MeasurementProvider.*:
+    apiId: 100
+    defaultExecutionContext: meas
+
