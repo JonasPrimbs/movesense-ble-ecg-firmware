@@ -1,5 +1,6 @@
 #include "OfflineStorageGattClient.h"
 
+#include "app-resources/resources.h"
 #include "comm_ble_gattsvc/resources.h"
 #include "movesense.h"
 
@@ -39,14 +40,22 @@ bool OfflineStorageGattClient::startModule()
 {
     mModuleState = WB_RES::ModuleStateValues::STARTED;
 
-
     // First, configure the Offline Gatt Activity Service.
     configGattSvc();
+
+    // Subscribe to measurement data.
+    asyncSubscribe(WB_RES::LOCAL::MEASUREMENTPROVIDER_ECG_DATASTREAM());
+    asyncSubscribe(WB_RES::LOCAL::MEASUREMENTPROVIDER_IMU9_DATASTREAM());
+
     return true;
 }
 
 void OfflineStorageGattClient::stopModule()
 {
+    // Unsubscribe from all measurement data.
+    asyncUnsubscribe(WB_RES::LOCAL::MEASUREMENTPROVIDER_ECG_DATASTREAM());
+    asyncUnsubscribe(WB_RES::LOCAL::MEASUREMENTPROVIDER_IMU9_DATASTREAM());
+
     // Unsubscribe from all Gatt characteristics.
     deinitGattCharSubscriptions();
 
@@ -153,6 +162,77 @@ void OfflineStorageGattClient::onNotify(wb::ResourceId resourceId,
                                         const wb::Value& rValue,
                                         const wb::ParameterList& rParameters)
 {
+    switch (resourceId.localResourceId)
+    {
+    // GATT Characteristic change:
+    case WB_RES::LOCAL::COMM_BLE_GATTSVC_SVCHANDLE_CHARHANDLE::LID: {
+        WB_RES::LOCAL::COMM_BLE_GATTSVC_SVCHANDLE_CHARHANDLE::SUBSCRIBE::
+            ParameterListRef parameterRef(rParameters);
+        int32_t svcHandle = parameterRef.getSvcHandle();
+        if (svcHandle != mActivityServiceHandle)
+            return;
+        int32_t charHandle = parameterRef.getCharHandle();
+
+        const WB_RES::Characteristic& charValue =
+            rValue.convertTo<const WB_RES::Characteristic&>();
+
+        if (charHandle == mCharAHandle)
+        {
+            if (!charValue.notifications.hasValue())
+                return;
+            this->mClientIsListeningToEcg = charValue.notifications.getValue();
+        }
+        else if (charHandle == mCharBHandle)
+        {
+            if (!charValue.notifications.hasValue())
+                return;
+            this->mClientIsListeingToMov = charValue.notifications.getValue();
+        }
+        else if (charHandle == mCharCHandle)
+        {
+            // TODO: use extend type length.
+            uint16_t value =
+                reinterpret_cast<const uint16_t*>(charValue.bytes.begin())[0];
+            parseConfigurationField(value);
+        }
+        else if (charHandle == mCharDHandle)
+        {
+            if (!charValue.notifications.hasValue())
+                return;
+            this->mClientIsListeningToRecorded =
+                charValue.notifications.getValue();
+        }
+
+        break;
+    }
+    // ECG Data:
+    case WB_RES::LOCAL::MEASUREMENTPROVIDER_ECG_DATASTREAM::LID: {
+        // Get raw bytes from the packet.
+        const WB_RES::MeasurementBundle& packet =
+            rValue.convertTo<const WB_RES::MeasurementBundle&>();
+
+        WB_RES::Characteristic ecgVoltageCharacteristic;
+        ecgVoltageCharacteristic.bytes = packet.bytes;
+
+        // Put value onto Ecg-Characteristic to notify listening client.
+        asyncPut(mCharAResource, AsyncRequestOptions::Empty,
+                 ecgVoltageCharacteristic);
+        break;
+    }
+    // IMU Data:
+    case WB_RES::LOCAL::MEASUREMENTPROVIDER_IMU9_DATASTREAM::LID: {
+        // Get raw bytes from the packet.
+        const WB_RES::MeasurementBundle& packet =
+            rValue.convertTo<const WB_RES::MeasurementBundle&>();
+        WB_RES::Characteristic movVectorCharacteristic;
+        movVectorCharacteristic.bytes = packet.bytes;
+
+        // Put value onto Mov-Characteristic to notify listening client.
+        asyncPut(mCharBResource, AsyncRequestOptions::Empty,
+                 movVectorCharacteristic);
+        break;
+    }
+    }
 }
 
 void OfflineStorageGattClient::configGattSvc()
@@ -227,8 +307,14 @@ void OfflineStorageGattClient::initGattCharSubscriptions()
     // Safe-subscribe to all Gatt characteristics to get notified on
     // value-changes and notification status changes. [!] must use
     // ForceAsync here.
+    if (mCharAResource != wb::ID_INVALID_RESOURCE)
+        asyncSubscribe(mCharAResource, AsyncRequestOptions::ForceAsync);
+    if (mCharBResource != wb::ID_INVALID_RESOURCE)
+        asyncSubscribe(mCharBResource, AsyncRequestOptions::ForceAsync);
     if (mCharCResource != wb::ID_INVALID_RESOURCE)
         asyncSubscribe(mCharCResource, AsyncRequestOptions::ForceAsync);
+    if (mCharDResource != wb::ID_INVALID_RESOURCE)
+        asyncSubscribe(mCharDResource, AsyncRequestOptions::ForceAsync);
 }
 
 void OfflineStorageGattClient::deinitGattCharSubscriptions()
@@ -242,4 +328,18 @@ void OfflineStorageGattClient::deinitGattCharSubscriptions()
         asyncUnsubscribe(mCharCResource);
     if (mCharDResource != wb::ID_INVALID_RESOURCE)
         asyncUnsubscribe(mCharDResource);
+}
+
+void OfflineStorageGattClient::parseConfigurationField(uint16_t configField)
+{
+    // Extract individual values as bytes from configField.
+    uint8_t ecgInterval = reinterpret_cast<uint8_t*>(&configField)[0];
+    uint8_t imuInterval = reinterpret_cast<uint8_t*>(&configField)[1];
+
+    // Update measurement intervals (operations are idempotent).
+    asyncPut(WB_RES::LOCAL::MEASUREMENTPROVIDER_ECG_INTERVAL(),
+             AsyncRequestOptions::Empty, ecgInterval);
+
+    asyncPut(WB_RES::LOCAL::MEASUREMENTPROVIDER_IMU9_INTERVAL(),
+             AsyncRequestOptions::Empty, imuInterval);
 }

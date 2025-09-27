@@ -2,7 +2,7 @@
 
 #include "movesense.h"
 
-class OfflineStorageGattClient final : private wb::ResourceClient,
+class OfflineStorageGattClient FINAL : private wb::ResourceClient,
                                        private wb::LaunchableModule
 {
   public:
@@ -55,4 +55,12 @@ class OfflineStorageGattClient final : private wb::ResourceClient,
 
     int32_t mCharDHandle;
     wb::ResourceId mCharDResource;
+
+    // Flags to keep track GATT subscribers.
+    bool mClientIsListeningToEcg;
+    bool mClientIsListeingToMov;
+    bool mClientIsListeningToRecorded;
+
+    // Measurement Interval settings.
+    void parseConfigurationField(uint16_t);
 };
