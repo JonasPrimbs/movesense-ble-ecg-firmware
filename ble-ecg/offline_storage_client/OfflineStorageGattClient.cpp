@@ -2,10 +2,11 @@
 
 #include "app-resources/resources.h"
 #include "comm_ble_gattsvc/resources.h"
-#include "ui_ind/resources.h"
 #include "mem_datalogger/resources.h"
 #include "mem_logbook/resources.h"
+#include "ui_ind/resources.h"
 
+#include "../WakeClient.h"
 #include "GattConfig.h"
 
 const char* const OfflineStorageGattClient::LAUNCHABLE_NAME =
@@ -508,7 +509,7 @@ void OfflineStorageGattClient::parseConfigurationField(
     {
         startDataLogger();
         this->mRecordingOperation = 1;
-        // TODO: re-enable WakeClient.
+        WakeClient::deactivate();
         asyncUnsubscribe(WB_RES::LOCAL::MEASUREMENTPROVIDER_ECG_DATASTREAM());
         asyncUnsubscribe(WB_RES::LOCAL::MEASUREMENTPROVIDER_IMU9_DATASTREAM());
     }
@@ -519,7 +520,7 @@ void OfflineStorageGattClient::parseConfigurationField(
         stopDataLogger();
         this->mRecordingOperation = 0;
 
-        // TODO: disable WakeClient
+        WakeClient::activate();
         asyncSubscribe(WB_RES::LOCAL::MEASUREMENTPROVIDER_ECG_DATASTREAM());
         asyncSubscribe(WB_RES::LOCAL::MEASUREMENTPROVIDER_IMU9_DATASTREAM());
     }
