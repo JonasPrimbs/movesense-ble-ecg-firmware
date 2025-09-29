@@ -154,6 +154,67 @@ void OfflineStorageGattClient::onGetResult(wb::RequestId requestId,
         initGattCharSubscriptions();
         break;
     }
+    case WB_RES::LOCAL::MEM_LOGBOOK_ENTRIES::LID: {
+        const WB_RES::LogEntries& entries =
+            rResultData.convertTo<const WB_RES::LogEntries&>();
+
+        for (const WB_RES::LogEntry& entry : entries.elements)
+        {
+            mCurrentLogEntryId = entry.id;
+        }
+        if (mCurrentLogEntryId == 0)
+        {
+            this->startBlinker(10);
+            finishCurrentReadOperation();
+            break;
+        }
+
+        asyncGet(WB_RES::LOCAL::MEM_LOGBOOK_BYID_LOGID_DATA(),
+                 AsyncRequestOptions::ForceAsync, mCurrentLogEntryId);
+        break;
+    }
+
+    case WB_RES::LOCAL::MEM_LOGBOOK_BYID_LOGID_DATA::LID: {
+        const wb::ByteStream& byteStream =
+            rResultData.convertTo<const wb::ByteStream&>();
+
+        // Send off the raw logs.
+        const size_t length = byteStream.length();
+        WB_RES::Characteristic recordedDataChar;
+
+        // Send in two halves if it is large enough, otherwise just one message.
+        if (length > LOG_TRANSMISSION_MTU)
+        {
+            recordedDataChar.bytes =
+                wb::MakeArray<uint8_t>(byteStream.data, LOG_TRANSMISSION_MTU);
+            asyncPut(mCharDResource, AsyncRequestOptions::Empty,
+                     recordedDataChar);
+            recordedDataChar.bytes =
+                wb::MakeArray<uint8_t>(byteStream.data + LOG_TRANSMISSION_MTU,
+                                       length - LOG_TRANSMISSION_MTU);
+            asyncPut(mCharDResource, AsyncRequestOptions::Empty,
+                     recordedDataChar);
+        }
+        else
+        {
+            recordedDataChar.bytes =
+                wb::MakeArray<uint8_t>(byteStream.data, length);
+            asyncPut(mCharDResource, AsyncRequestOptions::Empty,
+                     recordedDataChar);
+        }
+
+        if (resultCode == wb::HTTP_CODE_CONTINUE)
+        {
+            // Do another get request to get the next block of data.
+            asyncGet(WB_RES::LOCAL::MEM_LOGBOOK_BYID_LOGID_DATA(),
+                     AsyncRequestOptions::ForceAsync, mCurrentLogEntryId);
+        }
+        else if (resultCode == wb::HTTP_CODE_OK)
+        {
+            finishCurrentReadOperation();
+        }
+        break;
+    }
     }
 }
 
