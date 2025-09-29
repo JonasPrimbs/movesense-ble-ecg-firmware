@@ -147,9 +147,13 @@ void MeasurementProvider::onNotify(whiteboard::ResourceId resourceId,
                 ecgBuffer->setTimestamp(data.timestamp);
 
                 // Create Measurement Data packet.
-                WB_RES::MeasurementBundle packet{
-                    wb::MakeArray(ecgBuffer->getCurrentBuffer(),
-                                  ecgBuffer->getSingleBufferSize())};
+                const uint32_t timestamp =
+                    *reinterpret_cast<uint32_t*>(ecgBuffer->getCurrentBuffer());
+
+                const int16_t* samples = reinterpret_cast<int16_t*>(
+                    ecgBuffer->getCurrentBuffer() + 4);
+
+                WB_RES::EcgBundle packet{timestamp, wb::MakeArray(samples, 16)};
                 // Send the packet off to local listeners.
                 updateResource(
                     WB_RES::LOCAL::MEASUREMENTPROVIDER_ECG_DATASTREAM(),

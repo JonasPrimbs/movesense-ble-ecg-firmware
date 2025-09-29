@@ -48,7 +48,7 @@ struct mov_t
 
 /** Buffers **/
 constexpr uint16_t DEFAULT_ECG_OBJECT_SIZE = 16;
-constexpr uint16_t DEFAULT_MOV_OBJECT_SIZE = 8;
+constexpr uint16_t DEFAULT_MOV_OBJECT_SIZE = 4;
 constexpr uint16_t numberOfEcgBuffers = 2;
 constexpr uint16_t numberOfMovBuffers = 2;
 

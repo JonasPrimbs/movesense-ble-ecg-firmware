@@ -208,11 +208,15 @@ void OfflineStorageGattClient::onNotify(wb::ResourceId resourceId,
     // ECG Data:
     case WB_RES::LOCAL::MEASUREMENTPROVIDER_ECG_DATASTREAM::LID: {
         // Get raw bytes from the packet.
-        const WB_RES::MeasurementBundle& packet =
-            rValue.convertTo<const WB_RES::MeasurementBundle&>();
+        uint8_t sendBuffer[36];
+        const WB_RES::EcgBundle& packet =
+            rValue.convertTo<const WB_RES::EcgBundle&>();
+
+        memcpy(sendBuffer, &packet.timestamp, 4);
+        memcpy(sendBuffer + 4, packet.samples.begin(), 32);
 
         WB_RES::Characteristic ecgVoltageCharacteristic;
-        ecgVoltageCharacteristic.bytes = packet.bytes;
+        ecgVoltageCharacteristic.bytes = wb::MakeArray(sendBuffer);
 
         // Put value onto Ecg-Characteristic to notify listening client.
         asyncPut(mCharAResource, AsyncRequestOptions::Empty,
@@ -222,10 +226,14 @@ void OfflineStorageGattClient::onNotify(wb::ResourceId resourceId,
     // IMU Data:
     case WB_RES::LOCAL::MEASUREMENTPROVIDER_IMU9_DATASTREAM::LID: {
         // Get raw bytes from the packet.
-        const WB_RES::MeasurementBundle& packet =
-            rValue.convertTo<const WB_RES::MeasurementBundle&>();
+        const WB_RES::ImuBundle& packet =
+            rValue.convertTo<const WB_RES::ImuBundle&>();
+
+        uint8_t sendBuffer[76];
         WB_RES::Characteristic movVectorCharacteristic;
-        movVectorCharacteristic.bytes = packet.bytes;
+        memcpy(sendBuffer, &packet.timestamp, 4);
+        memcpy(sendBuffer + 4, packet.samples.begin(), 72);
+        movVectorCharacteristic.bytes = wb::MakeArray(sendBuffer);
 
         // Put value onto Mov-Characteristic to notify listening client.
         asyncPut(mCharBResource, AsyncRequestOptions::Empty,
