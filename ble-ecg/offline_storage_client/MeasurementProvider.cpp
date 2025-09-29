@@ -191,9 +191,13 @@ void MeasurementProvider::onNotify(whiteboard::ResourceId resourceId,
                 movBuffer->setTimestamp(data.timestamp);
 
                 // Create measurement data packet.
-                WB_RES::MeasurementBundle packet{
-                    wb::MakeArray(movBuffer->getCurrentBuffer(),
-                                  movBuffer->getSingleBufferSize())};
+                const uint32_t timestamp =
+                    *reinterpret_cast<uint32_t*>(movBuffer->getCurrentBuffer());
+
+                const int16_t* samples = reinterpret_cast<int16_t*>(
+                    movBuffer->getCurrentBuffer() + 4);
+
+                WB_RES::ImuBundle packet{timestamp, wb::MakeArray(samples, 36)};
                 // Send the packet off to local listeners.
                 updateResource(
                     WB_RES::LOCAL::MEASUREMENTPROVIDER_IMU9_DATASTREAM(),
