@@ -229,11 +229,11 @@ void OfflineStorageGattClient::onPostResult(wb::RequestId requestId,
         if (resultCode != wb::HTTP_CODE_CREATED)
             return;
 
-        // Service created successfully, save its handle
+        // Service created successfully, save its handle.
         mActivityServiceHandle = rResultData.convertTo<int32_t>();
 
         // Now, get the full details of the service to retrieve characteristic
-        // handles
+        // handles.
         asyncGet(WB_RES::LOCAL::COMM_BLE_GATTSVC_SVCHANDLE(),
                  AsyncRequestOptions::Empty, mActivityServiceHandle);
         // Continue logic in onGetResult() case Comm/Ble/GattSvc.

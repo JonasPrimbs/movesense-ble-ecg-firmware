@@ -12,7 +12,6 @@ class OfflineStorageGattClient FINAL : private wb::ResourceClient,
     ~OfflineStorageGattClient() = default;
 
   private:
-
     // From wb::LaunchableModule:
     bool initModule() OVERRIDE;
     void deinitModule() OVERRIDE;

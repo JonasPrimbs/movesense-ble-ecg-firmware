@@ -53,8 +53,8 @@ constexpr uint16_t numberOfEcgBuffers = 2;
 constexpr uint16_t numberOfMovBuffers = 2;
 
 /** Sample conversion constants **/
-constexpr ecg_t ECG_MAX_VALUE = 32767; // 0x7FFF = 2^15 - 1;
-constexpr ecg_t ECG_MIN_VALUE = -32767; // 0x8001 = -(2^15 - 1);
+constexpr ecg_t ECG_MAX_VALUE = 32767;      // 0x7FFF = 2^15 - 1;
+constexpr ecg_t ECG_MIN_VALUE = -32767;     // 0x8001 = -(2^15 - 1);
 constexpr ecg_t ECG_INVALID_VALUE = -32768; // 0x8000 = -2^15;
 
 constexpr acc_t MAX_ACC = +32767;

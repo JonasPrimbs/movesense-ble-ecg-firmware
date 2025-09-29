@@ -30,3 +30,15 @@ apis:
     apiId: 100
     defaultExecutionContext: meas
 
+  # PersistenceManager.*:
+  #   apiId: 100
+  #   defaultExecutionContext: application
+
+  # MeasDataProvider.*:
+  #   apiId: 101
+  #   defaultExecutionContext: meas # TODO test meas
+
+  # RecordingStateManager.*:
+  #   apiId: 102
+  #   defaultExecutionContext: application
+

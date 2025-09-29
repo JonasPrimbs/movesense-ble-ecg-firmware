@@ -80,8 +80,6 @@ paths:
           description:
             Operation completed successfully
 
-
-
 definitions:
   measurementBundle:
     required:
