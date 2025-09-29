@@ -63,7 +63,46 @@ class OfflineStorageGattClient FINAL : private wb::ResourceClient,
     bool mClientIsListeningToRecorded;
 
     // Measurement Interval settings.
-    void parseConfigurationField(uint16_t);
+    uint8_t mEcgMeasurementInterval;
+    uint8_t mImuMeasurementInterval;
+
+    void parseConfigurationField(const uint8_t*);
+
+    // For Data Recording.
+
+    // Record only ECG data.
+    void configureDataLoggerECG();
+
+    // Record only IMU data.
+    void configureDataLoggerIMU();
+
+    // Record ECG + IMU.
+    void configureDataLoggerAll();
+
+    // Record Nothing.
+    void configureDataLoggerNone();
+
+    void startDataLogger();
+    void stopDataLogger();
+
+    size_t mCurrentLogEntryId;
+
+    // For reading recorded data.
+    void startLogStreaming();
+    void deleteRecordedData();
+
+    void finishCurrentReadOperation();
+
+    // RecordingStates
+    uint8_t mEcgRecordingMode;
+    uint8_t mImuRecordingMode;
+
+    // Operation states
+    uint8_t mRecordingOperation;
+    uint8_t mGetDataOperation;
+    uint8_t mDeleteDataOperation;
+    void refreshConfigurationFields();
+
     // TODO: remove debug functions
     wb::TimerId mBlinkTimer;
     uint32_t mBlinkCounter;

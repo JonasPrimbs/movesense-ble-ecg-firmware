@@ -14,7 +14,6 @@ const char* const OfflineStorageGattClient::LAUNCHABLE_NAME =
 OfflineStorageGattClient::OfflineStorageGattClient() :
     ResourceClient(WBDEBUG_NAME(__FUNCTION__), WB_EXEC_CTX_APPLICATION),
     LaunchableModule(LAUNCHABLE_NAME, WB_EXEC_CTX_APPLICATION),
-    // Gatt related:
     // Debug Blinker:
     mBlinkTimer(wb::ID_INVALID_RESOURCE),
     mBlinkCounter(0),
@@ -28,7 +27,22 @@ OfflineStorageGattClient::OfflineStorageGattClient() :
     mCharCHandle(0),
     mCharCResource(wb::ID_INVALID_RESOURCE),
     mCharDHandle(0),
-    mCharDResource(wb::ID_INVALID_RESOURCE)
+    mCharDResource(wb::ID_INVALID_RESOURCE),
+
+    // Configuration Fields
+    // Measurement Intervals:
+    mEcgMeasurementInterval(IMU_DEFAULT_MEASUREMENT_INTERVAL),
+    mImuMeasurementInterval(IMU_DEFAULT_MEASUREMENT_INTERVAL),
+    // State fields:
+    mEcgRecordingMode(0),
+    mImuRecordingMode(0),
+    // Operation fields:
+    mRecordingOperation(0),
+    mGetDataOperation(0),
+    mDeleteDataOperation(0),
+
+    // DataLogger related:
+    mCurrentLogEntryId(0)
 {
 }
 
@@ -199,10 +213,7 @@ void OfflineStorageGattClient::onNotify(wb::ResourceId resourceId,
         }
         else if (charHandle == mCharCHandle)
         {
-            // TODO: use extend type length.
-            uint16_t value =
-                reinterpret_cast<const uint16_t*>(charValue.bytes.begin())[0];
-            parseConfigurationField(value);
+            parseConfigurationField(charValue.bytes.begin());
         }
         else if (charHandle == mCharDHandle)
         {
@@ -316,7 +327,7 @@ void OfflineStorageGattClient::configGattSvc()
     charB.initial_value = wb::MakeArray<uint8_t>(
         reinterpret_cast<const uint8_t*>(&INITIAL_B), sizeof(INITIAL_B));
     charC.initial_value = wb::MakeArray<uint8_t>(
-        reinterpret_cast<const uint8_t*>(&INITIAL_C), sizeof(INITIAL_C));
+        reinterpret_cast<const uint8_t*>(&INITIAL_C), CONFIGURATION_FIELD_SIZE);
     charD.initial_value = wb::MakeArray<uint8_t>(
         reinterpret_cast<const uint8_t*>(&INITIAL_D), sizeof(INITIAL_D));
 
@@ -370,18 +381,213 @@ void OfflineStorageGattClient::deinitGattCharSubscriptions()
         asyncUnsubscribe(mCharDResource);
 }
 
-void OfflineStorageGattClient::parseConfigurationField(uint16_t configField)
+void OfflineStorageGattClient::parseConfigurationField(
+    const uint8_t* configFields)
 {
-    // Extract individual values as bytes from configField.
-    uint8_t ecgInterval = reinterpret_cast<uint8_t*>(&configField)[0];
-    uint8_t imuInterval = reinterpret_cast<uint8_t*>(&configField)[1];
+    // Measurement intervals.
+    uint8_t ecgMeasurementInterval = configFields[0];
+    uint8_t imuMeasurementInterval = configFields[1];
 
-    // Update measurement intervals (operations are idempotent).
-    asyncPut(WB_RES::LOCAL::MEASUREMENTPROVIDER_ECG_INTERVAL(),
-             AsyncRequestOptions::Empty, ecgInterval);
+    // Potentially update ECG measurement interval.
+    if (ecgMeasurementInterval != mEcgMeasurementInterval)
+    {
+        asyncPut(WB_RES::LOCAL::MEASUREMENTPROVIDER_ECG_INTERVAL(),
+                 AsyncRequestOptions::Empty, ecgMeasurementInterval);
 
-    asyncPut(WB_RES::LOCAL::MEASUREMENTPROVIDER_IMU9_INTERVAL(),
-             AsyncRequestOptions::Empty, imuInterval);
+        this->mEcgMeasurementInterval = ecgMeasurementInterval;
+    }
+
+    // Potentially update IMU measurement interval.
+    if (imuMeasurementInterval != mImuMeasurementInterval)
+    {
+        asyncPut(WB_RES::LOCAL::MEASUREMENTPROVIDER_IMU9_INTERVAL(),
+                 AsyncRequestOptions::Empty, imuMeasurementInterval);
+        this->mImuMeasurementInterval = imuMeasurementInterval;
+    }
+
+    // Recording Modes.
+    uint8_t ecgRecordingMode = configFields[2];
+    uint8_t imuRecordingMode = configFields[3];
+
+    // Potentially update Recording Configuration.
+    if (ecgRecordingMode != mEcgRecordingMode ||
+        imuRecordingMode != mImuRecordingMode)
+    {
+        if (ecgRecordingMode && imuRecordingMode)
+        {
+            configureDataLoggerAll();
+            this->mEcgRecordingMode = true;
+            this->mImuRecordingMode = true;
+        }
+        else if (ecgRecordingMode && !imuRecordingMode)
+        {
+            configureDataLoggerECG();
+            this->mEcgRecordingMode = true;
+            this->mImuRecordingMode = false;
+        }
+        else if (!ecgRecordingMode && imuRecordingMode)
+        {
+            configureDataLoggerIMU();
+            this->mEcgRecordingMode = false;
+            this->mImuRecordingMode = true;
+        }
+        else
+        {
+            configureDataLoggerNone();
+            this->mEcgRecordingMode = false;
+            this->mImuRecordingMode = false;
+        }
+    }
+
+    // Recording Operation
+    uint8_t recordingOperation = configFields[4];
+
+    // Enable recording in case 0 -> 1
+    if (!mRecordingOperation && recordingOperation)
+    {
+        startDataLogger();
+        this->mRecordingOperation = 1;
+        // TODO: re-enable WakeClient.
+        asyncUnsubscribe(WB_RES::LOCAL::MEASUREMENTPROVIDER_ECG_DATASTREAM());
+        asyncUnsubscribe(WB_RES::LOCAL::MEASUREMENTPROVIDER_IMU9_DATASTREAM());
+    }
+
+    // Disable recording in case 1 -> 0
+    else if (mRecordingOperation && !recordingOperation)
+    {
+        stopDataLogger();
+        this->mRecordingOperation = 0;
+
+        // TODO: disable WakeClient
+        asyncSubscribe(WB_RES::LOCAL::MEASUREMENTPROVIDER_ECG_DATASTREAM());
+        asyncSubscribe(WB_RES::LOCAL::MEASUREMENTPROVIDER_IMU9_DATASTREAM());
+    }
+
+    uint8_t getDataOperation = configFields[5];
+
+    // Send recorded data operation (only if not recording currently and not
+    // already in get-data operation).
+    if (!mRecordingOperation && !mGetDataOperation && !mDeleteDataOperation &&
+        getDataOperation)
+    {
+        // TODO: no streaming if charD not enabled.
+        startLogStreaming();
+        mGetDataOperation = true;
+    }
+
+    uint8_t deleteDataOperation = configFields[6];
+
+    // Delete recorded data operation (only if not recording now, no ongoing
+    // data transfer or already started deletion operation).
+    if (!mRecordingOperation && !mGetDataOperation && !mDeleteDataOperation &&
+        deleteDataOperation)
+    {
+        deleteRecordedData();
+        // TODO: return to value 0 only on delete result.
+    }
+
+    // Refresh the configuration field for potential updates.
+    refreshConfigurationFields();
+}
+void OfflineStorageGattClient::refreshConfigurationFields()
+{
+    // Set the value of the characteristic to give client response information.
+    uint8_t values[sizeof(uint64_t)] = {
+        mEcgMeasurementInterval, mImuMeasurementInterval,
+        mEcgRecordingMode,       mImuRecordingMode,
+        mRecordingOperation,     mGetDataOperation,
+        mDeleteDataOperation,    0};
+
+    WB_RES::Characteristic configFieldsChar;
+    configFieldsChar.bytes = wb::MakeArray(values, sizeof(uint64_t));
+
+    // Actually PUT onto characteristic's value.
+    asyncPut(mCharCResource, AsyncRequestOptions::Empty, configFieldsChar);
+}
+
+void OfflineStorageGattClient::configureDataLoggerNone()
+{
+    WB_RES::DataLoggerConfig dlConfig;
+    asyncPut(WB_RES::LOCAL::MEM_DATALOGGER_CONFIG(), AsyncRequestOptions::Empty,
+             dlConfig);
+}
+
+void OfflineStorageGattClient::configureDataLoggerAll()
+{
+    startBlinker(2);
+    WB_RES::DataLoggerConfig dlConfig;
+    WB_RES::DataEntry dlEntries[2];
+    dlEntries[0].path = "/MeasurementProvider/ECG/DataStream";
+    dlEntries[1].path = "/MeasurementProvider/IMU9/DataStream";
+    dlConfig.dataEntries.dataEntry = wb::MakeArray(dlEntries, 2);
+    asyncPut(WB_RES::LOCAL::MEM_DATALOGGER_CONFIG(), AsyncRequestOptions::Empty,
+             dlConfig);
+}
+void OfflineStorageGattClient::configureDataLoggerECG()
+{
+    startBlinker(2);
+    WB_RES::DataLoggerConfig dlConfig;
+    WB_RES::DataEntry dlEntry;
+    dlEntry.path = "/MeasurementProvider/ECG/DataStream";
+    dlConfig.dataEntries.dataEntry = wb::MakeArray(&dlEntry, 1);
+    asyncPut(WB_RES::LOCAL::MEM_DATALOGGER_CONFIG(), AsyncRequestOptions::Empty,
+             dlConfig);
+}
+void OfflineStorageGattClient::configureDataLoggerIMU()
+{
+    startBlinker(2);
+    WB_RES::DataLoggerConfig dlConfig;
+    WB_RES::DataEntry dlEntry;
+    dlEntry.path = "/MeasurementProvider/IMU9/DataStream";
+    dlConfig.dataEntries.dataEntry = wb::MakeArray(&dlEntry, 1);
+    asyncPut(WB_RES::LOCAL::MEM_DATALOGGER_CONFIG(), AsyncRequestOptions::Empty,
+             dlConfig);
+}
+
+void OfflineStorageGattClient::startDataLogger()
+{
+    startBlinker(3);
+    // Start Logging with the configured LoggerConfig by PUTting the Logger
+    // in the LOGGING state.
+    asyncPut(WB_RES::LOCAL::MEM_DATALOGGER_STATE(), AsyncRequestOptions::Empty,
+             WB_RES::DataLoggerStateValues::DATALOGGER_LOGGING);
+}
+
+void OfflineStorageGattClient::stopDataLogger()
+{
+    startBlinker(3);
+    // Stop Logging by PUTting the logger in the READY state.
+    asyncPut(WB_RES::LOCAL::MEM_DATALOGGER_STATE(), AsyncRequestOptions::Empty,
+             WB_RES::DataLoggerStateValues::DATALOGGER_READY);
+}
+
+void OfflineStorageGattClient::startLogStreaming()
+{
+    startBlinker(4);
+    asyncGet(WB_RES::LOCAL::MEM_LOGBOOK_ENTRIES());
+    // Continue logic in onGetResult() case Mem/Logbook/Entries.
+}
+
+void OfflineStorageGattClient::deleteRecordedData()
+{
+    startBlinker(5);
+    // Delete all Logbook entries.
+    asyncDelete(WB_RES::LOCAL::MEM_LOGBOOK_ENTRIES());
+}
+
+void OfflineStorageGattClient::finishCurrentReadOperation()
+{
+    // Mark the stream-end by sending a single 0.
+    constexpr uint8_t ZERO = 0;
+    WB_RES::Characteristic recordedDataChar;
+    recordedDataChar.bytes = wb::MakeArray(&ZERO, 1);
+    asyncPut(mCharDResource, AsyncRequestOptions::Empty, recordedDataChar);
+    // Reset log entry id to 0 for next READ operation.
+    this->mCurrentLogEntryId = 0;
+    this->mGetDataOperation = 0;
+    refreshConfigurationFields();
+}
+
 // TODO: remove after debug.
 void OfflineStorageGattClient::startBlinker(const uint32_t n)
 {
