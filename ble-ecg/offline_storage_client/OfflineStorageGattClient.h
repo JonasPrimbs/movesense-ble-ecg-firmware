@@ -34,6 +34,7 @@ class OfflineStorageGattClient FINAL : private wb::ResourceClient,
                   const wb::Value& rValue,
                   const wb::ParameterList& rParameters) OVERRIDE;
 
+    void onTimer(wb::TimerId timerId) OVERRIDE;
 
     // GATT Service configuration methods:
     void configGattSvc();
@@ -63,4 +64,11 @@ class OfflineStorageGattClient FINAL : private wb::ResourceClient,
 
     // Measurement Interval settings.
     void parseConfigurationField(uint16_t);
+    // TODO: remove debug functions
+    wb::TimerId mBlinkTimer;
+    uint32_t mBlinkCounter;
+    void startBlinker(uint32_t);
+    void debug(const char* msg);
+    void debugf(const char*, int64_t);
+    // End remove
 };

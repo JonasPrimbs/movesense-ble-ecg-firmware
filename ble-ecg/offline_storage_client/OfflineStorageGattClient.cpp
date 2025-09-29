@@ -2,7 +2,9 @@
 
 #include "app-resources/resources.h"
 #include "comm_ble_gattsvc/resources.h"
-#include "movesense.h"
+#include "ui_ind/resources.h"
+#include "mem_datalogger/resources.h"
+#include "mem_logbook/resources.h"
 
 #include "GattConfig.h"
 
@@ -13,6 +15,11 @@ OfflineStorageGattClient::OfflineStorageGattClient() :
     ResourceClient(WBDEBUG_NAME(__FUNCTION__), WB_EXEC_CTX_APPLICATION),
     LaunchableModule(LAUNCHABLE_NAME, WB_EXEC_CTX_APPLICATION),
     // Gatt related:
+    // Debug Blinker:
+    mBlinkTimer(wb::ID_INVALID_RESOURCE),
+    mBlinkCounter(0),
+
+    // Gatt handles and resources:
     mActivityServiceHandle(0),
     mCharAHandle(0),
     mCharAResource(wb::ID_INVALID_RESOURCE),
@@ -61,6 +68,8 @@ void OfflineStorageGattClient::stopModule()
 
     // Set all resources to invalid.
     deconfigGattSvc();
+
+    mBlinkTimer = wb::ID_INVALID_TIMER;
     mModuleState = WB_RES::ModuleStateValues::STOPPED;
 }
 
@@ -243,6 +252,29 @@ void OfflineStorageGattClient::onNotify(wb::ResourceId resourceId,
     }
 }
 
+void OfflineStorageGattClient::onTimer(wb::TimerId timerId)
+{
+    // Only react on the blink-timer. (no other timer used in this module)
+    if (timerId == this->mBlinkTimer)
+    {
+        // Stop the blinking if the blink-counter has reached 0.
+        if (this->mBlinkCounter == 0)
+        {
+            this->stopTimer(this->mBlinkTimer);
+            this->mBlinkTimer = wb::ID_INVALID_TIMER;
+            return;
+        }
+        // Blink once.
+        const WB_RES::VisualIndType type =
+            WB_RES::VisualIndTypeValues::SHORT_VISUAL_INDICATION;
+        this->asyncPut(WB_RES::LOCAL::UI_IND_VISUAL(),
+                       AsyncRequestOptions::Empty, type);
+
+        // Decrement the blink-counter.
+        this->mBlinkCounter -= 1;
+    }
+}
+
 void OfflineStorageGattClient::configGattSvc()
 {
     WB_RES::GattSvc activityGattSvc;
@@ -350,4 +382,24 @@ void OfflineStorageGattClient::parseConfigurationField(uint16_t configField)
 
     asyncPut(WB_RES::LOCAL::MEASUREMENTPROVIDER_IMU9_INTERVAL(),
              AsyncRequestOptions::Empty, imuInterval);
+// TODO: remove after debug.
+void OfflineStorageGattClient::startBlinker(const uint32_t n)
+{
+    constexpr size_t SPECIAL_INDICATION_BLINK_PERIOD = 250;
+    this->mBlinkCounter = n;
+    this->mBlinkTimer = this->startTimer(SPECIAL_INDICATION_BLINK_PERIOD, true);
+}
+
+void OfflineStorageGattClient::debug(const char* msg)
+{
+    WB_RES::Characteristic recordedDataChar;
+    recordedDataChar.bytes = wb::MakeArray((const uint8_t*)msg, strlen(msg));
+    asyncPut(mCharDResource, AsyncRequestOptions::ForceAsync, recordedDataChar);
+}
+
+void OfflineStorageGattClient::debugf(const char* fmtstr, int64_t x)
+{
+    char buffer[100];
+    sprintf(buffer, fmtstr, x);
+    debug(buffer);
 }
