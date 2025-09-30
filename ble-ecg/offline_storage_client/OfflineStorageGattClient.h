@@ -102,6 +102,11 @@ class OfflineStorageGattClient FINAL : private wb::ResourceClient,
     uint8_t mDeleteDataOperation;
     void refreshConfigurationFields();
 
+    // Time Synchronization:
+    void setTimestamp();
+    int64_t mSynchronizationTimestamp;
+    wb::ResourceId mTimeResource;
+
     // TODO: remove debug functions
     wb::TimerId mBlinkTimer;
     uint32_t mBlinkCounter;

@@ -4,7 +4,7 @@
 #include <whiteboard/ResourceClient.h>
 #include <whiteboard/ResourceProvider.h>
 
-#include "../SeriesBuffer.h"
+#include "AbsoluteSeriesBuffer.h"
 #include "MeasurementConfig.h"
 
 class MeasurementProvider FINAL : private wb::ResourceProvider,
@@ -48,16 +48,20 @@ class MeasurementProvider FINAL : private wb::ResourceProvider,
     uint8_t mImuSampleSkipCount;
     void setImuMeasurementInterval(uint8_t);
     mov_t prepareImuSample(wb::FloatVector3D,
-                            wb::FloatVector3D,
-                            wb::FloatVector3D);
+                           wb::FloatVector3D,
+                           wb::FloatVector3D);
 
     acc_vec_t prepareAccSample(wb::FloatVector3D);
     gyr_vec_t prepareGyrSample(wb::FloatVector3D);
     mag_vec_t prepareMagSample(wb::FloatVector3D);
 
+    // For time synchronization.
+    // Timestamp for when the sensor time has started (microseconds).
+    int64_t mBaseTimestampUs;
+
     // Series Buffer for ECG data.
-    SeriesBuffer<ecg_t>* ecgBuffer;
+    AbsoluteSeriesBuffer<ecg_t>* ecgBuffer;
 
     // Series Buffer for IMU/Movement data.
-    SeriesBuffer<mov_t>* movBuffer;
+    AbsoluteSeriesBuffer<mov_t>* movBuffer;
 };

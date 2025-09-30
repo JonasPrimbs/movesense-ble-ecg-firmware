@@ -138,7 +138,7 @@ datalogger:
   resources:
     /MeasurementProvider/ECG/.*:
       # (16 * 2 + 4) / 4
-      array-lengths: 9
+      array-lengths: 10
     /MeasurementProvider/IMU9/.*:
       # (8 * 2 * 3 * 3 + 4) / 4
-      array-lengths: 37
+      array-lengths: 38

@@ -4,7 +4,7 @@
 #include "movesense.h"
 
 // Size Definitions:
-constexpr size_t CONFIGURATION_FIELD_SIZE = 8;
+constexpr size_t CONFIGURATION_FIELD_SIZE = 16;
 constexpr size_t SBEM_BLOCK_SIZE = 278;
 constexpr size_t LOG_TRANSMISSION_MTU = SBEM_BLOCK_SIZE / 2;
 constexpr size_t OFFLINE_STORAGE_GATT_CLIENT_CHARS = 4;
@@ -33,6 +33,14 @@ constexpr uint16_t INITIAL_B = 0;
 constexpr uint8_t INITIAL_C[CONFIGURATION_FIELD_SIZE] = {
     ECG_DEFAULT_MEASUREMENT_INTERVAL,
     IMU_DEFAULT_MEASUREMENT_INTERVAL,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
     0,
     0,
     0,

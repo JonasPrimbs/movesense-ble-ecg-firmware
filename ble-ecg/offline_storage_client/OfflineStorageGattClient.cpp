@@ -4,6 +4,7 @@
 #include "comm_ble_gattsvc/resources.h"
 #include "mem_datalogger/resources.h"
 #include "mem_logbook/resources.h"
+#include "movesense_time/resources.h"
 #include "ui_ind/resources.h"
 
 #include "../WakeClient.h"
@@ -43,7 +44,11 @@ OfflineStorageGattClient::OfflineStorageGattClient() :
     mDeleteDataOperation(0),
 
     // DataLogger related:
-    mCurrentLogEntryId(0)
+    mCurrentLogEntryId(0),
+
+    // Time synchronization
+    mSynchronizationTimestamp(0),
+    mTimeResource(wb::ID_INVALID_RESOURCE)
 {
 }
 
@@ -545,20 +550,35 @@ void OfflineStorageGattClient::parseConfigurationField(
         // TODO: return to value 0 only on delete result.
     }
 
+    int64_t timestamp;
+    // copy in 2 steps, otherwise crash on directly dereferencing 64-bit.
+    memcpy((uint32_t*)&timestamp, configFields + 8, 4);
+    memcpy((uint32_t*)(&timestamp) + 1, configFields + 12, 4);
+
+    if (timestamp != mSynchronizationTimestamp)
+    {
+        this->mSynchronizationTimestamp = timestamp;
+        setTimestamp();
+    }
+
     // Refresh the configuration field for potential updates.
     refreshConfigurationFields();
 }
 void OfflineStorageGattClient::refreshConfigurationFields()
 {
     // Set the value of the characteristic to give client response information.
+    uint8_t buffer[2 * 8];
     uint8_t values[sizeof(uint64_t)] = {
         mEcgMeasurementInterval, mImuMeasurementInterval,
         mEcgRecordingMode,       mImuRecordingMode,
         mRecordingOperation,     mGetDataOperation,
         mDeleteDataOperation,    0};
 
+    memcpy(buffer, values, 8);
+    memcpy(buffer + 8, &mSynchronizationTimestamp, 8);
+
     WB_RES::Characteristic configFieldsChar;
-    configFieldsChar.bytes = wb::MakeArray(values, sizeof(uint64_t));
+    configFieldsChar.bytes = wb::MakeArray(buffer);
 
     // Actually PUT onto characteristic's value.
     asyncPut(mCharCResource, AsyncRequestOptions::Empty, configFieldsChar);
@@ -647,6 +667,14 @@ void OfflineStorageGattClient::finishCurrentReadOperation()
     refreshConfigurationFields();
 }
 
+void OfflineStorageGattClient::setTimestamp()
+{
+    // Set the sensor's unix timestamp in microseconds now. Listeners
+    // on Time/Detailed will get notified.
+    asyncPut(WB_RES::LOCAL::TIME(), AsyncRequestOptions::Empty,
+             mSynchronizationTimestamp);
+}
+
 // TODO: remove after debug.
 void OfflineStorageGattClient::startBlinker(const uint32_t n)
 {
@@ -662,7 +690,7 @@ void OfflineStorageGattClient::debug(const char* msg)
     asyncPut(mCharDResource, AsyncRequestOptions::ForceAsync, recordedDataChar);
 }
 
-void OfflineStorageGattClient::debugf(const char* fmtstr, int64_t x)
+inline void OfflineStorageGattClient::debugf(const char* fmtstr, int64_t x)
 {
     char buffer[100];
     sprintf(buffer, fmtstr, x);

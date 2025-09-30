@@ -3,19 +3,22 @@
 #include "app-resources/resources.h"
 #include "meas_ecg/resources.h"
 #include "meas_imu/resources.h"
+#include "movesense_time/resources.h"
+#include "ui_ind/resources.h"
 
 const char* const MeasurementProvider::LAUNCHABLE_NAME = "MeasurementProvider";
 
 // Set execution context to *MEAS*
-static constexpr wb::ExecutionContextId sExecutionContextId = WB_EXEC_CTX_MEAS;
+constexpr wb::ExecutionContextId sExecutionContextId =
+    WB_RES::LOCAL::MEASUREMENTPROVIDER_ECG_DATASTREAM::EXECUTION_CONTEXT;
 
 // Array of all resources this Module provides.
 static constexpr wb::LocalResourceId sProviderResources[] = {
     WB_RES::LOCAL::MEASUREMENTPROVIDER_ECG_DATASTREAM::LID,
     WB_RES::LOCAL::MEASUREMENTPROVIDER_ECG_INTERVAL::LID,
     WB_RES::LOCAL::MEASUREMENTPROVIDER_IMU9_DATASTREAM::LID,
-    WB_RES::LOCAL::MEASUREMENTPROVIDER_IMU9_INTERVAL::LID};
-
+    WB_RES::LOCAL::MEASUREMENTPROVIDER_IMU9_INTERVAL::LID,
+};
 MeasurementProvider::MeasurementProvider() :
     ResourceProvider(WBDEBUG_NAME(__FUNCTION__), sExecutionContextId),
     ResourceClient(WBDEBUG_NAME(__FUNCTION__), sExecutionContextId),
@@ -27,13 +30,15 @@ MeasurementProvider::MeasurementProvider() :
     // IMU
     mImuMeasurementInterval(IMU_BASE_MEASUREMENT_INTERVAL),
     mImuSampleCounter(0),
-    mImuSampleSkipCount(IMU_DEFAULT_SAMPLE_SKIP_COUNT)
+    mImuSampleSkipCount(IMU_DEFAULT_SAMPLE_SKIP_COUNT),
+    // Time
+    mBaseTimestampUs(0)
 {
     // Create buffers.
-    this->ecgBuffer =
-        new SeriesBuffer<ecg_t>(DEFAULT_ECG_OBJECT_SIZE, numberOfEcgBuffers);
-    this->movBuffer =
-        new SeriesBuffer<mov_t>(DEFAULT_MOV_OBJECT_SIZE, numberOfMovBuffers);
+    this->ecgBuffer = new AbsoluteSeriesBuffer<ecg_t>(DEFAULT_ECG_OBJECT_SIZE,
+                                                      numberOfEcgBuffers);
+    this->movBuffer = new AbsoluteSeriesBuffer<mov_t>(DEFAULT_MOV_OBJECT_SIZE,
+                                                      numberOfMovBuffers);
 }
 
 MeasurementProvider::~MeasurementProvider()
@@ -61,6 +66,9 @@ bool MeasurementProvider::startModule()
 {
     mModuleState = WB_RES::ModuleStateValues::STARTED;
 
+    // Subscribe to changes in the devices timestamp
+    asyncSubscribe(WB_RES::LOCAL::TIME_DETAILED());
+
     // Subscribe to incoming measurement data from the beginning.
     asyncSubscribe(WB_RES::LOCAL::MEAS_ECG_REQUIREDSAMPLERATE(),
                    AsyncRequestOptions::Empty, ECG_BASE_SAMPLE_RATE);
@@ -76,6 +84,8 @@ void MeasurementProvider::stopModule()
                      AsyncRequestOptions::Empty, ECG_BASE_SAMPLE_RATE);
     asyncUnsubscribe(WB_RES::LOCAL::MEAS_IMU9_SAMPLERATE(),
                      AsyncRequestOptions::Empty, IMU9_BASE_SAMPLE_RATE);
+
+    asyncUnsubscribe(WB_RES::LOCAL::TIME_DETAILED());
     mModuleState = WB_RES::ModuleStateValues::STOPPED;
 }
 
@@ -122,6 +132,16 @@ void MeasurementProvider::onNotify(whiteboard::ResourceId resourceId,
 {
     switch (resourceId.localResourceId)
     {
+    // Change in the devices timestamp
+    case WB_RES::LOCAL::TIME_DETAILED::LID: {
+
+        const WB_RES::TimeSync& ts =
+            rValue.convertTo<const WB_RES::TimeSync&>();
+
+        // Update base time to contain the time of the device-start in us.
+        this->mBaseTimestampUs = ts.utcTime - 1000 * ts.relativeTime;
+        break;
+    }
     // New ECG data received from the sensor native resource.
     case WB_RES::LOCAL::MEAS_ECG_REQUIREDSAMPLERATE::LID: {
         const WB_RES::ECGData& data =
@@ -144,7 +164,8 @@ void MeasurementProvider::onNotify(whiteboard::ResourceId resourceId,
             if (!ecgBuffer->canAddSample())
             {
                 // TODO: correct timestamp to last sample?
-                ecgBuffer->setTimestamp(data.timestamp);
+                ecgBuffer->setTimestamp(this->mBaseTimestampUs +
+                                        1000 * data.timestamp);
 
                 // Create Measurement Data packet.
                 WB_RES::MeasurementBundle32 packet{wb::MakeArray(
@@ -184,7 +205,8 @@ void MeasurementProvider::onNotify(whiteboard::ResourceId resourceId,
             if (!movBuffer->canAddSample())
             {
                 // TODO: correct timestamp to last sample?
-                movBuffer->setTimestamp(data.timestamp);
+                movBuffer->setTimestamp(this->mBaseTimestampUs +
+                                        1000 * data.timestamp);
 
                 // Create measurement data packet.
                 WB_RES::MeasurementBundle32 packet{wb::MakeArray(

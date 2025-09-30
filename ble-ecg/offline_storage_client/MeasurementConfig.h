@@ -1,7 +1,6 @@
 #pragma once
+#include "AbsoluteSeriesBuffer.h"
 #include "movesense.h"
-
-
 /** Measurement intervals **/
 // The smallest possible measurement interval.
 constexpr uint8_t ECG_BASE_MEASUREMENT_INTERVAL = 2;
@@ -27,8 +26,7 @@ typedef int16_t acc_t;
 typedef int16_t gyr_t;
 typedef int16_t mag_t;
 
-template<class T>
-struct Vector3
+template <class T> struct Vector3
 {
     T x;
     T y;
@@ -54,10 +52,10 @@ constexpr uint16_t numberOfMovBuffers = 2;
 
 /** Resulting packet sizes **/
 constexpr uint16_t ECG_PACKET_SIZE =
-    DEFAULT_ECG_OBJECT_SIZE * sizeof(ecg_t) + sizeof(timestamp_t);
+    DEFAULT_ECG_OBJECT_SIZE * sizeof(ecg_t) + sizeof(absolute_timestamp_t);
 
 constexpr uint16_t MOV_PACKET_SIZE =
-    DEFAULT_MOV_OBJECT_SIZE * sizeof(mov_t) + sizeof(timestamp_t);
+    DEFAULT_MOV_OBJECT_SIZE * sizeof(mov_t) + sizeof(absolute_timestamp_t);
 
 constexpr uint16_t ECG_PACKET_SIZE_UINT32 = ECG_PACKET_SIZE / sizeof(uint32);
 constexpr uint16_t MOV_PACKET_SIZE_UINT32 = MOV_PACKET_SIZE / sizeof(uint32);
