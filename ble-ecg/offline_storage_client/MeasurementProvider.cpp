@@ -147,13 +147,9 @@ void MeasurementProvider::onNotify(whiteboard::ResourceId resourceId,
                 ecgBuffer->setTimestamp(data.timestamp);
 
                 // Create Measurement Data packet.
-                const uint32_t timestamp =
-                    *reinterpret_cast<uint32_t*>(ecgBuffer->getCurrentBuffer());
-
-                const int16_t* samples = reinterpret_cast<int16_t*>(
-                    ecgBuffer->getCurrentBuffer() + 4);
-
-                WB_RES::EcgBundle packet{timestamp, wb::MakeArray(samples, 16)};
+                WB_RES::MeasurementBundle32 packet{wb::MakeArray(
+                    reinterpret_cast<uint32_t*>(ecgBuffer->getCurrentBuffer()),
+                    ECG_PACKET_SIZE_UINT32)};
                 // Send the packet off to local listeners.
                 updateResource(
                     WB_RES::LOCAL::MEASUREMENTPROVIDER_ECG_DATASTREAM(),
@@ -191,13 +187,10 @@ void MeasurementProvider::onNotify(whiteboard::ResourceId resourceId,
                 movBuffer->setTimestamp(data.timestamp);
 
                 // Create measurement data packet.
-                const uint32_t timestamp =
-                    *reinterpret_cast<uint32_t*>(movBuffer->getCurrentBuffer());
+                WB_RES::MeasurementBundle32 packet{wb::MakeArray(
+                    reinterpret_cast<uint32_t*>(movBuffer->getCurrentBuffer()),
+                    MOV_PACKET_SIZE_UINT32)};
 
-                const int16_t* samples = reinterpret_cast<int16_t*>(
-                    movBuffer->getCurrentBuffer() + 4);
-
-                WB_RES::ImuBundle packet{timestamp, wb::MakeArray(samples, 36)};
                 // Send the packet off to local listeners.
                 updateResource(
                     WB_RES::LOCAL::MEASUREMENTPROVIDER_IMU9_DATASTREAM(),

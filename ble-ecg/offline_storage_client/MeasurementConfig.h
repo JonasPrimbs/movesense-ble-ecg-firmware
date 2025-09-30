@@ -48,9 +48,19 @@ struct mov_t
 
 /** Buffers **/
 constexpr uint16_t DEFAULT_ECG_OBJECT_SIZE = 16;
-constexpr uint16_t DEFAULT_MOV_OBJECT_SIZE = 4;
+constexpr uint16_t DEFAULT_MOV_OBJECT_SIZE = 8;
 constexpr uint16_t numberOfEcgBuffers = 2;
 constexpr uint16_t numberOfMovBuffers = 2;
+
+/** Resulting packet sizes **/
+constexpr uint16_t ECG_PACKET_SIZE =
+    DEFAULT_ECG_OBJECT_SIZE * sizeof(ecg_t) + sizeof(timestamp_t);
+
+constexpr uint16_t MOV_PACKET_SIZE =
+    DEFAULT_MOV_OBJECT_SIZE * sizeof(mov_t) + sizeof(timestamp_t);
+
+constexpr uint16_t ECG_PACKET_SIZE_UINT32 = ECG_PACKET_SIZE / sizeof(uint32);
+constexpr uint16_t MOV_PACKET_SIZE_UINT32 = MOV_PACKET_SIZE / sizeof(uint32);
 
 /** Sample conversion constants **/
 constexpr ecg_t ECG_MAX_VALUE = 32767;      // 0x7FFF = 2^15 - 1;

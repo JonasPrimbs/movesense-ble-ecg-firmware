@@ -290,15 +290,13 @@ void OfflineStorageGattClient::onNotify(wb::ResourceId resourceId,
     // ECG Data:
     case WB_RES::LOCAL::MEASUREMENTPROVIDER_ECG_DATASTREAM::LID: {
         // Get raw bytes from the packet.
-        uint8_t sendBuffer[36];
-        const WB_RES::EcgBundle& packet =
-            rValue.convertTo<const WB_RES::EcgBundle&>();
-
-        memcpy(sendBuffer, &packet.timestamp, 4);
-        memcpy(sendBuffer + 4, packet.samples.begin(), 32);
+        const WB_RES::MeasurementBundle32& packet =
+            rValue.convertTo<const WB_RES::MeasurementBundle32&>();
 
         WB_RES::Characteristic ecgVoltageCharacteristic;
-        ecgVoltageCharacteristic.bytes = wb::MakeArray(sendBuffer);
+        ecgVoltageCharacteristic.bytes = wb::MakeArray(
+            reinterpret_cast<const uint8_t*>(packet.units.begin()),
+            packet.units.size() * sizeof(uint32_t));
 
         // Put value onto Ecg-Characteristic to notify listening client.
         asyncPut(mCharAResource, AsyncRequestOptions::Empty,
@@ -308,14 +306,13 @@ void OfflineStorageGattClient::onNotify(wb::ResourceId resourceId,
     // IMU Data:
     case WB_RES::LOCAL::MEASUREMENTPROVIDER_IMU9_DATASTREAM::LID: {
         // Get raw bytes from the packet.
-        const WB_RES::ImuBundle& packet =
-            rValue.convertTo<const WB_RES::ImuBundle&>();
+        const WB_RES::MeasurementBundle32& packet =
+            rValue.convertTo<const WB_RES::MeasurementBundle32&>();
 
-        uint8_t sendBuffer[76];
         WB_RES::Characteristic movVectorCharacteristic;
-        memcpy(sendBuffer, &packet.timestamp, 4);
-        memcpy(sendBuffer + 4, packet.samples.begin(), 72);
-        movVectorCharacteristic.bytes = wb::MakeArray(sendBuffer);
+        movVectorCharacteristic.bytes = wb::MakeArray(
+            reinterpret_cast<const uint8_t*>(packet.units.begin()),
+            packet.units.size() * sizeof(uint32_t));
 
         // Put value onto Mov-Characteristic to notify listening client.
         asyncPut(mCharBResource, AsyncRequestOptions::Empty,

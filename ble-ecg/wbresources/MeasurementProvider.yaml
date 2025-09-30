@@ -35,7 +35,7 @@ paths:
         x-notification:
           description: ECG data notification
           schema:
-            $ref: '#/definitions/ecgBundle'
+            $ref: '#/definitions/measurementBundle32'
     delete:
       description: |
         Unsubscribe from ECG data.
@@ -71,9 +71,9 @@ paths:
         x-notification:
           description: IMU9 data notification
           schema:
-            $ref: '#/definitions/imuBundle'
+            $ref: '#/definitions/measurementBundle32'
     delete:
-      description: | 
+      description: |
         Unsubscribe from IMU9 data.
       responses:
         200:
@@ -81,6 +81,17 @@ paths:
             Operation completed successfully
 
 definitions:
+
+  measurementBundle32:
+    required:
+      - units
+    properties:
+      units:
+        type: array
+        items:
+          type: integer
+          format: uint32
+
   measurementBundle:
     required:
       - bytes
@@ -126,8 +137,8 @@ datalogger:
   type: "config"
   resources:
     /MeasurementProvider/ECG/.*:
-      # 16
-      array-lengths: 16
+      # (16 * 2 + 4) / 4
+      array-lengths: 9
     /MeasurementProvider/IMU9/.*:
-      # 4 * 3 * 3
-      array-lengths: 36
+      # (8 * 2 * 3 * 3 + 4) / 4
+      array-lengths: 37
