@@ -50,6 +50,12 @@ OfflineStorageGattClient::OfflineStorageGattClient() :
     mSynchronizationTimestamp(0),
     mTimeResource(wb::ID_INVALID_RESOURCE)
 {
+    mSbemWaitBuffer = new uint8_t[MTU];
+}
+
+OfflineStorageGattClient::~OfflineStorageGattClient()
+{
+    delete[] mSbemWaitBuffer;
 }
 
 bool OfflineStorageGattClient::initModule()
@@ -188,25 +194,48 @@ void OfflineStorageGattClient::onGetResult(wb::RequestId requestId,
         const size_t length = byteStream.length();
         WB_RES::Characteristic recordedDataChar;
 
-        // Send in two halves if it is large enough, otherwise just one message.
-        if (length > LOG_TRANSMISSION_MTU)
+        // Buffer for immediate off-sending
+        uint8_t sendOffBuffer[MTU];
+
+        // if old and new data do not fill up MTU, copy old data to sbemBuffer.
+        if (mSbemWaitBufferIndex + length < MTU)
         {
-            recordedDataChar.bytes =
-                wb::MakeArray<uint8_t>(byteStream.data, LOG_TRANSMISSION_MTU);
-            asyncPut(mCharDResource, AsyncRequestOptions::Empty,
-                     recordedDataChar);
-            recordedDataChar.bytes =
-                wb::MakeArray<uint8_t>(byteStream.data + LOG_TRANSMISSION_MTU,
-                                       length - LOG_TRANSMISSION_MTU);
-            asyncPut(mCharDResource, AsyncRequestOptions::Empty,
-                     recordedDataChar);
+            memcpy(mSbemWaitBuffer + mSbemWaitBufferIndex, byteStream.data,
+                   length);
+            mSbemWaitBufferIndex += length;
         }
         else
         {
-            recordedDataChar.bytes =
-                wb::MakeArray<uint8_t>(byteStream.data, length);
+            // First cope previous excess data to SendOffBuffer.
+            memcpy(sendOffBuffer, mSbemWaitBuffer, mSbemWaitBufferIndex);
+
+            // Fill up SendBuffer for sending (if block large enough).
+            size_t space_to_fill = MTU - mSbemWaitBufferIndex;
+            memcpy(sendOffBuffer + mSbemWaitBufferIndex, byteStream.data,
+                   space_to_fill);
+            mSbemWaitBufferIndex = 0;
+            // Send off first buffer.
+            recordedDataChar.bytes = wb::MakeArray<uint8_t>(sendOffBuffer, MTU);
             asyncPut(mCharDResource, AsyncRequestOptions::Empty,
                      recordedDataChar);
+            size_t read_index = space_to_fill;
+            // Iteratively break chunks off byteStream until smaller than MTU.
+            while (length - read_index >= MTU)
+            {
+                memcpy(sendOffBuffer, byteStream.data + read_index, MTU);
+                recordedDataChar.bytes =
+                    wb::MakeArray<uint8_t>(sendOffBuffer, MTU);
+                asyncPut(mCharDResource, AsyncRequestOptions::Empty,
+                         recordedDataChar);
+                read_index += MTU;
+            }
+            // buffer the excess until next round.
+            if (length - read_index > 0)
+            {
+                memcpy(mSbemWaitBuffer, byteStream.data + read_index,
+                       length - read_index);
+                mSbemWaitBufferIndex = length - read_index;
+            }
         }
 
         if (resultCode == wb::HTTP_CODE_CONTINUE)
@@ -217,6 +246,17 @@ void OfflineStorageGattClient::onGetResult(wb::RequestId requestId,
         }
         else if (resultCode == wb::HTTP_CODE_OK)
         {
+            // Send off remaining excess bytes.
+            if (mSbemWaitBufferIndex != 0)
+            {
+                recordedDataChar.bytes = wb::MakeArray<uint8_t>(
+                    mSbemWaitBuffer, mSbemWaitBufferIndex);
+                asyncPut(mCharDResource, AsyncRequestOptions::Empty,
+                         recordedDataChar);
+                mSbemWaitBufferIndex = 0;
+            }
+
+            // Finish off the operation.
             finishCurrentReadOperation();
         }
         break;
@@ -322,6 +362,22 @@ void OfflineStorageGattClient::onNotify(wb::ResourceId resourceId,
         // Put value onto Mov-Characteristic to notify listening client.
         asyncPut(mCharBResource, AsyncRequestOptions::Empty,
                  movVectorCharacteristic);
+        break;
+    }
+    case WB_RES::LOCAL::MEM_LOGBOOK_ISFULL::LID: {
+        const bool isFull = rValue.convertTo<bool>();
+        if (isFull)
+        {
+            // Stop recording when logbook is full.
+            stopDataLogger();
+            // reactivate auto-shutdown.
+            // TODO: check if this works
+            // WakeClient::activate();
+
+            // Reset recording field to 0.
+            mRecordingOperation = 0;
+            refreshConfigurationFields();
+        }
         break;
     }
     }
@@ -630,6 +686,8 @@ void OfflineStorageGattClient::startDataLogger()
     // in the LOGGING state.
     asyncPut(WB_RES::LOCAL::MEM_DATALOGGER_STATE(), AsyncRequestOptions::Empty,
              WB_RES::DataLoggerStateValues::DATALOGGER_LOGGING);
+    asyncSubscribe(WB_RES::LOCAL::MEM_LOGBOOK_ISFULL(),
+                   AsyncRequestOptions::ForceAsync);
 }
 
 void OfflineStorageGattClient::stopDataLogger()
@@ -638,6 +696,8 @@ void OfflineStorageGattClient::stopDataLogger()
     // Stop Logging by PUTting the logger in the READY state.
     asyncPut(WB_RES::LOCAL::MEM_DATALOGGER_STATE(), AsyncRequestOptions::Empty,
              WB_RES::DataLoggerStateValues::DATALOGGER_READY);
+    // Unsubscribe from Logbook:isFull
+    asyncUnsubscribe(WB_RES::LOCAL::MEM_LOGBOOK_ISFULL());
 }
 
 void OfflineStorageGattClient::startLogStreaming()

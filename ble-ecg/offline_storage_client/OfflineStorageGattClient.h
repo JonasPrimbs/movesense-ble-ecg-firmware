@@ -9,7 +9,7 @@ class OfflineStorageGattClient FINAL : private wb::ResourceClient,
     static const char* const LAUNCHABLE_NAME;
 
     OfflineStorageGattClient();
-    ~OfflineStorageGattClient() = default;
+    ~OfflineStorageGattClient();
 
   private:
     // From wb::LaunchableModule:
@@ -17,6 +17,9 @@ class OfflineStorageGattClient FINAL : private wb::ResourceClient,
     void deinitModule() OVERRIDE;
     bool startModule() OVERRIDE;
     void stopModule() OVERRIDE;
+
+    uint8_t* mSbemWaitBuffer;
+    size_t mSbemWaitBufferIndex = 0;
 
     // From wb::ResourceClient:
     void onGetResult(wb::RequestId requestId,
