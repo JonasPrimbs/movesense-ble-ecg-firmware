@@ -57,7 +57,14 @@ class MeasurementProvider FINAL : private wb::ResourceProvider,
 
     // For time synchronization.
     // Timestamp for when the sensor time has started (microseconds).
-    int64_t mBaseTimestampUs;
+    int64_t mUnixBaseTimestampUs;
+
+    // Overflow counters to keep track of device-timestamp-overflows:
+    // (one for each type, to prevent race conditions)
+    size_t mEcgCurrentSensorTimestampMs = 0;
+    size_t mEcgSensorTimestampOverflowCounter = 0;
+    size_t mImuCurrentSensorTimestampMs = 0;
+    size_t mImuSensorTimestampOverflowCounter = 0;
 
     // Series Buffer for ECG data.
     AbsoluteSeriesBuffer<ecg_t>* ecgBuffer;

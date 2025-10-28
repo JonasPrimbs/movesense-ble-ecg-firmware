@@ -32,7 +32,7 @@ MeasurementProvider::MeasurementProvider() :
     mImuSampleCounter(0),
     mImuSampleSkipCount(IMU_DEFAULT_SAMPLE_SKIP_COUNT),
     // Time
-    mBaseTimestampUs(0)
+    mUnixBaseTimestampUs(0)
 {
     // Create buffers.
     this->ecgBuffer = new AbsoluteSeriesBuffer<ecg_t>(DEFAULT_ECG_OBJECT_SIZE,
@@ -139,7 +139,7 @@ void MeasurementProvider::onNotify(whiteboard::ResourceId resourceId,
             rValue.convertTo<const WB_RES::TimeSync&>();
 
         // Update base time to contain the time of the device-start in us.
-        this->mBaseTimestampUs = ts.utcTime - 1000 * ts.relativeTime;
+        this->mUnixBaseTimestampUs = ts.utcTime - 1000 * ts.relativeTime;
         break;
     }
     // New ECG data received from the sensor native resource.
@@ -163,9 +163,17 @@ void MeasurementProvider::onNotify(whiteboard::ResourceId resourceId,
             // When buffer is full: send off ECG-packet.
             if (!ecgBuffer->canAddSample())
             {
+                if (data.timestamp < mEcgCurrentSensorTimestampMs)
+                {
+                    mEcgSensorTimestampOverflowCounter++;
+                }
+                mEcgCurrentSensorTimestampMs = data.timestamp;
                 // TODO: correct timestamp to last sample?
-                ecgBuffer->setTimestamp(this->mBaseTimestampUs +
-                                        1000 * data.timestamp);
+                ecgBuffer->setTimestamp(
+                    this->mUnixBaseTimestampUs +
+                    1000 *
+                        (data.timestamp + mEcgSensorTimestampOverflowCounter *
+                                              MAX_TIMESTAMP_VALUE));
 
                 // Create Measurement Data packet.
                 WB_RES::MeasurementBundle32 packet{wb::MakeArray(
@@ -204,9 +212,18 @@ void MeasurementProvider::onNotify(whiteboard::ResourceId resourceId,
             // When buffer is full: send off IMU9-packet
             if (!movBuffer->canAddSample())
             {
+                // Check if the data-timestamp overflowed
+                if (data.timestamp < mImuCurrentSensorTimestampMs)
+                {
+                    mImuSensorTimestampOverflowCounter++;
+                }
+                mImuCurrentSensorTimestampMs = data.timestamp;
                 // TODO: correct timestamp to last sample?
-                movBuffer->setTimestamp(this->mBaseTimestampUs +
-                                        1000 * data.timestamp);
+                movBuffer->setTimestamp(
+                    this->mUnixBaseTimestampUs +
+                    1000 *
+                        (data.timestamp + mImuSensorTimestampOverflowCounter *
+                                              MAX_TIMESTAMP_VALUE));
 
                 // Create measurement data packet.
                 WB_RES::MeasurementBundle32 packet{wb::MakeArray(

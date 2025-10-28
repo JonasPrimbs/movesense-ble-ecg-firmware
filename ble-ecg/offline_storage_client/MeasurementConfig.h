@@ -60,6 +60,8 @@ constexpr uint16_t MOV_PACKET_SIZE =
 constexpr uint16_t ECG_PACKET_SIZE_UINT32 = ECG_PACKET_SIZE / sizeof(uint32);
 constexpr uint16_t MOV_PACKET_SIZE_UINT32 = MOV_PACKET_SIZE / sizeof(uint32);
 
+constexpr uint64_t MAX_TIMESTAMP_VALUE = 1ULL << 32;
+
 /** Sample conversion constants **/
 constexpr ecg_t ECG_MAX_VALUE = 32767;      // 0x7FFF = 2^15 - 1;
 constexpr ecg_t ECG_MIN_VALUE = -32767;     // 0x8001 = -(2^15 - 1);
