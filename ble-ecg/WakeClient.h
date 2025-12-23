@@ -31,7 +31,21 @@ public:
     /** Destructor for Wake Client. */
     ~WakeClient();
 
-private:
+    /**
+     * Static deactivation function for the Wake Client.
+     * When the client is not active, it will *not* shut
+     * down the sensor automatically when disconnected.
+     */
+    static void deactivate();
+
+    /**
+     *  Static activation function for the Wake Client
+     *  When the client is active, it will shut down
+     *  the sensor automatically when disconnected.
+     */
+    static void activate();
+
+  private:
 
     // Module:
 
@@ -74,6 +88,11 @@ protected:
     virtual void onTimer(wb::TimerId timerId) OVERRIDE;
 
 private:
+    /**
+     * Activation flag, statically accessible through
+     * activate() and deactivate() from other modules.
+     */
+    static bool isActive;
 
     /** Timer ID for blinking. */
     wb::TimerId mBlinkTimer;

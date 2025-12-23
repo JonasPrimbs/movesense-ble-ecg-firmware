@@ -5,3 +5,9 @@
 .vagrant
 /*.log
 *.pyc
+
+
+compile_commands.json
+.clangd
+.clang-format
+settings.json

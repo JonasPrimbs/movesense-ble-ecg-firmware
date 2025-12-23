@@ -1,0 +1,144 @@
+swagger: '2.0'
+info:
+  version: "1.0.0"
+  title: Measurement Provider
+  description: |
+    API specification fort the Measurement Provider, which 
+    provides ECG and IMU9 data at configurable sample
+    intervals.
+
+paths:
+  /MeasurementProvider/ECG/Interval:
+    put:
+      description: |
+        Set the ECG data sampling interval in milliseconds.
+        Currently one of { 2, 4, 8, 10 }.
+      parameters:
+        - name: sampleInterval
+          in: body
+          description: New ECG Sample Interval
+          required: true
+          schema:
+            type: integer
+            format: uint8
+      responses:
+        200:
+          description: Operation completed successfully
+
+  /MeasurementProvider/ECG/DataStream/Subscription:
+    post:
+      description: |
+        Subscribe to ECG data.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-notification:
+          description: ECG data notification
+          schema:
+            $ref: '#/definitions/measurementBundle32'
+    delete:
+      description: |
+        Unsubscribe from ECG data.
+      responses:
+        200:
+          description: Operation completed successfully
+
+
+  /MeasurementProvider/IMU9/Interval:
+    put:
+      description: |
+        Configure the IMU9 data sampling interval in ms.
+        Currently one of { 5, 10, 20, 40 }.
+      parameters:
+        - name: sampleRate
+          in: body
+          description: New IMU9 sample interval
+          required: true
+          schema:
+            type: integer
+            format: uint8
+      responses:
+        200:
+          description: Operation completed successfully
+
+  /MeasurementProvider/IMU9/DataStream/Subscription:
+    post:
+      description: |
+        Subscribe to IMU9 data.
+      responses:
+        200:
+          description: Operation completed successfully
+        x-notification:
+          description: IMU9 data notification
+          schema:
+            $ref: '#/definitions/measurementBundle32'
+    delete:
+      description: |
+        Unsubscribe from IMU9 data.
+      responses:
+        200:
+          description:
+            Operation completed successfully
+
+definitions:
+
+  measurementBundle32:
+    required:
+      - units
+    properties:
+      units:
+        type: array
+        items:
+          type: integer
+          format: uint32
+
+  measurementBundle:
+    required:
+      - bytes
+    properties:
+      bytes:
+        type: array
+        items:
+          type: integer
+          format: uint8
+
+  ecgBundle:
+    required:
+      - timestamp
+      - samples
+    properties:
+      timestamp:
+        type: integer
+        format: uint32
+      samples:
+        type: array
+        items:
+          type: integer
+          format: int16
+
+  imuBundle:
+    required:
+      - timestamp
+      - samples
+    properties:
+      timestamp:
+        type: integer
+        format: uint32
+      samples:
+        type: array
+        items:
+          type: integer
+          format: int16
+
+
+# Extra configurations for Recording Data with DataLogger.
+datalogger:
+  version: "1.0"
+  type: "config"
+  resources:
+    /MeasurementProvider/ECG/.*:
+      # (16 * 2 + 4) / 4
+      array-lengths: 10
+    /MeasurementProvider/IMU9/.*:
+      # (8 * 2 * 3 * 3 + 4) / 4
+      array-lengths: 38

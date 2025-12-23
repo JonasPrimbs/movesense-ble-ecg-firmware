@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 0.8.0
+
+- Added recording capability to local sensor storage to enable recording without Bluetooth Connection
+  - Data-Transfer and Delete functions
+  - Modification of GATT-API
+- Update to Firmware based on version 2.3.2
+
 ## Version 0.7.0
 
 - Update to Firmware based on version 2.3.1
