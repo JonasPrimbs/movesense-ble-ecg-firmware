@@ -2,7 +2,7 @@
 
 A custom firmware for [Movesense Sensor devices](https://www.movesense.com/) which implements a Bluetooth Low Energy (BLE) GATT electrocardiograph (ECG) voltage and movement measurements.
 
-This Repository is forked from **version 2.3.1** of the [official Movesense Device Library](https://bitbucket.org/movesense/movesense-device-lib/).
+This Repository is forked from **version 2.3.2** of the [official Movesense Device Library](https://bitbucket.org/movesense/movesense-device-lib/).
 
 ## Citation
 
@@ -14,6 +14,44 @@ Primbs, J.; et al. The SSTeP-KiZ System—Secure Real-Time Communication Based o
 
 ### Provided GATT Services and Characteristics
 
+#### Version 0.8.0 and above
+Our custom firmware provides the following GATT Services:
+- **Heart Rate Service** with 16-bit UUID `0x180D`: Provides access to R-R intervals in milliseconds. See the [Bluetooth SIG specification](https://www.bluetooth.com/de/specifications/specs/heart-rate-service-1-0/) for more details.
+- **Activity Data and Offline Recording Service** with 16-bit UUID `0x1859`: Provides Access to ECG and IMU measurements, control of sampling rates and functions to control the offline recording to the local sensor storage
+  - **ECG Voltage Characteristic** with 16-bit UUID `0x2BF1`: Provides *NOTIFY* access to a relative *timestamp* and a series of *n* *voltages*. Each voltage is encoded as a 16-bit integer where -32768 is interpreted as an invalid value.
+  - **IMU Characteristic** with 16-bit UUID `0x2BF2`: Provides *NOTIFY* access to a relative *timestamp* and a series of *n* *3-tuples of 3D vectors of acceleration, gyroscope, and magnetic field values*. Each value is encoded as a 16-bit integer where -32768 is interpreted as an invalid value.
+  - **Configuration Characteristic** with 16-bit UUID `0x2BF3`: provides *READ* and *WRITE* access to configure the data-recording as well as starting and stopping offline-recording, triggering data-transfer and delete operations and configuring a 64-bit UNIX-timestamp. The field uses 128-Bytes in total, where every Field has 1-Byte width except the 8-Byte timestamp:
+    <table>
+      <tr>
+        <td>ECG-SR</td>
+        <td>IMU-SR</td>
+        <td>ECG-RC</td>
+        <td>IMU-RC</td>
+        <td>Rec-OP</td>
+        <td>Trans-OP</td>
+        <td>Del-OP</td>
+        <td>R</td>
+      </tr>
+      <tr>
+        <td colspan="8">UNIX-timestamp in µs-precision</td>
+      </tr>
+    </table>
+    
+    - ECG-SR: Sample-Rate setting for ECG-measurement. Can be: 2 (500 Hz), 4 (250 Hz), 8 (125 Hz), 10 (100 Hz).
+    - IMU-SR: Sample-Rate setting for IMU-measurement. Can be: 5 (208 Hz), 10 (104 Hz), 20 (52 Hz), 40 (26 Hz).
+    - ECG-RC: ECG Recording-Configuration. Include ECG-measurement in Offline recordings. Can be: 0 (no) or 1 (yes).
+    - IMU-RC: IMU Recording-Configuration. Include IMU-measurement in Offline recordings. Can be: 0 (no) or 1 (yes).
+    - Rec-OP: Triggering and Offline recording. Can be: 0 (no offline recording), 1 (offline recording now until set to 0 again or storage full). When Rec-OP is set to 1, the sensor will disable the 30s auto-shutdown, so recording can continue even without a BLE-connection.
+    - Trans-OP: Triggering a transfer of all the locally recorded data: Can be: 0 (no data transfer), 1 (data transfer now, auto-resets to 0 when complete).
+    - Del-OP: Triggering a Deletion of all the locally recorded data: Can be: 0 (no data deletion), 1 (data deletion now, auto-resets to 0 when complete).
+    - R: unused field
+    - UNIX-timestamp: 64-bit UNIX-timestamp of the current time on the client in microsecond-precision to be used in measurement data.
+
+  - **Data Transfer Characteristic** with 16-bit UUID `0x2BF4`: provides *INDICATE* access to data transfered from the local sensor storage. Triggered by the transfer-op bit from the configuration-characteristic.
+
+--- 
+
+#### Version 0.7.0 and below
 Our custom firmware provides the following GATT Services:
 
 - **Heart Rate Service** with 16-bit UUID `0x180D`: Provides access to R-R intervals in milliseconds. See the [Bluetooth SIG specification](https://www.bluetooth.com/de/specifications/specs/heart-rate-service-1-0/) for more details.
