@@ -1,6 +1,9 @@
 #pragma once
+
 #include "AbsoluteSeriesBuffer.h"
-#include "movesense.h"
+
+/** Definitions for ECG and IMU measurement-related constants **/
+
 /** Measurement intervals **/
 // The smallest possible measurement interval.
 constexpr uint8_t ECG_BASE_MEASUREMENT_INTERVAL = 2;
@@ -63,6 +66,7 @@ constexpr uint16_t MOV_PACKET_SIZE_UINT32 = MOV_PACKET_SIZE / sizeof(uint32);
 constexpr uint64_t MAX_TIMESTAMP_VALUE = 1ULL << 32;
 
 /** Sample conversion constants **/
+// TODO: maybe increase range if evidence shows necessity
 constexpr ecg_t ECG_MAX_VALUE = 32767;      // 0x7FFF = 2^15 - 1;
 constexpr ecg_t ECG_MIN_VALUE = -32767;     // 0x8001 = -(2^15 - 1);
 constexpr ecg_t ECG_INVALID_VALUE = -32768; // 0x8000 = -2^15;

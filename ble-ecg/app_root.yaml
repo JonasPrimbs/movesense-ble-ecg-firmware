@@ -22,7 +22,6 @@ executionContexts:
     numberOfRequests: 25
     numberOfResponses: 10
     stackSize: 768
-    priority: normal
     priority: high
 
 apis:
@@ -36,7 +35,7 @@ apis:
 
   # MeasDataProvider.*:
   #   apiId: 101
-  #   defaultExecutionContext: meas # TODO test meas
+  #   defaultExecutionContext: meas
 
   # RecordingStateManager.*:
   #   apiId: 102

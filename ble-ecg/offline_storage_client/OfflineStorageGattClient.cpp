@@ -316,7 +316,7 @@ void OfflineStorageGattClient::onNotify(wb::ResourceId resourceId,
         {
             if (!charValue.notifications.hasValue())
                 return;
-            this->mClientIsListeingToMov = charValue.notifications.getValue();
+            this->mClientIsListeningToMov = charValue.notifications.getValue();
         }
         else if (charHandle == mCharCHandle)
         {
@@ -371,10 +371,9 @@ void OfflineStorageGattClient::onNotify(wb::ResourceId resourceId,
             // Stop recording when logbook is full.
             stopDataLogger();
             // reactivate auto-shutdown.
-            // TODO: check if this works
-            // WakeClient::activate();
+            WakeClient::activate();
 
-            // Reset recording field to 0.
+            // Mark recording operation to end.
             mRecordingOperation = 0;
             refreshConfigurationFields();
         }
@@ -417,13 +416,12 @@ void OfflineStorageGattClient::configGattSvc()
     WB_RES::GattChar& charC = characteristics[2];
     WB_RES::GattChar& charD = characteristics[3];
 
-    // TODO: compare with INDICATE.
     // Define properties for each characteristic
     static WB_RES::GattProperty propsA[] = {WB_RES::GattProperty::NOTIFY};
     static WB_RES::GattProperty propsB[] = {WB_RES::GattProperty::NOTIFY};
     static WB_RES::GattProperty propsC[] = {WB_RES::GattProperty::READ,
                                             WB_RES::GattProperty::WRITE};
-    static WB_RES::GattProperty propsD[] = {WB_RES::GattProperty::NOTIFY};
+    static WB_RES::GattProperty propsD[] = {WB_RES::GattProperty::INDICATE};
 
     // Assign properties
     charA.props = wb::MakeArray(propsA);
@@ -590,7 +588,6 @@ void OfflineStorageGattClient::parseConfigurationField(
     if (!mRecordingOperation && !mGetDataOperation && !mDeleteDataOperation &&
         getDataOperation)
     {
-        // TODO: no streaming if charD not enabled.
         startLogStreaming();
         mGetDataOperation = true;
     }
@@ -735,9 +732,9 @@ void OfflineStorageGattClient::setTimestamp()
              mSynchronizationTimestamp);
 }
 
-// TODO: remove after debug.
 void OfflineStorageGattClient::startBlinker(const uint32_t n)
 {
+    // 250 ms blink period
     constexpr size_t SPECIAL_INDICATION_BLINK_PERIOD = 250;
     this->mBlinkCounter = n;
     this->mBlinkTimer = this->startTimer(SPECIAL_INDICATION_BLINK_PERIOD, true);

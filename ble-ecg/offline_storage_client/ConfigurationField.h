@@ -1,6 +1,7 @@
 #pragma once
 #include "movesense.h"
 
+/** Definition of the configuration field characteristic structure **/
 struct ConfigurationField final
 {
     uint8_t ecgMeasurementInterval;
@@ -13,5 +14,3 @@ struct ConfigurationField final
     uint8_t reserved;
     int64_t timestamp;
 };
-
-// constexpr size_t x = sizeof(ConfigurationField);

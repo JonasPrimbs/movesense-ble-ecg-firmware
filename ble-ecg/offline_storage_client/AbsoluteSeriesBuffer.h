@@ -1,10 +1,8 @@
 #pragma once
 
-#include <whiteboard/ResourceClient.h>
-
 typedef uint64_t absolute_timestamp_t;
 
-
+/** Implementation of SeriesBuffer but with a 64-bit timestamp **/
 template<class T>
 class AbsoluteSeriesBuffer
 {

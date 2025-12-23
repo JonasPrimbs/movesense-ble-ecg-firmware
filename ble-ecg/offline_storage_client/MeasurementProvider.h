@@ -7,6 +7,12 @@
 #include "AbsoluteSeriesBuffer.h"
 #include "MeasurementConfig.h"
 
+/**
+ * Movesense-Provider for ECG and IMU Measurement-Data.
+ * Uses the native Resources /Meas/ECG and /Meas/Imu, shrinks
+ * the data down to 16-bit and emits the data in Chunks of size
+ * 16 (ECG) or 8 (IMU) together with a 64-bit unix timestamp.
+ */
 class MeasurementProvider FINAL : private wb::ResourceProvider,
                                   private wb::ResourceClient,
                                   public wb::LaunchableModule
@@ -36,39 +42,77 @@ class MeasurementProvider FINAL : private wb::ResourceProvider,
 
   private:
     // For ECG data
+    /** Interval in ms between ECG-measurements **/
     uint8_t mEcgMeasurementInterval;
+
+    /** For counting how many ECG samples where received since the last one was added **/
     uint8_t mEcgSampleCounter;
+
+    /** Sets how many ECG samples are skipped before one is added to the buffer **/
     uint8_t mEcgSampleSkipCount;
-    void setEcgMeasurementInterval(uint8_t);
-    ecg_t prepareEcgSample(int32);
+
+    /**
+     * @brief Sets the new measurement Interval (ms) for ECG.
+     * @param newEcgInterval in ms
+     */
+    void setEcgMeasurementInterval(uint8_t newEcgInterval);
+
+    /**
+     * Converts a 32-bit ecg-sample to a 16-bit sample.
+     * @param rawSample ecg-sample as received by the native resource
+     * @return downsized sample to 16-bit
+     */
+    ecg_t prepareEcgSample(int32 rawSample);
 
     // For IMU data
+    /** Interval in ms between IMU-measurements **/
     uint8_t mImuMeasurementInterval;
+
+    /** For counting how many IMU samples where received since the last one was added **/
     uint8_t mImuSampleCounter;
+
+    /** Sets how many IMU samples are skipped before one is added to the buffer **/
     uint8_t mImuSampleSkipCount;
-    void setImuMeasurementInterval(uint8_t);
+
+    /**
+     * @brief Sets the new measurement interval (ms) for IMU.
+     * @param newImuInterval in ms
+     */
+    void setImuMeasurementInterval(uint8_t newImuInterval);
+
+    /**
+     * @brief Converts 3 FloatVectors for Acc, Gyro and Mag to a mov_t struct.
+     * @return 9-D imu-sample
+     */
     mov_t prepareImuSample(wb::FloatVector3D,
                            wb::FloatVector3D,
                            wb::FloatVector3D);
 
+    /**
+     * @brief Converts single acc Float32Vector to an Int16Vector
+     * @return prepared acc vector
+     */
     acc_vec_t prepareAccSample(wb::FloatVector3D);
+
+    /**
+     * @brief Converts single gyr Float32Vector to an Int16Vector
+     * @return prepared mag vector
+     */
     gyr_vec_t prepareGyrSample(wb::FloatVector3D);
+
+    /**
+     * @brief Converts single mag Float32Vector to an Int16Vector
+     * @return prepared mag vector
+     */
     mag_vec_t prepareMagSample(wb::FloatVector3D);
 
     // For time synchronization.
-    // Timestamp for when the sensor time has started (microseconds).
+    /** Timestamp for when the sensor time has started (microseconds). **/
     int64_t mUnixBaseTimestampUs;
 
-    // Overflow counters to keep track of device-timestamp-overflows:
-    // (one for each type, to prevent race conditions)
-    size_t mEcgCurrentSensorTimestampMs = 0;
-    size_t mEcgSensorTimestampOverflowCounter = 0;
-    size_t mImuCurrentSensorTimestampMs = 0;
-    size_t mImuSensorTimestampOverflowCounter = 0;
-
-    // Series Buffer for ECG data.
+    /** Series Buffer for ECG data. **/
     AbsoluteSeriesBuffer<ecg_t>* ecgBuffer;
 
-    // Series Buffer for IMU/Movement data.
+    /** Series Buffer for IMU/Movement data. **/
     AbsoluteSeriesBuffer<mov_t>* movBuffer;
 };

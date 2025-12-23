@@ -163,17 +163,9 @@ void MeasurementProvider::onNotify(whiteboard::ResourceId resourceId,
             // When buffer is full: send off ECG-packet.
             if (!ecgBuffer->canAddSample())
             {
-                if (data.timestamp < mEcgCurrentSensorTimestampMs)
-                {
-                    mEcgSensorTimestampOverflowCounter++;
-                }
-                mEcgCurrentSensorTimestampMs = data.timestamp;
-                // TODO: correct timestamp to last sample?
                 ecgBuffer->setTimestamp(
                     this->mUnixBaseTimestampUs +
-                    1000 *
-                        (data.timestamp + mEcgSensorTimestampOverflowCounter *
-                                              MAX_TIMESTAMP_VALUE));
+                    1000ULL * data.timestamp);
 
                 // Create Measurement Data packet.
                 WB_RES::MeasurementBundle32 packet{wb::MakeArray(
@@ -212,18 +204,9 @@ void MeasurementProvider::onNotify(whiteboard::ResourceId resourceId,
             // When buffer is full: send off IMU9-packet
             if (!movBuffer->canAddSample())
             {
-                // Check if the data-timestamp overflowed
-                if (data.timestamp < mImuCurrentSensorTimestampMs)
-                {
-                    mImuSensorTimestampOverflowCounter++;
-                }
-                mImuCurrentSensorTimestampMs = data.timestamp;
-                // TODO: correct timestamp to last sample?
                 movBuffer->setTimestamp(
                     this->mUnixBaseTimestampUs +
-                    1000 *
-                        (data.timestamp + mImuSensorTimestampOverflowCounter *
-                                              MAX_TIMESTAMP_VALUE));
+                    1000ULL * data.timestamp);
 
                 // Create measurement data packet.
                 WB_RES::MeasurementBundle32 packet{wb::MakeArray(
