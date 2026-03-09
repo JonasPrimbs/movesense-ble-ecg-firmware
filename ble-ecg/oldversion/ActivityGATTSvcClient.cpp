@@ -6,7 +6,7 @@
 #include <meas_magn/resources.h>
 #include <meas_hr/resources.h>
 
-#include "ActivityGATTSvcClient.h"
+#include "../ActivityGATTSvcClient.h"
 #include "common/core/debug.h"
 #include "oswrapper/thread.h"
 #include "component_led/resources.h"

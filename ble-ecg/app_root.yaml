@@ -24,10 +24,10 @@ executionContexts:
     stackSize: 768
     priority: high
 
-apis:
-  MeasurementProvider.*:
-    apiId: 100
-    defaultExecutionContext: meas
+#apis:
+#  MeasurementProvider.*:
+#    apiId: 100
+#    defaultExecutionContext: meas
 
   # PersistenceManager.*:
   #   apiId: 100
