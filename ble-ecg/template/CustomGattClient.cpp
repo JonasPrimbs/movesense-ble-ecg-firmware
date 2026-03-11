@@ -1,11 +1,13 @@
-#include "debug/CustomGattTemplate.h"
+#include "CustomGattClient.h"
 #include "movesense.h"
 
 #include <meas_ecg/resources.h>
+#include <ui_ind/resources.h>
 
 #include "comm_ble_gattsvc/resources.h"
 #include "comm_ble/resources.h"
 
+// Gatt service and characteristics definitions:
 constexpr uint16_t service_UUID_16 = 0x0909;
 
 constexpr uint16_t charA_UUID_16 = 0x0010;
@@ -16,46 +18,48 @@ constexpr uint16_t charA_init = 0;
 constexpr uint16_t charB_init = 1;
 constexpr uint16_t charC_init = 2;
 
-// ECG GATT Service implementations:
+// GATT Service implementations:
 
-const char* const CustomGattTemplate::LAUNCHABLE_NAME = "EcgGattSvc";
+const char* const CustomGattClient::LAUNCHABLE_NAME = "CustomGattClient";
 
-CustomGattTemplate::CustomGattTemplate() :
+CustomGattClient::CustomGattClient() :
     ResourceClient(WBDEBUG_NAME(__FUNCTION__), WB_EXEC_CTX_APPLICATION),
     LaunchableModule(LAUNCHABLE_NAME, WB_EXEC_CTX_APPLICATION)
 {
     // Constructor
 }
 
-bool CustomGattTemplate::initModule()
+bool CustomGattClient::initModule()
 {
     this->mModuleState = WB_RES::ModuleStateValues::INITIALIZED;
     return true;
 }
 
-void CustomGattTemplate::deinitModule()
+void CustomGattClient::deinitModule()
 {
     this->mModuleState = WB_RES::ModuleStateValues::UNINITIALIZED;
 }
 
-bool CustomGattTemplate::startModule()
+bool CustomGattClient::startModule()
 {
     this->mModuleState = WB_RES::ModuleStateValues::STARTED;
 
     // Configure ECG GATT Service.
     this->configGattSvc();
+    // Subscribe to connection updates
     this->asyncSubscribe(WB_RES::LOCAL::COMM_BLE_PEERS());
 
     return true;
 }
 
-void CustomGattTemplate::stopModule()
+void CustomGattClient::stopModule()
 {
     // set resources to invalid
     this->charAResource = wb::ID_INVALID_RESOURCE;
     this->charBResource = wb::ID_INVALID_RESOURCE;
     this->charCResource = wb::ID_INVALID_RESOURCE;
 
+    // unsubscribe from characteristic updates.
     this->asyncUnsubscribe(charAResource);
     this->asyncUnsubscribe(charBResource);
     this->asyncUnsubscribe(charCResource);
@@ -63,7 +67,7 @@ void CustomGattTemplate::stopModule()
     this->mModuleState = WB_RES::ModuleStateValues::STOPPED;
 }
 
-void CustomGattTemplate::onGetResult(wb::RequestId requestId,
+void CustomGattClient::onGetResult(wb::RequestId requestId,
                                    wb::ResourceId resourceId,
                                    wb::Result resultCode,
                                    const wb::Value& rResultData)
@@ -91,18 +95,33 @@ void CustomGattTemplate::onGetResult(wb::RequestId requestId,
                         break;
                 }
             }
+            if (!charAHandle || !charBHandle || !charCHandle) return;
 
-            // Force subscriptions asynchronously to save stack (will have stack overflow if not)
-            this->asyncSubscribe(this->charAResource, AsyncRequestOptions(NULL, 0, true));
-            this->asyncSubscribe(this->charBResource, AsyncRequestOptions(NULL, 0, true));
-            this->asyncSubscribe(this->charCResource,  AsyncRequestOptions(NULL, 0, true));
+            char pathBuffer[32];
+
+            snprintf(pathBuffer, sizeof(pathBuffer), "/Comm/Ble/GattSvc/%d/%d", svcHandle, charAHandle);
+            getResource(pathBuffer, charAResource);
+
+            snprintf(pathBuffer, sizeof(pathBuffer), "/Comm/Ble/GattSvc/%d/%d", svcHandle, charBHandle);
+            getResource(pathBuffer, charBResource);
+
+            snprintf(pathBuffer, sizeof(pathBuffer), "/Comm/Ble/GattSvc/%d/%d", svcHandle, charCHandle);
+            getResource(pathBuffer, charCResource);
+
+            // Subscribe to characteristic updates.
+            if (charAResource != wb::ID_INVALID_RESOURCE)
+                this->asyncSubscribe(this->charAResource, AsyncRequestOptions::ForceAsync);
+            if (charBResource != wb::ID_INVALID_RESOURCE)
+                this->asyncSubscribe(this->charBResource, AsyncRequestOptions::ForceAsync);
+            if (charCResource != wb::ID_INVALID_RESOURCE)
+                this->asyncSubscribe(this->charCResource, AsyncRequestOptions::ForceAsync);
             break;
             // GATT setup finished from here on...
         }
     }
 }
 
-void CustomGattTemplate::onPostResult(wb::RequestId requestId,
+void CustomGattClient::onPostResult(wb::RequestId requestId,
                                     wb::ResourceId resourceId,
                                     wb::Result resultCode,
                                     const wb::Value& rResultData)
@@ -121,44 +140,62 @@ void CustomGattTemplate::onPostResult(wb::RequestId requestId,
     }
 }
 
-void CustomGattTemplate::onNotify(wb::ResourceId resourceId,
+void CustomGattClient::onNotify(wb::ResourceId resourceId,
                                 const wb::Value& value,
                                 const wb::ParameterList& rParameters)
 {
     switch(resourceId.localResourceId)
     {
+        // Characteristic updates
         case WB_RES::LOCAL::COMM_BLE_GATTSVC_SVCHANDLE_CHARHANDLE::LID:
         {
             // Get the GATT characteristic which is handled now.
             WB_RES::LOCAL::COMM_BLE_GATTSVC_SVCHANDLE_CHARHANDLE::SUBSCRIBE::ParameterListRef parameterRef(rParameters);
             auto charHandle = parameterRef.getCharHandle();
+            auto &characteristic = value.convertTo<WB_RES::Characteristic&>();
 
-            // Set the current GATT characteristic.
-            if (charHandle == this->charBHandle)
-            {
-            }
-            else if (charHandle == this->charCHandle)
-            {
+            // Blink once to indicate update received.
+            const WB_RES::VisualIndType type = WB_RES::VisualIndTypeValues::SHORT_VISUAL_INDICATION;
+            this->asyncPut(WB_RES::LOCAL::UI_IND_VISUAL(), AsyncRequestOptions::Empty, type);
+
+            if (charHandle == charAHandle) {
+
+            } else if (charHandle == charBHandle) {
+
+            } else if (charHandle == charCHandle) {
+
             }
             break;
         }
+        // Connection updates
         case WB_RES::LOCAL::COMM_BLE_PEERS::LID: {
-            auto &peerChange = value.convertTo<WB_RES::PeerChange>();
+            auto &peerChange = value.convertTo<WB_RES::PeerChange&>();
 
-            uint32_t handle = peerChange.peer.handle.hasValue() ? peerChange.peer.handle.getValue() : 0;
-            if (!handle) {
-                setCharCValue(199);
-            } else {
-                setCharCValue(handle);
-                this->connectionHandle = handle;
+            switch (peerChange.state) {
+                case WB_RES::PeerStateValues::CONNECTED:
+                    break;
+                case WB_RES::PeerStateValues::DISCONNECTED:
+                    break;
             }
-
             break;
         }
     }
 }
 
-void CustomGattTemplate::configGattSvc()
+void CustomGattClient::onTimer(wb::TimerId timerId) {
+    if (timerId == this->blinkTimer) {
+        if (this->blinkCounter == 0) {
+            this->stopTimer(this->blinkTimer);
+            this->blinkTimer = wb::ID_INVALID_TIMER;
+            return;
+        }
+        const WB_RES::VisualIndType type = WB_RES::VisualIndTypeValues::SHORT_VISUAL_INDICATION;
+        this->asyncPut(WB_RES::LOCAL::UI_IND_VISUAL(), AsyncRequestOptions::Empty, type);
+        this->blinkCounter -= 1;
+    }
+}
+
+void CustomGattClient::configGattSvc()
 {
     // Define ECG GATT Service and its Characteristics.
     WB_RES::GattSvc GattSvc;
@@ -200,17 +237,11 @@ void CustomGattTemplate::configGattSvc()
     this->asyncPost(WB_RES::LOCAL::COMM_BLE_GATTSVC(), AsyncRequestOptions::Empty, GattSvc);
 }
 
-void CustomGattTemplate::setCharCValue(uint32_t value) {
+void CustomGattClient::startBlinker(uint32_t n) {
+    constexpr size_t BLINK_PERIOD = 250;
+    this->blinkCounter = n;
+    // do not allow a new blinker while the old is not finished.
+    if (this->blinkTimer != wb::ID_INVALID_TIMER) return;
 
-    WB_RES::Characteristic characteristic;
-    characteristic.bytes = wb::MakeArray<uint8_t>(reinterpret_cast<uint8_t *>(&value), sizeof(uint32_t));
-
-    // Set Characteristic Value
-    this->asyncPut(
-        WB_RES::LOCAL::COMM_BLE_GATTSVC_SVCHANDLE_CHARHANDLE(),
-        AsyncRequestOptions::Empty,
-        this->svcHandle,
-        this->charCHandle,
-        characteristic
-    );
+    this->blinkTimer = this->startTimer(BLINK_PERIOD, true);
 }

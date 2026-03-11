@@ -1,16 +1,17 @@
 #pragma once
 
+#include <comm_ble/resources.h>
 #include <whiteboard/LaunchableModule.h>
 #include <whiteboard/ResourceClient.h>
 
-class CustomGattTemplate FINAL :
+class CustomGattClient FINAL :
     private wb::ResourceClient,
     public wb::LaunchableModule
 {
 public:
     static const char* const LAUNCHABLE_NAME;
 
-    CustomGattTemplate();
+    CustomGattClient();
 
 private:
 
@@ -43,6 +44,8 @@ private:
                           const wb::Value& rValue,
                           const wb::ParameterList& rParameters) override;
 
+    virtual void onTimer(whiteboard::TimerId timerId) override;
+
 private:
 
     // GATT Service:
@@ -56,18 +59,17 @@ private:
     void configGattSvc();
 
     // GATT Characteristics:
-    // ECG -> A
     int32_t charAHandle = 0;
     wb::ResourceId charAResource = wb::ID_INVALID_RESOURCE;
 
-    // MeasInterval -> B
     int32_t charBHandle = 0;
     wb::ResourceId charBResource = wb::ID_INVALID_RESOURCE;
 
-    // ObjectSize -> C
     int32_t charCHandle = 0;
     wb::ResourceId charCResource = wb::ID_INVALID_RESOURCE;
 
-    int32_t connectionHandle = 0;
-    void setCharCValue(uint32_t value);
+    // Debug blinking
+    wb::TimerId blinkTimer = wb::ID_INVALID_TIMER;
+    uint32_t blinkCounter;
+    void startBlinker(uint32_t n);
 };

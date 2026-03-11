@@ -248,9 +248,8 @@ set(SOURCES ${SOURCES} ${MOVESENSE_CORE_LIBRARY}/src/movesense_heap.c)
 # Application sources in current folder (app)
 aux_source_directory(. APP_SOURCES)
 set(APP_SOURCES ${APP_SOURCES} ${SOURCES}
-#        ../ble-ecg/reliable_activity_svc/MainClient.cpp
-#        ../ble-ecg/reliable_activity_svc/DataProvider.cpp
-        ../ble-ecg/debug/CustomGattTemplate.cpp
+        ../ble-ecg/template/CustomGattClient.cpp
+        ../ble-ecg/experiment/RateTestClient.cpp
 )
 
 
