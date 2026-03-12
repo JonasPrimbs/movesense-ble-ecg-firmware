@@ -65,18 +65,18 @@ private:
     void configGattSvc();
 
     // GATT Characteristics:
-    // ECG -> A
     int32_t charAHandle = 0;
     wb::ResourceId charAResource = wb::ID_INVALID_RESOURCE;
     bool charAIsSubscribed = false;
 
-    // MeasInterval -> B
     int32_t charBHandle = 0;
     wb::ResourceId charBResource = wb::ID_INVALID_RESOURCE;
 
-    // ObjectSize -> C
     int32_t charCHandle = 0;
     wb::ResourceId charCResource = wb::ID_INVALID_RESOURCE;
+
+    int32_t charDHandle = 0;
+    wb::ResourceId charDResource = wb::ID_INVALID_RESOURCE;
 
     int32_t connectionHandle = 0;
 

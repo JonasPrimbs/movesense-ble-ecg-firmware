@@ -14,10 +14,12 @@ constexpr uint16_t service_UUID_16 = 0x1909;
 constexpr uint16_t charA_UUID_16 = 0x0010;
 constexpr uint16_t charB_UUID_16 = 0x0020;
 constexpr uint16_t charC_UUID_16 = 0x0030;
+constexpr uint16_t charD_UUID_16 = 0x0040;
 
 constexpr uint16_t charA_init = 0;
 constexpr uint16_t charB_init = 0;
 constexpr uint16_t charC_init = 0;
+constexpr uint16_t charD_init = 0;
 
 
 // GATT Service implementations:
@@ -50,10 +52,12 @@ void RateTestClient::stopModule() {
     this->charAResource = wb::ID_INVALID_RESOURCE;
     this->charBResource = wb::ID_INVALID_RESOURCE;
     this->charCResource = wb::ID_INVALID_RESOURCE;
+    this->charDResource = wb::ID_INVALID_RESOURCE;
 
     this->asyncUnsubscribe(charAResource);
     this->asyncUnsubscribe(charBResource);
     this->asyncUnsubscribe(charCResource);
+    this->asyncUnsubscribe(charDResource);
 
     this->mModuleState = WB_RES::ModuleStateValues::STOPPED;
 }
@@ -79,9 +83,12 @@ void RateTestClient::onGetResult(wb::RequestId requestId,
                     case charC_UUID_16:
                         this->charCHandle = c.handle.hasValue() ? c.handle.getValue() : 0;
                         break;
+                    case charD_UUID_16:
+                        this->charDHandle = c.handle.hasValue() ? c.handle.getValue() : 0;
+                        break;
                 }
             }
-            if (!charAHandle || !charBHandle || !charCHandle) return;
+            if (!charAHandle || !charBHandle || !charCHandle || !charDHandle) return;
 
             char pathBuffer[32];
 
@@ -94,12 +101,17 @@ void RateTestClient::onGetResult(wb::RequestId requestId,
             snprintf(pathBuffer, sizeof(pathBuffer), "/Comm/Ble/GattSvc/%d/%d", gattSvcHandle, charCHandle);
             getResource(pathBuffer, charCResource);
 
+            snprintf(pathBuffer, sizeof(pathBuffer), "/Comm/Ble/GattSvc/%d/%d", gattSvcHandle, charDHandle);
+            getResource(pathBuffer, charDResource);
+
             if (charAResource != wb::ID_INVALID_RESOURCE)
                 this->asyncSubscribe(this->charAResource, AsyncRequestOptions::ForceAsync);
             if (charBResource != wb::ID_INVALID_RESOURCE)
                 this->asyncSubscribe(this->charBResource, AsyncRequestOptions::ForceAsync);
             if (charCResource != wb::ID_INVALID_RESOURCE)
                 this->asyncSubscribe(this->charCResource, AsyncRequestOptions::ForceAsync);
+            if (charDResource != wb::ID_INVALID_RESOURCE)
+                this->asyncSubscribe(this->charDResource, AsyncRequestOptions::ForceAsync);
             break;
             // GATT setup finished from here on...
         }
@@ -255,18 +267,20 @@ void RateTestClient::onTimer(wb::TimerId timerId) {
 void RateTestClient::configGattSvc() {
     // Define ECG GATT Service and its Characteristics.
     WB_RES::GattSvc GattSvc;
-    WB_RES::GattChar characteristics[3];
+    WB_RES::GattChar characteristics[4];
     WB_RES::GattChar &charA = characteristics[0];
     WB_RES::GattChar &charB = characteristics[1];
     WB_RES::GattChar &charC = characteristics[2];
+    WB_RES::GattChar &charD = characteristics[3];
 
     // Specify Characteristics's properties.
     WB_RES::GattProperty charAProp = WB_RES::GattProperty::NOTIFY;
-    WB_RES::GattProperty charBProps[2] = {
+    WB_RES::GattProperty charBProp = WB_RES::GattProperty::NOTIFY;
+    WB_RES::GattProperty charCProps[2] = {
         WB_RES::GattProperty::READ,
         WB_RES::GattProperty::WRITE
     };
-    WB_RES::GattProperty charCProps[2] = {
+    WB_RES::GattProperty charDProps[2] = {
         WB_RES::GattProperty::READ,
         WB_RES::GattProperty::WRITE
     };
@@ -274,9 +288,10 @@ void RateTestClient::configGattSvc() {
     // Characteristic A
     charA.props = wb::MakeArray<WB_RES::GattProperty>(&charAProp, 1);
     charA.uuid = wb::MakeArray<uint8_t>(reinterpret_cast<const uint8_t *>(&charA_UUID_16), sizeof(uint16_t));
+    charA.initial_value = wb::MakeArray<uint8_t>(reinterpret_cast<const uint8_t *>(&charA_init), sizeof(uint16_t));
 
     // Characteristic B
-    charB.props = wb::MakeArray<WB_RES::GattProperty>(charBProps, 2);
+    charB.props = wb::MakeArray<WB_RES::GattProperty>(&charBProp, 1);
     charB.uuid = wb::MakeArray<uint8_t>(reinterpret_cast<const uint8_t *>(&charB_UUID_16), sizeof(uint16_t));
     charB.initial_value = wb::MakeArray<uint8_t>(reinterpret_cast<const uint8_t *>(&charB_init), sizeof(uint16_t));
 
@@ -285,9 +300,14 @@ void RateTestClient::configGattSvc() {
     charC.uuid = wb::MakeArray<uint8_t>(reinterpret_cast<const uint8_t *>(&charC_UUID_16), sizeof(uint16_t));
     charC.initial_value = wb::MakeArray<uint8_t>(reinterpret_cast<const uint8_t *>(&charC_init), sizeof(uint16_t));
 
+    // Characteristic D
+    charD.props = wb::MakeArray<WB_RES::GattProperty>(charCProps, 2);
+    charD.uuid = wb::MakeArray<uint8_t>(reinterpret_cast<const uint8_t *>(&charD_UUID_16), sizeof(uint16_t));
+    charD.initial_value = wb::MakeArray<uint8_t>(reinterpret_cast<const uint8_t *>(&charD_init), sizeof(uint16_t));
+
     // Service
     GattSvc.uuid = wb::MakeArray<uint8_t>(reinterpret_cast<const uint8_t *>(&service_UUID_16), sizeof(uint16_t));
-    GattSvc.chars = wb::MakeArray<WB_RES::GattChar>(characteristics, 3);
+    GattSvc.chars = wb::MakeArray<WB_RES::GattChar>(characteristics, 4);
 
     // Create custom GATT Service.
     this->asyncPost(WB_RES::LOCAL::COMM_BLE_GATTSVC(), AsyncRequestOptions::Empty, GattSvc);
@@ -407,5 +427,3 @@ void RateTestClient::startEcgData(uint8_t multiplicator) {
 void RateTestClient::stopEcgData(uint8_t multiplicator) {
     asyncUnsubscribe(WB_RES::LOCAL::MEAS_ECG_REQUIREDSAMPLERATE(), AsyncRequestOptions::Empty, 125 * multiplicator);
 }
-
-
