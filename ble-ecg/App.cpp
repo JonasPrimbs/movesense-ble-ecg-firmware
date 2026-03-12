@@ -1,5 +1,7 @@
 #include "WakeClient.h"
 #include "template/CustomGattClient.h"
+#include "experiment/RateTestClient.h"
+
 #include "movesense.h"
 
 MOVESENSE_APPLICATION_STACKSIZE(1024)
@@ -7,7 +9,7 @@ MOVESENSE_APPLICATION_STACKSIZE(1024)
 // Add Providers:
 MOVESENSE_PROVIDERS_BEGIN(2)
 
-MOVESENSE_PROVIDER_DEF(CustomGattClient)
+MOVESENSE_PROVIDER_DEF(RateTestClient)
 MOVESENSE_PROVIDER_DEF(WakeClient)
 
 MOVESENSE_PROVIDERS_END(2)
