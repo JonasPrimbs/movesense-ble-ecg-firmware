@@ -1,6 +1,7 @@
 #include "MainClient.h"
 
 #include "app-resources/resources.h"
+#include "comm_ble/resources.h"
 #include "comm_ble_gattsvc/resources.h"
 #include "mem_datalogger/resources.h"
 #include "mem_logbook/resources.h"
@@ -79,6 +80,9 @@ bool MainClient::startModule()
     // Subscribe to measurement data.
     asyncSubscribe(WB_RES::LOCAL::MEASUREMENTPROVIDER_ECG_DATASTREAM());
     asyncSubscribe(WB_RES::LOCAL::MEASUREMENTPROVIDER_IMU9_DATASTREAM());
+
+    // Subscribe to peer changes (connect and disconnect events).
+    asyncSubscribe(WB_RES::LOCAL::COMM_BLE_PEERS());
 
     return true;
 }
@@ -294,6 +298,19 @@ void MainClient::onNotify(wb::ResourceId resourceId,
 {
     switch (resourceId.localResourceId)
     {
+    // Connection state changes:
+    case WB_RES::LOCAL::COMM_BLE_PEERS::LID:
+    {
+        auto &peerChange = rValue.convertTo<WB_RES::PeerChange &>();
+
+        switch (peerChange.state) {
+            case WB_RES::PeerStateValues::CONNECTED:
+                break;
+            case WB_RES::PeerStateValues::DISCONNECTED:
+                startBlinker(5);
+                break;
+        }
+    }
     // GATT Characteristic change:
     case WB_RES::LOCAL::COMM_BLE_GATTSVC_SVCHANDLE_CHARHANDLE::LID: {
         WB_RES::LOCAL::COMM_BLE_GATTSVC_SVCHANDLE_CHARHANDLE::SUBSCRIBE::
