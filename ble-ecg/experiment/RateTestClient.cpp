@@ -3,6 +3,7 @@
 
 #include <meas_ecg/resources.h>
 #include <meas_imu/resources.h>
+#include <meas_temp/resources.h>
 #include <ui_ind/resources.h>
 
 #include "comm_ble_gattsvc/resources.h"
@@ -26,7 +27,8 @@ constexpr uint16_t charD_init = 0;
 const char *const RateTestClient::LAUNCHABLE_NAME = "RateTestClient";
 
 RateTestClient::RateTestClient() : ResourceClient(WBDEBUG_NAME(__FUNCTION__), WB_EXEC_CTX_APPLICATION),
-                                   LaunchableModule(LAUNCHABLE_NAME, WB_EXEC_CTX_APPLICATION) {}
+                                   LaunchableModule(LAUNCHABLE_NAME, WB_EXEC_CTX_APPLICATION) {
+}
 
 bool RateTestClient::initModule() {
     this->mModuleState = WB_RES::ModuleStateValues::INITIALIZED;
@@ -142,6 +144,12 @@ void RateTestClient::onGetResult(wb::RequestId requestId,
             this->setCharValue(gattSvcHandle, charCHandle, reinterpret_cast<uint8_t *>(arr), 4 * sizeof(uint16_t));
             break;
         }
+        case WB_RES::LOCAL::MEAS_IMU_INFO::LID: {
+            auto &imuInfo = rResultData.convertTo<WB_RES::IMUInfo &>();
+            setCharValue(gattSvcHandle, charCHandle, reinterpret_cast<const uint8_t *>(imuInfo.sampleRates.begin()),
+                         imuInfo.sampleRates.size() * sizeof(uint16_t));
+            break;
+        }
     }
 }
 
@@ -181,20 +189,33 @@ void RateTestClient::onNotify(wb::ResourceId resourceId,
                 bool notificationsEnabled = characteristic.notifications.getValue();
 
                 if (notificationsEnabled && !charAIsSubscribed) {
-                    this->startDataStreaming();
-                    // TODO: update on disconnects to false
+                    this->startEcgData(this->measEcgMultiplicator);
                     charAIsSubscribed = true;
                 }
                 if (!notificationsEnabled && charAIsSubscribed) {
-                    this->stopDataStreaming();
+                    this->stopEcgData(this->measEcgMultiplicator);
                     charAIsSubscribed = false;
                 }
             }
-            // Set the current GATT characteristic.
             if (charHandle == this->charBHandle) {
+                if (!characteristic.notifications.hasValue()) break;
+
+                bool notificationsEnabled = characteristic.notifications.getValue();
+
+                if (notificationsEnabled && !charBIsSubscribed) {
+                    this->startImuData(this->measImuMultiplicator);
+                    charBIsSubscribed = true;
+                }
+                if (!notificationsEnabled && charBIsSubscribed) {
+                    this->stopImuData(this->measImuMultiplicator);
+                    charBIsSubscribed = false;
+                }
+            }
+            if (charHandle == this->charCHandle) {
+            }
+            if (charHandle == this->charDHandle) {
                 // trigger action:
                 processCommand(characteristic);
-            } else if (charHandle == this->charCHandle) {
             }
             break;
         }
@@ -207,6 +228,7 @@ void RateTestClient::onNotify(wb::ResourceId resourceId,
                     break;
                 case WB_RES::PeerStateValues::DISCONNECTED:
                     charAIsSubscribed = false;
+                    charBIsSubscribed = false;
                     startBlinker(5);
                     break;
             }
@@ -224,6 +246,28 @@ void RateTestClient::onNotify(wb::ResourceId resourceId,
             size_t numberOfBytes = ecgData.samples.getNumberOfItems() * sizeof(int32_t);
             memcpy(buffr, ecgData.samples.begin(), numberOfBytes);
             setCharValue(this->gattSvcHandle, this->charAHandle, buffr, numberOfBytes);
+            break;
+        }
+        case WB_RES::LOCAL::MEAS_IMU9_SAMPLERATE::LID: {
+            auto &imuData = value.convertTo<WB_RES::IMU9Data &>();
+            uint8_t buffr[300];
+            size_t writeIndex = 0;
+
+            const size_t accSizeInBytes = imuData.arrayAcc.size() * sizeof(wb::FloatVector3D);
+            memcpy(buffr + writeIndex, imuData.arrayAcc.begin(), accSizeInBytes);
+            writeIndex += accSizeInBytes;
+
+            const size_t gyrSizeInBytes = imuData.arrayGyro.size() * sizeof(wb::FloatVector3D);
+            memcpy(buffr + writeIndex, imuData.arrayGyro.begin(), gyrSizeInBytes);
+            writeIndex += gyrSizeInBytes;
+
+            const size_t magSizeInBytes = imuData.arrayMagn.size() * sizeof(wb::FloatVector3D);
+            memcpy(buffr + writeIndex, imuData.arrayMagn.begin(), magSizeInBytes);
+
+
+            size_t totalSize = accSizeInBytes + gyrSizeInBytes + magSizeInBytes;
+            setCharValue(this->gattSvcHandle, this->charBHandle, buffr,
+                         totalSize <= 155 ? totalSize : 155);
             break;
         }
     }
@@ -250,17 +294,6 @@ void RateTestClient::onTimer(wb::TimerId timerId) {
         const WB_RES::VisualIndType type = WB_RES::VisualIndTypeValues::SHORT_VISUAL_INDICATION;
         this->asyncPut(WB_RES::LOCAL::UI_IND_VISUAL(), AsyncRequestOptions::Empty, type);
         this->blinkCounter -= 1;
-    } else if (timerId == this->rateTestTimer) {
-        // send <streamingRate> bytes of pseudo data via Characteristic A
-        if (switchData) {
-            WB_RES::Characteristic characteristic;
-            setCharValue(gattSvcHandle, this->charAHandle, RateTestClient::dataPacket + 1, streamingRate);
-            switchData = false;
-        } else {
-            WB_RES::Characteristic characteristic;
-            setCharValue(gattSvcHandle, this->charAHandle, RateTestClient::dataPacket, streamingRate);
-            switchData = true;
-        }
     }
 }
 
@@ -327,7 +360,7 @@ void RateTestClient::setCharValue(int32_t svcHandle, int32_t charHandle, uint32_
     );
 }
 
-void RateTestClient::setCharValue(int32_t svcHandle, int32_t charHandle, uint8_t *array, uint32_t len) {
+void RateTestClient::setCharValue(int32_t svcHandle, int32_t charHandle, const uint8_t *array, uint32_t len) {
     WB_RES::Characteristic characteristic;
     characteristic.bytes = wb::MakeArray<uint8_t>(array, len);
 
@@ -367,57 +400,21 @@ void RateTestClient::processCommand(WB_RES::Characteristic characteristic) {
                      this->connectionHandle, this->savedConnParams);
             break;
         }
-        case 3: {
-            // set new streaming rate parameter
-            uint8_t parameter = characteristic.bytes[1];
-            // cap streaming rate at MTU size
-            if (parameter > 155) parameter = 155;
-            this->streamingRate = parameter;
-            break;
-        }
         case 4: {
             uint8_t parameter = characteristic.bytes[1];
-            this->streaming_mode = parameter;
+            this->measEcgMultiplicator = parameter;
             break;
         }
         case 5: {
             uint8_t parameter = characteristic.bytes[1];
-            this->measMultiplicator = parameter;
+            this->measImuMultiplicator = parameter;
+            break;
+        }
+        case 6: {
+            asyncGet(WB_RES::LOCAL::MEAS_IMU_INFO(), AsyncRequestOptions::Empty);
             break;
         }
     }
-}
-void RateTestClient::startDataStreaming() {
-    switch (this->streaming_mode) {
-        case 0:
-            startPseudoData();
-            break;
-        case 1:
-            startEcgData(this->measMultiplicator);
-            break;
-    }
-}
-void RateTestClient::stopDataStreaming() {
-    switch (this->streaming_mode) {
-        case 0:
-            stopPseudoData();
-            break;
-        case 1:
-            stopEcgData(this->measMultiplicator);
-            break;
-    }
-}
-
-void RateTestClient::startPseudoData() {
-    if (rateTestTimer != wb::ID_INVALID_TIMER) return;
-
-    size_t sendPeriod = 10;
-    rateTestTimer = startTimer(sendPeriod, true);
-}
-
-void RateTestClient::stopPseudoData() {
-    stopTimer(rateTestTimer);
-    rateTestTimer = wb::ID_INVALID_TIMER;
 }
 
 void RateTestClient::startEcgData(uint8_t multiplicator) {
@@ -426,4 +423,13 @@ void RateTestClient::startEcgData(uint8_t multiplicator) {
 
 void RateTestClient::stopEcgData(uint8_t multiplicator) {
     asyncUnsubscribe(WB_RES::LOCAL::MEAS_ECG_REQUIREDSAMPLERATE(), AsyncRequestOptions::Empty, 125 * multiplicator);
+}
+
+void RateTestClient::startImuData(uint8_t multiplicator) {
+    asyncSubscribe(WB_RES::LOCAL::MEAS_IMU9_SAMPLERATE(), AsyncRequestOptions::Empty, 26 * multiplicator);
+}
+
+void RateTestClient::stopImuData(uint8_t multiplicator) {
+    asyncUnsubscribe(WB_RES::LOCAL::MEAS_IMU9_SAMPLERATE(), AsyncRequestOptions::Empty, 26 * multiplicator);
+
 }
