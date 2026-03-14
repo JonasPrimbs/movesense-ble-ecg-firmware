@@ -250,6 +250,8 @@ aux_source_directory(. APP_SOURCES)
 set(APP_SOURCES ${APP_SOURCES} ${SOURCES}
         ../ble-ecg/template/CustomGattClient.cpp
         ../ble-ecg/experiment/RateTestClient.cpp
+        ../ble-ecg/offline_storage_client/MainClient.cpp
+        ../ble-ecg/offline_storage_client/MeasurementProvider.cpp
 )
 
 

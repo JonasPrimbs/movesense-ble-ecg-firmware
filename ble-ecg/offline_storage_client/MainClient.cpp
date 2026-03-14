@@ -1,4 +1,4 @@
-#include "OfflineStorageGattClient.h"
+#include "MainClient.h"
 
 #include "app-resources/resources.h"
 #include "comm_ble_gattsvc/resources.h"
@@ -10,10 +10,10 @@
 #include "../WakeClient.h"
 #include "GattConfig.h"
 
-const char* const OfflineStorageGattClient::LAUNCHABLE_NAME =
+const char* const MainClient::LAUNCHABLE_NAME =
     "OfflineStorageGattClient";
 
-OfflineStorageGattClient::OfflineStorageGattClient() :
+MainClient::MainClient() :
     ResourceClient(WBDEBUG_NAME(__FUNCTION__), WB_EXEC_CTX_APPLICATION),
     LaunchableModule(LAUNCHABLE_NAME, WB_EXEC_CTX_APPLICATION),
     // Debug Blinker:
@@ -53,23 +53,23 @@ OfflineStorageGattClient::OfflineStorageGattClient() :
     mSbemWaitBuffer = new uint8_t[MTU];
 }
 
-OfflineStorageGattClient::~OfflineStorageGattClient()
+MainClient::~MainClient()
 {
     delete[] mSbemWaitBuffer;
 }
 
-bool OfflineStorageGattClient::initModule()
+bool MainClient::initModule()
 {
     mModuleState = WB_RES::ModuleStateValues::INITIALIZED;
     return true;
 }
 
-void OfflineStorageGattClient::deinitModule()
+void MainClient::deinitModule()
 {
     mModuleState = WB_RES::ModuleStateValues::UNINITIALIZED;
 }
 
-bool OfflineStorageGattClient::startModule()
+bool MainClient::startModule()
 {
     mModuleState = WB_RES::ModuleStateValues::STARTED;
 
@@ -83,7 +83,7 @@ bool OfflineStorageGattClient::startModule()
     return true;
 }
 
-void OfflineStorageGattClient::stopModule()
+void MainClient::stopModule()
 {
     // Unsubscribe from all measurement data.
     asyncUnsubscribe(WB_RES::LOCAL::MEASUREMENTPROVIDER_ECG_DATASTREAM());
@@ -99,7 +99,7 @@ void OfflineStorageGattClient::stopModule()
     mModuleState = WB_RES::ModuleStateValues::STOPPED;
 }
 
-void OfflineStorageGattClient::onGetResult(wb::RequestId requestId,
+void MainClient::onGetResult(wb::RequestId requestId,
                                            wb::ResourceId resourceId,
                                            wb::Result resultCode,
                                            const wb::Value& rResultData)
@@ -264,7 +264,7 @@ void OfflineStorageGattClient::onGetResult(wb::RequestId requestId,
     }
 }
 
-void OfflineStorageGattClient::onPostResult(wb::RequestId requestId,
+void MainClient::onPostResult(wb::RequestId requestId,
                                             wb::ResourceId resourceId,
                                             wb::Result resultCode,
                                             const wb::Value& rResultData)
@@ -288,7 +288,7 @@ void OfflineStorageGattClient::onPostResult(wb::RequestId requestId,
     }
 }
 
-void OfflineStorageGattClient::onNotify(wb::ResourceId resourceId,
+void MainClient::onNotify(wb::ResourceId resourceId,
                                         const wb::Value& rValue,
                                         const wb::ParameterList& rParameters)
 {
@@ -382,7 +382,7 @@ void OfflineStorageGattClient::onNotify(wb::ResourceId resourceId,
     }
 }
 
-void OfflineStorageGattClient::onTimer(wb::TimerId timerId)
+void MainClient::onTimer(wb::TimerId timerId)
 {
     // Only react on the blink-timer. (no other timer used in this module)
     if (timerId == this->mBlinkTimer)
@@ -405,7 +405,7 @@ void OfflineStorageGattClient::onTimer(wb::TimerId timerId)
     }
 }
 
-void OfflineStorageGattClient::configGattSvc()
+void MainClient::configGattSvc()
 {
     WB_RES::GattSvc activityGattSvc;
     WB_RES::GattChar characteristics[OFFLINE_STORAGE_GATT_CLIENT_CHARS];
@@ -461,7 +461,7 @@ void OfflineStorageGattClient::configGattSvc()
     // Logic continues in onPostResult() case Comm/Ble/Gattsvc.
 }
 
-void OfflineStorageGattClient::deconfigGattSvc()
+void MainClient::deconfigGattSvc()
 {
     // Invalidate all resource IDs on shutdown
     mCharAResource = wb::ID_INVALID_RESOURCE;
@@ -471,7 +471,7 @@ void OfflineStorageGattClient::deconfigGattSvc()
     mActivityServiceHandle = 0;
 }
 
-void OfflineStorageGattClient::initGattCharSubscriptions()
+void MainClient::initGattCharSubscriptions()
 {
     // Safe-subscribe to all Gatt characteristics to get notified on
     // value-changes and notification status changes. [!] must use
@@ -486,7 +486,7 @@ void OfflineStorageGattClient::initGattCharSubscriptions()
         asyncSubscribe(mCharDResource, AsyncRequestOptions::ForceAsync);
 }
 
-void OfflineStorageGattClient::deinitGattCharSubscriptions()
+void MainClient::deinitGattCharSubscriptions()
 {
     // Safe-unsubscribe from all Gatt characteristics.
     if (mCharAResource != wb::ID_INVALID_RESOURCE)
@@ -499,7 +499,7 @@ void OfflineStorageGattClient::deinitGattCharSubscriptions()
         asyncUnsubscribe(mCharDResource);
 }
 
-void OfflineStorageGattClient::parseConfigurationField(
+void MainClient::parseConfigurationField(
     const uint8_t* configFields)
 {
     // Measurement intervals.
@@ -617,7 +617,7 @@ void OfflineStorageGattClient::parseConfigurationField(
     // Refresh the configuration field for potential updates.
     refreshConfigurationFields();
 }
-void OfflineStorageGattClient::refreshConfigurationFields()
+void MainClient::refreshConfigurationFields()
 {
     // Set the value of the characteristic to give client response information.
     uint8_t buffer[2 * 8];
@@ -637,14 +637,14 @@ void OfflineStorageGattClient::refreshConfigurationFields()
     asyncPut(mCharCResource, AsyncRequestOptions::Empty, configFieldsChar);
 }
 
-void OfflineStorageGattClient::configureDataLoggerNone()
+void MainClient::configureDataLoggerNone()
 {
     WB_RES::DataLoggerConfig dlConfig;
     asyncPut(WB_RES::LOCAL::MEM_DATALOGGER_CONFIG(), AsyncRequestOptions::Empty,
              dlConfig);
 }
 
-void OfflineStorageGattClient::configureDataLoggerAll()
+void MainClient::configureDataLoggerAll()
 {
     startBlinker(2);
     WB_RES::DataLoggerConfig dlConfig;
@@ -655,7 +655,7 @@ void OfflineStorageGattClient::configureDataLoggerAll()
     asyncPut(WB_RES::LOCAL::MEM_DATALOGGER_CONFIG(), AsyncRequestOptions::Empty,
              dlConfig);
 }
-void OfflineStorageGattClient::configureDataLoggerECG()
+void MainClient::configureDataLoggerECG()
 {
     startBlinker(2);
     WB_RES::DataLoggerConfig dlConfig;
@@ -665,7 +665,7 @@ void OfflineStorageGattClient::configureDataLoggerECG()
     asyncPut(WB_RES::LOCAL::MEM_DATALOGGER_CONFIG(), AsyncRequestOptions::Empty,
              dlConfig);
 }
-void OfflineStorageGattClient::configureDataLoggerIMU()
+void MainClient::configureDataLoggerIMU()
 {
     startBlinker(2);
     WB_RES::DataLoggerConfig dlConfig;
@@ -676,7 +676,7 @@ void OfflineStorageGattClient::configureDataLoggerIMU()
              dlConfig);
 }
 
-void OfflineStorageGattClient::startDataLogger()
+void MainClient::startDataLogger()
 {
     startBlinker(3);
     // Start Logging with the configured LoggerConfig by PUTting the Logger
@@ -687,7 +687,7 @@ void OfflineStorageGattClient::startDataLogger()
                    AsyncRequestOptions::ForceAsync);
 }
 
-void OfflineStorageGattClient::stopDataLogger()
+void MainClient::stopDataLogger()
 {
     startBlinker(3);
     // Stop Logging by PUTting the logger in the READY state.
@@ -697,21 +697,21 @@ void OfflineStorageGattClient::stopDataLogger()
     asyncUnsubscribe(WB_RES::LOCAL::MEM_LOGBOOK_ISFULL());
 }
 
-void OfflineStorageGattClient::startLogStreaming()
+void MainClient::startLogStreaming()
 {
     startBlinker(4);
     asyncGet(WB_RES::LOCAL::MEM_LOGBOOK_ENTRIES());
     // Continue logic in onGetResult() case Mem/Logbook/Entries.
 }
 
-void OfflineStorageGattClient::deleteRecordedData()
+void MainClient::deleteRecordedData()
 {
     startBlinker(5);
     // Delete all Logbook entries.
     asyncDelete(WB_RES::LOCAL::MEM_LOGBOOK_ENTRIES());
 }
 
-void OfflineStorageGattClient::finishCurrentReadOperation()
+void MainClient::finishCurrentReadOperation()
 {
     // Mark the stream-end by sending a single 0.
     constexpr uint8_t ZERO = 0;
@@ -724,7 +724,7 @@ void OfflineStorageGattClient::finishCurrentReadOperation()
     refreshConfigurationFields();
 }
 
-void OfflineStorageGattClient::setTimestamp()
+void MainClient::setTimestamp()
 {
     // Set the sensor's unix timestamp in microseconds now. Listeners
     // on Time/Detailed will get notified.
@@ -732,7 +732,7 @@ void OfflineStorageGattClient::setTimestamp()
              mSynchronizationTimestamp);
 }
 
-void OfflineStorageGattClient::startBlinker(const uint32_t n)
+void MainClient::startBlinker(const uint32_t n)
 {
     // 250 ms blink period
     constexpr size_t SPECIAL_INDICATION_BLINK_PERIOD = 250;
@@ -740,14 +740,14 @@ void OfflineStorageGattClient::startBlinker(const uint32_t n)
     this->mBlinkTimer = this->startTimer(SPECIAL_INDICATION_BLINK_PERIOD, true);
 }
 
-void OfflineStorageGattClient::debug(const char* msg)
+void MainClient::debug(const char* msg)
 {
     WB_RES::Characteristic recordedDataChar;
     recordedDataChar.bytes = wb::MakeArray((const uint8_t*)msg, strlen(msg));
     asyncPut(mCharDResource, AsyncRequestOptions::ForceAsync, recordedDataChar);
 }
 
-inline void OfflineStorageGattClient::debugf(const char* fmtstr, int64_t x)
+inline void MainClient::debugf(const char* fmtstr, int64_t x)
 {
     char buffer[100];
     sprintf(buffer, fmtstr, x);

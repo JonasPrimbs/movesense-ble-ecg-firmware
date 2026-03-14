@@ -6,14 +6,14 @@
  *  Movesense-Client for Processing all GAtt-related functions and
  *  controlling/ consuming Data of the MeasurementProvider.
  */
-class OfflineStorageGattClient FINAL : private wb::ResourceClient,
+class MainClient FINAL : private wb::ResourceClient,
                                        private wb::LaunchableModule
 {
   public:
     static const char* const LAUNCHABLE_NAME;
 
-    OfflineStorageGattClient();
-    ~OfflineStorageGattClient();
+    MainClient();
+    ~MainClient();
 
   private:
     // From wb::LaunchableModule:
