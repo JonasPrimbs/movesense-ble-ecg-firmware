@@ -1,6 +1,9 @@
 #pragma once
 
+#include <comm_ble/resources.h>
+
 #include "movesense.h"
+#include "SensorStates.h"
 
 /**
  *  Movesense-Client for Processing all GAtt-related functions and
@@ -82,6 +85,7 @@ class MainClient FINAL : private wb::ResourceClient,
     /*+ Subscription to the ECG-Measurement Characteristic **/
     bool mClientIsListeningToEcg;
     /*+ Subscription to the IMU-Measurement Characteristic **/
+    // TODO rename mov to imu
     bool mClientIsListeningToMov;
     /*+ Subscription to the Recorded-Data Characteristic **/
     bool mClientIsListeningToRecorded;
@@ -212,4 +216,28 @@ class MainClient FINAL : private wb::ResourceClient,
      * @param x value appearing in the fmt-string
      */
     void debugf(const char* msg, int64_t x);
+
+    /**
+     * @brief Transition the sensors State.
+     * @param event that triggered the transition.
+     */
+    void sensorStateTransition(SensorEvents event);
+
+    /** The sensors internal state of operation. **/
+    SensorStates mSensorState = SensorStates::Started;
+
+    /** Additional state variable, specifies what data is in use a.t.m. **/
+    DataStates mDataState = DataStates::None;
+
+    /** Helper flag between transition from log ecg + imu to stream ecg + imu. **/
+    bool pendingEcg = false;
+
+    /** Helper flag between transition from log ecg + imu to stream ecg + imu. **/
+    bool pendingImu = false;
+
+    /** Hard coded connection params, that allow the Sensor to react to disconnects without crashing. **/
+    WB_RES::ConnParams mPreferedConnParams = {12, 12, 2, 50};
+
+    /** Timer to delay the PUT operation on the /Comm/Ble/{ConnHandle}/ConnParams resource. **/
+    wb::TimerId mConnParamPutTimer;
 };

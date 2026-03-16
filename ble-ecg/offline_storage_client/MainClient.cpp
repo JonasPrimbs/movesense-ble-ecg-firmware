@@ -11,67 +11,61 @@
 #include "../WakeClient.h"
 #include "GattConfig.h"
 
-const char* const MainClient::LAUNCHABLE_NAME =
-    "OfflineStorageGattClient";
+const char *const MainClient::LAUNCHABLE_NAME =
+        "OfflineStorageGattClient";
 
-MainClient::MainClient() :
-    ResourceClient(WBDEBUG_NAME(__FUNCTION__), WB_EXEC_CTX_APPLICATION),
-    LaunchableModule(LAUNCHABLE_NAME, WB_EXEC_CTX_APPLICATION),
-    // Debug Blinker:
-    mBlinkTimer(wb::ID_INVALID_RESOURCE),
-    mBlinkCounter(0),
+MainClient::MainClient() : ResourceClient(WBDEBUG_NAME(__FUNCTION__), WB_EXEC_CTX_APPLICATION),
+                           LaunchableModule(LAUNCHABLE_NAME, WB_EXEC_CTX_APPLICATION),
+                           // Debug Blinker:
+                           mBlinkTimer(wb::ID_INVALID_RESOURCE),
+                           mBlinkCounter(0),
 
-    // Gatt handles and resources:
-    mActivityServiceHandle(0),
-    mCharAHandle(0),
-    mCharAResource(wb::ID_INVALID_RESOURCE),
-    mCharBHandle(0),
-    mCharBResource(wb::ID_INVALID_RESOURCE),
-    mCharCHandle(0),
-    mCharCResource(wb::ID_INVALID_RESOURCE),
-    mCharDHandle(0),
-    mCharDResource(wb::ID_INVALID_RESOURCE),
+                           // Gatt handles and resources:
+                           mActivityServiceHandle(0),
+                           mCharAHandle(0),
+                           mCharAResource(wb::ID_INVALID_RESOURCE),
+                           mCharBHandle(0),
+                           mCharBResource(wb::ID_INVALID_RESOURCE),
+                           mCharCHandle(0),
+                           mCharCResource(wb::ID_INVALID_RESOURCE),
+                           mCharDHandle(0),
+                           mCharDResource(wb::ID_INVALID_RESOURCE),
 
-    // Configuration Fields
-    // Measurement Intervals:
-    mEcgMeasurementInterval(IMU_DEFAULT_MEASUREMENT_INTERVAL),
-    mImuMeasurementInterval(IMU_DEFAULT_MEASUREMENT_INTERVAL),
-    // State fields:
-    mEcgRecordingMode(0),
-    mImuRecordingMode(0),
-    // Operation fields:
-    mRecordingOperation(0),
-    mGetDataOperation(0),
-    mDeleteDataOperation(0),
+                           // Configuration Fields
+                           // Measurement Intervals:
+                           mEcgMeasurementInterval(IMU_DEFAULT_MEASUREMENT_INTERVAL),
+                           mImuMeasurementInterval(IMU_DEFAULT_MEASUREMENT_INTERVAL),
+                           // State fields:
+                           mEcgRecordingMode(0),
+                           mImuRecordingMode(0),
+                           // Operation fields:
+                           mRecordingOperation(0),
+                           mGetDataOperation(0),
+                           mDeleteDataOperation(0),
 
-    // DataLogger related:
-    mCurrentLogEntryId(0),
+                           // DataLogger related:
+                           mCurrentLogEntryId(0),
 
-    // Time synchronization
-    mSynchronizationTimestamp(0),
-    mTimeResource(wb::ID_INVALID_RESOURCE)
-{
+                           // Time synchronization
+                           mSynchronizationTimestamp(0),
+                           mTimeResource(wb::ID_INVALID_RESOURCE) {
     mSbemWaitBuffer = new uint8_t[MTU];
 }
 
-MainClient::~MainClient()
-{
+MainClient::~MainClient() {
     delete[] mSbemWaitBuffer;
 }
 
-bool MainClient::initModule()
-{
+bool MainClient::initModule() {
     mModuleState = WB_RES::ModuleStateValues::INITIALIZED;
     return true;
 }
 
-void MainClient::deinitModule()
-{
+void MainClient::deinitModule() {
     mModuleState = WB_RES::ModuleStateValues::UNINITIALIZED;
 }
 
-bool MainClient::startModule()
-{
+bool MainClient::startModule() {
     mModuleState = WB_RES::ModuleStateValues::STARTED;
 
     // First, configure the Offline Gatt Activity Service.
@@ -87,8 +81,7 @@ bool MainClient::startModule()
     return true;
 }
 
-void MainClient::stopModule()
-{
+void MainClient::stopModule() {
     // Unsubscribe from all measurement data.
     asyncUnsubscribe(WB_RES::LOCAL::MEASUREMENTPROVIDER_ECG_DATASTREAM());
     asyncUnsubscribe(WB_RES::LOCAL::MEASUREMENTPROVIDER_IMU9_DATASTREAM());
@@ -104,10 +97,9 @@ void MainClient::stopModule()
 }
 
 void MainClient::onGetResult(wb::RequestId requestId,
-                                           wb::ResourceId resourceId,
-                                           wb::Result resultCode,
-                                           const wb::Value& rResultData)
-{
+                             wb::ResourceId resourceId,
+                             wb::Result resultCode,
+                             const wb::Value &rResultData) {
     switch (resourceId.localResourceId)
     {
     case WB_RES::LOCAL::COMM_BLE_GATTSVC_SVCHANDLE::LID: {
@@ -302,14 +294,27 @@ void MainClient::onNotify(wb::ResourceId resourceId,
     case WB_RES::LOCAL::COMM_BLE_PEERS::LID:
     {
         auto &peerChange = rValue.convertTo<WB_RES::PeerChange &>();
-
-        switch (peerChange.state) {
-            case WB_RES::PeerStateValues::CONNECTED:
-                break;
-            case WB_RES::PeerStateValues::DISCONNECTED:
-                startBlinker(5);
-                break;
+        switch (peerChange.state)
+        {
+        case WB_RES::PeerStateValues::CONNECTED:
+            this->mConnParamPutTimer = startTimer(1000, false);
+            // Always set the connection params.
+            this->sensorStateTransition(SensorEvents::Connect);
+            break;
+        case WB_RES::PeerStateValues::DISCONNECTED:
+            // reset subscription parameters
+            this->mClientIsListeningToEcg = false;
+            this->mClientIsListeningToMov = false;
+            this->mClientIsListeningToRecorded = false;
+            if (mConnParamPutTimer != wb::ID_INVALID_TIMER) {
+                stopTimer(mConnParamPutTimer);
+                mConnParamPutTimer = wb::ID_INVALID_TIMER;
+            }
+            startBlinker(5);
+            this->sensorStateTransition(SensorEvents::Disconnect);
+            break;
         }
+        break;
     }
     // GATT Characteristic change:
     case WB_RES::LOCAL::COMM_BLE_GATTSVC_SVCHANDLE_CHARHANDLE::LID: {
@@ -327,13 +332,31 @@ void MainClient::onNotify(wb::ResourceId resourceId,
         {
             if (!charValue.notifications.hasValue())
                 return;
-            this->mClientIsListeningToEcg = charValue.notifications.getValue();
+            bool clientIsListeningToEcg = charValue.notifications.getValue();
+            if (!this->mClientIsListeningToEcg && clientIsListeningToEcg)
+            {
+                this->sensorStateTransition(SensorEvents::SubscribeEcg);
+            }
+            else if (this->mClientIsListeningToEcg && !clientIsListeningToEcg)
+            {
+                this->sensorStateTransition(SensorEvents::UnsubscribeEcg);
+            }
+            this->mClientIsListeningToEcg = clientIsListeningToEcg;
         }
         else if (charHandle == mCharBHandle)
         {
             if (!charValue.notifications.hasValue())
                 return;
-            this->mClientIsListeningToMov = charValue.notifications.getValue();
+            bool clientIsListeningToImu = charValue.notifications.getValue();
+            if (!this->mClientIsListeningToMov && clientIsListeningToImu)
+            {
+                this->sensorStateTransition(SensorEvents::SubscribeImu);
+            }
+            else if (this->mClientIsListeningToMov && !clientIsListeningToImu)
+            {
+                this->sensorStateTransition(SensorEvents::UnsubscribeImu);
+            }
+            this->mClientIsListeningToMov = clientIsListeningToImu;
         }
         else if (charHandle == mCharCHandle)
         {
@@ -399,9 +422,14 @@ void MainClient::onNotify(wb::ResourceId resourceId,
     }
 }
 
-void MainClient::onTimer(wb::TimerId timerId)
-{
-    // Only react on the blink-timer. (no other timer used in this module)
+void MainClient::onTimer(wb::TimerId timerId) {
+
+    if (timerId == this->mConnParamPutTimer)
+    {
+        stopTimer(mConnParamPutTimer);
+        this->mConnParamPutTimer = wb::ID_INVALID_TIMER;
+        asyncPut(WB_RES::LOCAL::COMM_BLE_PEERS_CONNHANDLE_PARAMS(), AsyncRequestOptions::Empty, 0, mPreferedConnParams);
+    }
     if (timerId == this->mBlinkTimer)
     {
         // Stop the blinking if the blink-counter has reached 0.
@@ -638,11 +666,12 @@ void MainClient::refreshConfigurationFields()
 {
     // Set the value of the characteristic to give client response information.
     uint8_t buffer[2 * 8];
-    uint8_t values[sizeof(uint64_t)] = {
+    uint8_t values[8] = {
         mEcgMeasurementInterval, mImuMeasurementInterval,
-        mEcgRecordingMode,       mImuRecordingMode,
-        mRecordingOperation,     mGetDataOperation,
-        mDeleteDataOperation,    0};
+        mEcgRecordingMode, mImuRecordingMode,
+        mRecordingOperation, mGetDataOperation,
+        mDeleteDataOperation, 0
+    };
 
     memcpy(buffer, values, 8);
     memcpy(buffer + 8, &mSynchronizationTimestamp, 8);
@@ -654,15 +683,13 @@ void MainClient::refreshConfigurationFields()
     asyncPut(mCharCResource, AsyncRequestOptions::Empty, configFieldsChar);
 }
 
-void MainClient::configureDataLoggerNone()
-{
+void MainClient::configureDataLoggerNone() {
     WB_RES::DataLoggerConfig dlConfig;
     asyncPut(WB_RES::LOCAL::MEM_DATALOGGER_CONFIG(), AsyncRequestOptions::Empty,
              dlConfig);
 }
 
-void MainClient::configureDataLoggerAll()
-{
+void MainClient::configureDataLoggerAll() {
     startBlinker(2);
     WB_RES::DataLoggerConfig dlConfig;
     WB_RES::DataEntry dlEntries[2];
@@ -672,9 +699,8 @@ void MainClient::configureDataLoggerAll()
     asyncPut(WB_RES::LOCAL::MEM_DATALOGGER_CONFIG(), AsyncRequestOptions::Empty,
              dlConfig);
 }
-void MainClient::configureDataLoggerECG()
-{
-    startBlinker(2);
+
+void MainClient::configureDataLoggerECG() {
     WB_RES::DataLoggerConfig dlConfig;
     WB_RES::DataEntry dlEntry;
     dlEntry.path = "/MeasurementProvider/ECG/DataStream";
@@ -682,9 +708,8 @@ void MainClient::configureDataLoggerECG()
     asyncPut(WB_RES::LOCAL::MEM_DATALOGGER_CONFIG(), AsyncRequestOptions::Empty,
              dlConfig);
 }
-void MainClient::configureDataLoggerIMU()
-{
-    startBlinker(2);
+
+void MainClient::configureDataLoggerIMU() {
     WB_RES::DataLoggerConfig dlConfig;
     WB_RES::DataEntry dlEntry;
     dlEntry.path = "/MeasurementProvider/IMU9/DataStream";
@@ -693,9 +718,7 @@ void MainClient::configureDataLoggerIMU()
              dlConfig);
 }
 
-void MainClient::startDataLogger()
-{
-    startBlinker(3);
+void MainClient::startDataLogger() {
     // Start Logging with the configured LoggerConfig by PUTting the Logger
     // in the LOGGING state.
     asyncPut(WB_RES::LOCAL::MEM_DATALOGGER_STATE(), AsyncRequestOptions::Empty,
@@ -704,9 +727,7 @@ void MainClient::startDataLogger()
                    AsyncRequestOptions::ForceAsync);
 }
 
-void MainClient::stopDataLogger()
-{
-    startBlinker(3);
+void MainClient::stopDataLogger() {
     // Stop Logging by PUTting the logger in the READY state.
     asyncPut(WB_RES::LOCAL::MEM_DATALOGGER_STATE(), AsyncRequestOptions::Empty,
              WB_RES::DataLoggerStateValues::DATALOGGER_READY);
@@ -714,22 +735,19 @@ void MainClient::stopDataLogger()
     asyncUnsubscribe(WB_RES::LOCAL::MEM_LOGBOOK_ISFULL());
 }
 
-void MainClient::startLogStreaming()
-{
+void MainClient::startLogStreaming() {
     startBlinker(4);
     asyncGet(WB_RES::LOCAL::MEM_LOGBOOK_ENTRIES());
     // Continue logic in onGetResult() case Mem/Logbook/Entries.
 }
 
-void MainClient::deleteRecordedData()
-{
+void MainClient::deleteRecordedData() {
     startBlinker(5);
     // Delete all Logbook entries.
     asyncDelete(WB_RES::LOCAL::MEM_LOGBOOK_ENTRIES());
 }
 
-void MainClient::finishCurrentReadOperation()
-{
+void MainClient::finishCurrentReadOperation() {
     // Mark the stream-end by sending a single 0.
     constexpr uint8_t ZERO = 0;
     WB_RES::Characteristic recordedDataChar;
@@ -741,32 +759,138 @@ void MainClient::finishCurrentReadOperation()
     refreshConfigurationFields();
 }
 
-void MainClient::setTimestamp()
-{
+void MainClient::setTimestamp() {
     // Set the sensor's unix timestamp in microseconds now. Listeners
     // on Time/Detailed will get notified.
     asyncPut(WB_RES::LOCAL::TIME(), AsyncRequestOptions::Empty,
              mSynchronizationTimestamp);
 }
 
-void MainClient::startBlinker(const uint32_t n)
-{
+void MainClient::startBlinker(const uint32_t n) {
     // 250 ms blink period
     constexpr size_t SPECIAL_INDICATION_BLINK_PERIOD = 250;
     this->mBlinkCounter = n;
     this->mBlinkTimer = this->startTimer(SPECIAL_INDICATION_BLINK_PERIOD, true);
 }
 
-void MainClient::debug(const char* msg)
-{
+void MainClient::debug(const char *msg) {
     WB_RES::Characteristic recordedDataChar;
-    recordedDataChar.bytes = wb::MakeArray((const uint8_t*)msg, strlen(msg));
+    recordedDataChar.bytes = wb::MakeArray((const uint8_t *) msg, strlen(msg));
     asyncPut(mCharDResource, AsyncRequestOptions::ForceAsync, recordedDataChar);
 }
 
-inline void MainClient::debugf(const char* fmtstr, int64_t x)
-{
+inline void MainClient::debugf(const char *fmtstr, int64_t x) {
     char buffer[100];
     sprintf(buffer, fmtstr, x);
     debug(buffer);
+}
+
+void MainClient::sensorStateTransition(SensorEvents event) {
+    switch (this->mSensorState) {
+        case SensorStates::Started:
+            switch (event) {
+                case SensorEvents::Connect:
+                    this->mSensorState = SensorStates::Connected;
+                    break;
+                default: {
+                }
+            }
+            break;
+        case SensorStates::Connected:
+            switch (event) {
+                case SensorEvents::Disconnect:
+                    this->mSensorState = SensorStates::Started;
+                    break;
+                case SensorEvents::SubscribeEcg:
+                    this->mSensorState = SensorStates::Streaming;
+                    this->mDataState = DataStates::ECG;
+                    this->configureDataLoggerECG();
+                    break;
+                case SensorEvents::SubscribeImu:
+                    this->mSensorState = SensorStates::Streaming;
+                    this->mDataState = DataStates::IMU;
+                    this->configureDataLoggerIMU();
+                    break;
+                default: {
+                }
+            }
+            break;
+        case SensorStates::Streaming:
+            switch (event) {
+                case SensorEvents::SubscribeEcg:
+                    this->mDataState = DataStates::Both;
+                    this->configureDataLoggerAll();
+                    break;
+                case SensorEvents::SubscribeImu:
+                    this->mDataState = DataStates::Both;
+                    this->configureDataLoggerAll();
+                    break;
+                case SensorEvents::UnsubscribeEcg:
+                    if (this->mDataState == DataStates::Both) {
+                        this->mDataState = DataStates::IMU;
+                        this->configureDataLoggerIMU();
+                    } else {
+                        this->mDataState = DataStates::None;
+                        this->mSensorState = SensorStates::Connected;
+                    }
+                    break;
+                case SensorEvents::UnsubscribeImu:
+                    if (this->mDataState == DataStates::Both) {
+                        this->mDataState = DataStates::ECG;
+                        this->configureDataLoggerECG();
+                    } else {
+                        this->mDataState = DataStates::None;
+                        this->mSensorState = SensorStates::Connected;
+                    }
+                    break;
+                case SensorEvents::Disconnect:
+                    WakeClient::deactivate();
+                    startDataLogger();
+                    this->mSensorState = SensorStates::Logging;
+                    break;
+                default: {
+                }
+            }
+            break;
+        case SensorStates::Logging:
+            switch (event) {
+                case SensorEvents::Connect:
+                    this->startBlinker(4);
+                    this->mSensorState = SensorStates::Reconnected;
+                    break;
+                default: {
+                }
+            }
+            break;
+        case SensorStates::Reconnected:
+            if (mDataState == DataStates::ECG && event == SensorEvents::SubscribeEcg) {
+                startBlinker(4);
+                this->mSensorState = SensorStates::Streaming;
+                this->stopDataLogger();
+                WakeClient::activate();
+            } else if (mDataState == DataStates::IMU && event == SensorEvents::SubscribeImu) {
+                this->mSensorState = SensorStates::Streaming;
+                this->stopDataLogger();
+                WakeClient::activate();
+            }
+            // TODO extended pending handling
+            else if (mDataState == DataStates::Both && event == SensorEvents::SubscribeEcg && pendingEcg) {
+                this->mSensorState = SensorStates::Streaming;
+                this->stopDataLogger();
+                WakeClient::activate();
+                this->pendingEcg = false;
+            } else if (mDataState == DataStates::Both && event == SensorEvents::SubscribeImu && pendingImu) {
+                this->mSensorState = SensorStates::Streaming;
+                this->stopDataLogger();
+                WakeClient::activate();
+                this->pendingImu = false;
+            } else if (mDataState == DataStates::Both && event == SensorEvents::SubscribeEcg) {
+                this->pendingImu = true;
+            } else if (mDataState == DataStates::Both && event == SensorEvents::SubscribeImu) {
+                this->pendingEcg = true;
+            }
+            break;
+        default: {
+        }
+    }
 }
