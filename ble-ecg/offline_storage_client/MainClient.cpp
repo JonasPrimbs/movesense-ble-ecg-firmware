@@ -438,7 +438,7 @@ void MainClient::configGattSvc()
     static WB_RES::GattProperty propsB[] = {WB_RES::GattProperty::NOTIFY};
     static WB_RES::GattProperty propsC[] = {WB_RES::GattProperty::READ,
                                             WB_RES::GattProperty::WRITE};
-    static WB_RES::GattProperty propsD[] = {WB_RES::GattProperty::INDICATE};
+    static WB_RES::GattProperty propsD[] = {WB_RES::GattProperty::NOTIFY};
 
     // Assign properties
     charA.props = wb::MakeArray(propsA);
