@@ -86,8 +86,8 @@ class MainClient FINAL : private wb::ResourceClient,
     /*+ Subscription to the ECG-Measurement Characteristic **/
     bool mClientIsListeningToEcg = false;
     /*+ Subscription to the IMU-Measurement Characteristic **/
-    // TODO rename mov to imu
-    bool mClientIsListeningToMov = false;
+
+    bool mClientIsListeningToImu = false;
     /*+ Subscription to the Recorded-Data Characteristic **/
     bool mClientIsListeningToRecorded = false;
 

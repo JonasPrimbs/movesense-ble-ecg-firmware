@@ -251,7 +251,7 @@ void MainClient::onNotify(wb::ResourceId resourceId,
                 case WB_RES::PeerStateValues::DISCONNECTED:
                     // reset subscription parameters
                     this->mClientIsListeningToEcg = false;
-                    this->mClientIsListeningToMov = false;
+                    this->mClientIsListeningToImu = false;
                     this->mClientIsListeningToRecorded = false;
                     if (mConnParamPutTimer != wb::ID_INVALID_TIMER) {
                         stopTimer(mConnParamPutTimer);
@@ -289,12 +289,12 @@ void MainClient::onNotify(wb::ResourceId resourceId,
                 if (!charValue.notifications.hasValue())
                     return;
                 bool clientIsListeningToImu = charValue.notifications.getValue();
-                if (!this->mClientIsListeningToMov && clientIsListeningToImu) {
+                if (!this->mClientIsListeningToImu && clientIsListeningToImu) {
                     this->sensorStateTransition(SensorEvents::SubscribeImu);
-                } else if (this->mClientIsListeningToMov && !clientIsListeningToImu) {
+                } else if (this->mClientIsListeningToImu && !clientIsListeningToImu) {
                     this->sensorStateTransition(SensorEvents::UnsubscribeImu);
                 }
-                this->mClientIsListeningToMov = clientIsListeningToImu;
+                this->mClientIsListeningToImu = clientIsListeningToImu;
             } else if (charHandle == mCharCHandle) {
                 parseConfigurationField(charValue.bytes.begin());
             } else if (charHandle == mCharDHandle) {
