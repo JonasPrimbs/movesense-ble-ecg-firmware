@@ -22,17 +22,7 @@ static constexpr wb::LocalResourceId sProviderResources[] = {
 MeasurementProvider::MeasurementProvider() :
     ResourceProvider(WBDEBUG_NAME(__FUNCTION__), sExecutionContextId),
     ResourceClient(WBDEBUG_NAME(__FUNCTION__), sExecutionContextId),
-    LaunchableModule(LAUNCHABLE_NAME, sExecutionContextId),
-    // ECG
-    mEcgMeasurementInterval(ECG_DEFAULT_MEASUREMENT_INTERVAL),
-    mEcgSampleCounter(0),
-    mEcgSampleSkipCount(ECG_DEFAULT_SAMPLE_SKIP_COUNT),
-    // IMU
-    mImuMeasurementInterval(IMU_BASE_MEASUREMENT_INTERVAL),
-    mImuSampleCounter(0),
-    mImuSampleSkipCount(IMU_DEFAULT_SAMPLE_SKIP_COUNT),
-    // Time
-    mUnixBaseTimestampUs(0)
+    LaunchableModule(LAUNCHABLE_NAME, sExecutionContextId)
 {
     // Create buffers.
     this->ecgBuffer = new AbsoluteSeriesBuffer<ecg_t>(DEFAULT_ECG_OBJECT_SIZE,

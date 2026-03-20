@@ -15,40 +15,7 @@ const char *const MainClient::LAUNCHABLE_NAME =
         "OfflineStorageGattClient";
 
 MainClient::MainClient() : ResourceClient(WBDEBUG_NAME(__FUNCTION__), WB_EXEC_CTX_APPLICATION),
-                           LaunchableModule(LAUNCHABLE_NAME, WB_EXEC_CTX_APPLICATION),
-                           // Debug Blinker:
-                           mBlinkTimer(wb::ID_INVALID_RESOURCE),
-                           mBlinkCounter(0),
-
-                           // Gatt handles and resources:
-                           mActivityServiceHandle(0),
-                           mCharAHandle(0),
-                           mCharAResource(wb::ID_INVALID_RESOURCE),
-                           mCharBHandle(0),
-                           mCharBResource(wb::ID_INVALID_RESOURCE),
-                           mCharCHandle(0),
-                           mCharCResource(wb::ID_INVALID_RESOURCE),
-                           mCharDHandle(0),
-                           mCharDResource(wb::ID_INVALID_RESOURCE),
-
-                           // Configuration Fields
-                           // Measurement Intervals:
-                           mEcgMeasurementInterval(IMU_DEFAULT_MEASUREMENT_INTERVAL),
-                           mImuMeasurementInterval(IMU_DEFAULT_MEASUREMENT_INTERVAL),
-                           // State fields:
-                           mEcgRecordingMode(0),
-                           mImuRecordingMode(0),
-                           // Operation fields:
-                           mRecordingOperation(0),
-                           mGetDataOperation(0),
-                           mDeleteDataOperation(0),
-
-                           // DataLogger related:
-                           mCurrentLogEntryId(0),
-
-                           // Time synchronization
-                           mSynchronizationTimestamp(0),
-                           mTimeResource(wb::ID_INVALID_RESOURCE) {
+                           LaunchableModule(LAUNCHABLE_NAME, WB_EXEC_CTX_APPLICATION) {
     mSbemWaitBuffer = new uint8_t[MTU];
 }
 
@@ -100,348 +67,310 @@ void MainClient::onGetResult(wb::RequestId requestId,
                              wb::ResourceId resourceId,
                              wb::Result resultCode,
                              const wb::Value &rResultData) {
-    switch (resourceId.localResourceId)
-    {
-    case WB_RES::LOCAL::COMM_BLE_GATTSVC_SVCHANDLE::LID: {
-        if (resultCode != wb::HTTP_CODE_OK)
-            return;
+    switch (resourceId.localResourceId) {
+        case WB_RES::LOCAL::COMM_BLE_GATTSVC_SVCHANDLE::LID: {
+            if (resultCode != wb::HTTP_CODE_OK)
+                return;
 
-        const WB_RES::GattSvc& svc =
-            rResultData.convertTo<const WB_RES::GattSvc&>();
+            const WB_RES::GattSvc &svc =
+                    rResultData.convertTo<const WB_RES::GattSvc &>();
 
-        // Get each characteristic's handle.
-        for (const WB_RES::GattChar& chr : svc.chars)
-        {
-            uint16_t uuid16 =
-                reinterpret_cast<const uint16_t*>(chr.uuid.begin())[0];
-            switch (uuid16)
-            {
-            case UUID_A:
-                mCharAHandle =
-                    chr.handle.hasValue() ? chr.handle.getValue() : 0;
-                break;
-            case UUID_B:
-                mCharBHandle =
-                    chr.handle.hasValue() ? chr.handle.getValue() : 0;
-                break;
-            case UUID_C:
-                mCharCHandle =
-                    chr.handle.hasValue() ? chr.handle.getValue() : 0;
-                break;
-            case UUID_D:
-                mCharDHandle =
-                    chr.handle.hasValue() ? chr.handle.getValue() : 0;
+            // Get each characteristic's handle.
+            for (const WB_RES::GattChar &chr: svc.chars) {
+                uint16_t uuid16 =
+                        reinterpret_cast<const uint16_t *>(chr.uuid.begin())[0];
+                switch (uuid16) {
+                    case UUID_A:
+                        mCharAHandle =
+                                chr.handle.hasValue() ? chr.handle.getValue() : 0;
+                        break;
+                    case UUID_B:
+                        mCharBHandle =
+                                chr.handle.hasValue() ? chr.handle.getValue() : 0;
+                        break;
+                    case UUID_C:
+                        mCharCHandle =
+                                chr.handle.hasValue() ? chr.handle.getValue() : 0;
+                        break;
+                    case UUID_D:
+                        mCharDHandle =
+                                chr.handle.hasValue() ? chr.handle.getValue() : 0;
+                        break;
+                }
+            }
+
+            // Only proceed if all characteristics were configured correctly.
+            if (!mCharAHandle || !mCharBHandle || !mCharCHandle || !mCharDHandle)
+                return;
+
+            char pathBuffer[32];
+
+            // Get each characteristic's corresponding resource.
+            snprintf(pathBuffer, sizeof(pathBuffer), "/Comm/Ble/GattSvc/%d/%d",
+                     mActivityServiceHandle, mCharAHandle);
+            getResource(pathBuffer, mCharAResource);
+
+            snprintf(pathBuffer, sizeof(pathBuffer), "/Comm/Ble/GattSvc/%d/%d",
+                     mActivityServiceHandle, mCharBHandle);
+            getResource(pathBuffer, mCharBResource);
+
+            snprintf(pathBuffer, sizeof(pathBuffer), "/Comm/Ble/GattSvc/%d/%d",
+                     mActivityServiceHandle, mCharCHandle);
+            getResource(pathBuffer, mCharCResource);
+
+            snprintf(pathBuffer, sizeof(pathBuffer), "/Comm/Ble/GattSvc/%d/%d",
+                     mActivityServiceHandle, mCharDHandle);
+            getResource(pathBuffer, mCharDResource);
+
+            // Subscribe to the necessary characteristics.
+            initGattCharSubscriptions();
+            break;
+        }
+        case WB_RES::LOCAL::MEM_LOGBOOK_ENTRIES::LID: {
+            const WB_RES::LogEntries &entries =
+                    rResultData.convertTo<const WB_RES::LogEntries &>();
+
+            for (const WB_RES::LogEntry &entry: entries.elements) {
+                mCurrentLogEntryId = entry.id;
+            }
+            if (mCurrentLogEntryId == 0) {
+                this->startBlinker(10);
+                finishCurrentReadOperation();
                 break;
             }
-        }
 
-        // Only proceed if all characteristics were configured correctly.
-        if (!mCharAHandle || !mCharBHandle || !mCharCHandle || !mCharDHandle)
-            return;
-
-        char pathBuffer[32];
-
-        // Get each characteristic's corresponding resource.
-        snprintf(pathBuffer, sizeof(pathBuffer), "/Comm/Ble/GattSvc/%d/%d",
-                 mActivityServiceHandle, mCharAHandle);
-        getResource(pathBuffer, mCharAResource);
-
-        snprintf(pathBuffer, sizeof(pathBuffer), "/Comm/Ble/GattSvc/%d/%d",
-                 mActivityServiceHandle, mCharBHandle);
-        getResource(pathBuffer, mCharBResource);
-
-        snprintf(pathBuffer, sizeof(pathBuffer), "/Comm/Ble/GattSvc/%d/%d",
-                 mActivityServiceHandle, mCharCHandle);
-        getResource(pathBuffer, mCharCResource);
-
-        snprintf(pathBuffer, sizeof(pathBuffer), "/Comm/Ble/GattSvc/%d/%d",
-                 mActivityServiceHandle, mCharDHandle);
-        getResource(pathBuffer, mCharDResource);
-
-        // Subscribe to the necessary characteristics.
-        initGattCharSubscriptions();
-        break;
-    }
-    case WB_RES::LOCAL::MEM_LOGBOOK_ENTRIES::LID: {
-        const WB_RES::LogEntries& entries =
-            rResultData.convertTo<const WB_RES::LogEntries&>();
-
-        for (const WB_RES::LogEntry& entry : entries.elements)
-        {
-            mCurrentLogEntryId = entry.id;
-        }
-        if (mCurrentLogEntryId == 0)
-        {
-            this->startBlinker(10);
-            finishCurrentReadOperation();
+            asyncGet(WB_RES::LOCAL::MEM_LOGBOOK_BYID_LOGID_DATA(),
+                     AsyncRequestOptions::ForceAsync, mCurrentLogEntryId);
             break;
         }
 
-        asyncGet(WB_RES::LOCAL::MEM_LOGBOOK_BYID_LOGID_DATA(),
-                 AsyncRequestOptions::ForceAsync, mCurrentLogEntryId);
-        break;
-    }
+        case WB_RES::LOCAL::MEM_LOGBOOK_BYID_LOGID_DATA::LID: {
+            const wb::ByteStream &byteStream =
+                    rResultData.convertTo<const wb::ByteStream &>();
 
-    case WB_RES::LOCAL::MEM_LOGBOOK_BYID_LOGID_DATA::LID: {
-        const wb::ByteStream& byteStream =
-            rResultData.convertTo<const wb::ByteStream&>();
+            // Send off the raw logs.
+            const size_t length = byteStream.length();
+            WB_RES::Characteristic recordedDataChar;
 
-        // Send off the raw logs.
-        const size_t length = byteStream.length();
-        WB_RES::Characteristic recordedDataChar;
+            // Buffer for immediate off-sending
+            uint8_t sendOffBuffer[MTU];
 
-        // Buffer for immediate off-sending
-        uint8_t sendOffBuffer[MTU];
+            // if old and new data do not fill up MTU, copy old data to sbemBuffer.
+            if (mSbemWaitBufferIndex + length < MTU) {
+                memcpy(mSbemWaitBuffer + mSbemWaitBufferIndex, byteStream.data,
+                       length);
+                mSbemWaitBufferIndex += length;
+            } else {
+                // First cope previous excess data to SendOffBuffer.
+                memcpy(sendOffBuffer, mSbemWaitBuffer, mSbemWaitBufferIndex);
 
-        // if old and new data do not fill up MTU, copy old data to sbemBuffer.
-        if (mSbemWaitBufferIndex + length < MTU)
-        {
-            memcpy(mSbemWaitBuffer + mSbemWaitBufferIndex, byteStream.data,
-                   length);
-            mSbemWaitBufferIndex += length;
-        }
-        else
-        {
-            // First cope previous excess data to SendOffBuffer.
-            memcpy(sendOffBuffer, mSbemWaitBuffer, mSbemWaitBufferIndex);
-
-            // Fill up SendBuffer for sending (if block large enough).
-            size_t space_to_fill = MTU - mSbemWaitBufferIndex;
-            memcpy(sendOffBuffer + mSbemWaitBufferIndex, byteStream.data,
-                   space_to_fill);
-            mSbemWaitBufferIndex = 0;
-            // Send off first buffer.
-            recordedDataChar.bytes = wb::MakeArray<uint8_t>(sendOffBuffer, MTU);
-            asyncPut(mCharDResource, AsyncRequestOptions::Empty,
-                     recordedDataChar);
-            size_t read_index = space_to_fill;
-            // Iteratively break chunks off byteStream until smaller than MTU.
-            while (length - read_index >= MTU)
-            {
-                memcpy(sendOffBuffer, byteStream.data + read_index, MTU);
-                recordedDataChar.bytes =
-                    wb::MakeArray<uint8_t>(sendOffBuffer, MTU);
-                asyncPut(mCharDResource, AsyncRequestOptions::Empty,
-                         recordedDataChar);
-                read_index += MTU;
-            }
-            // buffer the excess until next round.
-            if (length - read_index > 0)
-            {
-                memcpy(mSbemWaitBuffer, byteStream.data + read_index,
-                       length - read_index);
-                mSbemWaitBufferIndex = length - read_index;
-            }
-        }
-
-        if (resultCode == wb::HTTP_CODE_CONTINUE)
-        {
-            // Do another get request to get the next block of data.
-            asyncGet(WB_RES::LOCAL::MEM_LOGBOOK_BYID_LOGID_DATA(),
-                     AsyncRequestOptions::ForceAsync, mCurrentLogEntryId);
-        }
-        else if (resultCode == wb::HTTP_CODE_OK)
-        {
-            // Send off remaining excess bytes.
-            if (mSbemWaitBufferIndex != 0)
-            {
-                recordedDataChar.bytes = wb::MakeArray<uint8_t>(
-                    mSbemWaitBuffer, mSbemWaitBufferIndex);
-                asyncPut(mCharDResource, AsyncRequestOptions::Empty,
-                         recordedDataChar);
+                // Fill up SendBuffer for sending (if block large enough).
+                size_t space_to_fill = MTU - mSbemWaitBufferIndex;
+                memcpy(sendOffBuffer + mSbemWaitBufferIndex, byteStream.data,
+                       space_to_fill);
                 mSbemWaitBufferIndex = 0;
+                // Send off first buffer.
+                recordedDataChar.bytes = wb::MakeArray<uint8_t>(sendOffBuffer, MTU);
+                asyncPut(mCharDResource, AsyncRequestOptions::Empty,
+                         recordedDataChar);
+                size_t read_index = space_to_fill;
+                // Iteratively break chunks off byteStream until smaller than MTU.
+                while (length - read_index >= MTU) {
+                    memcpy(sendOffBuffer, byteStream.data + read_index, MTU);
+                    recordedDataChar.bytes =
+                            wb::MakeArray<uint8_t>(sendOffBuffer, MTU);
+                    asyncPut(mCharDResource, AsyncRequestOptions::Empty,
+                             recordedDataChar);
+                    read_index += MTU;
+                }
+                // buffer the excess until next round.
+                if (length - read_index > 0) {
+                    memcpy(mSbemWaitBuffer, byteStream.data + read_index,
+                           length - read_index);
+                    mSbemWaitBufferIndex = length - read_index;
+                }
             }
 
-            // Finish off the operation.
-            finishCurrentReadOperation();
+            if (resultCode == wb::HTTP_CODE_CONTINUE) {
+                // Do another get request to get the next block of data.
+                asyncGet(WB_RES::LOCAL::MEM_LOGBOOK_BYID_LOGID_DATA(),
+                         AsyncRequestOptions::ForceAsync, mCurrentLogEntryId);
+            } else if (resultCode == wb::HTTP_CODE_OK) {
+                // Send off remaining excess bytes.
+                if (mSbemWaitBufferIndex != 0) {
+                    recordedDataChar.bytes = wb::MakeArray<uint8_t>(
+                        mSbemWaitBuffer, mSbemWaitBufferIndex);
+                    asyncPut(mCharDResource, AsyncRequestOptions::Empty,
+                             recordedDataChar);
+                    mSbemWaitBufferIndex = 0;
+                }
+
+                // Finish off the operation.
+                finishCurrentReadOperation();
+            }
+            break;
         }
-        break;
-    }
     }
 }
 
 void MainClient::onPostResult(wb::RequestId requestId,
-                                            wb::ResourceId resourceId,
-                                            wb::Result resultCode,
-                                            const wb::Value& rResultData)
-{
-    switch (resourceId.localResourceId)
-    {
-    case WB_RES::LOCAL::COMM_BLE_GATTSVC::LID: {
-        if (resultCode != wb::HTTP_CODE_CREATED)
-            return;
+                              wb::ResourceId resourceId,
+                              wb::Result resultCode,
+                              const wb::Value &rResultData) {
+    switch (resourceId.localResourceId) {
+        case WB_RES::LOCAL::COMM_BLE_GATTSVC::LID: {
+            if (resultCode != wb::HTTP_CODE_CREATED)
+                return;
 
-        // Service created successfully, save its handle.
-        mActivityServiceHandle = rResultData.convertTo<int32_t>();
+            // Service created successfully, save its handle.
+            mActivityServiceHandle = rResultData.convertTo<int32_t>();
 
-        // Now, get the full details of the service to retrieve characteristic
-        // handles.
-        asyncGet(WB_RES::LOCAL::COMM_BLE_GATTSVC_SVCHANDLE(),
-                 AsyncRequestOptions::Empty, mActivityServiceHandle);
-        // Continue logic in onGetResult() case Comm/Ble/GattSvc.
-        break;
-    }
+            // Now, get the full details of the service to retrieve characteristic
+            // handles.
+            asyncGet(WB_RES::LOCAL::COMM_BLE_GATTSVC_SVCHANDLE(),
+                     AsyncRequestOptions::Empty, mActivityServiceHandle);
+            // Continue logic in onGetResult() case Comm/Ble/GattSvc.
+            break;
+        }
     }
 }
 
 void MainClient::onNotify(wb::ResourceId resourceId,
-                                        const wb::Value& rValue,
-                                        const wb::ParameterList& rParameters)
-{
-    switch (resourceId.localResourceId)
-    {
-    // Connection state changes:
-    case WB_RES::LOCAL::COMM_BLE_PEERS::LID:
-    {
-        auto &peerChange = rValue.convertTo<WB_RES::PeerChange &>();
-        switch (peerChange.state)
-        {
-        case WB_RES::PeerStateValues::CONNECTED:
-            this->mConnParamPutTimer = startTimer(1000, false);
-            // Always set the connection params.
-            this->sensorStateTransition(SensorEvents::Connect);
-            break;
-        case WB_RES::PeerStateValues::DISCONNECTED:
-            // reset subscription parameters
-            this->mClientIsListeningToEcg = false;
-            this->mClientIsListeningToMov = false;
-            this->mClientIsListeningToRecorded = false;
-            if (mConnParamPutTimer != wb::ID_INVALID_TIMER) {
-                stopTimer(mConnParamPutTimer);
-                mConnParamPutTimer = wb::ID_INVALID_TIMER;
+                          const wb::Value &rValue,
+                          const wb::ParameterList &rParameters) {
+    switch (resourceId.localResourceId) {
+        // Connection state changes:
+        case WB_RES::LOCAL::COMM_BLE_PEERS::LID: {
+            auto &peerChange = rValue.convertTo<WB_RES::PeerChange &>();
+            switch (peerChange.state) {
+                case WB_RES::PeerStateValues::CONNECTED:
+                    this->mConnParamPutTimer = startTimer(1000, false);
+                    // Always set the connection params.
+                    this->sensorStateTransition(SensorEvents::Connect);
+                    break;
+                case WB_RES::PeerStateValues::DISCONNECTED:
+                    // reset subscription parameters
+                    this->mClientIsListeningToEcg = false;
+                    this->mClientIsListeningToMov = false;
+                    this->mClientIsListeningToRecorded = false;
+                    if (mConnParamPutTimer != wb::ID_INVALID_TIMER) {
+                        stopTimer(mConnParamPutTimer);
+                        mConnParamPutTimer = wb::ID_INVALID_TIMER;
+                    }
+                    startBlinker(5);
+                    this->sensorStateTransition(SensorEvents::Disconnect);
+                    break;
             }
-            startBlinker(5);
-            this->sensorStateTransition(SensorEvents::Disconnect);
             break;
         }
-        break;
-    }
-    // GATT Characteristic change:
-    case WB_RES::LOCAL::COMM_BLE_GATTSVC_SVCHANDLE_CHARHANDLE::LID: {
-        WB_RES::LOCAL::COMM_BLE_GATTSVC_SVCHANDLE_CHARHANDLE::SUBSCRIBE::
-            ParameterListRef parameterRef(rParameters);
-        int32_t svcHandle = parameterRef.getSvcHandle();
-        if (svcHandle != mActivityServiceHandle)
-            return;
-        int32_t charHandle = parameterRef.getCharHandle();
-
-        const WB_RES::Characteristic& charValue =
-            rValue.convertTo<const WB_RES::Characteristic&>();
-
-        if (charHandle == mCharAHandle)
-        {
-            if (!charValue.notifications.hasValue())
+        // GATT Characteristic change:
+        case WB_RES::LOCAL::COMM_BLE_GATTSVC_SVCHANDLE_CHARHANDLE::LID: {
+            WB_RES::LOCAL::COMM_BLE_GATTSVC_SVCHANDLE_CHARHANDLE::SUBSCRIBE::
+                    ParameterListRef parameterRef(rParameters);
+            int32_t svcHandle = parameterRef.getSvcHandle();
+            if (svcHandle != mActivityServiceHandle)
                 return;
-            bool clientIsListeningToEcg = charValue.notifications.getValue();
-            if (!this->mClientIsListeningToEcg && clientIsListeningToEcg)
-            {
-                this->sensorStateTransition(SensorEvents::SubscribeEcg);
+            int32_t charHandle = parameterRef.getCharHandle();
+
+            const WB_RES::Characteristic &charValue =
+                    rValue.convertTo<const WB_RES::Characteristic &>();
+
+            if (charHandle == mCharAHandle) {
+                if (!charValue.notifications.hasValue())
+                    return;
+                bool clientIsListeningToEcg = charValue.notifications.getValue();
+                if (!this->mClientIsListeningToEcg && clientIsListeningToEcg) {
+                    this->sensorStateTransition(SensorEvents::SubscribeEcg);
+                } else if (this->mClientIsListeningToEcg && !clientIsListeningToEcg) {
+                    this->sensorStateTransition(SensorEvents::UnsubscribeEcg);
+                }
+                this->mClientIsListeningToEcg = clientIsListeningToEcg;
+            } else if (charHandle == mCharBHandle) {
+                if (!charValue.notifications.hasValue())
+                    return;
+                bool clientIsListeningToImu = charValue.notifications.getValue();
+                if (!this->mClientIsListeningToMov && clientIsListeningToImu) {
+                    this->sensorStateTransition(SensorEvents::SubscribeImu);
+                } else if (this->mClientIsListeningToMov && !clientIsListeningToImu) {
+                    this->sensorStateTransition(SensorEvents::UnsubscribeImu);
+                }
+                this->mClientIsListeningToMov = clientIsListeningToImu;
+            } else if (charHandle == mCharCHandle) {
+                parseConfigurationField(charValue.bytes.begin());
+            } else if (charHandle == mCharDHandle) {
+                if (!charValue.notifications.hasValue())
+                    return;
+                this->mClientIsListeningToRecorded =
+                        charValue.notifications.getValue();
             }
-            else if (this->mClientIsListeningToEcg && !clientIsListeningToEcg)
-            {
-                this->sensorStateTransition(SensorEvents::UnsubscribeEcg);
+
+            break;
+        }
+        // ECG Data:
+        case WB_RES::LOCAL::MEASUREMENTPROVIDER_ECG_DATASTREAM::LID: {
+            // Get raw bytes from the packet.
+            const WB_RES::MeasurementBundle32 &packet =
+                    rValue.convertTo<const WB_RES::MeasurementBundle32 &>();
+
+            WB_RES::Characteristic ecgVoltageCharacteristic;
+            ecgVoltageCharacteristic.bytes = wb::MakeArray(
+                reinterpret_cast<const uint8_t *>(packet.units.begin()),
+                packet.units.size() * sizeof(uint32_t));
+
+            // Put value onto Ecg-Characteristic to notify listening client.
+            asyncPut(mCharAResource, AsyncRequestOptions::Empty,
+                     ecgVoltageCharacteristic);
+            break;
+        }
+        // IMU Data:
+        case WB_RES::LOCAL::MEASUREMENTPROVIDER_IMU9_DATASTREAM::LID: {
+            // Get raw bytes from the packet.
+            const WB_RES::MeasurementBundle32 &packet =
+                    rValue.convertTo<const WB_RES::MeasurementBundle32 &>();
+
+            WB_RES::Characteristic movVectorCharacteristic;
+            movVectorCharacteristic.bytes = wb::MakeArray(
+                reinterpret_cast<const uint8_t *>(packet.units.begin()),
+                packet.units.size() * sizeof(uint32_t));
+
+            // Put value onto Mov-Characteristic to notify listening client.
+            asyncPut(mCharBResource, AsyncRequestOptions::Empty,
+                     movVectorCharacteristic);
+            break;
+        }
+        case WB_RES::LOCAL::MEM_LOGBOOK_ISFULL::LID: {
+            const bool isFull = rValue.convertTo<bool>();
+            if (isFull) {
+                // Stop recording when logbook is full.
+                stopDataLogger();
+                // reactivate auto-shutdown.
+                WakeClient::activate();
+
+                // Mark recording operation to end.
+                mRecordingOperation = 0;
+                refreshConfigurationFields();
             }
-            this->mClientIsListeningToEcg = clientIsListeningToEcg;
+            break;
         }
-        else if (charHandle == mCharBHandle)
-        {
-            if (!charValue.notifications.hasValue())
-                return;
-            bool clientIsListeningToImu = charValue.notifications.getValue();
-            if (!this->mClientIsListeningToMov && clientIsListeningToImu)
-            {
-                this->sensorStateTransition(SensorEvents::SubscribeImu);
-            }
-            else if (this->mClientIsListeningToMov && !clientIsListeningToImu)
-            {
-                this->sensorStateTransition(SensorEvents::UnsubscribeImu);
-            }
-            this->mClientIsListeningToMov = clientIsListeningToImu;
-        }
-        else if (charHandle == mCharCHandle)
-        {
-            parseConfigurationField(charValue.bytes.begin());
-        }
-        else if (charHandle == mCharDHandle)
-        {
-            if (!charValue.notifications.hasValue())
-                return;
-            this->mClientIsListeningToRecorded =
-                charValue.notifications.getValue();
-        }
-
-        break;
-    }
-    // ECG Data:
-    case WB_RES::LOCAL::MEASUREMENTPROVIDER_ECG_DATASTREAM::LID: {
-        // Get raw bytes from the packet.
-        const WB_RES::MeasurementBundle32& packet =
-            rValue.convertTo<const WB_RES::MeasurementBundle32&>();
-
-        WB_RES::Characteristic ecgVoltageCharacteristic;
-        ecgVoltageCharacteristic.bytes = wb::MakeArray(
-            reinterpret_cast<const uint8_t*>(packet.units.begin()),
-            packet.units.size() * sizeof(uint32_t));
-
-        // Put value onto Ecg-Characteristic to notify listening client.
-        asyncPut(mCharAResource, AsyncRequestOptions::Empty,
-                 ecgVoltageCharacteristic);
-        break;
-    }
-    // IMU Data:
-    case WB_RES::LOCAL::MEASUREMENTPROVIDER_IMU9_DATASTREAM::LID: {
-        // Get raw bytes from the packet.
-        const WB_RES::MeasurementBundle32& packet =
-            rValue.convertTo<const WB_RES::MeasurementBundle32&>();
-
-        WB_RES::Characteristic movVectorCharacteristic;
-        movVectorCharacteristic.bytes = wb::MakeArray(
-            reinterpret_cast<const uint8_t*>(packet.units.begin()),
-            packet.units.size() * sizeof(uint32_t));
-
-        // Put value onto Mov-Characteristic to notify listening client.
-        asyncPut(mCharBResource, AsyncRequestOptions::Empty,
-                 movVectorCharacteristic);
-        break;
-    }
-    case WB_RES::LOCAL::MEM_LOGBOOK_ISFULL::LID: {
-        const bool isFull = rValue.convertTo<bool>();
-        if (isFull)
-        {
-            // Stop recording when logbook is full.
-            stopDataLogger();
-            // reactivate auto-shutdown.
-            WakeClient::activate();
-
-            // Mark recording operation to end.
-            mRecordingOperation = 0;
-            refreshConfigurationFields();
-        }
-        break;
-    }
     }
 }
 
 void MainClient::onTimer(wb::TimerId timerId) {
-
-    if (timerId == this->mConnParamPutTimer)
-    {
+    if (timerId == this->mConnParamPutTimer) {
         stopTimer(mConnParamPutTimer);
         this->mConnParamPutTimer = wb::ID_INVALID_TIMER;
         asyncPut(WB_RES::LOCAL::COMM_BLE_PEERS_CONNHANDLE_PARAMS(), AsyncRequestOptions::Empty, 0, mPreferedConnParams);
     }
-    if (timerId == this->mBlinkTimer)
-    {
+    if (timerId == this->mBlinkTimer) {
         // Stop the blinking if the blink-counter has reached 0.
-        if (this->mBlinkCounter == 0)
-        {
+        if (this->mBlinkCounter == 0) {
             this->stopTimer(this->mBlinkTimer);
             this->mBlinkTimer = wb::ID_INVALID_TIMER;
             return;
         }
         // Blink once.
         const WB_RES::VisualIndType type =
-            WB_RES::VisualIndTypeValues::SHORT_VISUAL_INDICATION;
+                WB_RES::VisualIndTypeValues::SHORT_VISUAL_INDICATION;
         this->asyncPut(WB_RES::LOCAL::UI_IND_VISUAL(),
                        AsyncRequestOptions::Empty, type);
 
@@ -450,22 +379,23 @@ void MainClient::onTimer(wb::TimerId timerId) {
     }
 }
 
-void MainClient::configGattSvc()
-{
+void MainClient::configGattSvc() {
     WB_RES::GattSvc activityGattSvc;
     WB_RES::GattChar characteristics[OFFLINE_STORAGE_GATT_CLIENT_CHARS];
 
     // Define each characteristic by reference for clarity
-    WB_RES::GattChar& charA = characteristics[0];
-    WB_RES::GattChar& charB = characteristics[1];
-    WB_RES::GattChar& charC = characteristics[2];
-    WB_RES::GattChar& charD = characteristics[3];
+    WB_RES::GattChar &charA = characteristics[0];
+    WB_RES::GattChar &charB = characteristics[1];
+    WB_RES::GattChar &charC = characteristics[2];
+    WB_RES::GattChar &charD = characteristics[3];
 
     // Define properties for each characteristic
     static WB_RES::GattProperty propsA[] = {WB_RES::GattProperty::NOTIFY};
     static WB_RES::GattProperty propsB[] = {WB_RES::GattProperty::NOTIFY};
-    static WB_RES::GattProperty propsC[] = {WB_RES::GattProperty::READ,
-                                            WB_RES::GattProperty::WRITE};
+    static WB_RES::GattProperty propsC[] = {
+        WB_RES::GattProperty::READ,
+        WB_RES::GattProperty::WRITE
+    };
     static WB_RES::GattProperty propsD[] = {WB_RES::GattProperty::NOTIFY};
 
     // Assign properties
@@ -476,27 +406,27 @@ void MainClient::configGattSvc()
 
     // Assign UUIDs
     charA.uuid = wb::MakeArray<uint8_t>(
-        reinterpret_cast<const uint8_t*>(&UUID_A), sizeof(UUID_A));
+        reinterpret_cast<const uint8_t *>(&UUID_A), sizeof(UUID_A));
     charB.uuid = wb::MakeArray<uint8_t>(
-        reinterpret_cast<const uint8_t*>(&UUID_B), sizeof(UUID_B));
+        reinterpret_cast<const uint8_t *>(&UUID_B), sizeof(UUID_B));
     charC.uuid = wb::MakeArray<uint8_t>(
-        reinterpret_cast<const uint8_t*>(&UUID_C), sizeof(UUID_C));
+        reinterpret_cast<const uint8_t *>(&UUID_C), sizeof(UUID_C));
     charD.uuid = wb::MakeArray<uint8_t>(
-        reinterpret_cast<const uint8_t*>(&UUID_D), sizeof(UUID_D));
+        reinterpret_cast<const uint8_t *>(&UUID_D), sizeof(UUID_D));
 
     // Assign initial values
     charA.initial_value = wb::MakeArray<uint8_t>(
-        reinterpret_cast<const uint8_t*>(&INITIAL_A), sizeof(INITIAL_A));
+        reinterpret_cast<const uint8_t *>(&INITIAL_A), sizeof(INITIAL_A));
     charB.initial_value = wb::MakeArray<uint8_t>(
-        reinterpret_cast<const uint8_t*>(&INITIAL_B), sizeof(INITIAL_B));
+        reinterpret_cast<const uint8_t *>(&INITIAL_B), sizeof(INITIAL_B));
     charC.initial_value = wb::MakeArray<uint8_t>(
-        reinterpret_cast<const uint8_t*>(&INITIAL_C), CONFIGURATION_FIELD_SIZE);
+        reinterpret_cast<const uint8_t *>(&INITIAL_C), CONFIGURATION_FIELD_SIZE);
     charD.initial_value = wb::MakeArray<uint8_t>(
-        reinterpret_cast<const uint8_t*>(&INITIAL_D), sizeof(INITIAL_D));
+        reinterpret_cast<const uint8_t *>(&INITIAL_D), sizeof(INITIAL_D));
 
     // Combine characteristics into the service definition
     activityGattSvc.uuid = wb::MakeArray<uint8_t>(
-        reinterpret_cast<const uint8_t*>(&OFFLINE_ACTIVITY_SVC_UUID16),
+        reinterpret_cast<const uint8_t *>(&OFFLINE_ACTIVITY_SVC_UUID16),
         sizeof(uint16_t));
     activityGattSvc.chars = wb::MakeArray(characteristics);
 
@@ -506,8 +436,7 @@ void MainClient::configGattSvc()
     // Logic continues in onPostResult() case Comm/Ble/Gattsvc.
 }
 
-void MainClient::deconfigGattSvc()
-{
+void MainClient::deconfigGattSvc() {
     // Invalidate all resource IDs on shutdown
     mCharAResource = wb::ID_INVALID_RESOURCE;
     mCharBResource = wb::ID_INVALID_RESOURCE;
@@ -516,8 +445,7 @@ void MainClient::deconfigGattSvc()
     mActivityServiceHandle = 0;
 }
 
-void MainClient::initGattCharSubscriptions()
-{
+void MainClient::initGattCharSubscriptions() {
     // Safe-subscribe to all Gatt characteristics to get notified on
     // value-changes and notification status changes. [!] must use
     // ForceAsync here.
@@ -531,8 +459,7 @@ void MainClient::initGattCharSubscriptions()
         asyncSubscribe(mCharDResource, AsyncRequestOptions::ForceAsync);
 }
 
-void MainClient::deinitGattCharSubscriptions()
-{
+void MainClient::deinitGattCharSubscriptions() {
     // Safe-unsubscribe from all Gatt characteristics.
     if (mCharAResource != wb::ID_INVALID_RESOURCE)
         asyncUnsubscribe(mCharAResource);
@@ -545,15 +472,13 @@ void MainClient::deinitGattCharSubscriptions()
 }
 
 void MainClient::parseConfigurationField(
-    const uint8_t* configFields)
-{
+    const uint8_t *configFields) {
     // Measurement intervals.
     uint8_t ecgMeasurementInterval = configFields[0];
     uint8_t imuMeasurementInterval = configFields[1];
 
     // Potentially update ECG measurement interval.
-    if (ecgMeasurementInterval != mEcgMeasurementInterval)
-    {
+    if (ecgMeasurementInterval != mEcgMeasurementInterval) {
         asyncPut(WB_RES::LOCAL::MEASUREMENTPROVIDER_ECG_INTERVAL(),
                  AsyncRequestOptions::Empty, ecgMeasurementInterval);
 
@@ -561,8 +486,7 @@ void MainClient::parseConfigurationField(
     }
 
     // Potentially update IMU measurement interval.
-    if (imuMeasurementInterval != mImuMeasurementInterval)
-    {
+    if (imuMeasurementInterval != mImuMeasurementInterval) {
         asyncPut(WB_RES::LOCAL::MEASUREMENTPROVIDER_IMU9_INTERVAL(),
                  AsyncRequestOptions::Empty, imuMeasurementInterval);
         this->mImuMeasurementInterval = imuMeasurementInterval;
@@ -574,28 +498,20 @@ void MainClient::parseConfigurationField(
 
     // Potentially update Recording Configuration.
     if (ecgRecordingMode != mEcgRecordingMode ||
-        imuRecordingMode != mImuRecordingMode)
-    {
-        if (ecgRecordingMode && imuRecordingMode)
-        {
+        imuRecordingMode != mImuRecordingMode) {
+        if (ecgRecordingMode && imuRecordingMode) {
             configureDataLoggerAll();
             this->mEcgRecordingMode = true;
             this->mImuRecordingMode = true;
-        }
-        else if (ecgRecordingMode && !imuRecordingMode)
-        {
+        } else if (ecgRecordingMode && !imuRecordingMode) {
             configureDataLoggerECG();
             this->mEcgRecordingMode = true;
             this->mImuRecordingMode = false;
-        }
-        else if (!ecgRecordingMode && imuRecordingMode)
-        {
+        } else if (!ecgRecordingMode && imuRecordingMode) {
             configureDataLoggerIMU();
             this->mEcgRecordingMode = false;
             this->mImuRecordingMode = true;
-        }
-        else
-        {
+        } else {
             configureDataLoggerNone();
             this->mEcgRecordingMode = false;
             this->mImuRecordingMode = false;
@@ -606,8 +522,7 @@ void MainClient::parseConfigurationField(
     uint8_t recordingOperation = configFields[4];
 
     // Enable recording in case 0 -> 1
-    if (!mRecordingOperation && recordingOperation)
-    {
+    if (!mRecordingOperation && recordingOperation) {
         startDataLogger();
         this->mRecordingOperation = 1;
         WakeClient::deactivate();
@@ -616,8 +531,7 @@ void MainClient::parseConfigurationField(
     }
 
     // Disable recording in case 1 -> 0
-    else if (mRecordingOperation && !recordingOperation)
-    {
+    else if (mRecordingOperation && !recordingOperation) {
         stopDataLogger();
         this->mRecordingOperation = 0;
 
@@ -631,8 +545,7 @@ void MainClient::parseConfigurationField(
     // Send recorded data operation (only if not recording currently and not
     // already in get-data operation).
     if (!mRecordingOperation && !mGetDataOperation && !mDeleteDataOperation &&
-        getDataOperation)
-    {
+        getDataOperation) {
         startLogStreaming();
         mGetDataOperation = true;
     }
@@ -642,19 +555,17 @@ void MainClient::parseConfigurationField(
     // Delete recorded data operation (only if not recording now, no ongoing
     // data transfer or already started deletion operation).
     if (!mRecordingOperation && !mGetDataOperation && !mDeleteDataOperation &&
-        deleteDataOperation)
-    {
+        deleteDataOperation) {
         deleteRecordedData();
         // TODO: return to value 0 only on delete result.
     }
 
     int64_t timestamp;
     // copy in 2 steps, otherwise crash on directly dereferencing 64-bit.
-    memcpy((uint32_t*)&timestamp, configFields + 8, 4);
-    memcpy((uint32_t*)(&timestamp) + 1, configFields + 12, 4);
+    memcpy((uint32_t *) &timestamp, configFields + 8, 4);
+    memcpy((uint32_t *) (&timestamp) + 1, configFields + 12, 4);
 
-    if (timestamp != mSynchronizationTimestamp)
-    {
+    if (timestamp != mSynchronizationTimestamp) {
         this->mSynchronizationTimestamp = timestamp;
         setTimestamp();
     }
@@ -662,8 +573,8 @@ void MainClient::parseConfigurationField(
     // Refresh the configuration field for potential updates.
     refreshConfigurationFields();
 }
-void MainClient::refreshConfigurationFields()
-{
+
+void MainClient::refreshConfigurationFields() {
     // Set the value of the characteristic to give client response information.
     uint8_t buffer[2 * 8];
     uint8_t values[8] = {
@@ -728,6 +639,7 @@ void MainClient::startDataLogger() {
 }
 
 void MainClient::stopDataLogger() {
+    startBlinker(3);
     // Stop Logging by PUTting the logger in the READY state.
     asyncPut(WB_RES::LOCAL::MEM_DATALOGGER_STATE(), AsyncRequestOptions::Empty,
              WB_RES::DataLoggerStateValues::DATALOGGER_READY);
@@ -863,8 +775,8 @@ void MainClient::sensorStateTransition(SensorEvents event) {
             }
             break;
         case SensorStates::Reconnected:
+            this->startBlinker(2);
             if (mDataState == DataStates::ECG && event == SensorEvents::SubscribeEcg) {
-                startBlinker(4);
                 this->mSensorState = SensorStates::Streaming;
                 this->stopDataLogger();
                 WakeClient::activate();
@@ -873,7 +785,7 @@ void MainClient::sensorStateTransition(SensorEvents event) {
                 this->stopDataLogger();
                 WakeClient::activate();
             }
-            // TODO extended pending handling
+            // TODO extended pending handling (sub and unsub ecg before imu)
             else if (mDataState == DataStates::Both && event == SensorEvents::SubscribeEcg && pendingEcg) {
                 this->mSensorState = SensorStates::Streaming;
                 this->stopDataLogger();
