@@ -14,6 +14,11 @@ Primbs, J.; et al. The SSTeP-KiZ System—Secure Real-Time Communication Based o
 
 ### Provided GATT Services and Characteristics
 
+#### Version 0.9.0 and above
+This version adds to services provided by 0.8.0 the ability to automatically transition to offline storage mode when the device disconnects, if ECG or IMU data streams are enabled. This happens on sudden disconnects but **also** if one disconnects from the sensor, without **properly unsubscribing** from ECG voltage or IMU characteristics.
+
+The sensor will blink rapidly 5 times when it enters this "emergency logging mode". It will then continue to record the previously active datastreams at the configured samplerate. When re-connected, the sensor will stop the offline logging as soon as the client re-subscribes to all previously subscribed characteristics, before the connection terminated (e.g. when the sensor was sending ECG data before, the client has to re-subscribe to ECG-data in order to stop the logging or if it was sending ECG and IMU data the client has to re-subscribe to both ECG and IMU Data to stop the sensor-local recording. The logs can then be transferred to the client with the same procedure as "manual logs" (i.e. recordings on the sensor that were directly initiated by the client and not a connection loss), described under version 0.8.0.
+
 #### Version 0.8.0 and above
 Our custom firmware provides the following GATT Services:
 - **Heart Rate Service** with 16-bit UUID `0x180D`: Provides access to R-R intervals in milliseconds. See the [Bluetooth SIG specification](https://www.bluetooth.com/de/specifications/specs/heart-rate-service-1-0/) for more details.
@@ -47,7 +52,7 @@ Our custom firmware provides the following GATT Services:
     - R: unused field
     - UNIX-timestamp: 64-bit UNIX-timestamp of the current time on the client in microsecond-precision to be used in measurement data.
 
-  - **Data Transfer Characteristic** with 16-bit UUID `0x2BF4`: provides *INDICATE* access to data transfered from the local sensor storage. Triggered by the transfer-op bit from the configuration-characteristic.
+  - **Data Transfer Characteristic** with 16-bit UUID `0x2BF4`: provides *NOTIFY* access to data transferred from the local sensor storage. Triggered by the transfer-op bit from the configuration-characteristic. When a Data-Transfer is triggered, the notifications on this property should be activated. A file in [SBEM](https://www.movesense.com/docs/esw/data_storage/)-Format will be transferred to the client in sequential notifications. End of the transfer is signaled by sending an individual 0 byte, which is not part of the file. Chunks containing ECG data are of length 10 and have chunk ID 104. Chunks containing IMU Data are of length 38 and have chunk ID 105.
 
 --- 
 
