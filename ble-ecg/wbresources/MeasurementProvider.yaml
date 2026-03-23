@@ -8,23 +8,6 @@ info:
     intervals.
 
 paths:
-  /MeasurementProvider/MeasurementStatus/Subscription:
-    post:
-      description: |
-        Subscription to log measurement status updates
-      responses:
-        200:
-          description: Operation completed successfully
-        x-notification:
-          description: Measurement Status Update
-          schema:
-            $ref: '#/definitions/measurementStatus'
-    delete:
-      description: |
-      responses:
-        200:
-          description: Operation completed successfully
-
   /MeasurementProvider/ECG/Interval:
     put:
       description: |
