@@ -43,13 +43,13 @@ class MeasurementProvider FINAL : private wb::ResourceProvider,
   private:
     // For ECG data
     /** Interval in ms between ECG-measurements **/
-    uint8_t mEcgMeasurementInterval;
+    uint8_t mEcgMeasurementInterval = ECG_DEFAULT_MEASUREMENT_INTERVAL;
 
     /** For counting how many ECG samples where received since the last one was added **/
-    uint8_t mEcgSampleCounter;
+    uint8_t mEcgSampleCounter = 0;
 
     /** Sets how many ECG samples are skipped before one is added to the buffer **/
-    uint8_t mEcgSampleSkipCount;
+    uint8_t mEcgSampleSkipCount = ECG_DEFAULT_SAMPLE_SKIP_COUNT;
 
     /**
      * @brief Sets the new measurement Interval (ms) for ECG.
@@ -66,13 +66,14 @@ class MeasurementProvider FINAL : private wb::ResourceProvider,
 
     // For IMU data
     /** Interval in ms between IMU-measurements **/
-    uint8_t mImuMeasurementInterval;
+    // TODO: must be IMU_DEFAULT_MEAS_INTERVAL?
+    uint8_t mImuMeasurementInterval = IMU_BASE_MEASUREMENT_INTERVAL;
 
     /** For counting how many IMU samples where received since the last one was added **/
-    uint8_t mImuSampleCounter;
+    uint8_t mImuSampleCounter = 0;
 
     /** Sets how many IMU samples are skipped before one is added to the buffer **/
-    uint8_t mImuSampleSkipCount;
+    uint8_t mImuSampleSkipCount = IMU_DEFAULT_SAMPLE_SKIP_COUNT;
 
     /**
      * @brief Sets the new measurement interval (ms) for IMU.
@@ -108,7 +109,7 @@ class MeasurementProvider FINAL : private wb::ResourceProvider,
 
     // For time synchronization.
     /** Timestamp for when the sensor time has started (microseconds). **/
-    int64_t mUnixBaseTimestampUs;
+    int64_t mUnixBaseTimestampUs = 0;
 
     /** Series Buffer for ECG data. **/
     AbsoluteSeriesBuffer<ecg_t>* ecgBuffer;

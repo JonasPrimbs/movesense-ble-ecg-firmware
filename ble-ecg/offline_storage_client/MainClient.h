@@ -1,19 +1,23 @@
 #pragma once
 
+#include <comm_ble/resources.h>
+
+#include "MeasurementConfig.h"
 #include "movesense.h"
+#include "SensorStates.h"
 
 /**
  *  Movesense-Client for Processing all GAtt-related functions and
  *  controlling/ consuming Data of the MeasurementProvider.
  */
-class OfflineStorageGattClient FINAL : private wb::ResourceClient,
+class MainClient FINAL : private wb::ResourceClient,
                                        private wb::LaunchableModule
 {
   public:
     static const char* const LAUNCHABLE_NAME;
 
-    OfflineStorageGattClient();
-    ~OfflineStorageGattClient();
+    MainClient();
+    ~MainClient() override;
 
   private:
     // From wb::LaunchableModule:
@@ -64,33 +68,34 @@ class OfflineStorageGattClient FINAL : private wb::ResourceClient,
     void deinitGattCharSubscriptions();
 
     // Member variables for GATT handles and resources:
-    int32_t mActivityServiceHandle;
+    int32_t mActivityServiceHandle = 0;
 
-    int32_t mCharAHandle;
-    wb::ResourceId mCharAResource;
+    int32_t mCharAHandle = 0;
+    wb::ResourceId mCharAResource = wb::ID_INVALID_RESOURCE;
 
-    int32_t mCharBHandle;
-    wb::ResourceId mCharBResource;
+    int32_t mCharBHandle = 0;
+    wb::ResourceId mCharBResource = wb::ID_INVALID_RESOURCE;
 
-    int32_t mCharCHandle;
-    wb::ResourceId mCharCResource;
+    int32_t mCharCHandle = 0;
+    wb::ResourceId mCharCResource = wb::ID_INVALID_RESOURCE;
 
-    int32_t mCharDHandle;
-    wb::ResourceId mCharDResource;
+    int32_t mCharDHandle = 0;
+    wb::ResourceId mCharDResource = wb::ID_INVALID_RESOURCE;
 
     // Flags to keep track GATT subscribers.
     /*+ Subscription to the ECG-Measurement Characteristic **/
-    bool mClientIsListeningToEcg;
+    bool mClientIsListeningToEcg = false;
     /*+ Subscription to the IMU-Measurement Characteristic **/
-    bool mClientIsListeningToMov;
+
+    bool mClientIsListeningToImu = false;
     /*+ Subscription to the Recorded-Data Characteristic **/
-    bool mClientIsListeningToRecorded;
+    bool mClientIsListeningToRecorded = false;
 
     // Measurement Interval settings.
     /** The current ECG-Measurement Interval setting **/
-    uint8_t mEcgMeasurementInterval;
+    uint8_t mEcgMeasurementInterval = ECG_DEFAULT_MEASUREMENT_INTERVAL;
     /** The current IMU-Measurement Interval setting **/
-    uint8_t mImuMeasurementInterval;
+    uint8_t mImuMeasurementInterval = IMU_DEFAULT_MEASUREMENT_INTERVAL;
 
     /**
      * @brief Execute the necessary configurations, when the BLE-Client writes to the
@@ -128,7 +133,7 @@ class OfflineStorageGattClient FINAL : private wb::ResourceClient,
     void stopDataLogger();
 
     /** The ID of the currently accessed DataLogEntry (normally 1) **/
-    size_t mCurrentLogEntryId;
+    size_t mCurrentLogEntryId = 0;
 
     // For reading recorded data.
     /**
@@ -150,21 +155,21 @@ class OfflineStorageGattClient FINAL : private wb::ResourceClient,
     // 0 -> No Recording
     // 1 -> Recording
     /** Recording states for ECG **/
-    uint8_t mEcgRecordingMode;
+    uint8_t mEcgRecordingMode = 0;
 
     /** Recording states for IMU **/
-    uint8_t mImuRecordingMode;
+    uint8_t mImuRecordingMode = 0;
 
     // Operation States:
     // 0 -> Operation not ongoing
     // 1 -> Operation ongoing
 
     /** Recording Operation Status **/
-    uint8_t mRecordingOperation;
+    uint8_t mRecordingOperation = 0;
     /** Log-Read and Send Status **/
-    uint8_t mGetDataOperation;
+    uint8_t mGetDataOperation = 0;
     /** Delete all logs Operation Status **/
-    uint8_t mDeleteDataOperation;
+    uint8_t mDeleteDataOperation = 0;
 
     /**
      * @brief Update the value of the configuration field visible to the
@@ -181,17 +186,15 @@ class OfflineStorageGattClient FINAL : private wb::ResourceClient,
     void setTimestamp();
 
     /** SynchronisationTimestamp value set by BLE-Client **/
-    int64_t mSynchronizationTimestamp;
+    int64_t mSynchronizationTimestamp = 0;
 
     // Debug Functions
-    /** Timer Resource for the Blink timer **/
-    wb::ResourceId mTimeResource;
 
     /** Timer for Blink Debugging **/
-    wb::TimerId mBlinkTimer;
+    wb::TimerId mBlinkTimer = wb::ID_INVALID_RESOURCE;
 
     /** Counter for Blink Debugging **/
-    uint32_t mBlinkCounter;
+    uint32_t mBlinkCounter = 0;
 
     /**
      * @brief Make the Sensors Red Blinker blink for n times.
@@ -212,4 +215,28 @@ class OfflineStorageGattClient FINAL : private wb::ResourceClient,
      * @param x value appearing in the fmt-string
      */
     void debugf(const char* msg, int64_t x);
+
+    /**
+     * @brief Transition the sensors State.
+     * @param event that triggered the transition.
+     */
+    void sensorStateTransition(SensorEvents event);
+
+    /** The sensors internal state of operation. **/
+    SensorStates mSensorState = SensorStates::Started;
+
+    /** Additional state variable, specifies what data is in use a.t.m. **/
+    DataStates mDataState = DataStates::None;
+
+    /** Helper flag between transition from log ecg + imu to stream ecg + imu. **/
+    bool pendingEcg = false;
+
+    /** Helper flag between transition from log ecg + imu to stream ecg + imu. **/
+    bool pendingImu = false;
+
+    /** Hard coded connection params, that allow the Sensor to react to disconnects without crashing. **/
+    WB_RES::ConnParams mPreferedConnParams = {12, 12, 2, 50};
+
+    /** Timer to delay the PUT operation on the /Comm/Ble/{ConnHandle}/ConnParams resource. **/
+    wb::TimerId mConnParamPutTimer;
 };

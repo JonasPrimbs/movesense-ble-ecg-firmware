@@ -4,7 +4,7 @@
 #include <meas_gyro/resources.h>
 #include <meas_magn/resources.h>
 
-#include "MovGATTSvcClient.h"
+#include "../MovGATTSvcClient.h"
 #include "common/core/debug.h"
 #include "oswrapper/thread.h"
 

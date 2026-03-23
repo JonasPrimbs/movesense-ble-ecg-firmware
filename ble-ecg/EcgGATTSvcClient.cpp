@@ -2,7 +2,7 @@
 
 #include <meas_ecg/resources.h>
 
-#include "EcgGATTSvcClient.h"
+#include "../EcgGATTSvcClient.h"
 #include "common/core/debug.h"
 #include "oswrapper/thread.h"
 

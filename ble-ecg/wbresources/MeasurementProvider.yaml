@@ -43,7 +43,6 @@ paths:
         200:
           description: Operation completed successfully
 
-
   /MeasurementProvider/IMU9/Interval:
     put:
       description: |
@@ -81,6 +80,17 @@ paths:
             Operation completed successfully
 
 definitions:
+  measurementStatus:
+    required:
+      - ecgStatus
+      - imuStatus
+    properties:
+      ecgStatus:
+        type: integer
+        format: uint8
+      imuStatus:
+        type: integer
+        format: uint8
 
   measurementBundle32:
     required:
@@ -92,53 +102,14 @@ definitions:
           type: integer
           format: uint32
 
-  measurementBundle:
-    required:
-      - bytes
-    properties:
-      bytes:
-        type: array
-        items:
-          type: integer
-          format: uint8
-
-  ecgBundle:
-    required:
-      - timestamp
-      - samples
-    properties:
-      timestamp:
-        type: integer
-        format: uint32
-      samples:
-        type: array
-        items:
-          type: integer
-          format: int16
-
-  imuBundle:
-    required:
-      - timestamp
-      - samples
-    properties:
-      timestamp:
-        type: integer
-        format: uint32
-      samples:
-        type: array
-        items:
-          type: integer
-          format: int16
-
-
 # Extra configurations for Recording Data with DataLogger.
 datalogger:
   version: "1.0"
   type: "config"
   resources:
     /MeasurementProvider/ECG/.*:
-      # (16 * 2 + 4) / 4
+      # (16 * 2 + 8) / 4
       array-lengths: 10
     /MeasurementProvider/IMU9/.*:
-      # (8 * 2 * 3 * 3 + 4) / 4
+      # (8 * 2 * 3 * 3 + 8) / 4
       array-lengths: 38

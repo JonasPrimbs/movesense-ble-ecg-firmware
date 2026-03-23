@@ -126,7 +126,7 @@ void WakeClient::startShutdownTimer() {
     }
 
     // Start timer.
-    this->mShutdownTimer = startTimer(SHUTDOWN_TIME_MS, false);
+    this->mShutdownTimer = startTimer(SHUTDOWN_TIME_MS, true);
 }
 
 void WakeClient::stopShutdownTimer() {

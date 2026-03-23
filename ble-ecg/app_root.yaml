@@ -28,16 +28,3 @@ apis:
   MeasurementProvider.*:
     apiId: 100
     defaultExecutionContext: meas
-
-  # PersistenceManager.*:
-  #   apiId: 100
-  #   defaultExecutionContext: application
-
-  # MeasDataProvider.*:
-  #   apiId: 101
-  #   defaultExecutionContext: meas
-
-  # RecordingStateManager.*:
-  #   apiId: 102
-  #   defaultExecutionContext: application
-

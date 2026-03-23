@@ -1,5 +1,5 @@
 #include "WakeClient.h"
-#include "offline_storage_client/OfflineStorageGattClient.h"
+#include "offline_storage_client/MainClient.h"
 #include "offline_storage_client/MeasurementProvider.h"
 
 #include "movesense.h"
@@ -7,17 +7,15 @@
 MOVESENSE_APPLICATION_STACKSIZE(1024)
 
 // Add Providers:
-
 MOVESENSE_PROVIDERS_BEGIN(3)
 
-MOVESENSE_PROVIDER_DEF(OfflineStorageGattClient)
-MOVESENSE_PROVIDER_DEF(MeasurementProvider)
+MOVESENSE_PROVIDER_DEF(MainClient)
 MOVESENSE_PROVIDER_DEF(WakeClient)
+MOVESENSE_PROVIDER_DEF(MeasurementProvider)
 
 MOVESENSE_PROVIDERS_END(3)
 
 // Load Features:
-
 MOVESENSE_FEATURES_BEGIN()
 
 OPTIONAL_CORE_MODULE(DataLogger, true)
@@ -35,8 +33,8 @@ OPTIONAL_CORE_MODULE(CustomGattService, true)
 
 // Define Application Specification:
 
-APPINFO_NAME("OfflineActivityService");
-APPINFO_VERSION("0.8.0");
+APPINFO_NAME("ReliableActivityService");
+APPINFO_VERSION("0.9.0");
 APPINFO_COMPANY("Jonas Primbs");
 
 // Enable Bluetooth Low Energy Communication:
