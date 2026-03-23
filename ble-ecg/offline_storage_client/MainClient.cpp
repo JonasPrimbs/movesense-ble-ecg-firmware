@@ -134,7 +134,6 @@ void MainClient::onGetResult(wb::RequestId requestId,
                 mCurrentLogEntryId = entry.id;
             }
             if (mCurrentLogEntryId == 0) {
-                this->startBlinker(10);
                 finishCurrentReadOperation();
                 break;
             }
@@ -599,7 +598,6 @@ void MainClient::configureDataLoggerNone() {
 }
 
 void MainClient::configureDataLoggerAll() {
-    startBlinker(2);
     WB_RES::DataLoggerConfig dlConfig;
     WB_RES::DataEntry dlEntries[2];
     dlEntries[0].path = "/MeasurementProvider/ECG/DataStream";
@@ -637,7 +635,6 @@ void MainClient::startDataLogger() {
 }
 
 void MainClient::stopDataLogger() {
-    startBlinker(3);
     // Stop Logging by PUTting the logger in the READY state.
     asyncPut(WB_RES::LOCAL::MEM_DATALOGGER_STATE(), AsyncRequestOptions::Empty,
              WB_RES::DataLoggerStateValues::DATALOGGER_READY);
@@ -646,13 +643,11 @@ void MainClient::stopDataLogger() {
 }
 
 void MainClient::startLogStreaming() {
-    startBlinker(4);
     asyncGet(WB_RES::LOCAL::MEM_LOGBOOK_ENTRIES());
     // Continue logic in onGetResult() case Mem/Logbook/Entries.
 }
 
 void MainClient::deleteRecordedData() {
-    startBlinker(5);
     // Delete all Logbook entries.
     asyncDelete(WB_RES::LOCAL::MEM_LOGBOOK_ENTRIES());
 }
