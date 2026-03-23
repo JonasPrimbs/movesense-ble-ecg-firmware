@@ -257,7 +257,6 @@ void MainClient::onNotify(wb::ResourceId resourceId,
                         stopTimer(mConnParamPutTimer);
                         mConnParamPutTimer = wb::ID_INVALID_TIMER;
                     }
-                    startBlinker(5);
                     this->sensorStateTransition(SensorEvents::Disconnect);
                     break;
             }
@@ -557,7 +556,6 @@ void MainClient::parseConfigurationField(
     if (!mRecordingOperation && !mGetDataOperation && !mDeleteDataOperation &&
         deleteDataOperation) {
         deleteRecordedData();
-        // TODO: return to value 0 only on delete result.
     }
 
     int64_t timestamp;
@@ -758,6 +756,7 @@ void MainClient::sensorStateTransition(SensorEvents event) {
                 case SensorEvents::Disconnect:
                     WakeClient::deactivate();
                     startDataLogger();
+                    startBlinker(5);
                     this->mSensorState = SensorStates::Logging;
                     break;
                 default: {
@@ -785,7 +784,12 @@ void MainClient::sensorStateTransition(SensorEvents event) {
                 this->stopDataLogger();
                 WakeClient::activate();
             }
-            // TODO extended pending handling (sub and unsub ecg before imu)
+            else if (mDataState == DataStates::Both && event == SensorEvents::UnsubscribeEcg && pendingImu) {
+                this->pendingImu = false;
+            }
+            else if (mDataState == DataStates::Both && event == SensorEvents::UnsubscribeImu && pendingEcg) {
+                this->pendingEcg = false;
+            }
             else if (mDataState == DataStates::Both && event == SensorEvents::SubscribeEcg && pendingEcg) {
                 this->mSensorState = SensorStates::Streaming;
                 this->stopDataLogger();
